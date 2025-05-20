@@ -859,24 +859,28 @@ ${resultBoxText}`;
 
     // Função para aplicar imposto sobre o rendimento
     function aplicarImposto(dados, taxaImposto) {
-      for (let i = 0; i < dados.length; i++) {
-        const imposto = dados[i].totalJuros * taxaImposto;
-        dados[i].imposto = imposto;
-        dados[i].valorLiquido = dados[i].totalAcumulado - imposto;
+      let dadosComImposto = JSON.parse(JSON.stringify(dados)); // Cria uma cópia profunda
+      
+      for (let i = 0; i < dadosComImposto.length; i++) {
+        const imposto = dadosComImposto[i].totalJuros * taxaImposto;
+        dadosComImposto[i].imposto = imposto;
+        dadosComImposto[i].valorLiquido = dadosComImposto[i].totalAcumulado - imposto;
       }
-      return dados;
+      
+      return dadosComImposto;
     }
 
     // Função para aplicar correção pela inflação
     function aplicarInflacao(dados, objetivo, taxaInflacao) {
+      let dadosComInflacao = JSON.parse(JSON.stringify(dados)); // Cria uma cópia profunda
       let objetivoCorrigido = objetivo;
       
-      for (let i = 0; i < dados.length; i++) {
-        dados[i].objetivoCorrigido = objetivoCorrigido;
+      for (let i = 0; i < dadosComInflacao.length; i++) {
+        dadosComInflacao[i].objetivoCorrigido = objetivoCorrigido;
         objetivoCorrigido *= (1 + taxaInflacao);
       }
       
-      return dados;
+      return dadosComInflacao;
     }
 
     // Função para calcular a taxa necessária
@@ -968,87 +972,94 @@ ${resultBoxText}`;
 
     // Função para calcular as poupanças
     function calculateSavings() {
-      // Validar formulário
-      if (!validarFormulario()) {
-        return;
-      }
-      
-      // Obter valores do formulário
-      goalDescriptionText = document.getElementById('goalDescription').value;
-      const goalValue = parseCurrency(document.getElementById('goal').value);
-      const period = parseInt(document.getElementById('period').value);
-      const rateValue = parsePercentage(document.getElementById('rate').value);
-      const rateType = document.getElementById('rateType').value;
-      const taxValue = parsePercentage(document.getElementById('tax').value);
-      const inflationValue = parsePercentage(document.getElementById('inflation').value);
-      const currentSavings = parseCurrency(document.getElementById('currentSavings').value);
-      const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
-      
-      // Converter taxa anual para mensal se necessário
-      const monthlyRate = rateType === 'annual' ? Math.pow(1 + rateValue, 1/12) - 1 : rateValue;
-      const monthlyInflation = Math.pow(1 + inflationValue, 1/12) - 1;
-      
-      // Calcular valor único necessário
-      const valorUnico = goalValue / Math.pow(1 + monthlyRate, period);
-      
-      // Calcular aporte mensal ideal
-      const aporteIdeal = calcularPoupancaNecessaria(goalValue, monthlyRate, period, currentSavings);
-      
-      // Calcular com aporte atual
-      const dadosAtual = calcularValorFuturo(currentSavings, monthlyRate, period, currentContribution);
-      const valorFinalAtual = dadosAtual[period].totalAcumulado;
-      
-      // Calcular taxa necessária para atingir o objetivo com o aporte atual
-      const taxaNecessaria = calcularTaxaNecessaria(goalValue, period, currentSavings, currentContribution);
-      
-      // Calcular dados para os diferentes cenários
-      let dadosUnico = calcularValorFuturo(valorUnico, monthlyRate, period);
-      let dadosIdeal = calcularValorFuturo(currentSavings, monthlyRate, period, aporteIdeal);
-      let dadosRentabilidade = calcularValorFuturo(currentSavings, taxaNecessaria, period, currentContribution);
-      
-      // Aplicar imposto sobre o rendimento
-      dadosUnico = aplicarImposto(dadosUnico, taxValue);
-      dadosIdeal = aplicarImposto(dadosIdeal, taxValue);
-      dadosAtual = aplicarImposto(dadosAtual, taxValue);
-      dadosRentabilidade = aplicarImposto(dadosRentabilidade, taxValue);
-      
-      // Aplicar correção pela inflação
-      dadosUnico = aplicarInflacao(dadosUnico, goalValue, monthlyInflation);
-      dadosIdeal = aplicarInflacao(dadosIdeal, goalValue, monthlyInflation);
-      dadosAtual = aplicarInflacao(dadosAtual, goalValue, monthlyInflation);
-      dadosRentabilidade = aplicarInflacao(dadosRentabilidade, goalValue, monthlyInflation);
-      
-      // Calcular diferença entre valor final e objetivo
-      const diferencaAtual = valorFinalAtual - goalValue;
-      const atingeObjetivo = diferencaAtual >= 0;
-      
-      // Preparar texto do resultado
-      const taxaAnual = (Math.pow(1 + monthlyRate, 12) - 1) * 100;
-      const taxaNecessariaAnual = (Math.pow(1 + taxaNecessaria, 12) - 1) * 100;
-      
-      let resultHtml = `
-        <h3>Resultado da Simulação</h3>
-        <p><strong>Objetivo:</strong> R$ ${formatMoney(goalValue)} em ${period} meses</p>
-        <p><strong>Taxa de juros:</strong> ${rateValue.toFixed(2)}% ${rateType === 'annual' ? 'ao ano' : 'ao mês'} (${taxaAnual.toFixed(2)}% ao ano)</p>
-        <p><strong>Inflação:</strong> ${inflationValue.toFixed(2)}% ao ano</p>
-        <p><strong>Imposto:</strong> ${taxValue.toFixed(2)}%</p>
-        <p><strong>Valor já guardado:</strong> R$ ${formatMoney(currentSavings)}</p>
-        <p><strong>Aporte mensal atual:</strong> R$ ${formatMoney(currentContribution)}</p>
-        <hr>
-        <p><strong>Investimento único necessário:</strong> R$ ${formatMoney(valorUnico)}</p>
-        <p><strong>Aporte mensal ideal:</strong> R$ ${formatMoney(aporteIdeal)}</p>
-        <p><strong>Valor final com aporte atual:</strong> R$ ${formatMoney(valorFinalAtual)} (${atingeObjetivo ? 'atinge o objetivo' : 'não atinge o objetivo'})</p>
-        <p><strong>Diferença para o objetivo:</strong> R$ ${formatMoney(Math.abs(diferencaAtual))} ${atingeObjetivo ? 'acima' : 'abaixo'}</p>
-        <p><strong>Rentabilidade necessária:</strong> ${taxaNecessariaAnual.toFixed(2)}% ao ano</p>
-      `;
-      
-      // Exibir resultado
-      const resultElement = document.getElementById('result');
-      resultElement.innerHTML = resultHtml;
-      resultElement.style.display = 'block';
-      
-      // Armazenar texto do resultado para WhatsApp
-      resultText = `Objetivo: R$ ${formatMoney(goalValue)} em ${period} meses
+      try {
+        // Validar formulário
+        if (!validarFormulario()) {
+          return;
+        }
+        
+        // Obter valores do formulário
+        goalDescriptionText = document.getElementById('goalDescription').value;
+        const goalValue = parseCurrency(document.getElementById('goal').value);
+        const period = parseInt(document.getElementById('period').value);
+        const rateValue = parsePercentage(document.getElementById('rate').value);
+        const rateType = document.getElementById('rateType').value;
+        const taxValue = parsePercentage(document.getElementById('tax').value);
+        const inflationValue = parsePercentage(document.getElementById('inflation').value);
+        const currentSavings = parseCurrency(document.getElementById('currentSavings').value);
+        const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
+        
+        // Converter taxa anual para mensal se necessário
+        let monthlyRate = 0;
+        if (rateType === 'annual') {
+          monthlyRate = Math.pow(1 + rateValue, 1/12) - 1;
+        } else {
+          monthlyRate = rateValue;
+        }
+        
+        let monthlyInflation = Math.pow(1 + inflationValue, 1/12) - 1;
+        
+        // Calcular valor único necessário
+        const valorUnico = goalValue / Math.pow(1 + monthlyRate, period);
+        
+        // Calcular aporte mensal ideal
+        const aporteIdeal = calcularPoupancaNecessaria(goalValue, monthlyRate, period, currentSavings);
+        
+        // Calcular com aporte atual
+        let dadosAtual = calcularValorFuturo(currentSavings, monthlyRate, period, currentContribution);
+        const valorFinalAtual = dadosAtual[period].totalAcumulado;
+        
+        // Calcular taxa necessária para atingir o objetivo com o aporte atual
+        const taxaNecessaria = calcularTaxaNecessaria(goalValue, period, currentSavings, currentContribution);
+        
+        // Calcular dados para os diferentes cenários
+        let dadosUnico = calcularValorFuturo(valorUnico, monthlyRate, period);
+        let dadosIdeal = calcularValorFuturo(currentSavings, monthlyRate, period, aporteIdeal);
+        let dadosRentabilidade = calcularValorFuturo(currentSavings, taxaNecessaria, period, currentContribution);
+        
+        // Aplicar imposto sobre o rendimento
+        let dadosUnicoComImposto = aplicarImposto(dadosUnico, taxValue);
+        let dadosIdealComImposto = aplicarImposto(dadosIdeal, taxValue);
+        let dadosAtualComImposto = aplicarImposto(dadosAtual, taxValue);
+        let dadosRentabilidadeComImposto = aplicarImposto(dadosRentabilidade, taxValue);
+        
+        // Aplicar correção pela inflação
+        let dadosUnicoFinal = aplicarInflacao(dadosUnicoComImposto, goalValue, monthlyInflation);
+        let dadosIdealFinal = aplicarInflacao(dadosIdealComImposto, goalValue, monthlyInflation);
+        let dadosAtualFinal = aplicarInflacao(dadosAtualComImposto, goalValue, monthlyInflation);
+        let dadosRentabilidadeFinal = aplicarInflacao(dadosRentabilidadeComImposto, goalValue, monthlyInflation);
+        
+        // Calcular diferença entre valor final e objetivo
+        const diferencaAtual = valorFinalAtual - goalValue;
+        const atingeObjetivo = diferencaAtual >= 0;
+        
+        // Preparar texto do resultado
+        const taxaAnual = (Math.pow(1 + monthlyRate, 12) - 1) * 100;
+        const taxaNecessariaAnual = (Math.pow(1 + taxaNecessaria, 12) - 1) * 100;
+        
+        let resultHtml = `
+          <h3>Resultado da Simulação</h3>
+          <p><strong>Objetivo:</strong> R$ ${formatMoney(goalValue)} em ${period} meses</p>
+          <p><strong>Taxa de juros:</strong> ${rateValue.toFixed(2)}% ${rateType === 'annual' ? 'ao ano' : 'ao mês'} (${taxaAnual.toFixed(2)}% ao ano)</p>
+          <p><strong>Inflação:</strong> ${inflationValue.toFixed(2)}% ao ano</p>
+          <p><strong>Imposto:</strong> ${taxValue.toFixed(2)}%</p>
+          <p><strong>Valor já guardado:</strong> R$ ${formatMoney(currentSavings)}</p>
+          <p><strong>Aporte mensal atual:</strong> R$ ${formatMoney(currentContribution)}</p>
+          <hr>
+          <p><strong>Investimento único necessário:</strong> R$ ${formatMoney(valorUnico)}</p>
+          <p><strong>Aporte mensal ideal:</strong> R$ ${formatMoney(aporteIdeal)}</p>
+          <p><strong>Valor final com aporte atual:</strong> R$ ${formatMoney(valorFinalAtual)} (${atingeObjetivo ? 'atinge o objetivo' : 'não atinge o objetivo'})</p>
+          <p><strong>Diferença para o objetivo:</strong> R$ ${formatMoney(Math.abs(diferencaAtual))} ${atingeObjetivo ? 'acima' : 'abaixo'}</p>
+          <p><strong>Rentabilidade necessária:</strong> ${taxaNecessariaAnual.toFixed(2)}% ao ano</p>
+        `;
+        
+        // Exibir resultado
+        const resultElement = document.getElementById('result');
+        resultElement.innerHTML = resultHtml;
+        resultElement.style.display = 'block';
+        
+        // Armazenar texto do resultado para WhatsApp
+        resultText = `Objetivo: R$ ${formatMoney(goalValue)} em ${period} meses
 Taxa de juros: ${rateValue.toFixed(2)}% ${rateType === 'annual' ? 'ao ano' : 'ao mês'} (${taxaAnual.toFixed(2)}% ao ano)
 Inflação: ${inflationValue.toFixed(2)}% ao ano
 Imposto: ${taxValue.toFixed(2)}%
@@ -1060,94 +1071,98 @@ Aporte mensal ideal: R$ ${formatMoney(aporteIdeal)}
 Valor final com aporte atual: R$ ${formatMoney(valorFinalAtual)} (${atingeObjetivo ? 'atinge o objetivo' : 'não atinge o objetivo'})
 Diferença para o objetivo: R$ ${formatMoney(Math.abs(diferencaAtual))} ${atingeObjetivo ? 'acima' : 'abaixo'}
 Rentabilidade necessária: ${taxaNecessariaAnual.toFixed(2)}% ao ano`;
-      
-      // Preparar recomendação
-      let recommendationText = '';
-      
-      if (atingeObjetivo) {
-        recommendationText = `
-          <p>Parabéns! Com seu aporte mensal atual de R$ ${formatMoney(currentContribution)}, você conseguirá atingir seu objetivo de R$ ${formatMoney(goalValue)} em ${period} meses, e ainda terá um excedente de R$ ${formatMoney(diferencaAtual)}.</p>
-          <p>Recomendações:</p>
-          <ul>
-            <li>Considere aumentar seu objetivo financeiro</li>
-            <li>Você pode reduzir seu aporte mensal para R$ ${formatMoney(aporteIdeal)} e ainda assim atingir seu objetivo</li>
-            <li>Alternativamente, você pode reduzir o prazo para alcançar seu objetivo mais rapidamente</li>
-          </ul>
-        `;
-      } else {
-        recommendationText = `
-          <p>Com seu aporte mensal atual de R$ ${formatMoney(currentContribution)}, você não conseguirá atingir seu objetivo de R$ ${formatMoney(goalValue)} em ${period} meses. Faltarão aproximadamente R$ ${formatMoney(Math.abs(diferencaAtual))}.</p>
-          <p>Recomendações:</p>
-          <ul>
-            <li>Aumente seu aporte mensal para R$ ${formatMoney(aporteIdeal)}</li>
-            <li>Busque investimentos com rentabilidade de pelo menos ${taxaNecessariaAnual.toFixed(2)}% ao ano</li>
-            <li>Considere estender o prazo para atingir seu objetivo</li>
-          </ul>
-        `;
+        
+        // Preparar recomendação
+        let recommendationText = '';
+        
+        if (atingeObjetivo) {
+          recommendationText = `
+            <p>Parabéns! Com seu aporte mensal atual de R$ ${formatMoney(currentContribution)}, você conseguirá atingir seu objetivo de R$ ${formatMoney(goalValue)} em ${period} meses, e ainda terá um excedente de R$ ${formatMoney(diferencaAtual)}.</p>
+            <p>Recomendações:</p>
+            <ul>
+              <li>Considere aumentar seu objetivo financeiro</li>
+              <li>Você pode reduzir seu aporte mensal para R$ ${formatMoney(aporteIdeal)} e ainda assim atingir seu objetivo</li>
+              <li>Alternativamente, você pode reduzir o prazo para alcançar seu objetivo mais rapidamente</li>
+            </ul>
+          `;
+        } else {
+          recommendationText = `
+            <p>Com seu aporte mensal atual de R$ ${formatMoney(currentContribution)}, você não conseguirá atingir seu objetivo de R$ ${formatMoney(goalValue)} em ${period} meses. Faltarão aproximadamente R$ ${formatMoney(Math.abs(diferencaAtual))}.</p>
+            <p>Recomendações:</p>
+            <ul>
+              <li>Aumente seu aporte mensal para R$ ${formatMoney(aporteIdeal)}</li>
+              <li>Busque investimentos com rentabilidade de pelo menos ${taxaNecessariaAnual.toFixed(2)}% ao ano</li>
+              <li>Considere estender o prazo para atingir seu objetivo</li>
+            </ul>
+          `;
+        }
+        
+        // Exibir recomendação
+        document.getElementById('recommendationText').innerHTML = recommendationText;
+        document.getElementById('recommendation').style.display = 'block';
+        
+        // Exibir botão do WhatsApp
+        document.getElementById('whatsappButton').style.display = 'block';
+        
+        // Desenhar gráficos
+        document.getElementById('chartUnicoContainer').style.display = 'block';
+        document.getElementById('chartIdealContainer').style.display = 'block';
+        document.getElementById('chartAtualContainer').style.display = 'block';
+        document.getElementById('chartRentabilidadeContainer').style.display = 'block';
+        
+        // Preencher tabelas
+        fillDataTable('tableUnico', dadosUnicoFinal, goalValue, inflationValue);
+        fillDataTable('tableIdeal', dadosIdealFinal, goalValue, inflationValue);
+        fillDataTable('tableAtual', dadosAtualFinal, goalValue, inflationValue);
+        fillDataTable('tableRentabilidade', dadosRentabilidadeFinal, goalValue, inflationValue);
+        
+        // Desenhar gráficos
+        drawChart(
+          document.getElementById('chartUnico').getContext('2d'),
+          dadosUnicoFinal,
+          dadosUnicoFinal,
+          dadosUnicoFinal,
+          '#046c4e',
+          '#28a745',
+          '#d4af37'
+        );
+        
+        drawChart(
+          document.getElementById('chartIdeal').getContext('2d'),
+          dadosIdealFinal,
+          dadosIdealFinal,
+          dadosIdealFinal,
+          '#046c4e',
+          '#28a745',
+          '#d4af37'
+        );
+        
+        drawChart(
+          document.getElementById('chartAtual').getContext('2d'),
+          dadosAtualFinal,
+          dadosAtualFinal,
+          dadosAtualFinal,
+          '#046c4e',
+          '#28a745',
+          '#d4af37'
+        );
+        
+        drawChart(
+          document.getElementById('chartRentabilidade').getContext('2d'),
+          dadosRentabilidadeFinal,
+          dadosRentabilidadeFinal,
+          dadosRentabilidadeFinal,
+          '#046c4e',
+          '#28a745',
+          '#d4af37'
+        );
+        
+        // Rolar para o resultado
+        document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+      } catch (erro) {
+        console.error('Erro ao calcular:', erro);
+        showErrorMessage('Ocorreu um erro ao calcular. Por favor, verifique os valores informados e tente novamente.');
       }
-      
-      // Exibir recomendação
-      document.getElementById('recommendationText').innerHTML = recommendationText;
-      document.getElementById('recommendation').style.display = 'block';
-      
-      // Exibir botão do WhatsApp
-      document.getElementById('whatsappButton').style.display = 'block';
-      
-      // Desenhar gráficos
-      document.getElementById('chartUnicoContainer').style.display = 'block';
-      document.getElementById('chartIdealContainer').style.display = 'block';
-      document.getElementById('chartAtualContainer').style.display = 'block';
-      document.getElementById('chartRentabilidadeContainer').style.display = 'block';
-      
-      // Preencher tabelas
-      fillDataTable('tableUnico', dadosUnico, goalValue, inflationValue);
-      fillDataTable('tableIdeal', dadosIdeal, goalValue, inflationValue);
-      fillDataTable('tableAtual', dadosAtual, goalValue, inflationValue);
-      fillDataTable('tableRentabilidade', dadosRentabilidade, goalValue, inflationValue);
-      
-      // Desenhar gráficos
-      drawChart(
-        document.getElementById('chartUnico').getContext('2d'),
-        dadosUnico,
-        dadosUnico,
-        dadosUnico,
-        '#046c4e',
-        '#28a745',
-        '#d4af37'
-      );
-      
-      drawChart(
-        document.getElementById('chartIdeal').getContext('2d'),
-        dadosIdeal,
-        dadosIdeal,
-        dadosIdeal,
-        '#046c4e',
-        '#28a745',
-        '#d4af37'
-      );
-      
-      drawChart(
-        document.getElementById('chartAtual').getContext('2d'),
-        dadosAtual,
-        dadosAtual,
-        dadosAtual,
-        '#046c4e',
-        '#28a745',
-        '#d4af37'
-      );
-      
-      drawChart(
-        document.getElementById('chartRentabilidade').getContext('2d'),
-        dadosRentabilidade,
-        dadosRentabilidade,
-        dadosRentabilidade,
-        '#046c4e',
-        '#28a745',
-        '#d4af37'
-      );
-      
-      // Rolar para o resultado
-      document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
     }
 
     // Função para buscar a taxa CDI atual
