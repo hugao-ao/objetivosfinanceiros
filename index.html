@@ -20,6 +20,9 @@
       --vermelho-translucido: rgba(255, 0, 0, 0.1);
       --azul-translucido: rgba(0, 0, 255, 0.1);
       --roxo-translucido: rgba(111, 66, 193, 0.1);
+      --cinza-claro: #e9ecef;
+      --cinza-medio: #ced4da;
+      --cinza-escuro: #6c757d;
     }
     body {
       font-family: Arial, sans-serif;
@@ -176,6 +179,180 @@
     .data-table tr:hover {
       background-color: #f1f1f1;
     }
+    
+    /* Estilos para múltiplos cenários */
+    .scenarios-container {
+      margin-top: 20px;
+      border: 2px solid var(--dourado);
+      border-radius: 8px;
+      padding: 15px;
+      background-color: white;
+    }
+    
+    .scenarios-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .scenarios-header h3 {
+      color: var(--verde-esmeralda);
+      margin: 0;
+    }
+    
+    .scenario-card {
+      border: 1px solid var(--cinza-medio);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: var(--cinza-claro);
+      position: relative;
+    }
+    
+    .scenario-card.active {
+      border: 2px solid var(--verde-esmeralda);
+      background-color: white;
+    }
+    
+    .scenario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .scenario-title {
+      font-weight: bold;
+      color: var(--verde-esmeralda);
+      margin: 0;
+    }
+    
+    .scenario-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .scenario-actions button {
+      padding: 5px 10px;
+      margin: 0;
+      width: auto;
+      font-size: 12px;
+    }
+    
+    .scenario-delete {
+      background-color: #dc3545;
+    }
+    
+    .scenario-delete:hover {
+      background-color: #c82333;
+    }
+    
+    .scenario-select {
+      background-color: var(--dourado);
+    }
+    
+    .scenario-select:hover {
+      background-color: var(--dourado-escuro);
+    }
+    
+    .scenario-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .scenario-info {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .scenario-info p {
+      margin: 5px 0;
+    }
+    
+    .scenario-info strong {
+      color: var(--verde-esmeralda);
+    }
+    
+    .add-scenario-button {
+      background-color: var(--dourado);
+      margin-bottom: 20px;
+    }
+    
+    .add-scenario-button:hover {
+      background-color: var(--dourado-escuro);
+    }
+    
+    .scenario-name-input {
+      margin-bottom: 15px;
+    }
+    
+    /* Estilos para comparação de cenários */
+    .comparison-container {
+      margin-top: 30px;
+      border: 2px solid var(--roxo);
+      border-radius: 8px;
+      padding: 15px;
+      background-color: white;
+    }
+    
+    .comparison-header {
+      color: var(--roxo);
+      margin-top: 0;
+      border-bottom: 1px solid var(--dourado-claro);
+      padding-bottom: 10px;
+      text-align: center;
+    }
+    
+    .comparison-chart-container {
+      height: 400px;
+      margin: 20px 0;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    
+    .comparison-table th, .comparison-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    
+    .comparison-table th {
+      background-color: var(--roxo-translucido);
+      color: var(--roxo-escuro);
+    }
+    
+    .comparison-table tr:nth-child(even) {
+      background-color: var(--fundo-claro);
+    }
+    
+    .comparison-table .best-value {
+      font-weight: bold;
+      color: var(--verde-esmeralda);
+      background-color: rgba(40, 167, 69, 0.1);
+    }
+    
+    .general-analysis {
+      margin-top: 30px;
+      padding: 20px;
+      border: 2px solid var(--roxo);
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .general-analysis h3 {
+      color: var(--roxo);
+      margin-top: 0;
+      border-bottom: 1px solid var(--dourado-claro);
+      padding-bottom: 10px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -183,6 +360,9 @@
   <form id="savingsForm">
     <label for="goalDescription">Qual é o seu objetivo financeiro e por que ele é importante para você?</label>
     <textarea id="goalDescription" placeholder="Ex: Comprar um imóvel para ter segurança e estabilidade para minha família, ou fazer uma viagem internacional para conhecer novas culturas..."></textarea>
+    
+    <label for="scenarioName">Nome do Cenário (opcional):</label>
+    <input type="text" id="scenarioName" placeholder="Ex: Cenário Conservador, Cenário Otimista, etc.">
     
     <label for="goal">Valor do Objetivo (R$):</label>
     <input type="text" id="goal" required oninput="formatCurrency(this)">
@@ -240,6 +420,47 @@
   </form>
 
   <div id="result" class="result"></div>
+  
+  <!-- Container para cenários -->
+  <div id="scenariosContainer" class="scenarios-container" style="display: none;">
+    <div class="scenarios-header">
+      <h3>Cenários</h3>
+      <button id="addScenarioBtn" class="add-scenario-button" onclick="addCurrentScenario()">Adicionar Cenário Atual</button>
+    </div>
+    <div id="scenariosList"></div>
+  </div>
+  
+  <!-- Container para comparação de cenários -->
+  <div id="comparisonContainer" class="comparison-container" style="display: none;">
+    <h3 class="comparison-header">Comparação de Cenários</h3>
+    <div class="comparison-chart-container">
+      <canvas id="comparisonChart"></canvas>
+    </div>
+    <div id="comparisonTableContainer">
+      <table id="comparisonTable" class="comparison-table">
+        <thead>
+          <tr>
+            <th>Cenário</th>
+            <th>Valor do Objetivo</th>
+            <th>Prazo (meses)</th>
+            <th>Valor Guardado</th>
+            <th>Aporte Mensal</th>
+            <th>Taxa de Juros</th>
+            <th>Valor Final</th>
+            <th>Total Investido</th>
+            <th>Total de Juros</th>
+          </tr>
+        </thead>
+        <tbody id="comparisonTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Análise Geral Automática -->
+  <div id="generalAnalysis" class="general-analysis" style="display: none;">
+    <h3>Análise Geral Automática</h3>
+    <div id="generalAnalysisText"></div>
+  </div>
   
   <div id="recommendation" class="recommendation" style="display: none;">
     <h3>Análise Automatizada</h3>
@@ -376,6 +597,22 @@
     let goalDescriptionText = '';
     let resultText = '';
     
+    // Array para armazenar os cenários
+    let scenarios = [];
+    let currentScenarioIndex = -1;
+    
+    // Cores para os diferentes cenários nos gráficos comparativos
+    const scenarioColors = [
+      { background: 'rgba(40, 167, 69, 0.2)', border: 'rgb(40, 167, 69)' },
+      { background: 'rgba(111, 66, 193, 0.2)', border: 'rgb(111, 66, 193)' },
+      { background: 'rgba(212, 175, 55, 0.2)', border: 'rgb(212, 175, 55)' },
+      { background: 'rgba(220, 53, 69, 0.2)', border: 'rgb(220, 53, 69)' },
+      { background: 'rgba(0, 123, 255, 0.2)', border: 'rgb(0, 123, 255)' },
+      { background: 'rgba(255, 193, 7, 0.2)', border: 'rgb(255, 193, 7)' },
+      { background: 'rgba(23, 162, 184, 0.2)', border: 'rgb(23, 162, 184)' },
+      { background: 'rgba(108, 117, 125, 0.2)', border: 'rgb(108, 117, 125)' }
+    ];
+    
     function formatCurrency(input) {
       let value = input.value.replace(/\D/g, '');
       value = (parseFloat(value) / 100).toFixed(2);
@@ -504,51 +741,63 @@ ${resultBoxText}`;
       new Chart(ctx, {
         type: 'line',
         data: {
-          labels: bruto.map((_, i) => i + 1), // Começar do mês 1
+          labels: Array.from({length: bruto.length}, (_, i) => i + 1),
           datasets: [
             {
-              label: 'Valor Investido',
-              data: investido,
-              borderColor: corInvestido,
+              label: 'Valor Bruto',
+              data: bruto,
+              borderColor: corBruto,
+              backgroundColor: 'transparent',
+              borderWidth: 2,
               pointRadius: 0,
-              fill: false,
-              tension: 0.4
+              pointHoverRadius: 5
             },
             {
               label: 'Valor Líquido',
               data: liquido,
               borderColor: corLiquido,
+              backgroundColor: 'transparent',
+              borderWidth: 2,
               pointRadius: 0,
-              fill: '-1',
-              backgroundColor: 'rgba(0, 0, 255, 0.1)',
-              tension: 0.4
+              pointHoverRadius: 5
             },
             {
-              label: 'Valor Bruto',
-              data: bruto,
-              borderColor: corBruto,
+              label: 'Total Investido',
+              data: investido,
+              borderColor: corInvestido,
+              backgroundColor: 'transparent',
+              borderWidth: 2,
               pointRadius: 0,
-              fill: '-1',
-              backgroundColor: 'rgba(255, 0, 0, 0.1)',
-              tension: 0.4
+              pointHoverRadius: 5
             }
           ]
         },
         options: {
-          elements: { point: { radius: 0 } },
+          responsive: true,
+          maintainAspectRatio: false,
           scales: {
-            x: { 
-              grid: { drawTicks: false, drawBorder: false },
-              title: {
-                display: true,
-                text: 'Meses'
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return 'R$ ' + value.toLocaleString('pt-BR');
+                }
               }
-            },
-            y: { 
-              grid: { drawTicks: false, drawBorder: false },
-              title: {
-                display: true,
-                text: 'Valor (R$)'
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    label += 'R$ ' + context.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                  }
+                  return label;
+                }
               }
             }
           }
@@ -556,16 +805,14 @@ ${resultBoxText}`;
       });
     }
 
-    // Função para calcular juros compostos com aportes mensais
-    function calculateCompoundInterest(initialValue, monthlyContribution, monthlyRate, periods, tax = 0, goal = 0, inflation = 0) {
+    // Função para calcular juros compostos
+    function calculateCompoundInterest(initialValue, monthlyContribution, monthlyRate, months, tax, goal, inflation) {
       let totalValue = initialValue;
       let totalInvested = initialValue;
       let totalJuros = 0;
-      let objetivoCorrigido = goal;
+      let valoresMensais = [];
       
-      const valoresMensais = [];
-      
-      // Mês 0 (inicial) - não será exibido na tabela, mas é usado para cálculos
+      // Registrar valores iniciais (mês 0)
       valoresMensais.push({
         month: 0,
         juros: 0,
@@ -574,30 +821,24 @@ ${resultBoxText}`;
         imposto: 0,
         valorLiquido: totalValue,
         totalAcumulado: totalValue,
-        objetivoCorrigido: objetivoCorrigido
+        objetivoCorrigido: goal
       });
       
-      for (let i = 1; i <= periods; i++) {
-        // Calcular juros sobre o valor total
+      for (let i = 1; i <= months; i++) {
+        // Calcular juros do mês
         const jurosDoMes = totalValue * monthlyRate;
         totalJuros += jurosDoMes;
         
         // Adicionar aporte mensal
+        totalValue += jurosDoMes + monthlyContribution;
         totalInvested += monthlyContribution;
         
-        // Atualizar valor total: valor anterior + juros + aporte
-        totalValue = totalValue + jurosDoMes + monthlyContribution;
-        
-        // Calcular imposto sobre o total de juros
+        // Calcular imposto sobre o rendimento
         const impostoTotal = totalJuros * tax;
-        
-        // Calcular valor líquido: total acumulado - imposto
         const valorLiquido = totalValue - impostoTotal;
         
-        // Atualizar objetivo corrigido pela inflação a cada 12 meses
-        if (i % 12 === 0) {
-          objetivoCorrigido = objetivoCorrigido * (1 + inflation);
-        }
+        // Calcular objetivo corrigido pela inflação
+        const objetivoCorrigido = goal * Math.pow(1 + inflation, i / 12);
         
         // Registrar valores mensais para gráfico e análise
         valoresMensais.push({
@@ -814,6 +1055,525 @@ ${resultBoxText}`;
       // Mostrar o botão do WhatsApp
       whatsappButton.style.display = 'block';
     }
+    
+    // Função para adicionar o cenário atual à lista de cenários
+    function addCurrentScenario() {
+      // Verificar se há dados para adicionar
+      if (!document.getElementById('result').innerHTML) {
+        alert('Por favor, calcule um cenário antes de adicioná-lo.');
+        return;
+      }
+      
+      // Obter os dados do formulário
+      const scenarioName = document.getElementById('scenarioName').value || `Cenário ${scenarios.length + 1}`;
+      const goalDescription = document.getElementById('goalDescription').value;
+      const goal = parseCurrency(document.getElementById('goal').value);
+      const rate = parsePercentage(document.getElementById('rate').value);
+      const rateType = document.getElementById('rateType').value;
+      const knowsTax = document.getElementById('knowsTax').value;
+      const tax = knowsTax === 'yes' ? parsePercentage(document.getElementById('tax').value) : 0.15;
+      const knowsInflation = document.getElementById('knowsInflation').value;
+      const inflation = knowsInflation === 'yes' ? parsePercentage(document.getElementById('inflation').value) : 0.05;
+      const period = parseInt(document.getElementById('period').value);
+      const currentSavings = parseCurrency(document.getElementById('currentSavings').value);
+      const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
+      
+      // Calcular a taxa mensal
+      const monthlyRate = rateType === 'annual' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
+      
+      // Calcular resultados para o cenário
+      const resultUnico = calculateCompoundInterest(currentSavings, 0, monthlyRate, period, tax, goal, inflation);
+      
+      // Calcular o plano ideal
+      let low = 0, high = goal * 10, idealContribution = 0;
+      let resultIdeal;
+      
+      for (let i = 0; i < 100; i++) {
+        idealContribution = (low + high) / 2;
+        resultIdeal = calculateCompoundInterest(currentSavings, idealContribution, monthlyRate, period, tax, goal, inflation);
+        
+        const valorLiquidoFinal = resultIdeal.valoresMensais[period].valorLiquido;
+        const objetivoFinal = resultIdeal.valoresMensais[period].objetivoCorrigido;
+        
+        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) break;
+        if (valorLiquidoFinal > objetivoFinal) high = idealContribution;
+        else low = idealContribution;
+      }
+      
+      // Calcular com a poupança atual
+      const resultAtual = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, period, tax, goal, inflation);
+      
+      // Calcular a rentabilidade necessária
+      const requiredRateResult = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
+      
+      // Criar objeto do cenário
+      const scenario = {
+        id: Date.now(), // ID único baseado no timestamp
+        name: scenarioName,
+        goalDescription: goalDescription,
+        goal: goal,
+        rate: rate,
+        rateType: rateType,
+        tax: tax,
+        inflation: inflation,
+        period: period,
+        currentSavings: currentSavings,
+        currentContribution: currentContribution,
+        idealContribution: idealContribution,
+        requiredRate: requiredRateResult.annualRate,
+        resultUnico: resultUnico,
+        resultIdeal: resultIdeal,
+        resultAtual: resultAtual,
+        resultRentabilidade: requiredRateResult
+      };
+      
+      // Adicionar o cenário ao array
+      scenarios.push(scenario);
+      
+      // Atualizar a interface
+      updateScenariosUI();
+      
+      // Limpar o campo de nome do cenário
+      document.getElementById('scenarioName').value = '';
+      
+      // Mostrar a seção de cenários
+      document.getElementById('scenariosContainer').style.display = 'block';
+      
+      // Atualizar a comparação se houver mais de um cenário
+      if (scenarios.length > 1) {
+        updateComparisonUI();
+        document.getElementById('comparisonContainer').style.display = 'block';
+        generateGeneralAnalysis();
+        document.getElementById('generalAnalysis').style.display = 'block';
+      }
+    }
+    
+    // Função para remover um cenário
+    function removeScenario(id) {
+      // Encontrar o índice do cenário no array
+      const index = scenarios.findIndex(s => s.id === id);
+      
+      // Remover o cenário do array
+      if (index !== -1) {
+        scenarios.splice(index, 1);
+      }
+      
+      // Atualizar a interface
+      updateScenariosUI();
+      
+      // Atualizar ou esconder a comparação dependendo do número de cenários
+      if (scenarios.length > 1) {
+        updateComparisonUI();
+        generateGeneralAnalysis();
+      } else {
+        document.getElementById('comparisonContainer').style.display = 'none';
+        document.getElementById('generalAnalysis').style.display = 'none';
+      }
+      
+      // Esconder a seção de cenários se não houver nenhum
+      if (scenarios.length === 0) {
+        document.getElementById('scenariosContainer').style.display = 'none';
+      }
+    }
+    
+    // Função para atualizar a interface de cenários
+    function updateScenariosUI() {
+      const scenariosList = document.getElementById('scenariosList');
+      scenariosList.innerHTML = '';
+      
+      scenarios.forEach((scenario, index) => {
+        const scenarioCard = document.createElement('div');
+        scenarioCard.className = 'scenario-card';
+        scenarioCard.id = `scenario-${scenario.id}`;
+        
+        // Cabeçalho do cenário
+        const scenarioHeader = document.createElement('div');
+        scenarioHeader.className = 'scenario-header';
+        
+        const scenarioTitle = document.createElement('h4');
+        scenarioTitle.className = 'scenario-title';
+        scenarioTitle.textContent = scenario.name;
+        
+        const scenarioActions = document.createElement('div');
+        scenarioActions.className = 'scenario-actions';
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'scenario-delete';
+        deleteButton.textContent = 'Excluir';
+        deleteButton.onclick = function() { removeScenario(scenario.id); };
+        
+        scenarioActions.appendChild(deleteButton);
+        scenarioHeader.appendChild(scenarioTitle);
+        scenarioHeader.appendChild(scenarioActions);
+        
+        // Conteúdo do cenário
+        const scenarioContent = document.createElement('div');
+        scenarioContent.className = 'scenario-content';
+        
+        // Informações básicas
+        const basicInfo = document.createElement('div');
+        basicInfo.className = 'scenario-info';
+        basicInfo.innerHTML = `
+          <p><strong>Valor do Objetivo:</strong> R$ ${formatMoney(scenario.goal)}</p>
+          <p><strong>Prazo:</strong> ${scenario.period} meses</p>
+          <p><strong>Valor Guardado:</strong> R$ ${formatMoney(scenario.currentSavings)}</p>
+        `;
+        
+        // Informações financeiras
+        const financialInfo = document.createElement('div');
+        financialInfo.className = 'scenario-info';
+        financialInfo.innerHTML = `
+          <p><strong>Aporte Mensal Atual:</strong> R$ ${formatMoney(scenario.currentContribution)}</p>
+          <p><strong>Aporte Ideal:</strong> R$ ${formatMoney(scenario.idealContribution)}</p>
+          <p><strong>Taxa de Juros:</strong> ${(scenario.rate * 100).toFixed(2).replace('.', ',')}% ${scenario.rateType === 'annual' ? 'ao ano' : 'ao mês'}</p>
+        `;
+        
+        // Resultados
+        const resultsInfo = document.createElement('div');
+        resultsInfo.className = 'scenario-info';
+        
+        const finalValue = scenario.resultAtual.valoresMensais[scenario.period].valorLiquido;
+        const goalValue = scenario.resultAtual.valoresMensais[scenario.period].objetivoCorrigido;
+        const difference = finalValue - goalValue;
+        
+        resultsInfo.innerHTML = `
+          <p><strong>Valor Final:</strong> R$ ${formatMoney(finalValue)}</p>
+          <p><strong>Objetivo Corrigido:</strong> R$ ${formatMoney(goalValue)}</p>
+          <p><strong>Diferença:</strong> R$ ${formatMoney(difference)} (${difference >= 0 ? 'superávit' : 'déficit'})</p>
+        `;
+        
+        scenarioContent.appendChild(basicInfo);
+        scenarioContent.appendChild(financialInfo);
+        scenarioContent.appendChild(resultsInfo);
+        
+        scenarioCard.appendChild(scenarioHeader);
+        scenarioCard.appendChild(scenarioContent);
+        
+        scenariosList.appendChild(scenarioCard);
+      });
+    }
+    
+    // Função para atualizar a interface de comparação
+    function updateComparisonUI() {
+      // Limpar gráfico de comparação existente
+      const comparisonChartCanvas = document.getElementById('comparisonChart');
+      const existingChart = Chart.getChart(comparisonChartCanvas);
+      if (existingChart) {
+        existingChart.destroy();
+      }
+      
+      // Preparar dados para o gráfico de comparação
+      const labels = scenarios.map(s => s.name);
+      const finalValues = scenarios.map(s => s.resultAtual.valoresMensais[s.period].valorLiquido);
+      const goalValues = scenarios.map(s => s.resultAtual.valoresMensais[s.period].objetivoCorrigido);
+      const totalInvested = scenarios.map(s => s.resultAtual.valoresMensais[s.period].totalInvestido);
+      
+      // Criar o gráfico de comparação
+      new Chart(comparisonChartCanvas, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Valor Final',
+              data: finalValues,
+              backgroundColor: 'rgba(40, 167, 69, 0.6)',
+              borderColor: 'rgb(40, 167, 69)',
+              borderWidth: 1
+            },
+            {
+              label: 'Objetivo Corrigido',
+              data: goalValues,
+              backgroundColor: 'rgba(111, 66, 193, 0.6)',
+              borderColor: 'rgb(111, 66, 193)',
+              borderWidth: 1
+            },
+            {
+              label: 'Total Investido',
+              data: totalInvested,
+              backgroundColor: 'rgba(212, 175, 55, 0.6)',
+              borderColor: 'rgb(212, 175, 55)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return 'R$ ' + value.toLocaleString('pt-BR');
+                }
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    label += 'R$ ' + context.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                  }
+                  return label;
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Atualizar a tabela de comparação
+      const comparisonTableBody = document.getElementById('comparisonTableBody');
+      comparisonTableBody.innerHTML = '';
+      
+      // Encontrar os melhores valores para destacar
+      const bestValues = {
+        finalValue: Math.max(...scenarios.map(s => s.resultAtual.valoresMensais[s.period].valorLiquido)),
+        totalInvested: Math.min(...scenarios.map(s => s.resultAtual.valoresMensais[s.period].totalInvestido)),
+        totalJuros: Math.max(...scenarios.map(s => s.resultAtual.valoresMensais[s.period].totalJuros))
+      };
+      
+      scenarios.forEach(scenario => {
+        const row = document.createElement('tr');
+        
+        // Nome do cenário
+        const tdName = document.createElement('td');
+        tdName.textContent = scenario.name;
+        row.appendChild(tdName);
+        
+        // Valor do objetivo
+        const tdGoal = document.createElement('td');
+        tdGoal.textContent = `R$ ${formatMoney(scenario.goal)}`;
+        row.appendChild(tdGoal);
+        
+        // Prazo
+        const tdPeriod = document.createElement('td');
+        tdPeriod.textContent = scenario.period;
+        row.appendChild(tdPeriod);
+        
+        // Valor guardado
+        const tdSavings = document.createElement('td');
+        tdSavings.textContent = `R$ ${formatMoney(scenario.currentSavings)}`;
+        row.appendChild(tdSavings);
+        
+        // Aporte mensal
+        const tdContribution = document.createElement('td');
+        tdContribution.textContent = `R$ ${formatMoney(scenario.currentContribution)}`;
+        row.appendChild(tdContribution);
+        
+        // Taxa de juros
+        const tdRate = document.createElement('td');
+        tdRate.textContent = `${(scenario.rate * 100).toFixed(2).replace('.', ',')}%`;
+        row.appendChild(tdRate);
+        
+        // Valor final
+        const finalValue = scenario.resultAtual.valoresMensais[scenario.period].valorLiquido;
+        const tdFinalValue = document.createElement('td');
+        tdFinalValue.textContent = `R$ ${formatMoney(finalValue)}`;
+        if (finalValue === bestValues.finalValue) {
+          tdFinalValue.className = 'best-value';
+        }
+        row.appendChild(tdFinalValue);
+        
+        // Total investido
+        const totalInvested = scenario.resultAtual.valoresMensais[scenario.period].totalInvestido;
+        const tdTotalInvested = document.createElement('td');
+        tdTotalInvested.textContent = `R$ ${formatMoney(totalInvested)}`;
+        if (totalInvested === bestValues.totalInvested) {
+          tdTotalInvested.className = 'best-value';
+        }
+        row.appendChild(tdTotalInvested);
+        
+        // Total de juros
+        const totalJuros = scenario.resultAtual.valoresMensais[scenario.period].totalJuros;
+        const tdTotalJuros = document.createElement('td');
+        tdTotalJuros.textContent = `R$ ${formatMoney(totalJuros)}`;
+        if (totalJuros === bestValues.totalJuros) {
+          tdTotalJuros.className = 'best-value';
+        }
+        row.appendChild(tdTotalJuros);
+        
+        comparisonTableBody.appendChild(row);
+      });
+    }
+    
+    // Função para gerar análise geral automática
+    function generateGeneralAnalysis() {
+      if (scenarios.length < 2) return;
+      
+      const generalAnalysisText = document.getElementById('generalAnalysisText');
+      let analysis = '';
+      
+      // Ordenar cenários por valor final líquido (do maior para o menor)
+      const sortedByFinalValue = [...scenarios].sort((a, b) => {
+        const aFinalValue = a.resultAtual.valoresMensais[a.period].valorLiquido;
+        const bFinalValue = b.resultAtual.valoresMensais[b.period].valorLiquido;
+        return bFinalValue - aFinalValue;
+      });
+      
+      // Ordenar cenários por eficiência (valor final / total investido)
+      const scenariosWithEfficiency = scenarios.map(s => {
+        const finalValue = s.resultAtual.valoresMensais[s.period].valorLiquido;
+        const totalInvested = s.resultAtual.valoresMensais[s.period].totalInvestido;
+        const efficiency = finalValue / totalInvested;
+        return { ...s, efficiency };
+      });
+      
+      const sortedByEfficiency = [...scenariosWithEfficiency].sort((a, b) => b.efficiency - a.efficiency);
+      
+      // Ordenar cenários por diferença entre valor final e objetivo
+      const scenariosWithDifference = scenarios.map(s => {
+        const finalValue = s.resultAtual.valoresMensais[s.period].valorLiquido;
+        const goalValue = s.resultAtual.valoresMensais[s.period].objetivoCorrigido;
+        const difference = finalValue - goalValue;
+        const percentageDifference = (difference / goalValue) * 100;
+        return { ...s, difference, percentageDifference };
+      });
+      
+      const sortedByDifference = [...scenariosWithDifference].sort((a, b) => b.percentageDifference - a.percentageDifference);
+      
+      // Introdução
+      analysis += `<p>Foram simulados ${scenarios.length} cenários diferentes para o objetivo financeiro. A seguir, apresentamos uma análise comparativa dos resultados:</p>`;
+      
+      // Análise do melhor cenário em termos de valor final
+      const bestFinalValueScenario = sortedByFinalValue[0];
+      const bestFinalValue = bestFinalValueScenario.resultAtual.valoresMensais[bestFinalValueScenario.period].valorLiquido;
+      
+      analysis += `<p><strong>Melhor Cenário em Valor Final:</strong> "${bestFinalValueScenario.name}" com R$ ${formatMoney(bestFinalValue)}. `;
+      
+      if (sortedByFinalValue.length > 1) {
+        const secondBestFinalValueScenario = sortedByFinalValue[1];
+        const secondBestFinalValue = secondBestFinalValueScenario.resultAtual.valoresMensais[secondBestFinalValueScenario.period].valorLiquido;
+        const difference = bestFinalValue - secondBestFinalValue;
+        const percentageDifference = (difference / secondBestFinalValue) * 100;
+        
+        analysis += `Este valor é R$ ${formatMoney(difference)} (${percentageDifference.toFixed(2).replace('.', ',')}%) superior ao segundo melhor cenário "${secondBestFinalValueScenario.name}".</p>`;
+      } else {
+        analysis += `</p>`;
+      }
+      
+      // Análise do cenário mais eficiente
+      const mostEfficientScenario = sortedByEfficiency[0];
+      const efficiency = mostEfficientScenario.efficiency;
+      
+      analysis += `<p><strong>Cenário Mais Eficiente:</strong> "${mostEfficientScenario.name}" com eficiência de ${efficiency.toFixed(2).replace('.', ',')}x (para cada R$ 1,00 investido, o retorno é de R$ ${efficiency.toFixed(2).replace('.', ',')}). `;
+      
+      if (mostEfficientScenario.id !== bestFinalValueScenario.id) {
+        analysis += `Embora não tenha o maior valor final, este cenário apresenta a melhor relação entre investimento e retorno.</p>`;
+      } else {
+        analysis += `Este cenário também apresenta o maior valor final, sendo a opção mais vantajosa em termos gerais.</p>`;
+      }
+      
+      // Análise do cenário que melhor atinge o objetivo
+      const bestMatchScenario = sortedByDifference[0];
+      const bestMatchDifference = bestMatchScenario.difference;
+      const bestMatchPercentage = bestMatchScenario.percentageDifference;
+      
+      if (bestMatchDifference >= 0) {
+        analysis += `<p><strong>Cenário que Melhor Atinge o Objetivo:</strong> "${bestMatchScenario.name}" supera o objetivo em R$ ${formatMoney(bestMatchDifference)} (${bestMatchPercentage.toFixed(2).replace('.', ',')}%). `;
+      } else {
+        // Se todos os cenários não atingem o objetivo, encontrar o que chega mais perto
+        const closestScenario = [...scenariosWithDifference]
+          .filter(s => s.difference < 0)
+          .sort((a, b) => Math.abs(a.difference) - Math.abs(b.difference))[0];
+        
+        analysis += `<p><strong>Cenário que Mais se Aproxima do Objetivo:</strong> "${closestScenario.name}" fica R$ ${formatMoney(Math.abs(closestScenario.difference))} abaixo do objetivo (${Math.abs(closestScenario.percentageDifference).toFixed(2).replace('.', ',')}%). `;
+      }
+      
+      // Verificar se há cenários que não atingem o objetivo
+      const scenariosNotReachingGoal = scenariosWithDifference.filter(s => s.difference < 0);
+      if (scenariosNotReachingGoal.length > 0) {
+        if (scenariosNotReachingGoal.length === scenarios.length) {
+          analysis += `Nenhum dos cenários simulados atinge completamente o objetivo financeiro.</p>`;
+        } else {
+          analysis += `${scenariosNotReachingGoal.length} de ${scenarios.length} cenários não atingem completamente o objetivo financeiro.</p>`;
+        }
+      } else {
+        analysis += `Todos os cenários simulados atingem o objetivo financeiro.</p>`;
+      }
+      
+      // Análise de prazos e taxas
+      const differentPeriods = [...new Set(scenarios.map(s => s.period))].length > 1;
+      const differentRates = [...new Set(scenarios.map(s => s.rate))].length > 1;
+      
+      if (differentPeriods) {
+        // Ordenar por prazo (do menor para o maior)
+        const sortedByPeriod = [...scenarios].sort((a, b) => a.period - b.period);
+        const shortestPeriodScenario = sortedByPeriod[0];
+        const longestPeriodScenario = sortedByPeriod[sortedByPeriod.length - 1];
+        
+        analysis += `<p><strong>Análise de Prazos:</strong> O cenário "${shortestPeriodScenario.name}" tem o menor prazo (${shortestPeriodScenario.period} meses), enquanto "${longestPeriodScenario.name}" tem o maior prazo (${longestPeriodScenario.period} meses). `;
+        
+        // Verificar se o cenário com menor prazo atinge o objetivo
+        const shortestPeriodFinalValue = shortestPeriodScenario.resultAtual.valoresMensais[shortestPeriodScenario.period].valorLiquido;
+        const shortestPeriodGoalValue = shortestPeriodScenario.resultAtual.valoresMensais[shortestPeriodScenario.period].objetivoCorrigido;
+        
+        if (shortestPeriodFinalValue >= shortestPeriodGoalValue) {
+          analysis += `O cenário com menor prazo consegue atingir o objetivo, o que pode ser vantajoso se a prioridade for realizar o objetivo mais rapidamente.</p>`;
+        } else {
+          analysis += `O cenário com menor prazo não consegue atingir o objetivo, indicando que pode ser necessário um prazo maior ou ajustes em outros parâmetros.</p>`;
+        }
+      }
+      
+      if (differentRates) {
+        // Ordenar por taxa (da menor para a maior)
+        const sortedByRate = [...scenarios].sort((a, b) => a.rate - b.rate);
+        const lowestRateScenario = sortedByRate[0];
+        const highestRateScenario = sortedByRate[sortedByRate.length - 1];
+        
+        analysis += `<p><strong>Análise de Taxas:</strong> O cenário "${lowestRateScenario.name}" tem a menor taxa (${(lowestRateScenario.rate * 100).toFixed(2).replace('.', ',')}% ${lowestRateScenario.rateType === 'annual' ? 'ao ano' : 'ao mês'}), enquanto "${highestRateScenario.name}" tem a maior taxa (${(highestRateScenario.rate * 100).toFixed(2).replace('.', ',')}% ${highestRateScenario.rateType === 'annual' ? 'ao ano' : 'ao mês'}). `;
+        
+        // Verificar se o cenário com menor taxa atinge o objetivo
+        const lowestRateFinalValue = lowestRateScenario.resultAtual.valoresMensais[lowestRateScenario.period].valorLiquido;
+        const lowestRateGoalValue = lowestRateScenario.resultAtual.valoresMensais[lowestRateScenario.period].objetivoCorrigido;
+        
+        if (lowestRateFinalValue >= lowestRateGoalValue) {
+          analysis += `O cenário com menor taxa consegue atingir o objetivo, o que pode ser vantajoso se a prioridade for reduzir o risco do investimento.</p>`;
+        } else {
+          analysis += `O cenário com menor taxa não consegue atingir o objetivo, indicando que pode ser necessário buscar investimentos com maior rentabilidade ou ajustar outros parâmetros.</p>`;
+        }
+      }
+      
+      // Conclusão e recomendação
+      analysis += `<p><strong>Conclusão:</strong> `;
+      
+      // Identificar o cenário mais equilibrado (combinação de eficiência e atingimento do objetivo)
+      let recommendedScenario;
+      
+      // Priorizar cenários que atingem o objetivo
+      const scenariosReachingGoal = scenariosWithDifference.filter(s => s.difference >= 0);
+      
+      if (scenariosReachingGoal.length > 0) {
+        // Entre os que atingem o objetivo, escolher o mais eficiente
+        recommendedScenario = scenariosReachingGoal.sort((a, b) => {
+          const aEfficiency = scenariosWithEfficiency.find(s => s.id === a.id).efficiency;
+          const bEfficiency = scenariosWithEfficiency.find(s => s.id === b.id).efficiency;
+          return bEfficiency - aEfficiency;
+        })[0];
+        
+        analysis += `Com base na análise comparativa, o cenário "${recommendedScenario.name}" apresenta o melhor equilíbrio entre eficiência e atingimento do objetivo. `;
+      } else {
+        // Se nenhum atinge o objetivo, recomendar o que chega mais perto
+        recommendedScenario = scenariosWithDifference.sort((a, b) => Math.abs(a.difference) - Math.abs(b.difference))[0];
+        
+        analysis += `Como nenhum cenário atinge completamente o objetivo, o cenário "${recommendedScenario.name}" é o que mais se aproxima. `;
+      }
+      
+      // Adicionar detalhes sobre o cenário recomendado
+      analysis += `Este cenário tem um aporte mensal de R$ ${formatMoney(recommendedScenario.currentContribution)}, prazo de ${recommendedScenario.period} meses e taxa de ${(recommendedScenario.rate * 100).toFixed(2).replace('.', ',')}% ${recommendedScenario.rateType === 'annual' ? 'ao ano' : 'ao mês'}.</p>`;
+      
+      // Dica final
+      analysis += `<p><strong>Dica:</strong> Considere revisar periodicamente seu plano financeiro e ajustar os parâmetros conforme necessário, especialmente em caso de mudanças significativas nas condições econômicas ou em sua situação pessoal.</p>`;
+      
+      generalAnalysisText.innerHTML = analysis;
+    }
 
     function calculateSavings() {
       // Armazenar o texto do objetivo para uso posterior
@@ -916,82 +1676,68 @@ ${resultBoxText}`;
       drawChart(document.getElementById('chartIdeal').getContext('2d'), brutoIdeal, liquidoIdeal, investidoIdeal, '#28a745', '#218838', '#046c4e');
 
       // Cálculo com a poupança atual
-      // Calcular quanto tempo levará para atingir o objetivo com o aporte atual
-      // Fórmula: n = ln((VF + A/i) / (PV + A/i)) / ln(1 + i)
-      // Onde n é o número de períodos, VF é o valor futuro (objetivo), PV é o valor presente (valor já guardado), A é o aporte mensal
-      
-      // Calcular juros compostos com aportes mensais e inflação progressiva
-      const resultAtual = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, 1200, tax, goal, inflation);
-      const valoresMensais = resultAtual.valoresMensais;
-      
-      // Encontrar em qual mês o objetivo é atingido, considerando a inflação
-      let months = 0;
-      let objetivoAtingido = false;
-      
-      for (let i = 1; i < valoresMensais.length; i++) {
-        // Verificar se o valor líquido supera o objetivo corrigido
-        if (valoresMensais[i].valorLiquido > valoresMensais[i].objetivoCorrigido) {
-          months = i;
-          objetivoAtingido = true;
-          break;
-        }
-      }
-      
-      // Se o objetivo não foi atingido dentro do limite, usar o último mês calculado
-      if (!objetivoAtingido) {
-        months = valoresMensais.length - 1;
-      }
+      const resultAtual = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, period, tax, goal, inflation);
       
       // Extrair dados para o gráfico (começando do mês 1)
-      const brutoAtual = valoresMensais.slice(1, Math.max(months + 1, period + 1)).map(m => m.totalAcumulado);
-      const liquidoAtual = valoresMensais.slice(1, Math.max(months + 1, period + 1)).map(m => m.valorLiquido);
-      const investidoAtual = valoresMensais.slice(1, Math.max(months + 1, period + 1)).map(m => m.totalInvestido);
+      const brutoAtual = resultAtual.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoAtual = resultAtual.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoAtual = resultAtual.valoresMensais.slice(1).map(m => m.totalInvestido);
       
-      resultDiv.innerHTML += `<p><strong>Com a Poupança Atual:</strong><br>Você atingirá o objetivo em aproximadamente ${months} meses, considerando a inflação progressiva a cada 12 meses.</p>`;
-
+      // Verificar se o valor final atinge o objetivo
+      const valorFinalAtual = resultAtual.valoresMensais[period].valorLiquido;
+      const objetivoFinalAtual = resultAtual.valoresMensais[period].objetivoCorrigido;
+      const diferencaAtual = valorFinalAtual - objetivoFinalAtual;
+      
+      if (diferencaAtual >= 0) {
+        resultDiv.innerHTML += `<p><strong>Plano Atual:</strong><br>Com seu aporte mensal atual de R$ ${formatMoney(currentContribution)}, você <strong>conseguirá</strong> atingir seu objetivo no prazo desejado, com um superávit de R$ ${formatMoney(diferencaAtual)}.</p>`;
+      } else {
+        resultDiv.innerHTML += `<p><strong>Plano Atual:</strong><br>Com seu aporte mensal atual de R$ ${formatMoney(currentContribution)}, você <strong>não conseguirá</strong> atingir seu objetivo no prazo desejado, ficando com um déficit de R$ ${formatMoney(Math.abs(diferencaAtual))}.</p>`;
+      }
+      
       // Mostrar o container do gráfico
       document.getElementById('chartAtualContainer').style.display = 'block';
       
       // Preencher a tabela de dados
-      fillDataTable('tableAtual', valoresMensais.slice(0, Math.max(months + 1, period + 1)), goal, inflation);
+      fillDataTable('tableAtual', resultAtual.valoresMensais, goal, inflation);
       
-      // Desenhar o gráfico da poupança atual
-      drawChart(document.getElementById('chartAtual').getContext('2d'), brutoAtual, liquidoAtual, investidoAtual, '#d4af37', '#b38e2e', '#f5e2a9');
+      // Desenhar o gráfico do plano atual
+      drawChart(document.getElementById('chartAtual').getContext('2d'), brutoAtual, liquidoAtual, investidoAtual, '#d4af37', '#f5e2a9', '#b38e2e');
 
-      // Calcular a rentabilidade anual necessária para atingir o objetivo no prazo desejado
-      // Fórmula: Determinar i tal que VF = PV * (1 + i)^n + A * ((1 + i)^n - 1) / i
-      // Onde i é a taxa, VF é o valor futuro (objetivo), PV é o valor presente (valor já guardado), A é o aporte mensal, n é o período
-      
-      const requiredRate = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
+      // Cálculo da rentabilidade necessária
+      const requiredRateResult = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
+      const requiredAnnualRate = requiredRateResult.annualRate;
       
       // Extrair dados para o gráfico (começando do mês 1)
-      const brutoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalAcumulado);
-      const liquidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.valorLiquido);
-      const investidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalInvestido);
+      const brutoRentabilidade = requiredRateResult.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoRentabilidade = requiredRateResult.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoRentabilidade = requiredRateResult.valoresMensais.slice(1).map(m => m.totalInvestido);
       
-      // Adicionar resultado da rentabilidade necessária
-      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo em ${period} meses, mantendo o aporte mensal de R$ ${formatMoney(currentContribution)}, você precisaria de uma rentabilidade anual de <strong>${(requiredRate.annualRate * 100).toFixed(2).replace('.', ',')}%</strong>.</p>`;
-      
-      // Armazenar o texto da caixa de resposta para uso posterior
-      resultText = resultDiv.innerText;
+      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo no prazo desejado com o aporte mensal atual, você precisaria de uma rentabilidade de <strong>${(requiredAnnualRate * 100).toFixed(2).replace('.', ',')}% ao ano</strong>.</p>`;
       
       // Mostrar o container do gráfico
       document.getElementById('chartRentabilidadeContainer').style.display = 'block';
       
       // Preencher a tabela de dados
-      fillDataTable('tableRentabilidade', requiredRate.valoresMensais, goal, inflation);
+      fillDataTable('tableRentabilidade', requiredRateResult.valoresMensais, goal, inflation);
       
       // Desenhar o gráfico da rentabilidade necessária
-      drawChart(document.getElementById('chartRentabilidade').getContext('2d'), brutoRentabilidade, liquidoRentabilidade, investidoRentabilidade, '#6f42c1', '#9f75e5', '#4b2882');
+      drawChart(document.getElementById('chartRentabilidade').getContext('2d'), brutoRentabilidade, liquidoRentabilidade, investidoRentabilidade, '#dc3545', '#e35d6a', '#b02a37');
+
+      // Armazenar o texto do resultado para uso posterior
+      resultText = resultDiv.innerText;
       
       // Gerar análise automatizada
-      generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, months, requiredRate.annualRate, rateType === 'annual' ? rate : Math.pow(1 + rate, 12) - 1);
+      generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, period, requiredAnnualRate, rate);
+      
+      // Mostrar o container de cenários
+      document.getElementById('scenariosContainer').style.display = 'block';
     }
 
-    window.onload = () => {
+    // Inicializar os campos de imposto e inflação
+    document.addEventListener('DOMContentLoaded', function() {
       toggleTaxInput('tax', '15,00 %');
       toggleTaxInput('inflation', '5,00 %');
-    };
+    });
   </script>
 </body>
 </html>
