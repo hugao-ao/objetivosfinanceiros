@@ -1,16 +1,16 @@
 /**
- * Implementação da busca automática de taxas de juros e inflação
+ * Implementação da busca automática de taxas de juros (CDI) e inflação (IPCA)
  * 
- * Este código implementa a funcionalidade de busca automática das taxas de juros (SELIC)
- * e inflação (IPCA) com base no prazo informado pelo usuário, calculando o rendimento
+ * Este código implementa a funcionalidade de busca automática das taxas de CDI
+ * e IPCA com base no prazo informado pelo usuário, calculando o rendimento
  * acumulado no período e convertendo para taxas anuais equivalentes.
  * 
  * Autor: Manus
  * Data: 20/05/2025
  */
 
-// Função para buscar a taxa SELIC acumulada para um período específico e converter para taxa anual
-async function buscarTaxaSelicAnual(mesesRetroativos) {
+// Função para buscar a taxa CDI acumulada para um período específico e converter para taxa anual
+async function buscarTaxaCDIAnual(mesesRetroativos) {
   try {
     // Calcula as datas inicial e final com base no número de meses retroativos
     const dataFinal = new Date();
@@ -21,15 +21,15 @@ async function buscarTaxaSelicAnual(mesesRetroativos) {
     const dataInicialFormatada = `${String(dataInicial.getDate()).padStart(2, '0')}/${String(dataInicial.getMonth() + 1).padStart(2, '0')}/${dataInicial.getFullYear()}`;
     const dataFinalFormatada = `${String(dataFinal.getDate()).padStart(2, '0')}/${String(dataFinal.getMonth() + 1).padStart(2, '0')}/${dataFinal.getFullYear()}`;
     
-    // Monta a URL da API do Banco Central para a SELIC (código 11)
-    const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=${dataInicialFormatada}&dataFinal=${dataFinalFormatada}`;
+    // Monta a URL da API do Banco Central para o CDI (código 12 para CDI diário)
+    const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${dataInicialFormatada}&dataFinal=${dataFinalFormatada}`;
     
     // Faz a requisição à API
     const response = await fetch(url);
     
     // Verifica se a resposta foi bem-sucedida
     if (!response.ok) {
-      throw new Error(`Erro ao buscar dados da SELIC: ${response.status}`);
+      throw new Error(`Erro ao buscar dados do CDI: ${response.status}`);
     }
     
     // Converte a resposta para JSON
@@ -40,22 +40,23 @@ async function buscarTaxaSelicAnual(mesesRetroativos) {
       throw new Error('Nenhum dado encontrado para o período especificado');
     }
     
-    // Calcula o rendimento acumulado no período (produto dos fatores mensais)
+    // Calcula o rendimento acumulado no período (produto dos fatores diários)
     let rendimentoAcumulado = 1;
     for (const item of dados) {
-      // A taxa SELIC é fornecida em percentual ao mês, precisamos converter para fator
-      const taxaMensal = parseFloat(item.valor) / 100;
-      rendimentoAcumulado *= (1 + taxaMensal);
+      // A taxa CDI é fornecida em percentual ao dia, precisamos converter para fator
+      const taxaDiaria = parseFloat(item.valor) / 100;
+      rendimentoAcumulado *= (1 + taxaDiaria);
     }
     
     // Calcula a taxa anual equivalente
-    // Fórmula: ((1 + rendimento acumulado)^(12/número de meses)) - 1
-    const taxaAnual = Math.pow(rendimentoAcumulado, 12 / dados.length) - 1;
+    // Fórmula: ((1 + rendimento acumulado)^(252/número de dias úteis)) - 1
+    // Considerando aproximadamente 252 dias úteis por ano
+    const taxaAnual = Math.pow(rendimentoAcumulado, 252 / dados.length) - 1;
     
     // Retorna a taxa anual em percentual
     return taxaAnual * 100;
   } catch (erro) {
-    console.error('Erro ao buscar taxa SELIC:', erro);
+    console.error('Erro ao buscar taxa CDI:', erro);
     return null;
   }
 }
@@ -73,7 +74,6 @@ async function buscarTaxaIPCAAnual(mesesRetroativos) {
     const dataFinalFormatada = `${String(dataFinal.getDate()).padStart(2, '0')}/${String(dataFinal.getMonth() + 1).padStart(2, '0')}/${dataFinal.getFullYear()}`;
     
     // Monta a URL da API do Banco Central para o IPCA (código 433)
-    // Nota: O código 433 é para o IPCA mensal
     const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json&dataInicial=${dataInicialFormatada}&dataFinal=${dataFinalFormatada}`;
     
     // Faz a requisição à API
@@ -129,20 +129,20 @@ async function atualizarTaxasComBasePrazo() {
   
   try {
     // Busca as taxas anualizadas para o período informado
-    const taxaSelicAnual = await buscarTaxaSelicAnual(prazoMeses);
+    const taxaCDIAnual = await buscarTaxaCDIAnual(prazoMeses);
     const taxaIPCAAnual = await buscarTaxaIPCAAnual(prazoMeses);
     
     // Verifica se as taxas foram encontradas
-    if (taxaSelicAnual === null || taxaIPCAAnual === null) {
+    if (taxaCDIAnual === null || taxaIPCAAnual === null) {
       throw new Error('Não foi possível obter as taxas para o período informado.');
     }
     
     // Formata as taxas para exibição
-    const taxaSelicFormatada = taxaSelicAnual.toFixed(2).replace('.', ',') + ' %';
+    const taxaCDIFormatada = taxaCDIAnual.toFixed(2).replace('.', ',') + ' %';
     const taxaIPCAFormatada = taxaIPCAAnual.toFixed(2).replace('.', ',') + ' %';
     
     // Atualiza os campos do formulário
-    document.getElementById('rate').value = taxaSelicFormatada;
+    document.getElementById('rate').value = taxaCDIFormatada;
     document.getElementById('inflation').value = taxaIPCAFormatada;
     
     // Atualiza os selects para indicar que as taxas foram preenchidas automaticamente
@@ -155,7 +155,7 @@ async function atualizarTaxasComBasePrazo() {
     
     // Exibe mensagem de sucesso
     document.getElementById('taxasStatus').textContent = 
-      `Taxas anualizadas com base nos últimos ${prazoMeses} meses: SELIC ${taxaSelicFormatada} e IPCA ${taxaIPCAFormatada}`;
+      `Taxas anualizadas com base nos últimos ${prazoMeses} meses: CDI ${taxaCDIFormatada} e IPCA ${taxaIPCAFormatada}`;
     document.getElementById('taxasStatus').style.color = 'green';
   } catch (erro) {
     console.error('Erro ao atualizar taxas:', erro);
