@@ -622,6 +622,7 @@
     let scenarioCounter = 1; // Contador para nomeação automática de cenários
     let isFirstScenario = true; // Flag para controlar se é o primeiro cenário
     let isSavingScenario = false; // Flag para evitar duplicidade ao salvar cenários
+    let calculationComplete = false; // Flag para indicar se o cálculo foi concluído
     
     // Cores para os diferentes cenários nos gráficos comparativos
     const scenarioColors = [
@@ -1211,6 +1212,9 @@ Estou enviando também uma imagem com todos os detalhes.`;
         // E o botão do WhatsApp
         whatsappButton.style.display = 'block';
       }
+      
+      // Marcar que o cálculo foi concluído
+      calculationComplete = true;
     }
     
     // Função para salvar o cenário atual e preparar para um novo
@@ -1257,6 +1261,9 @@ Estou enviando também uma imagem com todos os detalhes.`;
       
       // Marcar que não é mais o primeiro cenário
       isFirstScenario = false;
+      
+      // Resetar a flag de cálculo concluído
+      calculationComplete = false;
       
       // Rolar para o topo do formulário
       window.scrollTo(0, 0);
@@ -1952,9 +1959,6 @@ Estou enviando também uma imagem com todos os detalhes.`;
       
       // Se não for o primeiro cenário, mostrar a análise geral se houver mais de um cenário
       if (!isFirstScenario && scenarios.length > 0) {
-        // Adicionar automaticamente o cenário atual
-        addCurrentScenario();
-        
         // Mostrar a análise geral
         document.getElementById('generalAnalysis').style.display = 'block';
       }
