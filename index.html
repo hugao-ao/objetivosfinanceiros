@@ -190,6 +190,12 @@
     <label for="period">Prazo (em meses):</label>
     <input type="number" id="period" required>
 
+    <label for="currentSavings">Valor já Guardado (R$):</label>
+    <input type="text" id="currentSavings" required oninput="formatCurrency(this)">
+
+    <label for="currentContribution">Quanto você poupa atualmente por mês (R$):</label>
+    <input type="text" id="currentContribution" required oninput="formatCurrency(this)">
+
     <div class="row">
       <div>
         <label for="rate">Taxa de Juros (%):</label>
@@ -229,12 +235,6 @@
         <input type="text" id="inflation" placeholder="5,00 %" oninput="formatPercentage(this)">
       </div>
     </div>
-
-    <label for="currentSavings">Valor já Guardado (R$):</label>
-    <input type="text" id="currentSavings" required oninput="formatCurrency(this)">
-
-    <label for="currentContribution">Quanto você poupa atualmente por mês (R$):</label>
-    <input type="text" id="currentContribution" required oninput="formatCurrency(this)">
 
     <button type="button" onclick="calculateSavings()">Calcular</button>
   </form>
