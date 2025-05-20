@@ -77,6 +77,26 @@
     .whatsapp-button:hover {
       background-color: #128C7E; /* Darker WhatsApp green */
     }
+    .save-scenario-button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 20px 0;
+      background-color: var(--dourado);
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: background-color 0.3s ease;
+    }
+    .save-scenario-button:hover {
+      background-color: var(--dourado-escuro);
+    }
     label {
       display: block;
       margin-top: 10px;
@@ -275,17 +295,12 @@
       color: var(--verde-esmeralda);
     }
     
-    .add-scenario-button {
-      background-color: var(--dourado);
-      margin-bottom: 20px;
-    }
-    
-    .add-scenario-button:hover {
-      background-color: var(--dourado-escuro);
-    }
-    
-    .scenario-name-input {
-      margin-bottom: 15px;
+    .scenario-details {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: var(--fundo-claro);
+      border-radius: 5px;
+      font-size: 14px;
     }
     
     /* Estilos para comparação de cenários */
@@ -361,9 +376,6 @@
     <label for="goalDescription">Qual é o seu objetivo financeiro e por que ele é importante para você?</label>
     <textarea id="goalDescription" placeholder="Ex: Comprar um imóvel para ter segurança e estabilidade para minha família, ou fazer uma viagem internacional para conhecer novas culturas..."></textarea>
     
-    <label for="scenarioName">Nome do Cenário (opcional):</label>
-    <input type="text" id="scenarioName" placeholder="Ex: Cenário Conservador, Cenário Otimista, etc.">
-    
     <label for="goal">Valor do Objetivo (R$):</label>
     <input type="text" id="goal" required oninput="formatCurrency(this)">
 
@@ -425,7 +437,6 @@
   <div id="scenariosContainer" class="scenarios-container" style="display: none;">
     <div class="scenarios-header">
       <h3>Cenários</h3>
-      <button id="addScenarioBtn" class="add-scenario-button" onclick="addCurrentScenario()">Adicionar Cenário Atual</button>
     </div>
     <div id="scenariosList"></div>
   </div>
@@ -466,6 +477,11 @@
     <h3>Análise Automatizada</h3>
     <div id="recommendationText"></div>
   </div>
+  
+  <!-- Botão para salvar e simular outro cenário -->
+  <button id="saveScenarioButton" class="save-scenario-button" onclick="saveAndSimulateAnother()" style="display: none;">
+    SALVAR E SIMULAR OUTRO CENÁRIO
+  </button>
   
   <!-- Botão WhatsApp fora da caixa de análise automatizada -->
   <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
@@ -600,6 +616,8 @@
     // Array para armazenar os cenários
     let scenarios = [];
     let currentScenarioIndex = -1;
+    let scenarioCounter = 1; // Contador para nomeação automática de cenários
+    let isFirstScenario = true; // Flag para controlar se é o primeiro cenário
     
     // Cores para os diferentes cenários nos gráficos comparativos
     const scenarioColors = [
@@ -995,6 +1013,7 @@ ${resultBoxText}`;
       const recommendationDiv = document.getElementById('recommendation');
       const recommendationText = document.getElementById('recommendationText');
       const whatsappButton = document.getElementById('whatsappButton');
+      const saveScenarioButton = document.getElementById('saveScenarioButton');
       
       // Extrair informações relevantes
       const goalGap = goal - currentSavings;
@@ -1050,10 +1069,62 @@ ${resultBoxText}`;
       }
       
       recommendationText.innerHTML = analysis;
-      recommendationDiv.style.display = 'block';
       
-      // Mostrar o botão do WhatsApp
-      whatsappButton.style.display = 'block';
+      // Mostrar os elementos relevantes apenas no primeiro cenário
+      if (isFirstScenario) {
+        recommendationDiv.style.display = 'block';
+        saveScenarioButton.style.display = 'block';
+        whatsappButton.style.display = 'block';
+      } else {
+        // Nos cenários subsequentes, não mostrar a análise automatizada individual
+        recommendationDiv.style.display = 'none';
+        // Mas continuar mostrando o botão de salvar cenário
+        saveScenarioButton.style.display = 'block';
+        // E o botão do WhatsApp
+        whatsappButton.style.display = 'block';
+      }
+    }
+    
+    // Função para salvar o cenário atual e preparar para um novo
+    function saveAndSimulateAnother() {
+      // Verificar se há dados para adicionar
+      if (!document.getElementById('result').innerHTML) {
+        alert('Por favor, calcule um cenário antes de salvá-lo.');
+        return;
+      }
+      
+      // Adicionar o cenário atual
+      addCurrentScenario();
+      
+      // Limpar os campos do formulário, exceto o objetivo
+      document.getElementById('goal').value = '';
+      document.getElementById('period').value = '';
+      document.getElementById('currentSavings').value = '';
+      document.getElementById('currentContribution').value = '';
+      document.getElementById('rate').value = '';
+      document.getElementById('knowsTax').value = 'no';
+      document.getElementById('knowsInflation').value = 'no';
+      toggleTaxInput('tax', '15,00 %');
+      toggleTaxInput('inflation', '5,00 %');
+      
+      // Limpar os resultados
+      document.getElementById('result').innerHTML = '';
+      
+      // Esconder os gráficos e tabelas
+      document.getElementById('chartUnicoContainer').style.display = 'none';
+      document.getElementById('chartIdealContainer').style.display = 'none';
+      document.getElementById('chartAtualContainer').style.display = 'none';
+      document.getElementById('chartRentabilidadeContainer').style.display = 'none';
+      
+      // Esconder o botão de salvar cenário até que um novo cálculo seja feito
+      document.getElementById('saveScenarioButton').style.display = 'none';
+      document.getElementById('whatsappButton').style.display = 'none';
+      
+      // Marcar que não é mais o primeiro cenário
+      isFirstScenario = false;
+      
+      // Rolar para o topo do formulário
+      window.scrollTo(0, 0);
     }
     
     // Função para adicionar o cenário atual à lista de cenários
@@ -1065,7 +1136,9 @@ ${resultBoxText}`;
       }
       
       // Obter os dados do formulário
-      const scenarioName = document.getElementById('scenarioName').value || `Cenário ${scenarios.length + 1}`;
+      const scenarioName = `Cenário ${scenarioCounter.toString().padStart(2, '0')}`;
+      scenarioCounter++; // Incrementar o contador para o próximo cenário
+      
       const goalDescription = document.getElementById('goalDescription').value;
       const goal = parseCurrency(document.getElementById('goal').value);
       const rate = parsePercentage(document.getElementById('rate').value);
@@ -1106,6 +1179,9 @@ ${resultBoxText}`;
       // Calcular a rentabilidade necessária
       const requiredRateResult = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
       
+      // Obter o texto completo da caixa de resposta
+      const resultText = document.getElementById('result').innerHTML;
+      
       // Criar objeto do cenário
       const scenario = {
         id: Date.now(), // ID único baseado no timestamp
@@ -1124,7 +1200,8 @@ ${resultBoxText}`;
         resultUnico: resultUnico,
         resultIdeal: resultIdeal,
         resultAtual: resultAtual,
-        resultRentabilidade: requiredRateResult
+        resultRentabilidade: requiredRateResult,
+        resultText: resultText // Salvar o texto completo da caixa de resposta
       };
       
       // Adicionar o cenário ao array
@@ -1132,9 +1209,6 @@ ${resultBoxText}`;
       
       // Atualizar a interface
       updateScenariosUI();
-      
-      // Limpar o campo de nome do cenário
-      document.getElementById('scenarioName').value = '';
       
       // Mostrar a seção de cenários
       document.getElementById('scenariosContainer').style.display = 'block';
@@ -1226,6 +1300,8 @@ ${resultBoxText}`;
           <p><strong>Aporte Mensal Atual:</strong> R$ ${formatMoney(scenario.currentContribution)}</p>
           <p><strong>Aporte Ideal:</strong> R$ ${formatMoney(scenario.idealContribution)}</p>
           <p><strong>Taxa de Juros:</strong> ${(scenario.rate * 100).toFixed(2).replace('.', ',')}% ${scenario.rateType === 'annual' ? 'ao ano' : 'ao mês'}</p>
+          <p><strong>Inflação:</strong> ${(scenario.inflation * 100).toFixed(2).replace('.', ',')}%</p>
+          <p><strong>Imposto:</strong> ${(scenario.tax * 100).toFixed(2).replace('.', ',')}%</p>
         `;
         
         // Resultados
@@ -1246,8 +1322,14 @@ ${resultBoxText}`;
         scenarioContent.appendChild(financialInfo);
         scenarioContent.appendChild(resultsInfo);
         
+        // Adicionar detalhes completos (texto da caixa de resposta)
+        const scenarioDetails = document.createElement('div');
+        scenarioDetails.className = 'scenario-details';
+        scenarioDetails.innerHTML = scenario.resultText;
+        
         scenarioCard.appendChild(scenarioHeader);
         scenarioCard.appendChild(scenarioContent);
+        scenarioCard.appendChild(scenarioDetails);
         
         scenariosList.appendChild(scenarioCard);
       });
@@ -1418,16 +1500,6 @@ ${resultBoxText}`;
         return bFinalValue - aFinalValue;
       });
       
-      // Ordenar cenários por eficiência (valor final / total investido)
-      const scenariosWithEfficiency = scenarios.map(s => {
-        const finalValue = s.resultAtual.valoresMensais[s.period].valorLiquido;
-        const totalInvested = s.resultAtual.valoresMensais[s.period].totalInvestido;
-        const efficiency = finalValue / totalInvested;
-        return { ...s, efficiency };
-      });
-      
-      const sortedByEfficiency = [...scenariosWithEfficiency].sort((a, b) => b.efficiency - a.efficiency);
-      
       // Ordenar cenários por diferença entre valor final e objetivo
       const scenariosWithDifference = scenarios.map(s => {
         const finalValue = s.resultAtual.valoresMensais[s.period].valorLiquido;
@@ -1440,13 +1512,13 @@ ${resultBoxText}`;
       const sortedByDifference = [...scenariosWithDifference].sort((a, b) => b.percentageDifference - a.percentageDifference);
       
       // Introdução
-      analysis += `<p>Foram simulados ${scenarios.length} cenários diferentes para o objetivo financeiro. A seguir, apresentamos uma análise comparativa dos resultados:</p>`;
+      analysis += `<p>Foram simulados ${scenarios.length} cenários diferentes para o objetivo financeiro. A seguir, apresentamos uma análise comparativa das diferentes perspectivas de realização:</p>`;
       
-      // Análise do melhor cenário em termos de valor final
+      // Análise do cenário com maior valor final
       const bestFinalValueScenario = sortedByFinalValue[0];
       const bestFinalValue = bestFinalValueScenario.resultAtual.valoresMensais[bestFinalValueScenario.period].valorLiquido;
       
-      analysis += `<p><strong>Melhor Cenário em Valor Final:</strong> "${bestFinalValueScenario.name}" com R$ ${formatMoney(bestFinalValue)}. `;
+      analysis += `<p><strong>Perspectiva de Maximização de Patrimônio:</strong> O "${bestFinalValueScenario.name}" resulta no maior valor final (R$ ${formatMoney(bestFinalValue)}). `;
       
       if (sortedByFinalValue.length > 1) {
         const secondBestFinalValueScenario = sortedByFinalValue[1];
@@ -1459,32 +1531,20 @@ ${resultBoxText}`;
         analysis += `</p>`;
       }
       
-      // Análise do cenário mais eficiente
-      const mostEfficientScenario = sortedByEfficiency[0];
-      const efficiency = mostEfficientScenario.efficiency;
-      
-      analysis += `<p><strong>Cenário Mais Eficiente:</strong> "${mostEfficientScenario.name}" com eficiência de ${efficiency.toFixed(2).replace('.', ',')}x (para cada R$ 1,00 investido, o retorno é de R$ ${efficiency.toFixed(2).replace('.', ',')}). `;
-      
-      if (mostEfficientScenario.id !== bestFinalValueScenario.id) {
-        analysis += `Embora não tenha o maior valor final, este cenário apresenta a melhor relação entre investimento e retorno.</p>`;
-      } else {
-        analysis += `Este cenário também apresenta o maior valor final, sendo a opção mais vantajosa em termos gerais.</p>`;
-      }
-      
       // Análise do cenário que melhor atinge o objetivo
       const bestMatchScenario = sortedByDifference[0];
       const bestMatchDifference = bestMatchScenario.difference;
       const bestMatchPercentage = bestMatchScenario.percentageDifference;
       
       if (bestMatchDifference >= 0) {
-        analysis += `<p><strong>Cenário que Melhor Atinge o Objetivo:</strong> "${bestMatchScenario.name}" supera o objetivo em R$ ${formatMoney(bestMatchDifference)} (${bestMatchPercentage.toFixed(2).replace('.', ',')}%). `;
+        analysis += `<p><strong>Perspectiva de Realização do Objetivo:</strong> O "${bestMatchScenario.name}" supera o objetivo em R$ ${formatMoney(bestMatchDifference)} (${bestMatchPercentage.toFixed(2).replace('.', ',')}%). `;
       } else {
         // Se todos os cenários não atingem o objetivo, encontrar o que chega mais perto
         const closestScenario = [...scenariosWithDifference]
           .filter(s => s.difference < 0)
           .sort((a, b) => Math.abs(a.difference) - Math.abs(b.difference))[0];
         
-        analysis += `<p><strong>Cenário que Mais se Aproxima do Objetivo:</strong> "${closestScenario.name}" fica R$ ${formatMoney(Math.abs(closestScenario.difference))} abaixo do objetivo (${Math.abs(closestScenario.percentageDifference).toFixed(2).replace('.', ',')}%). `;
+        analysis += `<p><strong>Perspectiva de Aproximação do Objetivo:</strong> O "${closestScenario.name}" é o que mais se aproxima do objetivo, ficando R$ ${formatMoney(Math.abs(closestScenario.difference))} abaixo do valor necessário (${Math.abs(closestScenario.percentageDifference).toFixed(2).replace('.', ',')}%). `;
       }
       
       // Verificar se há cenários que não atingem o objetivo
@@ -1499,9 +1559,8 @@ ${resultBoxText}`;
         analysis += `Todos os cenários simulados atingem o objetivo financeiro.</p>`;
       }
       
-      // Análise de prazos e taxas
+      // Análise de prazos
       const differentPeriods = [...new Set(scenarios.map(s => s.period))].length > 1;
-      const differentRates = [...new Set(scenarios.map(s => s.rate))].length > 1;
       
       if (differentPeriods) {
         // Ordenar por prazo (do menor para o maior)
@@ -1509,7 +1568,7 @@ ${resultBoxText}`;
         const shortestPeriodScenario = sortedByPeriod[0];
         const longestPeriodScenario = sortedByPeriod[sortedByPeriod.length - 1];
         
-        analysis += `<p><strong>Análise de Prazos:</strong> O cenário "${shortestPeriodScenario.name}" tem o menor prazo (${shortestPeriodScenario.period} meses), enquanto "${longestPeriodScenario.name}" tem o maior prazo (${longestPeriodScenario.period} meses). `;
+        analysis += `<p><strong>Perspectiva de Tempo:</strong> O "${shortestPeriodScenario.name}" tem o menor prazo (${shortestPeriodScenario.period} meses), enquanto "${longestPeriodScenario.name}" tem o maior prazo (${longestPeriodScenario.period} meses). `;
         
         // Verificar se o cenário com menor prazo atinge o objetivo
         const shortestPeriodFinalValue = shortestPeriodScenario.resultAtual.valoresMensais[shortestPeriodScenario.period].valorLiquido;
@@ -1522,55 +1581,88 @@ ${resultBoxText}`;
         }
       }
       
-      if (differentRates) {
-        // Ordenar por taxa (da menor para a maior)
-        const sortedByRate = [...scenarios].sort((a, b) => a.rate - b.rate);
-        const lowestRateScenario = sortedByRate[0];
-        const highestRateScenario = sortedByRate[sortedByRate.length - 1];
+      // Análise de esforço financeiro (aporte mensal)
+      const sortedByContribution = [...scenarios].sort((a, b) => a.currentContribution - b.currentContribution);
+      const lowestContributionScenario = sortedByContribution[0];
+      const highestContributionScenario = sortedByContribution[sortedByContribution.length - 1];
+      
+      analysis += `<p><strong>Perspectiva de Esforço Financeiro:</strong> O "${lowestContributionScenario.name}" requer o menor aporte mensal (R$ ${formatMoney(lowestContributionScenario.currentContribution)}), enquanto "${highestContributionScenario.name}" requer o maior aporte mensal (R$ ${formatMoney(highestContributionScenario.currentContribution)}). `;
+      
+      // Verificar se o cenário com menor aporte atinge o objetivo
+      const lowestContributionFinalValue = lowestContributionScenario.resultAtual.valoresMensais[lowestContributionScenario.period].valorLiquido;
+      const lowestContributionGoalValue = lowestContributionScenario.resultAtual.valoresMensais[lowestContributionScenario.period].objetivoCorrigido;
+      
+      if (lowestContributionFinalValue >= lowestContributionGoalValue) {
+        analysis += `O cenário com menor aporte mensal consegue atingir o objetivo, o que pode ser vantajoso se a prioridade for reduzir o impacto no orçamento mensal.</p>`;
+      } else {
+        analysis += `O cenário com menor aporte mensal não consegue atingir o objetivo, indicando que pode ser necessário um esforço financeiro maior ou ajustes em outros parâmetros.</p>`;
+      }
+      
+      // Análise de valor inicial
+      const sortedByInitialValue = [...scenarios].sort((a, b) => a.currentSavings - b.currentSavings);
+      const lowestInitialValueScenario = sortedByInitialValue[0];
+      const highestInitialValueScenario = sortedByInitialValue[sortedByInitialValue.length - 1];
+      
+      if (lowestInitialValueScenario.currentSavings !== highestInitialValueScenario.currentSavings) {
+        analysis += `<p><strong>Perspectiva de Valor Inicial:</strong> O "${lowestInitialValueScenario.name}" começa com o menor valor guardado (R$ ${formatMoney(lowestInitialValueScenario.currentSavings)}), enquanto "${highestInitialValueScenario.name}" começa com o maior valor guardado (R$ ${formatMoney(highestInitialValueScenario.currentSavings)}). `;
         
-        analysis += `<p><strong>Análise de Taxas:</strong> O cenário "${lowestRateScenario.name}" tem a menor taxa (${(lowestRateScenario.rate * 100).toFixed(2).replace('.', ',')}% ${lowestRateScenario.rateType === 'annual' ? 'ao ano' : 'ao mês'}), enquanto "${highestRateScenario.name}" tem a maior taxa (${(highestRateScenario.rate * 100).toFixed(2).replace('.', ',')}% ${highestRateScenario.rateType === 'annual' ? 'ao ano' : 'ao mês'}). `;
+        // Verificar se o cenário com menor valor inicial atinge o objetivo
+        const lowestInitialValueFinalValue = lowestInitialValueScenario.resultAtual.valoresMensais[lowestInitialValueScenario.period].valorLiquido;
+        const lowestInitialValueGoalValue = lowestInitialValueScenario.resultAtual.valoresMensais[lowestInitialValueScenario.period].objetivoCorrigido;
         
-        // Verificar se o cenário com menor taxa atinge o objetivo
-        const lowestRateFinalValue = lowestRateScenario.resultAtual.valoresMensais[lowestRateScenario.period].valorLiquido;
-        const lowestRateGoalValue = lowestRateScenario.resultAtual.valoresMensais[lowestRateScenario.period].objetivoCorrigido;
-        
-        if (lowestRateFinalValue >= lowestRateGoalValue) {
-          analysis += `O cenário com menor taxa consegue atingir o objetivo, o que pode ser vantajoso se a prioridade for reduzir o risco do investimento.</p>`;
+        if (lowestInitialValueFinalValue >= lowestInitialValueGoalValue) {
+          analysis += `O cenário com menor valor inicial consegue atingir o objetivo, o que pode ser vantajoso se a prioridade for começar com menos recursos.</p>`;
         } else {
-          analysis += `O cenário com menor taxa não consegue atingir o objetivo, indicando que pode ser necessário buscar investimentos com maior rentabilidade ou ajustar outros parâmetros.</p>`;
+          analysis += `O cenário com menor valor inicial não consegue atingir o objetivo, indicando que pode ser necessário um valor inicial maior ou ajustes em outros parâmetros.</p>`;
         }
       }
       
       // Conclusão e recomendação
       analysis += `<p><strong>Conclusão:</strong> `;
       
-      // Identificar o cenário mais equilibrado (combinação de eficiência e atingimento do objetivo)
+      // Identificar o cenário mais equilibrado (combinação de atingimento do objetivo e prazo)
       let recommendedScenario;
       
       // Priorizar cenários que atingem o objetivo
       const scenariosReachingGoal = scenariosWithDifference.filter(s => s.difference >= 0);
       
       if (scenariosReachingGoal.length > 0) {
-        // Entre os que atingem o objetivo, escolher o mais eficiente
+        // Entre os que atingem o objetivo, escolher o que tem o melhor equilíbrio entre prazo e aporte
         recommendedScenario = scenariosReachingGoal.sort((a, b) => {
-          const aEfficiency = scenariosWithEfficiency.find(s => s.id === a.id).efficiency;
-          const bEfficiency = scenariosWithEfficiency.find(s => s.id === b.id).efficiency;
-          return bEfficiency - aEfficiency;
+          // Normalizar prazo e aporte para valores entre 0 e 1
+          const maxPeriod = Math.max(...scenarios.map(s => s.period));
+          const minPeriod = Math.min(...scenarios.map(s => s.period));
+          const periodRange = maxPeriod - minPeriod;
+          
+          const maxContribution = Math.max(...scenarios.map(s => s.currentContribution));
+          const minContribution = Math.min(...scenarios.map(s => s.currentContribution));
+          const contributionRange = maxContribution - minContribution;
+          
+          // Calcular scores normalizados (menor é melhor)
+          const aPeriodScore = periodRange > 0 ? (a.period - minPeriod) / periodRange : 0;
+          const aContributionScore = contributionRange > 0 ? (a.currentContribution - minContribution) / contributionRange : 0;
+          const aScore = aPeriodScore + aContributionScore;
+          
+          const bPeriodScore = periodRange > 0 ? (b.period - minPeriod) / periodRange : 0;
+          const bContributionScore = contributionRange > 0 ? (b.currentContribution - minContribution) / contributionRange : 0;
+          const bScore = bPeriodScore + bContributionScore;
+          
+          return aScore - bScore; // Menor score é melhor
         })[0];
         
-        analysis += `Com base na análise comparativa, o cenário "${recommendedScenario.name}" apresenta o melhor equilíbrio entre eficiência e atingimento do objetivo. `;
+        analysis += `Considerando as diferentes perspectivas, o "${recommendedScenario.name}" apresenta um bom equilíbrio entre prazo, esforço financeiro e realização do objetivo. `;
       } else {
         // Se nenhum atinge o objetivo, recomendar o que chega mais perto
         recommendedScenario = scenariosWithDifference.sort((a, b) => Math.abs(a.difference) - Math.abs(b.difference))[0];
         
-        analysis += `Como nenhum cenário atinge completamente o objetivo, o cenário "${recommendedScenario.name}" é o que mais se aproxima. `;
+        analysis += `Como nenhum cenário atinge completamente o objetivo, o "${recommendedScenario.name}" é o que mais se aproxima. `;
       }
       
       // Adicionar detalhes sobre o cenário recomendado
-      analysis += `Este cenário tem um aporte mensal de R$ ${formatMoney(recommendedScenario.currentContribution)}, prazo de ${recommendedScenario.period} meses e taxa de ${(recommendedScenario.rate * 100).toFixed(2).replace('.', ',')}% ${recommendedScenario.rateType === 'annual' ? 'ao ano' : 'ao mês'}.</p>`;
+      analysis += `Este cenário tem um aporte mensal de R$ ${formatMoney(recommendedScenario.currentContribution)}, prazo de ${recommendedScenario.period} meses e valor inicial de R$ ${formatMoney(recommendedScenario.currentSavings)}.</p>`;
       
       // Dica final
-      analysis += `<p><strong>Dica:</strong> Considere revisar periodicamente seu plano financeiro e ajustar os parâmetros conforme necessário, especialmente em caso de mudanças significativas nas condições econômicas ou em sua situação pessoal.</p>`;
+      analysis += `<p><strong>Dica:</strong> Avalie qual perspectiva é mais importante para você neste momento: menor prazo, menor esforço financeiro mensal, ou maior valor final. Isso ajudará a escolher o cenário mais adequado às suas necessidades e possibilidades atuais.</p>`;
       
       generalAnalysisText.innerHTML = analysis;
     }
@@ -1729,8 +1821,17 @@ ${resultBoxText}`;
       // Gerar análise automatizada
       generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, period, requiredAnnualRate, rate);
       
-      // Mostrar o container de cenários
-      document.getElementById('scenariosContainer').style.display = 'block';
+      // Mostrar o botão de salvar cenário
+      document.getElementById('saveScenarioButton').style.display = 'block';
+      
+      // Se não for o primeiro cenário, mostrar a análise geral se houver mais de um cenário
+      if (!isFirstScenario && scenarios.length > 0) {
+        // Adicionar automaticamente o cenário atual
+        addCurrentScenario();
+        
+        // Mostrar a análise geral
+        document.getElementById('generalAnalysis').style.display = 'block';
+      }
     }
 
     // Inicializar os campos de imposto e inflação
