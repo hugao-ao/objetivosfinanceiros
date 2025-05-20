@@ -279,6 +279,16 @@
       background-color: #f1f1f1;
     }
     
+    .error-message {
+      background-color: #ffebee;
+      color: #c62828;
+      padding: 10px;
+      border-radius: 6px;
+      margin: 10px 0;
+      border: 1px solid #ffcdd2;
+      display: none;
+    }
+    
     @media (max-width: 768px) {
       .row {
         flex-direction: column;
@@ -314,6 +324,7 @@
       </div>
       
       <div id="taxasStatus" class="status-message"></div>
+      <div id="errorMessage" class="error-message"></div>
       
       <div class="form-section">
         <div class="form-section-title">Taxas e rendimentos</div>
@@ -577,12 +588,14 @@
 
     // Função para analisar valores monetários
     function parseCurrency(value) {
+      if (!value) return 0;
       return parseFloat(value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
     }
 
     // Função para analisar valores percentuais
     function parsePercentage(value) {
-      return parseFloat(value.replace('%', '').replace(',', '.')) / 100 || 0;
+      if (!value) return 0;
+      return parseFloat(value.replace(/[%\s]/g, '').replace(',', '.')) / 100 || 0;
     }
 
     // Função para formatar valores monetários com sempre duas casas decimais
@@ -612,6 +625,21 @@
           statusElement.style.display = 'none';
         }, 5000);
       }
+    }
+    
+    // Função para exibir mensagens de erro
+    function showErrorMessage(message) {
+      const errorElement = document.getElementById('errorMessage');
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+      
+      // Rolar até a mensagem de erro
+      errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Esconde a mensagem após 8 segundos
+      setTimeout(() => {
+        errorElement.style.display = 'none';
+      }, 8000);
     }
 
     // Função para alternar entre visualização de gráfico e tabela
@@ -882,8 +910,69 @@ ${resultBoxText}`;
       return taxaAtual;
     }
 
+    // Função para validar os campos do formulário
+    function validarFormulario() {
+      // Obter valores do formulário
+      const goalDescription = document.getElementById('goalDescription').value.trim();
+      const goalValue = parseCurrency(document.getElementById('goal').value);
+      const period = parseInt(document.getElementById('period').value);
+      const rateValue = parsePercentage(document.getElementById('rate').value);
+      const taxValue = parsePercentage(document.getElementById('tax').value);
+      const inflationValue = parsePercentage(document.getElementById('inflation').value);
+      const currentSavings = parseCurrency(document.getElementById('currentSavings').value);
+      const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
+      
+      // Verificar se todos os campos estão preenchidos
+      if (!goalDescription) {
+        showErrorMessage('Por favor, descreva seu objetivo financeiro.');
+        return false;
+      }
+      
+      if (!goalValue || goalValue <= 0) {
+        showErrorMessage('Por favor, informe um valor válido para o objetivo.');
+        return false;
+      }
+      
+      if (!period || period <= 0) {
+        showErrorMessage('Por favor, informe um prazo válido em meses.');
+        return false;
+      }
+      
+      if (!rateValue || rateValue <= 0) {
+        showErrorMessage('Por favor, informe uma taxa de juros válida.');
+        return false;
+      }
+      
+      if (!taxValue && taxValue !== 0) {
+        showErrorMessage('Por favor, informe uma alíquota de imposto válida.');
+        return false;
+      }
+      
+      if (!inflationValue && inflationValue !== 0) {
+        showErrorMessage('Por favor, informe uma taxa de inflação válida.');
+        return false;
+      }
+      
+      if (!currentSavings && currentSavings !== 0) {
+        showErrorMessage('Por favor, informe o valor já guardado.');
+        return false;
+      }
+      
+      if (!currentContribution && currentContribution !== 0) {
+        showErrorMessage('Por favor, informe quanto você poupa atualmente por mês.');
+        return false;
+      }
+      
+      return true;
+    }
+
     // Função para calcular as poupanças
     function calculateSavings() {
+      // Validar formulário
+      if (!validarFormulario()) {
+        return;
+      }
+      
       // Obter valores do formulário
       goalDescriptionText = document.getElementById('goalDescription').value;
       const goalValue = parseCurrency(document.getElementById('goal').value);
@@ -894,12 +983,6 @@ ${resultBoxText}`;
       const inflationValue = parsePercentage(document.getElementById('inflation').value);
       const currentSavings = parseCurrency(document.getElementById('currentSavings').value);
       const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
-      
-      // Validar entradas
-      if (!goalValue || !period || !rateValue || !taxValue || !inflationValue || !currentSavings || !currentContribution) {
-        showStatusMessage('Por favor, preencha todos os campos corretamente.', 'error');
-        return;
-      }
       
       // Converter taxa anual para mensal se necessário
       const monthlyRate = rateType === 'annual' ? Math.pow(1 + rateValue, 1/12) - 1 : rateValue;
