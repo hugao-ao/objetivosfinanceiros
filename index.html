@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Objetivos Financeiros</title>
+  <title>Calculadora de Novos Objetivos</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -21,390 +21,232 @@
       --azul-translucido: rgba(0, 0, 255, 0.1);
       --roxo-translucido: rgba(111, 66, 193, 0.1);
     }
-    
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: Arial, sans-serif;
       background-color: var(--fundo-claro);
       color: var(--verde-esmeralda);
       margin: 20px auto;
       padding: 20px;
       max-width: 1200px;
-      line-height: 1.6;
     }
-    
     h1 {
       color: var(--dourado);
       text-align: center;
-      margin-bottom: 30px;
-      font-size: 2.2rem;
-      font-weight: 600;
     }
-    
-    .form-container {
-      background-color: white;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
-    }
-    
-    .form-section {
-      margin-bottom: 25px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 20px;
-    }
-    
-    .form-section:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    
-    .form-section-title {
-      font-size: 1.2rem;
-      color: var(--verde-esmeralda);
-      margin-bottom: 15px;
-      font-weight: 600;
-    }
-    
-    label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 5px;
-      font-weight: 500;
-      color: #333;
-    }
-    
-    .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 15px;
-    }
-    
-    .row > div {
-      flex: 1;
-    }
-    
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 5px;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-family: inherit;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-    
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--verde-esmeralda);
-      box-shadow: 0 0 0 2px rgba(4, 108, 78, 0.2);
-    }
-    
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-    
-    button {
-      margin-top: 25px;
-      padding: 14px;
-      background-color: var(--verde-esmeralda);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      font-weight: 600;
-      font-size: 1.1rem;
-      transition: background-color 0.3s;
-    }
-    
-    button:hover {
-      background-color: #035a41;
-    }
-    
-    .status-message {
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 6px;
-      display: none;
-    }
-    
-    .status-success {
-      background-color: rgba(40, 167, 69, 0.1);
-      border: 1px solid rgba(40, 167, 69, 0.3);
-      color: #218838;
-    }
-    
-    .status-error {
-      background-color: rgba(220, 53, 69, 0.1);
-      border: 1px solid rgba(220, 53, 69, 0.3);
-      color: #dc3545;
-    }
-    
-    .status-info {
-      background-color: rgba(0, 123, 255, 0.1);
-      border: 1px solid rgba(0, 123, 255, 0.3);
-      color: #0069d9;
-    }
-    
     .result {
-      margin-top: 30px;
-      padding: 25px;
+      margin-top: 20px;
+      padding: 15px;
       border: 2px solid var(--dourado);
       background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
     }
-    
     .recommendation {
       margin: 30px 0;
-      padding: 25px;
+      padding: 20px;
       border: 2px solid var(--verde-esmeralda);
       background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    
     .recommendation h3 {
       color: var(--verde-esmeralda);
       margin-top: 0;
       border-bottom: 1px solid var(--dourado-claro);
-      padding-bottom: 15px;
-      font-size: 1.4rem;
+      padding-bottom: 10px;
     }
-    
     .whatsapp-button {
       display: block;
       width: 100%;
-      padding: 16px;
-      margin: 30px 0;
-      background-color: #25D366;
+      padding: 15px;
+      margin: 20px 0;
+      background-color: #25D366; /* WhatsApp green */
       color: white;
       text-align: center;
-      font-weight: 600;
-      font-size: 1.1rem;
+      font-weight: bold;
+      font-size: 16px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       transition: background-color 0.3s ease;
     }
-    
     .whatsapp-button:hover {
-      background-color: #128C7E;
+      background-color: #128C7E; /* Darker WhatsApp green */
     }
-    
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .row > div {
+      flex: 1;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      box-sizing: border-box;
+      border: 1px solid var(--verde-esmeralda);
+      border-radius: 5px;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    button {
+      margin-top: 15px;
+      padding: 12px;
+      background-color: var(--verde-esmeralda);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #03563f;
+    }
     .chart-container {
-      margin-top: 40px;
+      margin-top: 30px;
       position: relative;
       border: 1px solid var(--dourado-claro);
-      border-radius: 12px;
-      padding: 25px;
+      border-radius: 8px;
+      padding: 15px;
       background-color: white;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-    
     .chart-title {
       text-align: center;
-      font-weight: 600;
-      margin-bottom: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
       color: var(--verde-esmeralda);
-      font-size: 1.3rem;
     }
-    
     .chart-nav {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
-    
     .chart-nav button {
-      padding: 10px 20px;
+      padding: 8px 15px;
       margin-top: 0;
       width: auto;
-      font-size: 0.9rem;
-      background-color: var(--verde-medio);
+      font-size: 14px;
     }
-    
     .chart-content {
       display: flex;
       overflow: hidden;
       position: relative;
-      height: 450px;
+      height: 400px;
     }
-    
     .chart-slide {
       flex: 0 0 100%;
       transition: transform 0.3s ease;
     }
-    
     .table-slide {
       flex: 0 0 100%;
       overflow-y: auto;
       padding: 10px;
     }
-    
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
+      font-size: 14px;
     }
-    
     .data-table th, .data-table td {
       border: 1px solid #ddd;
-      padding: 10px;
+      padding: 8px;
       text-align: right;
     }
-    
     .data-table th {
       background-color: var(--fundo-claro);
       color: var(--verde-esmeralda);
       text-align: center;
       position: sticky;
       top: 0;
-      font-weight: 600;
     }
-    
     .data-table tr:nth-child(even) {
       background-color: #f9f9f9;
     }
-    
     .data-table tr:hover {
       background-color: #f1f1f1;
-    }
-    
-    .error-message {
-      background-color: #ffebee;
-      color: #c62828;
-      padding: 10px;
-      border-radius: 6px;
-      margin: 10px 0;
-      border: 1px solid #ffcdd2;
-      display: none;
-    }
-    
-    @media (max-width: 768px) {
-      .row {
-        flex-direction: column;
-        gap: 10px;
-      }
-      
-      .chart-content {
-        height: 350px;
-      }
     }
   </style>
 </head>
 <body>
-  <h1>Calculadora de Objetivos Financeiros</h1>
-  
-  <div class="form-container">
-    <form id="savingsForm">
-      <div class="form-section">
-        <div class="form-section-title">Sobre seu objetivo</div>
-        <label for="goalDescription">Qual é o seu objetivo financeiro e por que ele é importante para você?</label>
-        <textarea id="goalDescription" placeholder="Ex: Comprar um imóvel para ter segurança e estabilidade para minha família, ou fazer uma viagem internacional para conhecer novas culturas..."></textarea>
-        
-        <div class="row">
-          <div>
-            <label for="goal">Valor do Objetivo (R$):</label>
-            <input type="text" id="goal" required oninput="formatCurrency(this)">
-          </div>
-          <div>
-            <label for="period">Prazo (em meses):</label>
-            <input type="number" id="period" required min="1">
-          </div>
-        </div>
+  <h1>Calculadora de Objetivos</h1>
+  <form id="savingsForm">
+    <label for="goalDescription">Qual é o seu objetivo financeiro e por que ele é importante para você?</label>
+    <textarea id="goalDescription" placeholder="Ex: Comprar um imóvel para ter segurança e estabilidade para minha família, ou fazer uma viagem internacional para conhecer novas culturas..."></textarea>
+    
+    <label for="goal">Valor do Objetivo (R$):</label>
+    <input type="text" id="goal" required oninput="formatCurrency(this)">
+
+    <label for="period">Prazo (em meses):</label>
+    <input type="number" id="period" required>
+
+    <div class="row">
+      <div>
+        <label for="rate">Taxa de Juros (%):</label>
+        <input type="text" id="rate" required oninput="formatPercentage(this)">
       </div>
-      
-      <div id="taxasStatus" class="status-message"></div>
-      <div id="errorMessage" class="error-message"></div>
-      
-      <div class="form-section">
-        <div class="form-section-title">Taxas e rendimentos</div>
-        
-        <label>Você sabe a taxa de juros?</label>
-        <div class="row">
-          <div>
-            <select id="knowsRate" onchange="toggleRateInput()">
-              <option value="no">Não</option>
-              <option value="yes">Sim</option>
-            </select>
-          </div>
-          <div>
-            <input type="text" id="rate" placeholder="10,00 %" oninput="formatPercentage(this)">
-          </div>
-        </div>
-        
-        <div class="row">
-          <div>
-            <label for="rateType">Tipo de Taxa:</label>
-            <select id="rateType">
-              <option value="annual">Anual</option>
-              <option value="monthly">Mensal</option>
-            </select>
-          </div>
-        </div>
-        
-        <label>Você sabe a alíquota de imposto sobre o rendimento?</label>
-        <div class="row">
-          <div>
-            <select id="knowsTax" onchange="toggleTaxInput('tax', '15,00 %')">
-              <option value="no">Não</option>
-              <option value="yes">Sim</option>
-            </select>
-          </div>
-          <div>
-            <input type="text" id="tax" placeholder="15,00 %" oninput="formatPercentage(this)">
-          </div>
-        </div>
-        
-        <label>Você sabe a taxa de inflação dos últimos 12 meses?</label>
-        <div class="row">
-          <div>
-            <select id="knowsInflation" onchange="toggleInflationInput()">
-              <option value="no">Não</option>
-              <option value="yes">Sim</option>
-            </select>
-          </div>
-          <div>
-            <input type="text" id="inflation" placeholder="5,00 %" oninput="formatPercentage(this)">
-          </div>
-        </div>
+      <div>
+        <label for="rateType">Tipo de Taxa:</label>
+        <select id="rateType">
+          <option value="annual">Anual</option>
+          <option value="monthly">Mensal</option>
+        </select>
       </div>
-      
-      <div class="form-section">
-        <div class="form-section-title">Situação atual</div>
-        
-        <div class="row">
-          <div>
-            <label for="currentSavings">Valor já Guardado (R$):</label>
-            <input type="text" id="currentSavings" required oninput="formatCurrency(this)">
-          </div>
-          <div>
-            <label for="currentContribution">Quanto você poupa atualmente por mês (R$):</label>
-            <input type="text" id="currentContribution" required oninput="formatCurrency(this)">
-          </div>
-        </div>
+    </div>
+
+    <label>Você sabe a alíquota de imposto sobre o rendimento?</label>
+    <div class="row">
+      <div>
+        <select id="knowsTax" onchange="toggleTaxInput('tax', '15,00 %')">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
       </div>
-      
-      <button type="button" onclick="calculateSavings()">Calcular</button>
-    </form>
-  </div>
-  
-  <div id="result" class="result" style="display: none;"></div>
+      <div>
+        <input type="text" id="tax" placeholder="15,00 %" oninput="formatPercentage(this)">
+      </div>
+    </div>
+
+    <label>Você sabe a taxa de inflação dos últimos 12 meses?</label>
+    <div class="row">
+      <div>
+        <select id="knowsInflation" onchange="toggleTaxInput('inflation', '5,00 %')">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" id="inflation" placeholder="5,00 %" oninput="formatPercentage(this)">
+      </div>
+    </div>
+
+    <label for="currentSavings">Valor já Guardado (R$):</label>
+    <input type="text" id="currentSavings" required oninput="formatCurrency(this)">
+
+    <label for="currentContribution">Quanto você poupa atualmente por mês (R$):</label>
+    <input type="text" id="currentContribution" required oninput="formatCurrency(this)">
+
+    <button type="button" onclick="calculateSavings()">Calcular</button>
+  </form>
+
+  <div id="result" class="result"></div>
   
   <div id="recommendation" class="recommendation" style="display: none;">
     <h3>Análise Automatizada</h3>
     <div id="recommendationText"></div>
   </div>
   
+  <!-- Botão WhatsApp fora da caixa de análise automatizada -->
   <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
     Avançar para análise personalizada
   </a>
@@ -534,112 +376,36 @@
     let goalDescriptionText = '';
     let resultText = '';
     
-    // Função para formatar valores monetários
     function formatCurrency(input) {
       let value = input.value.replace(/\D/g, '');
       value = (parseFloat(value) / 100).toFixed(2);
       input.value = 'R$ ' + value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.').replace(/\.(\d{2})$/, ',$1');
     }
 
-    // Função para formatar valores percentuais
     function formatPercentage(input) {
       let value = input.value.replace(/\D/g, '');
       value = (parseFloat(value) / 100).toFixed(2);
       input.value = value.replace('.', ',') + ' %';
     }
 
-    // Função para alternar a entrada de taxa de imposto
     function toggleTaxInput(id, defaultValue) {
       const select = document.getElementById(id === 'tax' ? 'knowsTax' : 'knowsInflation');
       const input = document.getElementById(id);
       input.disabled = select.value !== 'yes';
       input.value = select.value === 'yes' ? '' : defaultValue;
     }
-    
-    // Função para alternar a entrada de taxa de juros
-    function toggleRateInput() {
-      const select = document.getElementById('knowsRate');
-      const input = document.getElementById('rate');
-      input.disabled = select.value !== 'yes';
-      
-      if (select.value === 'no') {
-        showStatusMessage('Buscando taxa CDI atual...', 'info');
-        preencherCDIAtual();
-      } else {
-        input.value = '';
-        input.focus();
-      }
-    }
-    
-    // Função para alternar a entrada de taxa de inflação
-    function toggleInflationInput() {
-      const select = document.getElementById('knowsInflation');
-      const input = document.getElementById('inflation');
-      input.disabled = select.value !== 'yes';
-      
-      if (select.value === 'no') {
-        showStatusMessage('Buscando IPCA dos últimos 12 meses...', 'info');
-        preencherIPCAUltimos12Meses();
-      } else {
-        input.value = '';
-        input.focus();
-      }
-    }
 
-    // Função para analisar valores monetários
     function parseCurrency(value) {
-      if (!value) return 0;
       return parseFloat(value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
     }
 
-    // Função para analisar valores percentuais
     function parsePercentage(value) {
-      if (!value) return 0;
-      return parseFloat(value.replace(/[%\s]/g, '').replace(',', '.')) / 100 || 0;
+      return parseFloat(value.replace('%', '').replace(',', '.')) / 100 || 0;
     }
 
     // Função para formatar valores monetários com sempre duas casas decimais
     function formatMoney(value) {
       return value.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    }
-
-    // Função para exibir mensagens de status
-    function showStatusMessage(message, type) {
-      const statusElement = document.getElementById('taxasStatus');
-      statusElement.textContent = message;
-      statusElement.className = 'status-message';
-      
-      if (type === 'success') {
-        statusElement.classList.add('status-success');
-      } else if (type === 'error') {
-        statusElement.classList.add('status-error');
-      } else {
-        statusElement.classList.add('status-info');
-      }
-      
-      statusElement.style.display = 'block';
-      
-      // Esconde a mensagem após 5 segundos se for sucesso ou informação
-      if (type === 'success' || type === 'info') {
-        setTimeout(() => {
-          statusElement.style.display = 'none';
-        }, 5000);
-      }
-    }
-    
-    // Função para exibir mensagens de erro
-    function showErrorMessage(message) {
-      const errorElement = document.getElementById('errorMessage');
-      errorElement.textContent = message;
-      errorElement.style.display = 'block';
-      
-      // Rolar até a mensagem de erro
-      errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      
-      // Esconde a mensagem após 8 segundos
-      setTimeout(() => {
-        errorElement.style.display = 'none';
-      }, 8000);
     }
 
     // Função para alternar entre visualização de gráfico e tabela
@@ -662,8 +428,8 @@
       const goalText = goalDescriptionText;
       const resultBoxText = resultText;
       
-      // Criar a mensagem para o WhatsApp
-      const message = `Oi Hugo, queria tua ajuda com o meu objetivo:
+     // Criar a mensagem para o WhatsApp
+const message = `Oi Hugo, queria tua ajuda com o meu objetivo:
 ${goalText}
 
 Segue o resumo:
@@ -734,69 +500,55 @@ ${resultBoxText}`;
       }
     }
 
-    // Função para desenhar gráficos
     function drawChart(ctx, bruto, liquido, investido, corBruto, corLiquido, corInvestido) {
       new Chart(ctx, {
         type: 'line',
         data: {
-          labels: bruto.map(item => item.month),
+          labels: bruto.map((_, i) => i + 1), // Começar do mês 1
           datasets: [
             {
-              label: 'Valor Bruto',
-              data: bruto.map(item => item.totalAcumulado),
-              borderColor: corBruto,
-              backgroundColor: corBruto + '20',
-              borderWidth: 2,
-              fill: true,
+              label: 'Valor Investido',
+              data: investido,
+              borderColor: corInvestido,
+              pointRadius: 0,
+              fill: false,
               tension: 0.4
             },
             {
               label: 'Valor Líquido',
-              data: liquido.map(item => item.valorLiquido),
+              data: liquido,
               borderColor: corLiquido,
-              backgroundColor: corLiquido + '20',
-              borderWidth: 2,
-              fill: true,
+              pointRadius: 0,
+              fill: '-1',
+              backgroundColor: 'rgba(0, 0, 255, 0.1)',
               tension: 0.4
             },
             {
-              label: 'Total Investido',
-              data: investido.map(item => item.totalInvestido),
-              borderColor: corInvestido,
-              backgroundColor: corInvestido + '20',
-              borderWidth: 2,
-              fill: true,
+              label: 'Valor Bruto',
+              data: bruto,
+              borderColor: corBruto,
+              pointRadius: 0,
+              fill: '-1',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
               tension: 0.4
             }
           ]
         },
         options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'top',
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  let label = context.dataset.label || '';
-                  if (label) {
-                    label += ': ';
-                  }
-                  if (context.parsed.y !== null) {
-                    label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
-                  }
-                  return label;
-                }
-              }
-            }
-          },
+          elements: { point: { radius: 0 } },
           scales: {
-            y: {
-              ticks: {
-                callback: function(value) {
-                  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-                }
+            x: { 
+              grid: { drawTicks: false, drawBorder: false },
+              title: {
+                display: true,
+                text: 'Meses'
+              }
+            },
+            y: { 
+              grid: { drawTicks: false, drawBorder: false },
+              title: {
+                display: true,
+                text: 'Valor (R$)'
               }
             }
           }
@@ -804,535 +556,442 @@ ${resultBoxText}`;
       });
     }
 
-    // Função para calcular o valor futuro com juros compostos
-    function calcularValorFuturo(principal, taxa, periodo, aporte = 0) {
-      let valorFuturo = principal;
-      let totalInvestido = principal;
+    // Função para calcular juros compostos com aportes mensais
+    function calculateCompoundInterest(initialValue, monthlyContribution, monthlyRate, periods, tax = 0, goal = 0, inflation = 0) {
+      let totalValue = initialValue;
+      let totalInvested = initialValue;
       let totalJuros = 0;
-      let dados = [];
+      let objetivoCorrigido = goal;
       
-      // Mês 0 (inicial)
-      dados.push({
+      const valoresMensais = [];
+      
+      // Mês 0 (inicial) - não será exibido na tabela, mas é usado para cálculos
+      valoresMensais.push({
         month: 0,
-        totalInvestido: totalInvestido,
         juros: 0,
+        totalInvestido: totalInvested,
         totalJuros: 0,
-        totalAcumulado: valorFuturo,
         imposto: 0,
-        valorLiquido: valorFuturo,
-        objetivoCorrigido: 0
+        valorLiquido: totalValue,
+        totalAcumulado: totalValue,
+        objetivoCorrigido: objetivoCorrigido
       });
       
-      for (let i = 1; i <= periodo; i++) {
-        const juros = valorFuturo * taxa;
-        valorFuturo = valorFuturo + juros + aporte;
-        totalInvestido += aporte;
-        totalJuros += juros;
+      for (let i = 1; i <= periods; i++) {
+        // Calcular juros sobre o valor total
+        const jurosDoMes = totalValue * monthlyRate;
+        totalJuros += jurosDoMes;
         
-        dados.push({
+        // Adicionar aporte mensal
+        totalInvested += monthlyContribution;
+        
+        // Atualizar valor total: valor anterior + juros + aporte
+        totalValue = totalValue + jurosDoMes + monthlyContribution;
+        
+        // Calcular imposto sobre o total de juros
+        const impostoTotal = totalJuros * tax;
+        
+        // Calcular valor líquido: total acumulado - imposto
+        const valorLiquido = totalValue - impostoTotal;
+        
+        // Atualizar objetivo corrigido pela inflação a cada 12 meses
+        if (i % 12 === 0) {
+          objetivoCorrigido = objetivoCorrigido * (1 + inflation);
+        }
+        
+        // Registrar valores mensais para gráfico e análise
+        valoresMensais.push({
           month: i,
-          totalInvestido: totalInvestido,
-          juros: juros,
+          juros: jurosDoMes,
+          totalInvestido: totalInvested,
           totalJuros: totalJuros,
-          totalAcumulado: valorFuturo,
-          imposto: 0, // Será calculado depois
-          valorLiquido: 0, // Será calculado depois
-          objetivoCorrigido: 0 // Será calculado depois
+          imposto: impostoTotal,
+          valorLiquido: valorLiquido,
+          totalAcumulado: totalValue,
+          objetivoCorrigido: objetivoCorrigido
         });
       }
       
-      return dados;
+      return {
+        finalValue: totalValue,
+        totalInvested: totalInvested,
+        totalJuros: totalJuros,
+        totalImposto: totalJuros * tax,
+        valoresMensais: valoresMensais
+      };
     }
 
-    // Função para calcular a poupança necessária
-    function calcularPoupancaNecessaria(objetivo, taxa, periodo, valorInicial) {
-      // Fórmula: PMT = (FV - PV * (1 + r)^n) / (((1 + r)^n - 1) / r)
-      const taxaDecimal = taxa;
-      const fv = objetivo;
-      const pv = valorInicial;
+    // Função para calcular a taxa anual necessária para atingir o objetivo no prazo desejado
+    function calculateRequiredRate(goal, currentSavings, monthlyContribution, period, tax, inflation) {
+      // Ajustar o objetivo pela inflação
+      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
       
-      const parte1 = fv - pv * Math.pow(1 + taxaDecimal, periodo);
-      const parte2 = (Math.pow(1 + taxaDecimal, periodo) - 1) / taxaDecimal;
+      // Busca binária para encontrar a taxa mensal necessária
+      let lowRate = 0;
+      let highRate = 1; // 100% ao mês como limite superior inicial
+      let requiredMonthlyRate = 0;
+      let iterations = 0;
+      let result;
       
-      return parte1 / parte2;
-    }
-
-    // Função para aplicar imposto sobre o rendimento
-    function aplicarImposto(dados, taxaImposto) {
-      let dadosComImposto = JSON.parse(JSON.stringify(dados)); // Cria uma cópia profunda
-      
-      for (let i = 0; i < dadosComImposto.length; i++) {
-        const imposto = dadosComImposto[i].totalJuros * taxaImposto;
-        dadosComImposto[i].imposto = imposto;
-        dadosComImposto[i].valorLiquido = dadosComImposto[i].totalAcumulado - imposto;
-      }
-      
-      return dadosComImposto;
-    }
-
-    // Função para aplicar correção pela inflação
-    function aplicarInflacao(dados, objetivo, taxaInflacao) {
-      let dadosComInflacao = JSON.parse(JSON.stringify(dados)); // Cria uma cópia profunda
-      let objetivoCorrigido = objetivo;
-      
-      for (let i = 0; i < dadosComInflacao.length; i++) {
-        dadosComInflacao[i].objetivoCorrigido = objetivoCorrigido;
-        objetivoCorrigido *= (1 + taxaInflacao);
-      }
-      
-      return dadosComInflacao;
-    }
-
-    // Função para calcular a taxa necessária
-    function calcularTaxaNecessaria(objetivo, periodo, valorInicial, aporteMensal) {
-      // Usar método de aproximação para encontrar a taxa
-      let taxaMin = 0;
-      let taxaMax = 1; // 100% ao mês seria um limite superior razoável
-      let taxaAtual = 0.01; // Começar com 1% ao mês
-      let valorFuturo = 0;
-      const precisao = 0.0000001;
-      
-      for (let i = 0; i < 100; i++) { // Limite de iterações
-        valorFuturo = valorInicial;
-        for (let j = 0; j < periodo; j++) {
-          valorFuturo = valorFuturo * (1 + taxaAtual) + aporteMensal;
-        }
+      while (iterations < 100) { // Limite de iterações para evitar loop infinito
+        requiredMonthlyRate = (lowRate + highRate) / 2;
+        result = calculateCompoundInterest(currentSavings, monthlyContribution, requiredMonthlyRate, period, tax, goal, inflation);
         
-        if (Math.abs(valorFuturo - objetivo) < precisao) {
+        // Verificar se o valor líquido final está próximo o suficiente do objetivo
+        const valorLiquidoFinal = result.valoresMensais[period].valorLiquido;
+        const objetivoFinal = result.valoresMensais[period].objetivoCorrigido;
+        
+        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) {
           break;
         }
         
-        if (valorFuturo < objetivo) {
-          taxaMin = taxaAtual;
+        // Ajusta os limites da busca
+        if (valorLiquidoFinal > objetivoFinal) {
+          highRate = requiredMonthlyRate;
         } else {
-          taxaMax = taxaAtual;
+          lowRate = requiredMonthlyRate;
         }
         
-        taxaAtual = (taxaMin + taxaMax) / 2;
+        iterations++;
       }
       
-      return taxaAtual;
+      // Converter taxa mensal para anual: (1 + taxa_mensal)^12 - 1
+      const requiredAnnualRate = Math.pow(1 + requiredMonthlyRate, 12) - 1;
+      
+      return {
+        monthlyRate: requiredMonthlyRate,
+        annualRate: requiredAnnualRate,
+        finalValue: result.finalValue,
+        finalGoal: inflatedGoal,
+        valoresMensais: result.valoresMensais
+      };
     }
 
-    // Função para validar os campos do formulário
-    function validarFormulario() {
-      // Obter valores do formulário
-      const goalDescription = document.getElementById('goalDescription').value.trim();
-      const goalValue = parseCurrency(document.getElementById('goal').value);
+    // Função para resumir o texto do objetivo
+    function summarizeGoalText(text) {
+      if (!text || text.trim() === '') {
+        return '';
+      }
+      
+      // Palavras-chave para identificar tipos de objetivos
+      const keywords = {
+        imovel: ['imóvel', 'casa', 'apartamento', 'moradia', 'residência', 'propriedade', 'terreno'],
+        viagem: ['viagem', 'viajar', 'turismo', 'férias', 'exterior', 'internacional', 'conhecer'],
+        educacao: ['educação', 'faculdade', 'universidade', 'curso', 'estudo', 'formação', 'pós-graduação', 'mestrado', 'doutorado'],
+        aposentadoria: ['aposentadoria', 'aposentar', 'independência financeira', 'liberdade financeira', 'renda passiva'],
+        veiculo: ['carro', 'veículo', 'automóvel', 'moto', 'motocicleta', 'caminhão'],
+        negocio: ['negócio', 'empresa', 'empreendimento', 'startup', 'investimento', 'sociedade'],
+        saude: ['saúde', 'tratamento', 'cirurgia', 'médico', 'hospital', 'plano de saúde'],
+        familia: ['família', 'filhos', 'casamento', 'herança', 'futuro dos filhos']
+      };
+      
+      // Converter texto para minúsculas para facilitar a comparação
+      const lowerText = text.toLowerCase();
+      
+      // Identificar o tipo de objetivo
+      let goalType = '';
+      let maxMatches = 0;
+      
+      for (const [type, words] of Object.entries(keywords)) {
+        const matches = words.filter(word => lowerText.includes(word)).length;
+        if (matches > maxMatches) {
+          maxMatches = matches;
+          goalType = type;
+        }
+      }
+      
+      // Criar resumo com base no tipo de objetivo identificado
+      let summary = '';
+      
+      switch (goalType) {
+        case 'imovel':
+          summary = 'aquisição de imóvel';
+          break;
+        case 'viagem':
+          summary = 'realização de viagem';
+          break;
+        case 'educacao':
+          summary = 'investimento em educação';
+          break;
+        case 'aposentadoria':
+          summary = 'planejamento para aposentadoria';
+          break;
+        case 'veiculo':
+          summary = 'compra de veículo';
+          break;
+        case 'negocio':
+          summary = 'investimento em negócio próprio';
+          break;
+        case 'saude':
+          summary = 'cuidados com saúde';
+          break;
+        case 'familia':
+          summary = 'planejamento familiar';
+          break;
+        default:
+          // Se não conseguir identificar um tipo específico, extrair as primeiras palavras
+          const words = lowerText.split(' ');
+          if (words.length > 3) {
+            summary = words.slice(0, 3).join(' ') + '...';
+          } else {
+            summary = 'objetivo financeiro';
+          }
+      }
+      
+      // Verificar se há menção à importância ou motivo
+      const importanceKeywords = ['importante', 'importância', 'significa', 'porque', 'pois', 'para', 'motivo'];
+      let hasImportance = importanceKeywords.some(word => lowerText.includes(word));
+      
+      if (hasImportance) {
+        summary += ' com significado pessoal';
+      }
+      
+      return summary;
+    }
+
+    // Função para gerar análise automatizada
+    function generateRecommendation(goalDescription, goal, currentSavings, currentContribution, idealContribution, months, requiredRate, rate) {
+      const recommendationDiv = document.getElementById('recommendation');
+      const recommendationText = document.getElementById('recommendationText');
+      const whatsappButton = document.getElementById('whatsappButton');
+      
+      // Extrair informações relevantes
+      const goalGap = goal - currentSavings;
+      const contributionGap = idealContribution - currentContribution;
+      const contributionPercentage = (currentContribution / idealContribution) * 100;
+      const rateGap = requiredRate - rate;
+      
+      let analysis = '';
+      
+      // Análise da situação atual - começando diretamente aqui, sem introdução sobre o objetivo
+      if (currentSavings > 0) {
+        const savingsPercentage = (currentSavings / goal) * 100;
+        analysis += `<p>Valor já guardado: R$ ${formatMoney(currentSavings)}, o que representa ${savingsPercentage.toFixed(1).replace('.', ',')}% do objetivo. `;
+        
+        if (savingsPercentage < 10) {
+          analysis += `Este é um bom começo, mas ainda há um longo caminho pela frente.</p>`;
+        } else if (savingsPercentage < 30) {
+          analysis += `Já foram dados passos importantes em direção ao objetivo.</p>`;
+        } else if (savingsPercentage < 60) {
+          analysis += `Uma parte significativa do caminho já foi percorrida.</p>`;
+        } else {
+          analysis += `O objetivo está muito próximo de ser alcançado.</p>`;
+        }
+      } else {
+        analysis += `<p>Ainda não foi iniciada a poupança para este objetivo específico.</p>`;
+      }
+      
+      // Análise do aporte mensal
+      if (currentContribution > 0) {
+        if (contributionPercentage >= 100) {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} é suficiente para atingir o objetivo no prazo desejado.</p>`;
+        } else if (contributionPercentage >= 80) {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} está próximo do ideal. Um pequeno ajuste de R$ ${formatMoney(contributionGap)} a mais por mês seria o suficiente para atingir o objetivo no prazo desejado.</p>`;
+        } else if (contributionPercentage >= 50) {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} representa um bom esforço, mas para atingir o objetivo no prazo desejado, seria necessário aumentar para R$ ${formatMoney(idealContribution)} por mês (um acréscimo de R$ ${formatMoney(contributionGap)}).</p>`;
+        } else {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} está significativamente abaixo do ideal. Para atingir o objetivo no prazo desejado, seria necessário aumentar para R$ ${formatMoney(idealContribution)} por mês.</p>`;
+        }
+      } else {
+        analysis += `<p>Não estão sendo feitos aportes mensais. Para atingir o objetivo no prazo desejado, seria necessário poupar R$ ${formatMoney(idealContribution)} por mês.</p>`;
+      }
+      
+      // Análise da rentabilidade
+      if (rateGap > 0) {
+        const rateGapPercentage = rateGap * 100;
+        if (rateGapPercentage > 10) {
+          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace('.', ',')}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace('.', ',')} pontos percentuais acima da taxa informada. Esta diferença é significativa e pode representar um risco maior.</p>`;
+        } else {
+          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace('.', ',')}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace('.', ',')} pontos percentuais acima da taxa informada. Esta diferença é relativamente pequena e pode ser alcançável com ajustes na estratégia de investimento.</p>`;
+        }
+      } else {
+        analysis += `<p>A rentabilidade informada de ${(rate * 100).toFixed(2).replace('.', ',')}% ao ano é suficiente para atingir o objetivo no prazo desejado, desde que sejam mantidos os aportes mensais adequados.</p>`;
+      }
+      
+      recommendationText.innerHTML = analysis;
+      recommendationDiv.style.display = 'block';
+      
+      // Mostrar o botão do WhatsApp
+      whatsappButton.style.display = 'block';
+    }
+
+    function calculateSavings() {
+      // Armazenar o texto do objetivo para uso posterior
+      goalDescriptionText = document.getElementById('goalDescription').value;
+      
+      // Resetar os gráficos antes de desenhar novos
+      const chartUnico = Chart.getChart("chartUnico");
+      if (chartUnico) chartUnico.destroy();
+      const chartIdeal = Chart.getChart("chartIdeal");
+      if (chartIdeal) chartIdeal.destroy();
+      const chartAtual = Chart.getChart("chartAtual");
+      if (chartAtual) chartAtual.destroy();
+      const chartRentabilidade = Chart.getChart("chartRentabilidade");
+      if (chartRentabilidade) chartRentabilidade.destroy();
+      
+      const goalDescription = document.getElementById('goalDescription').value;
+      const goal = parseCurrency(document.getElementById('goal').value);
+      const rate = parsePercentage(document.getElementById('rate').value);
+      const rateType = document.getElementById('rateType').value;
+      const knowsTax = document.getElementById('knowsTax').value;
+      const tax = knowsTax === 'yes' ? parsePercentage(document.getElementById('tax').value) : 0.15;
+      const knowsInflation = document.getElementById('knowsInflation').value;
+      const inflation = knowsInflation === 'yes' ? parsePercentage(document.getElementById('inflation').value) : 0.05;
       const period = parseInt(document.getElementById('period').value);
-      const rateValue = parsePercentage(document.getElementById('rate').value);
-      const taxValue = parsePercentage(document.getElementById('tax').value);
-      const inflationValue = parsePercentage(document.getElementById('inflation').value);
       const currentSavings = parseCurrency(document.getElementById('currentSavings').value);
       const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
+
+      const monthlyRate = rateType === 'annual' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
+      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace('.', ',')}%) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
+
+      // Cálculo do investimento único necessário
+      // Fórmula: PV = VF / (1 + i)^n
+      // Onde VF é o valor futuro (objetivo corrigido), i é a taxa, n é o período
+      // Considerando o imposto: PV = VF / [(1 + i)^n - imposto * ((1 + i)^n - 1)]
       
-      // Verificar se todos os campos estão preenchidos
-      if (!goalDescription) {
-        showErrorMessage('Por favor, descreva seu objetivo financeiro.');
-        return false;
+      const taxFactor = (1 + monthlyRate) ** period - tax * ((1 + monthlyRate) ** period - 1);
+      const investmentNeeded = inflatedGoal / taxFactor;
+      
+      // Comparação com o valor já guardado
+      const difference = investmentNeeded - currentSavings;
+      const comparisonText = difference > 0 
+        ? `Este valor é <strong>R$ ${formatMoney(difference)} maior</strong> do que o valor que você já tem guardado.`
+        : `Este valor é <strong>R$ ${formatMoney(Math.abs(difference))} menor</strong> do que o valor que você já tem guardado.`;
+      
+      // Cálculo do valor bruto e líquido para o investimento único
+      const resultUnico = calculateCompoundInterest(investmentNeeded, 0, monthlyRate, period, tax, goal, inflation);
+      
+      // Extrair dados para o gráfico (começando do mês 1)
+      const brutoUnico = resultUnico.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.totalInvestido);
+      
+      resultDiv.innerHTML += `<p><strong>Investimento Único Necessário:</strong><br>Para atingir seu objetivo no prazo desejado, sem poupar mensalmente, você precisaria investir <strong>R$ ${formatMoney(investmentNeeded)}</strong> hoje.<br>${comparisonText}</p>`;
+      
+      // Mostrar o container do gráfico
+      document.getElementById('chartUnicoContainer').style.display = 'block';
+      
+      // Preencher a tabela de dados
+      fillDataTable('tableUnico', resultUnico.valoresMensais, goal, inflation);
+      
+      // Desenhar o gráfico do investimento único
+      drawChart(document.getElementById('chartUnico').getContext('2d'), brutoUnico, liquidoUnico, investidoUnico, '#6f42c1', '#9f75e5', '#4b2882');
+
+      // Cálculo do plano ideal (quanto poupar mensalmente)
+      // Fórmula: A = (VF - PV * (1 + i)^n) / ((1 + i)^n - 1) * i
+      // Onde A é o aporte mensal, VF é o valor futuro (objetivo), PV é o valor presente (valor já guardado)
+      
+      let low = 0, high = inflatedGoal, Y = 0;
+      let resultIdeal;
+      
+      for (let i = 0; i < 100; i++) {
+        Y = (low + high) / 2;
+        resultIdeal = calculateCompoundInterest(currentSavings, Y, monthlyRate, period, tax, goal, inflation);
+        
+        const valorLiquidoFinal = resultIdeal.valoresMensais[period].valorLiquido;
+        const objetivoFinal = resultIdeal.valoresMensais[period].objetivoCorrigido;
+        
+        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) break;
+        if (valorLiquidoFinal > objetivoFinal) high = Y;
+        else low = Y;
       }
       
-      if (!goalValue || goalValue <= 0) {
-        showErrorMessage('Por favor, informe um valor válido para o objetivo.');
-        return false;
+      // Extrair dados para o gráfico (começando do mês 1)
+      const brutoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.totalInvestido);
+
+      resultDiv.innerHTML += `<p><strong>Plano Ideal:</strong><br>Você precisará poupar R$ ${formatMoney(Y)} por mês para atingir seu objetivo corrigido.</p>`;
+
+      // Mostrar o container do gráfico
+      document.getElementById('chartIdealContainer').style.display = 'block';
+      
+      // Preencher a tabela de dados
+      fillDataTable('tableIdeal', resultIdeal.valoresMensais, goal, inflation);
+      
+      // Desenhar o gráfico do plano ideal
+      drawChart(document.getElementById('chartIdeal').getContext('2d'), brutoIdeal, liquidoIdeal, investidoIdeal, '#28a745', '#218838', '#046c4e');
+
+      // Cálculo com a poupança atual
+      // Calcular quanto tempo levará para atingir o objetivo com o aporte atual
+      // Fórmula: n = ln((VF + A/i) / (PV + A/i)) / ln(1 + i)
+      // Onde n é o número de períodos, VF é o valor futuro (objetivo), PV é o valor presente (valor já guardado), A é o aporte mensal
+      
+      // Calcular juros compostos com aportes mensais e inflação progressiva
+      const resultAtual = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, 1200, tax, goal, inflation);
+      const valoresMensais = resultAtual.valoresMensais;
+      
+      // Encontrar em qual mês o objetivo é atingido, considerando a inflação
+      let months = 0;
+      let objetivoAtingido = false;
+      
+      for (let i = 1; i < valoresMensais.length; i++) {
+        // Verificar se o valor líquido supera o objetivo corrigido
+        if (valoresMensais[i].valorLiquido > valoresMensais[i].objetivoCorrigido) {
+          months = i;
+          objetivoAtingido = true;
+          break;
+        }
       }
       
-      if (!period || period <= 0) {
-        showErrorMessage('Por favor, informe um prazo válido em meses.');
-        return false;
+      // Se o objetivo não foi atingido dentro do limite, usar o último mês calculado
+      if (!objetivoAtingido) {
+        months = valoresMensais.length - 1;
       }
       
-      if (!rateValue || rateValue <= 0) {
-        showErrorMessage('Por favor, informe uma taxa de juros válida.');
-        return false;
-      }
+      // Extrair dados para o gráfico (começando do mês 1)
+      const brutoAtual = valoresMensais.slice(1, Math.max(months + 1, period + 1)).map(m => m.totalAcumulado);
+      const liquidoAtual = valoresMensais.slice(1, Math.max(months + 1, period + 1)).map(m => m.valorLiquido);
+      const investidoAtual = valoresMensais.slice(1, Math.max(months + 1, period + 1)).map(m => m.totalInvestido);
       
-      if (!taxValue && taxValue !== 0) {
-        showErrorMessage('Por favor, informe uma alíquota de imposto válida.');
-        return false;
-      }
+      resultDiv.innerHTML += `<p><strong>Com a Poupança Atual:</strong><br>Você atingirá o objetivo em aproximadamente ${months} meses, considerando a inflação progressiva a cada 12 meses.</p>`;
+
+      // Mostrar o container do gráfico
+      document.getElementById('chartAtualContainer').style.display = 'block';
       
-      if (!inflationValue && inflationValue !== 0) {
-        showErrorMessage('Por favor, informe uma taxa de inflação válida.');
-        return false;
-      }
+      // Preencher a tabela de dados
+      fillDataTable('tableAtual', valoresMensais.slice(0, Math.max(months + 1, period + 1)), goal, inflation);
       
-      if (!currentSavings && currentSavings !== 0) {
-        showErrorMessage('Por favor, informe o valor já guardado.');
-        return false;
-      }
+      // Desenhar o gráfico da poupança atual
+      drawChart(document.getElementById('chartAtual').getContext('2d'), brutoAtual, liquidoAtual, investidoAtual, '#d4af37', '#b38e2e', '#f5e2a9');
+
+      // Calcular a rentabilidade anual necessária para atingir o objetivo no prazo desejado
+      // Fórmula: Determinar i tal que VF = PV * (1 + i)^n + A * ((1 + i)^n - 1) / i
+      // Onde i é a taxa, VF é o valor futuro (objetivo), PV é o valor presente (valor já guardado), A é o aporte mensal, n é o período
       
-      if (!currentContribution && currentContribution !== 0) {
-        showErrorMessage('Por favor, informe quanto você poupa atualmente por mês.');
-        return false;
-      }
+      const requiredRate = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
       
-      return true;
+      // Extrair dados para o gráfico (começando do mês 1)
+      const brutoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalInvestido);
+      
+      // Adicionar resultado da rentabilidade necessária
+      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo em ${period} meses, mantendo o aporte mensal de R$ ${formatMoney(currentContribution)}, você precisaria de uma rentabilidade anual de <strong>${(requiredRate.annualRate * 100).toFixed(2).replace('.', ',')}%</strong>.</p>`;
+      
+      // Armazenar o texto da caixa de resposta para uso posterior
+      resultText = resultDiv.innerText;
+      
+      // Mostrar o container do gráfico
+      document.getElementById('chartRentabilidadeContainer').style.display = 'block';
+      
+      // Preencher a tabela de dados
+      fillDataTable('tableRentabilidade', requiredRate.valoresMensais, goal, inflation);
+      
+      // Desenhar o gráfico da rentabilidade necessária
+      drawChart(document.getElementById('chartRentabilidade').getContext('2d'), brutoRentabilidade, liquidoRentabilidade, investidoRentabilidade, '#6f42c1', '#9f75e5', '#4b2882');
+      
+      // Gerar análise automatizada
+      generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, months, requiredRate.annualRate, rateType === 'annual' ? rate : Math.pow(1 + rate, 12) - 1);
     }
 
-    // Função para calcular as poupanças
-    function calculateSavings() {
-      try {
-        // Validar formulário
-        if (!validarFormulario()) {
-          return;
-        }
-        
-        // Obter valores do formulário
-        goalDescriptionText = document.getElementById('goalDescription').value;
-        const goalValue = parseCurrency(document.getElementById('goal').value);
-        const period = parseInt(document.getElementById('period').value);
-        const rateValue = parsePercentage(document.getElementById('rate').value);
-        const rateType = document.getElementById('rateType').value;
-        const taxValue = parsePercentage(document.getElementById('tax').value);
-        const inflationValue = parsePercentage(document.getElementById('inflation').value);
-        const currentSavings = parseCurrency(document.getElementById('currentSavings').value);
-        const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
-        
-        // Converter taxa anual para mensal se necessário
-        let monthlyRate = 0;
-        if (rateType === 'annual') {
-          monthlyRate = Math.pow(1 + rateValue, 1/12) - 1;
-        } else {
-          monthlyRate = rateValue;
-        }
-        
-        let monthlyInflation = Math.pow(1 + inflationValue, 1/12) - 1;
-        
-        // Calcular valor único necessário
-        const valorUnico = goalValue / Math.pow(1 + monthlyRate, period);
-        
-        // Calcular aporte mensal ideal
-        const aporteIdeal = calcularPoupancaNecessaria(goalValue, monthlyRate, period, currentSavings);
-        
-        // Calcular com aporte atual
-        let dadosAtual = calcularValorFuturo(currentSavings, monthlyRate, period, currentContribution);
-        const valorFinalAtual = dadosAtual[period].totalAcumulado;
-        
-        // Calcular taxa necessária para atingir o objetivo com o aporte atual
-        const taxaNecessaria = calcularTaxaNecessaria(goalValue, period, currentSavings, currentContribution);
-        
-        // Calcular dados para os diferentes cenários
-        let dadosUnico = calcularValorFuturo(valorUnico, monthlyRate, period);
-        let dadosIdeal = calcularValorFuturo(currentSavings, monthlyRate, period, aporteIdeal);
-        let dadosRentabilidade = calcularValorFuturo(currentSavings, taxaNecessaria, period, currentContribution);
-        
-        // Aplicar imposto sobre o rendimento
-        let dadosUnicoComImposto = aplicarImposto(dadosUnico, taxValue);
-        let dadosIdealComImposto = aplicarImposto(dadosIdeal, taxValue);
-        let dadosAtualComImposto = aplicarImposto(dadosAtual, taxValue);
-        let dadosRentabilidadeComImposto = aplicarImposto(dadosRentabilidade, taxValue);
-        
-        // Aplicar correção pela inflação
-        let dadosUnicoFinal = aplicarInflacao(dadosUnicoComImposto, goalValue, monthlyInflation);
-        let dadosIdealFinal = aplicarInflacao(dadosIdealComImposto, goalValue, monthlyInflation);
-        let dadosAtualFinal = aplicarInflacao(dadosAtualComImposto, goalValue, monthlyInflation);
-        let dadosRentabilidadeFinal = aplicarInflacao(dadosRentabilidadeComImposto, goalValue, monthlyInflation);
-        
-        // Calcular diferença entre valor final e objetivo
-        const diferencaAtual = valorFinalAtual - goalValue;
-        const atingeObjetivo = diferencaAtual >= 0;
-        
-        // Preparar texto do resultado
-        const taxaAnual = (Math.pow(1 + monthlyRate, 12) - 1) * 100;
-        const taxaNecessariaAnual = (Math.pow(1 + taxaNecessaria, 12) - 1) * 100;
-        
-        let resultHtml = `
-          <h3>Resultado da Simulação</h3>
-          <p><strong>Objetivo:</strong> R$ ${formatMoney(goalValue)} em ${period} meses</p>
-          <p><strong>Taxa de juros:</strong> ${rateValue.toFixed(2)}% ${rateType === 'annual' ? 'ao ano' : 'ao mês'} (${taxaAnual.toFixed(2)}% ao ano)</p>
-          <p><strong>Inflação:</strong> ${inflationValue.toFixed(2)}% ao ano</p>
-          <p><strong>Imposto:</strong> ${taxValue.toFixed(2)}%</p>
-          <p><strong>Valor já guardado:</strong> R$ ${formatMoney(currentSavings)}</p>
-          <p><strong>Aporte mensal atual:</strong> R$ ${formatMoney(currentContribution)}</p>
-          <hr>
-          <p><strong>Investimento único necessário:</strong> R$ ${formatMoney(valorUnico)}</p>
-          <p><strong>Aporte mensal ideal:</strong> R$ ${formatMoney(aporteIdeal)}</p>
-          <p><strong>Valor final com aporte atual:</strong> R$ ${formatMoney(valorFinalAtual)} (${atingeObjetivo ? 'atinge o objetivo' : 'não atinge o objetivo'})</p>
-          <p><strong>Diferença para o objetivo:</strong> R$ ${formatMoney(Math.abs(diferencaAtual))} ${atingeObjetivo ? 'acima' : 'abaixo'}</p>
-          <p><strong>Rentabilidade necessária:</strong> ${taxaNecessariaAnual.toFixed(2)}% ao ano</p>
-        `;
-        
-        // Exibir resultado
-        const resultElement = document.getElementById('result');
-        resultElement.innerHTML = resultHtml;
-        resultElement.style.display = 'block';
-        
-        // Armazenar texto do resultado para WhatsApp
-        resultText = `Objetivo: R$ ${formatMoney(goalValue)} em ${period} meses
-Taxa de juros: ${rateValue.toFixed(2)}% ${rateType === 'annual' ? 'ao ano' : 'ao mês'} (${taxaAnual.toFixed(2)}% ao ano)
-Inflação: ${inflationValue.toFixed(2)}% ao ano
-Imposto: ${taxValue.toFixed(2)}%
-Valor já guardado: R$ ${formatMoney(currentSavings)}
-Aporte mensal atual: R$ ${formatMoney(currentContribution)}
-
-Investimento único necessário: R$ ${formatMoney(valorUnico)}
-Aporte mensal ideal: R$ ${formatMoney(aporteIdeal)}
-Valor final com aporte atual: R$ ${formatMoney(valorFinalAtual)} (${atingeObjetivo ? 'atinge o objetivo' : 'não atinge o objetivo'})
-Diferença para o objetivo: R$ ${formatMoney(Math.abs(diferencaAtual))} ${atingeObjetivo ? 'acima' : 'abaixo'}
-Rentabilidade necessária: ${taxaNecessariaAnual.toFixed(2)}% ao ano`;
-        
-        // Preparar recomendação
-        let recommendationText = '';
-        
-        if (atingeObjetivo) {
-          recommendationText = `
-            <p>Parabéns! Com seu aporte mensal atual de R$ ${formatMoney(currentContribution)}, você conseguirá atingir seu objetivo de R$ ${formatMoney(goalValue)} em ${period} meses, e ainda terá um excedente de R$ ${formatMoney(diferencaAtual)}.</p>
-            <p>Recomendações:</p>
-            <ul>
-              <li>Considere aumentar seu objetivo financeiro</li>
-              <li>Você pode reduzir seu aporte mensal para R$ ${formatMoney(aporteIdeal)} e ainda assim atingir seu objetivo</li>
-              <li>Alternativamente, você pode reduzir o prazo para alcançar seu objetivo mais rapidamente</li>
-            </ul>
-          `;
-        } else {
-          recommendationText = `
-            <p>Com seu aporte mensal atual de R$ ${formatMoney(currentContribution)}, você não conseguirá atingir seu objetivo de R$ ${formatMoney(goalValue)} em ${period} meses. Faltarão aproximadamente R$ ${formatMoney(Math.abs(diferencaAtual))}.</p>
-            <p>Recomendações:</p>
-            <ul>
-              <li>Aumente seu aporte mensal para R$ ${formatMoney(aporteIdeal)}</li>
-              <li>Busque investimentos com rentabilidade de pelo menos ${taxaNecessariaAnual.toFixed(2)}% ao ano</li>
-              <li>Considere estender o prazo para atingir seu objetivo</li>
-            </ul>
-          `;
-        }
-        
-        // Exibir recomendação
-        document.getElementById('recommendationText').innerHTML = recommendationText;
-        document.getElementById('recommendation').style.display = 'block';
-        
-        // Exibir botão do WhatsApp
-        document.getElementById('whatsappButton').style.display = 'block';
-        
-        // Desenhar gráficos
-        document.getElementById('chartUnicoContainer').style.display = 'block';
-        document.getElementById('chartIdealContainer').style.display = 'block';
-        document.getElementById('chartAtualContainer').style.display = 'block';
-        document.getElementById('chartRentabilidadeContainer').style.display = 'block';
-        
-        // Preencher tabelas
-        fillDataTable('tableUnico', dadosUnicoFinal, goalValue, inflationValue);
-        fillDataTable('tableIdeal', dadosIdealFinal, goalValue, inflationValue);
-        fillDataTable('tableAtual', dadosAtualFinal, goalValue, inflationValue);
-        fillDataTable('tableRentabilidade', dadosRentabilidadeFinal, goalValue, inflationValue);
-        
-        // Desenhar gráficos
-        drawChart(
-          document.getElementById('chartUnico').getContext('2d'),
-          dadosUnicoFinal,
-          dadosUnicoFinal,
-          dadosUnicoFinal,
-          '#046c4e',
-          '#28a745',
-          '#d4af37'
-        );
-        
-        drawChart(
-          document.getElementById('chartIdeal').getContext('2d'),
-          dadosIdealFinal,
-          dadosIdealFinal,
-          dadosIdealFinal,
-          '#046c4e',
-          '#28a745',
-          '#d4af37'
-        );
-        
-        drawChart(
-          document.getElementById('chartAtual').getContext('2d'),
-          dadosAtualFinal,
-          dadosAtualFinal,
-          dadosAtualFinal,
-          '#046c4e',
-          '#28a745',
-          '#d4af37'
-        );
-        
-        drawChart(
-          document.getElementById('chartRentabilidade').getContext('2d'),
-          dadosRentabilidadeFinal,
-          dadosRentabilidadeFinal,
-          dadosRentabilidadeFinal,
-          '#046c4e',
-          '#28a745',
-          '#d4af37'
-        );
-        
-        // Rolar para o resultado
-        document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
-      } catch (erro) {
-        console.error('Erro ao calcular:', erro);
-        showErrorMessage('Ocorreu um erro ao calcular. Por favor, verifique os valores informados e tente novamente.');
-      }
-    }
-
-    // Função para buscar a taxa CDI atual
-    async function buscarCDIAtual() {
-      try {
-        // Busca os últimos valores do CDI diário (código 12)
-        const url = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados/ultimos/20?formato=json';
-        
-        // Faz a requisição à API
-        const response = await fetch(url);
-        
-        // Verifica se a resposta foi bem-sucedida
-        if (!response.ok) {
-          throw new Error(`Erro ao buscar dados do CDI atual: ${response.status}`);
-        }
-        
-        // Converte a resposta para JSON
-        const dados = await response.json();
-        
-        // Verifica se há dados
-        if (dados.length === 0) {
-          throw new Error('Nenhum dado encontrado para o CDI atual');
-        }
-        
-        // Obtém o valor mais recente do CDI
-        const taxaCDIAtual = parseFloat(dados[dados.length - 1].valor);
-        
-        // Calcula a taxa anual equivalente (considerando 252 dias úteis por ano)
-        // Fórmula: ((1 + taxa diária)^252) - 1
-        const taxaAnual = (Math.pow(1 + taxaCDIAtual / 100, 252) - 1) * 100;
-        
-        // Retorna a taxa anual
-        return taxaAnual;
-      } catch (erro) {
-        console.error('Erro ao buscar taxa CDI atual:', erro);
-        return null;
-      }
-    }
-
-    // Função para buscar a inflação (IPCA) acumulada dos últimos 12 meses
-    async function buscarIPCAUltimos12Meses() {
-      try {
-        // Calcula as datas para os últimos 12 meses
-        const dataFinal = new Date();
-        const dataInicial = new Date();
-        dataInicial.setMonth(dataInicial.getMonth() - 12);
-        
-        // Formata as datas no padrão dd/MM/aaaa exigido pela API
-        const dataInicialFormatada = `${String(dataInicial.getDate()).padStart(2, '0')}/${String(dataInicial.getMonth() + 1).padStart(2, '0')}/${dataInicial.getFullYear()}`;
-        const dataFinalFormatada = `${String(dataFinal.getDate()).padStart(2, '0')}/${String(dataFinal.getMonth() + 1).padStart(2, '0')}/${dataFinal.getFullYear()}`;
-        
-        // Monta a URL da API do Banco Central para o IPCA (código 433)
-        const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json&dataInicial=${dataInicialFormatada}&dataFinal=${dataFinalFormatada}`;
-        
-        // Faz a requisição à API
-        const response = await fetch(url);
-        
-        // Verifica se a resposta foi bem-sucedida
-        if (!response.ok) {
-          throw new Error(`Erro ao buscar dados do IPCA: ${response.status}`);
-        }
-        
-        // Converte a resposta para JSON
-        const dados = await response.json();
-        
-        // Verifica se há dados no período
-        if (dados.length === 0) {
-          throw new Error('Nenhum dado encontrado para o IPCA nos últimos 12 meses');
-        }
-        
-        // Calcula a inflação acumulada nos últimos 12 meses (produto dos fatores mensais)
-        let inflacaoAcumulada = 1;
-        for (const item of dados) {
-          // O IPCA é fornecido em percentual ao mês, precisamos converter para fator
-          const taxaMensal = parseFloat(item.valor) / 100;
-          inflacaoAcumulada *= (1 + taxaMensal);
-        }
-        
-        // Converte para percentual anual
-        const taxaAnual = (inflacaoAcumulada - 1) * 100;
-        
-        // Retorna a taxa anual
-        return taxaAnual;
-      } catch (erro) {
-        console.error('Erro ao buscar IPCA dos últimos 12 meses:', erro);
-        return null;
-      }
-    }
-
-    // Função para preencher a taxa de juros com o CDI atual
-    async function preencherCDIAtual() {
-      try {
-        // Busca o CDI atual
-        const taxaCDI = await buscarCDIAtual();
-        
-        // Verifica se a taxa foi encontrada
-        if (taxaCDI === null) {
-          throw new Error('Não foi possível obter a taxa CDI atual');
-        }
-        
-        // Formata a taxa para exibição
-        const taxaCDIFormatada = taxaCDI.toFixed(2).replace('.', ',') + ' %';
-        
-        // Atualiza o campo de taxa de juros
-        document.getElementById('rate').value = taxaCDIFormatada;
-        
-        // Atualiza a mensagem de status
-        showStatusMessage(`Taxa CDI atual: ${taxaCDIFormatada}`, 'success');
-        
-        return true;
-      } catch (erro) {
-        console.error('Erro ao preencher CDI atual:', erro);
-        
-        // Exibe mensagem de erro
-        showStatusMessage(`Erro: ${erro.message}. Por favor, informe a taxa manualmente.`, 'error');
-        
-        return false;
-      }
-    }
-
-    // Função para preencher a taxa de inflação com o IPCA dos últimos 12 meses
-    async function preencherIPCAUltimos12Meses() {
-      try {
-        // Busca o IPCA dos últimos 12 meses
-        const taxaIPCA = await buscarIPCAUltimos12Meses();
-        
-        // Verifica se a taxa foi encontrada
-        if (taxaIPCA === null) {
-          throw new Error('Não foi possível obter o IPCA dos últimos 12 meses');
-        }
-        
-        // Formata a taxa para exibição
-        const taxaIPCAFormatada = taxaIPCA.toFixed(2).replace('.', ',') + ' %';
-        
-        // Atualiza o campo de inflação
-        document.getElementById('inflation').value = taxaIPCAFormatada;
-        
-        // Atualiza a mensagem de status
-        showStatusMessage(`IPCA dos últimos 12 meses: ${taxaIPCAFormatada}`, 'success');
-        
-        return true;
-      } catch (erro) {
-        console.error('Erro ao preencher IPCA dos últimos 12 meses:', erro);
-        
-        // Exibe mensagem de erro
-        showStatusMessage(`Erro: ${erro.message}. Por favor, informe a taxa manualmente.`, 'error');
-        
-        return false;
-      }
-    }
-
-    // Inicialização quando o documento estiver carregado
-    document.addEventListener('DOMContentLoaded', function() {
-      // Inicializa os estados dos inputs
-      toggleRateInput();
+    window.onload = () => {
       toggleTaxInput('tax', '15,00 %');
-      toggleInflationInput();
-      
-      // Preenche automaticamente as taxas se os seletores estiverem como "Não"
-      const knowsRateSelect = document.getElementById('knowsRate');
-      const knowsInflationSelect = document.getElementById('knowsInflation');
-      
-      if (knowsRateSelect && knowsRateSelect.value === 'no') {
-        preencherCDIAtual();
-      }
-      
-      if (knowsInflationSelect && knowsInflationSelect.value === 'no') {
-        preencherIPCAUltimos12Meses();
-      }
-    });
+      toggleTaxInput('inflation', '5,00 %');
+    };
   </script>
 </body>
 </html>
