@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Novos Objetivos</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --verde-esmeralda: #046c4e;
@@ -66,13 +67,14 @@
       color: white;
       text-align: center;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 20.8px; /* 30% maior que 16px */
       border: none;
       border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       transition: background-color 0.3s ease;
+      text-transform: uppercase;
     }
     .whatsapp-button:hover {
       background-color: #128C7E; /* Darker WhatsApp green */
@@ -93,6 +95,7 @@
       text-decoration: none;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       transition: background-color 0.3s ease;
+      text-transform: uppercase;
     }
     .save-scenario-button:hover {
       background-color: var(--dourado-escuro);
@@ -485,7 +488,7 @@
   
   <!-- Botão WhatsApp fora da caixa de análise automatizada -->
   <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
-    Avançar para análise personalizada
+    AVANÇAR PARA ANÁLISE PERSONALIZADA
   </a>
   
   <div id="chartUnicoContainer" class="chart-container" style="display: none;">
@@ -677,18 +680,61 @@
       }
     }
 
+    // Função para capturar a página como imagem e enviar pelo WhatsApp
+    async function capturePageAndSend() {
+      try {
+        // Esconder o botão do WhatsApp durante a captura
+        const whatsappButton = document.getElementById('whatsappButton');
+        whatsappButton.style.display = 'none';
+        
+        // Capturar a página
+        const canvas = await html2canvas(document.body, {
+          scale: 1,
+          useCORS: true,
+          logging: false,
+          allowTaint: true
+        });
+        
+        // Mostrar o botão novamente
+        whatsappButton.style.display = 'block';
+        
+        // Converter para imagem
+        const imageData = canvas.toDataURL('image/jpeg', 0.7);
+        
+        // Criar um link temporário para download
+        const link = document.createElement('a');
+        link.href = imageData;
+        link.download = 'analise_financeira.jpg';
+        
+        // Simular clique para download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        return imageData;
+      } catch (error) {
+        console.error('Erro ao capturar a página:', error);
+        return null;
+      }
+    }
+
     // Função para abrir o WhatsApp com a mensagem personalizada
-    function openWhatsAppChat() {
+    async function openWhatsAppChat() {
       // Obter o texto do objetivo e da caixa de resposta
       const goalText = goalDescriptionText;
       const resultBoxText = resultText;
       
-     // Criar a mensagem para o WhatsApp
-const message = `Oi Hugo, queria tua ajuda com o meu objetivo:
+      // Capturar a página como imagem
+      await capturePageAndSend();
+      
+      // Criar a mensagem para o WhatsApp
+      const message = `Oi Hugo, queria tua ajuda com o meu objetivo:
 ${goalText}
 
 Segue o resumo:
-${resultBoxText}`;
+${resultBoxText}
+
+Estou enviando também uma imagem com todos os detalhes.`;
       
       // Codificar a mensagem para URL
       const encodedMessage = encodeURIComponent(message);
@@ -829,6 +875,7 @@ ${resultBoxText}`;
       let totalInvested = initialValue;
       let totalJuros = 0;
       let valoresMensais = [];
+      let objetivoCorrigido = goal;
       
       // Registrar valores iniciais (mês 0)
       valoresMensais.push({
@@ -839,7 +886,7 @@ ${resultBoxText}`;
         imposto: 0,
         valorLiquido: totalValue,
         totalAcumulado: totalValue,
-        objetivoCorrigido: goal
+        objetivoCorrigido: objetivoCorrigido
       });
       
       for (let i = 1; i <= months; i++) {
@@ -855,8 +902,10 @@ ${resultBoxText}`;
         const impostoTotal = totalJuros * tax;
         const valorLiquido = totalValue - impostoTotal;
         
-        // Calcular objetivo corrigido pela inflação
-        const objetivoCorrigido = goal * Math.pow(1 + inflation, i / 12);
+        // Calcular objetivo corrigido pela inflação (a cada 12 meses)
+        if (i % 12 === 0) {
+          objetivoCorrigido = objetivoCorrigido * (1 + inflation);
+        }
         
         // Registrar valores mensais para gráfico e análise
         valoresMensais.push({
@@ -882,8 +931,15 @@ ${resultBoxText}`;
 
     // Função para calcular a taxa anual necessária para atingir o objetivo no prazo desejado
     function calculateRequiredRate(goal, currentSavings, monthlyContribution, period, tax, inflation) {
-      // Ajustar o objetivo pela inflação
-      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
+      // Ajustar o objetivo pela inflação (anualmente)
+      let inflatedGoal = goal;
+      const yearsCount = Math.floor(period / 12);
+      const remainingMonths = period % 12;
+      
+      // Aplicar inflação para anos completos
+      for (let i = 0; i < yearsCount; i++) {
+        inflatedGoal *= (1 + inflation);
+      }
       
       // Busca binária para encontrar a taxa mensal necessária
       let lowRate = 0;
@@ -1216,8 +1272,8 @@ ${resultBoxText}`;
       // Atualizar a comparação se houver mais de um cenário
       if (scenarios.length > 1) {
         updateComparisonUI();
-        document.getElementById('comparisonContainer').style.display = 'block';
         generateGeneralAnalysis();
+        document.getElementById('comparisonContainer').style.display = 'block';
         document.getElementById('generalAnalysis').style.display = 'block';
       }
     }
@@ -1617,53 +1673,6 @@ ${resultBoxText}`;
         }
       }
       
-      // Conclusão e recomendação
-      analysis += `<p><strong>Conclusão:</strong> `;
-      
-      // Identificar o cenário mais equilibrado (combinação de atingimento do objetivo e prazo)
-      let recommendedScenario;
-      
-      // Priorizar cenários que atingem o objetivo
-      const scenariosReachingGoal = scenariosWithDifference.filter(s => s.difference >= 0);
-      
-      if (scenariosReachingGoal.length > 0) {
-        // Entre os que atingem o objetivo, escolher o que tem o melhor equilíbrio entre prazo e aporte
-        recommendedScenario = scenariosReachingGoal.sort((a, b) => {
-          // Normalizar prazo e aporte para valores entre 0 e 1
-          const maxPeriod = Math.max(...scenarios.map(s => s.period));
-          const minPeriod = Math.min(...scenarios.map(s => s.period));
-          const periodRange = maxPeriod - minPeriod;
-          
-          const maxContribution = Math.max(...scenarios.map(s => s.currentContribution));
-          const minContribution = Math.min(...scenarios.map(s => s.currentContribution));
-          const contributionRange = maxContribution - minContribution;
-          
-          // Calcular scores normalizados (menor é melhor)
-          const aPeriodScore = periodRange > 0 ? (a.period - minPeriod) / periodRange : 0;
-          const aContributionScore = contributionRange > 0 ? (a.currentContribution - minContribution) / contributionRange : 0;
-          const aScore = aPeriodScore + aContributionScore;
-          
-          const bPeriodScore = periodRange > 0 ? (b.period - minPeriod) / periodRange : 0;
-          const bContributionScore = contributionRange > 0 ? (b.currentContribution - minContribution) / contributionRange : 0;
-          const bScore = bPeriodScore + bContributionScore;
-          
-          return aScore - bScore; // Menor score é melhor
-        })[0];
-        
-        analysis += `Considerando as diferentes perspectivas, o "${recommendedScenario.name}" apresenta um bom equilíbrio entre prazo, esforço financeiro e realização do objetivo. `;
-      } else {
-        // Se nenhum atinge o objetivo, recomendar o que chega mais perto
-        recommendedScenario = scenariosWithDifference.sort((a, b) => Math.abs(a.difference) - Math.abs(b.difference))[0];
-        
-        analysis += `Como nenhum cenário atinge completamente o objetivo, o "${recommendedScenario.name}" é o que mais se aproxima. `;
-      }
-      
-      // Adicionar detalhes sobre o cenário recomendado
-      analysis += `Este cenário tem um aporte mensal de R$ ${formatMoney(recommendedScenario.currentContribution)}, prazo de ${recommendedScenario.period} meses e valor inicial de R$ ${formatMoney(recommendedScenario.currentSavings)}.</p>`;
-      
-      // Dica final
-      analysis += `<p><strong>Dica:</strong> Avalie qual perspectiva é mais importante para você neste momento: menor prazo, menor esforço financeiro mensal, ou maior valor final. Isso ajudará a escolher o cenário mais adequado às suas necessidades e possibilidades atuais.</p>`;
-      
       generalAnalysisText.innerHTML = analysis;
     }
 
@@ -1694,7 +1703,15 @@ ${resultBoxText}`;
       const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
 
       const monthlyRate = rateType === 'annual' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
-      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
+      
+      // Calcular o objetivo corrigido pela inflação (anualmente)
+      let inflatedGoal = goal;
+      const yearsCount = Math.floor(period / 12);
+      
+      // Aplicar inflação para anos completos
+      for (let i = 0; i < yearsCount; i++) {
+        inflatedGoal *= (1 + inflation);
+      }
 
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace('.', ',')}%) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
