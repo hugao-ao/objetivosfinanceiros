@@ -2,14 +2,15 @@
  * Implementação da busca automática de taxas de juros e inflação
  * 
  * Este código implementa a funcionalidade de busca automática das taxas de juros (SELIC)
- * e inflação (IPCA) com base no prazo informado pelo usuário.
+ * e inflação (IPCA) com base no prazo informado pelo usuário, calculando o rendimento
+ * acumulado no período e convertendo para taxas anuais equivalentes.
  * 
  * Autor: Manus
  * Data: 20/05/2025
  */
 
-// Função para buscar a taxa SELIC média para um período específico
-async function buscarTaxaSelicMedia(mesesRetroativos) {
+// Função para buscar a taxa SELIC acumulada para um período específico e converter para taxa anual
+async function buscarTaxaSelicAnual(mesesRetroativos) {
   try {
     // Calcula as datas inicial e final com base no número de meses retroativos
     const dataFinal = new Date();
@@ -34,25 +35,33 @@ async function buscarTaxaSelicMedia(mesesRetroativos) {
     // Converte a resposta para JSON
     const dados = await response.json();
     
-    // Calcula a média das taxas no período
+    // Verifica se há dados no período
     if (dados.length === 0) {
       throw new Error('Nenhum dado encontrado para o período especificado');
     }
     
-    // Soma todas as taxas e divide pelo número de registros para obter a média
-    const somaValores = dados.reduce((soma, item) => soma + parseFloat(item.valor), 0);
-    const mediaAnual = somaValores / dados.length;
+    // Calcula o rendimento acumulado no período (produto dos fatores mensais)
+    let rendimentoAcumulado = 1;
+    for (const item of dados) {
+      // A taxa SELIC é fornecida em percentual ao mês, precisamos converter para fator
+      const taxaMensal = parseFloat(item.valor) / 100;
+      rendimentoAcumulado *= (1 + taxaMensal);
+    }
     
-    // Retorna a média anualizada (considerando que os dados da SELIC são mensais)
-    return mediaAnual;
+    // Calcula a taxa anual equivalente
+    // Fórmula: ((1 + rendimento acumulado)^(12/número de meses)) - 1
+    const taxaAnual = Math.pow(rendimentoAcumulado, 12 / dados.length) - 1;
+    
+    // Retorna a taxa anual em percentual
+    return taxaAnual * 100;
   } catch (erro) {
     console.error('Erro ao buscar taxa SELIC:', erro);
     return null;
   }
 }
 
-// Função para buscar a taxa IPCA média para um período específico
-async function buscarTaxaIPCAMedia(mesesRetroativos) {
+// Função para buscar a taxa IPCA acumulada para um período específico e converter para taxa anual
+async function buscarTaxaIPCAAnual(mesesRetroativos) {
   try {
     // Calcula as datas inicial e final com base no número de meses retroativos
     const dataFinal = new Date();
@@ -64,7 +73,7 @@ async function buscarTaxaIPCAMedia(mesesRetroativos) {
     const dataFinalFormatada = `${String(dataFinal.getDate()).padStart(2, '0')}/${String(dataFinal.getMonth() + 1).padStart(2, '0')}/${dataFinal.getFullYear()}`;
     
     // Monta a URL da API do Banco Central para o IPCA (código 433)
-    // Nota: O código 433 é para o IPCA mensal, enquanto o 10844 é para IPCA de serviços
+    // Nota: O código 433 é para o IPCA mensal
     const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json&dataInicial=${dataInicialFormatada}&dataFinal=${dataFinalFormatada}`;
     
     // Faz a requisição à API
@@ -78,17 +87,25 @@ async function buscarTaxaIPCAMedia(mesesRetroativos) {
     // Converte a resposta para JSON
     const dados = await response.json();
     
-    // Calcula a média das taxas no período
+    // Verifica se há dados no período
     if (dados.length === 0) {
       throw new Error('Nenhum dado encontrado para o período especificado');
     }
     
-    // Soma todas as taxas e divide pelo número de registros para obter a média
-    const somaValores = dados.reduce((soma, item) => soma + parseFloat(item.valor), 0);
-    const mediaAnual = somaValores / dados.length;
+    // Calcula a inflação acumulada no período (produto dos fatores mensais)
+    let inflacaoAcumulada = 1;
+    for (const item of dados) {
+      // O IPCA é fornecido em percentual ao mês, precisamos converter para fator
+      const taxaMensal = parseFloat(item.valor) / 100;
+      inflacaoAcumulada *= (1 + taxaMensal);
+    }
     
-    // Retorna a média anualizada (considerando que os dados do IPCA são mensais)
-    return mediaAnual;
+    // Calcula a taxa anual equivalente
+    // Fórmula: ((1 + inflação acumulada)^(12/número de meses)) - 1
+    const taxaAnual = Math.pow(inflacaoAcumulada, 12 / dados.length) - 1;
+    
+    // Retorna a taxa anual em percentual
+    return taxaAnual * 100;
   } catch (erro) {
     console.error('Erro ao buscar taxa IPCA:', erro);
     return null;
@@ -107,22 +124,22 @@ async function atualizarTaxasComBasePrazo() {
   }
   
   // Exibe mensagem de carregamento
-  document.getElementById('taxasStatus').textContent = 'Buscando taxas médias históricas...';
+  document.getElementById('taxasStatus').textContent = 'Buscando taxas históricas acumuladas...';
   document.getElementById('taxasStatus').style.display = 'block';
   
   try {
-    // Busca as taxas médias para o período informado
-    const taxaSelicMedia = await buscarTaxaSelicMedia(prazoMeses);
-    const taxaIPCAMedia = await buscarTaxaIPCAMedia(prazoMeses);
+    // Busca as taxas anualizadas para o período informado
+    const taxaSelicAnual = await buscarTaxaSelicAnual(prazoMeses);
+    const taxaIPCAAnual = await buscarTaxaIPCAAnual(prazoMeses);
     
     // Verifica se as taxas foram encontradas
-    if (taxaSelicMedia === null || taxaIPCAMedia === null) {
+    if (taxaSelicAnual === null || taxaIPCAAnual === null) {
       throw new Error('Não foi possível obter as taxas para o período informado.');
     }
     
     // Formata as taxas para exibição
-    const taxaSelicFormatada = taxaSelicMedia.toFixed(2).replace('.', ',') + ' %';
-    const taxaIPCAFormatada = taxaIPCAMedia.toFixed(2).replace('.', ',') + ' %';
+    const taxaSelicFormatada = taxaSelicAnual.toFixed(2).replace('.', ',') + ' %';
+    const taxaIPCAFormatada = taxaIPCAAnual.toFixed(2).replace('.', ',') + ' %';
     
     // Atualiza os campos do formulário
     document.getElementById('rate').value = taxaSelicFormatada;
@@ -138,7 +155,7 @@ async function atualizarTaxasComBasePrazo() {
     
     // Exibe mensagem de sucesso
     document.getElementById('taxasStatus').textContent = 
-      `Taxas médias dos últimos ${prazoMeses} meses: SELIC ${taxaSelicFormatada} e IPCA ${taxaIPCAFormatada}`;
+      `Taxas anualizadas com base nos últimos ${prazoMeses} meses: SELIC ${taxaSelicFormatada} e IPCA ${taxaIPCAFormatada}`;
     document.getElementById('taxasStatus').style.color = 'green';
   } catch (erro) {
     console.error('Erro ao atualizar taxas:', erro);
@@ -169,7 +186,7 @@ function configurarBuscaAutomaticaTaxas() {
   // Adiciona um botão para buscar as taxas manualmente
   const buscarTaxasBtn = document.createElement('button');
   buscarTaxasBtn.type = 'button';
-  buscarTaxasBtn.textContent = 'Buscar taxas médias históricas';
+  buscarTaxasBtn.textContent = 'Buscar taxas históricas';
   buscarTaxasBtn.style.marginTop = '10px';
   buscarTaxasBtn.style.padding = '8px';
   buscarTaxasBtn.style.backgroundColor = 'var(--verde-esmeralda)';
