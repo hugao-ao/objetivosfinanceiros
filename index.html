@@ -708,23 +708,29 @@ ${resultBoxText}`;
     }
 
     function aplicarImposto(dados, taxaImposto) {
-      for (let i = 0; i < dados.length; i++) {
-        const imposto = dados[i].totalJuros * taxaImposto;
-        dados[i].imposto = imposto;
-        dados[i].valorLiquido = dados[i].totalAcumulado - imposto;
+      // Criar uma cópia dos dados para evitar modificar o original
+      let dadosComImposto = JSON.parse(JSON.stringify(dados));
+      
+      for (let i = 0; i < dadosComImposto.length; i++) {
+        const imposto = dadosComImposto[i].totalJuros * taxaImposto;
+        dadosComImposto[i].imposto = imposto;
+        dadosComImposto[i].valorLiquido = dadosComImposto[i].totalAcumulado - imposto;
       }
-      return dados;
+      
+      return dadosComImposto;
     }
 
     function aplicarInflacao(dados, objetivo, taxaInflacao) {
+      // Criar uma cópia dos dados para evitar modificar o original
+      let dadosComInflacao = JSON.parse(JSON.stringify(dados));
       let objetivoCorrigido = objetivo;
       
-      for (let i = 0; i < dados.length; i++) {
-        dados[i].objetivoCorrigido = objetivoCorrigido;
+      for (let i = 0; i < dadosComInflacao.length; i++) {
+        dadosComInflacao[i].objetivoCorrigido = objetivoCorrigido;
         objetivoCorrigido *= (1 + taxaInflacao);
       }
       
-      return dados;
+      return dadosComInflacao;
     }
 
     function calcularTaxaNecessaria(objetivo, periodo, valorInicial, aporteMensal) {
@@ -770,8 +776,8 @@ ${resultBoxText}`;
       const currentContribution = parseCurrency(document.getElementById('currentContribution').value);
       
       // Converter taxa anual para mensal se necessário
-      const monthlyRate = rateType === 'annual' ? Math.pow(1 + rateValue, 1/12) - 1 : rateValue;
-      const monthlyInflation = Math.pow(1 + inflationValue, 1/12) - 1;
+      let monthlyRate = rateType === 'annual' ? Math.pow(1 + rateValue, 1/12) - 1 : rateValue;
+      let monthlyInflation = Math.pow(1 + inflationValue, 1/12) - 1;
       
       // Calcular valor único necessário
       const valorUnico = goalValue / Math.pow(1 + monthlyRate, period);
@@ -780,7 +786,7 @@ ${resultBoxText}`;
       const aporteIdeal = calcularPoupancaNecessaria(goalValue, monthlyRate, period, currentSavings);
       
       // Calcular com aporte atual
-      const dadosAtual = calcularValorFuturo(currentSavings, monthlyRate, period, currentContribution);
+      let dadosAtual = calcularValorFuturo(currentSavings, monthlyRate, period, currentContribution);
       const valorFinalAtual = dadosAtual[period].totalAcumulado;
       
       // Calcular taxa necessária para atingir o objetivo com o aporte atual
@@ -792,16 +798,16 @@ ${resultBoxText}`;
       let dadosRentabilidade = calcularValorFuturo(currentSavings, taxaNecessaria, period, currentContribution);
       
       // Aplicar imposto sobre o rendimento
-      dadosUnico = aplicarImposto(dadosUnico, taxValue);
-      dadosIdeal = aplicarImposto(dadosIdeal, taxValue);
-      dadosAtual = aplicarImposto(dadosAtual, taxValue);
-      dadosRentabilidade = aplicarImposto(dadosRentabilidade, taxValue);
+      let dadosUnicoComImposto = aplicarImposto(dadosUnico, taxValue);
+      let dadosIdealComImposto = aplicarImposto(dadosIdeal, taxValue);
+      let dadosAtualComImposto = aplicarImposto(dadosAtual, taxValue);
+      let dadosRentabilidadeComImposto = aplicarImposto(dadosRentabilidade, taxValue);
       
       // Aplicar correção pela inflação
-      dadosUnico = aplicarInflacao(dadosUnico, goalValue, monthlyInflation);
-      dadosIdeal = aplicarInflacao(dadosIdeal, goalValue, monthlyInflation);
-      dadosAtual = aplicarInflacao(dadosAtual, goalValue, monthlyInflation);
-      dadosRentabilidade = aplicarInflacao(dadosRentabilidade, goalValue, monthlyInflation);
+      let dadosUnicoFinal = aplicarInflacao(dadosUnicoComImposto, goalValue, monthlyInflation);
+      let dadosIdealFinal = aplicarInflacao(dadosIdealComImposto, goalValue, monthlyInflation);
+      let dadosAtualFinal = aplicarInflacao(dadosAtualComImposto, goalValue, monthlyInflation);
+      let dadosRentabilidadeFinal = aplicarInflacao(dadosRentabilidadeComImposto, goalValue, monthlyInflation);
       
       // Calcular diferença entre valor final e objetivo
       const diferencaAtual = valorFinalAtual - goalValue;
@@ -883,17 +889,17 @@ Rentabilidade necessária: ${taxaNecessariaAnual.toFixed(2)}% ao ano`;
       document.getElementById('chartRentabilidadeContainer').style.display = 'block';
       
       // Preencher tabelas
-      fillDataTable('tableUnico', dadosUnico, goalValue, inflationValue);
-      fillDataTable('tableIdeal', dadosIdeal, goalValue, inflationValue);
-      fillDataTable('tableAtual', dadosAtual, goalValue, inflationValue);
-      fillDataTable('tableRentabilidade', dadosRentabilidade, goalValue, inflationValue);
+      fillDataTable('tableUnico', dadosUnicoFinal, goalValue, inflationValue);
+      fillDataTable('tableIdeal', dadosIdealFinal, goalValue, inflationValue);
+      fillDataTable('tableAtual', dadosAtualFinal, goalValue, inflationValue);
+      fillDataTable('tableRentabilidade', dadosRentabilidadeFinal, goalValue, inflationValue);
       
       // Desenhar gráficos
       drawChart(
         document.getElementById('chartUnico').getContext('2d'),
-        dadosUnico,
-        dadosUnico,
-        dadosUnico,
+        dadosUnicoFinal,
+        dadosUnicoFinal,
+        dadosUnicoFinal,
         '#046c4e',
         '#28a745',
         '#d4af37'
@@ -901,9 +907,9 @@ Rentabilidade necessária: ${taxaNecessariaAnual.toFixed(2)}% ao ano`;
       
       drawChart(
         document.getElementById('chartIdeal').getContext('2d'),
-        dadosIdeal,
-        dadosIdeal,
-        dadosIdeal,
+        dadosIdealFinal,
+        dadosIdealFinal,
+        dadosIdealFinal,
         '#046c4e',
         '#28a745',
         '#d4af37'
@@ -911,9 +917,9 @@ Rentabilidade necessária: ${taxaNecessariaAnual.toFixed(2)}% ao ano`;
       
       drawChart(
         document.getElementById('chartAtual').getContext('2d'),
-        dadosAtual,
-        dadosAtual,
-        dadosAtual,
+        dadosAtualFinal,
+        dadosAtualFinal,
+        dadosAtualFinal,
         '#046c4e',
         '#28a745',
         '#d4af37'
@@ -921,9 +927,9 @@ Rentabilidade necessária: ${taxaNecessariaAnual.toFixed(2)}% ao ano`;
       
       drawChart(
         document.getElementById('chartRentabilidade').getContext('2d'),
-        dadosRentabilidade,
-        dadosRentabilidade,
-        dadosRentabilidade,
+        dadosRentabilidadeFinal,
+        dadosRentabilidadeFinal,
+        dadosRentabilidadeFinal,
         '#046c4e',
         '#28a745',
         '#d4af37'
