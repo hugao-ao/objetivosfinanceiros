@@ -434,7 +434,7 @@
     <button type="button" onclick="calculateSavings()">Calcular</button>
   </form>
 
-  <div id="result" class="result"></div>
+  <div id="result" class="result" style="display: none;"></div>
   
   <!-- Container para cenários -->
   <div id="scenariosContainer" class="scenarios-container" style="display: none;">
@@ -1220,7 +1220,7 @@ Estou enviando também uma imagem com todos os detalhes.`;
     // Função para salvar o cenário atual e preparar para um novo
     function saveAndSimulateAnother() {
       // Verificar se há dados para adicionar
-      if (!document.getElementById('result').innerHTML) {
+      if (!document.getElementById('result').innerHTML || document.getElementById('result').style.display === 'none') {
         alert('Por favor, calcule um cenário antes de salvá-lo.');
         return;
       }
@@ -1248,6 +1248,7 @@ Estou enviando também uma imagem com todos os detalhes.`;
       
       // Limpar os resultados
       document.getElementById('result').innerHTML = '';
+      document.getElementById('result').style.display = 'none';
       
       // Esconder os gráficos e tabelas
       document.getElementById('chartUnicoContainer').style.display = 'none';
@@ -1277,7 +1278,7 @@ Estou enviando também uma imagem com todos os detalhes.`;
     // Função para adicionar o cenário atual à lista de cenários
     function addCurrentScenario() {
       // Verificar se há dados para adicionar
-      if (!document.getElementById('result').innerHTML) {
+      if (!document.getElementById('result').innerHTML || document.getElementById('result').style.display === 'none') {
         alert('Por favor, calcule um cenário antes de adicioná-lo.');
         return;
       }
@@ -1830,6 +1831,7 @@ Estou enviando também uma imagem com todos os detalhes.`;
 
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace('.', ',')}%) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
+      resultDiv.style.display = 'block';
 
       // Cálculo do investimento único necessário
       // Fórmula: PV = VF / (1 + i)^n
