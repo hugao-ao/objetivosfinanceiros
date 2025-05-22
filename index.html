@@ -1082,45 +1082,99 @@
       calculationComplete = true;
     }
 
-    // Função placeholder para addCurrentScenario (precisa ser implementada com a lógica desejada)
+    // Função para adicionar o cenário atual
     function addCurrentScenario() {
-      if (!currentCalculationData) return;
+      if (!currentCalculationData) {
+        console.log("Nenhum dado de cálculo disponível para salvar");
+        return;
+      }
 
       const scenarioData = {
         name: `Cenário ${scenarioCounter++}`,
         ...currentCalculationData // Inclui goal, period, currentSavings, etc.
-        // Adicionar aqui os resultados calculados que deseja salvar
-        // Ex: idealContribution: currentCalculationData.idealContribution,
-        //     requiredRate: currentCalculationData.requiredRate,
-        //     monthsToGoalAtual: currentCalculationData.monthsToGoalAtual
       };
 
       scenarios.push(scenarioData);
       console.log("Cenário salvo:", scenarioData);
-      // Atualizar a interface de cenários salvos (implementar displayScenarios)
+      
+      // Criar container de cenários se não existir
+      let scenariosContainer = document.getElementById("scenariosContainer");
+      if (!scenariosContainer) {
+        scenariosContainer = document.createElement("div");
+        scenariosContainer.id = "scenariosContainer";
+        scenariosContainer.className = "scenarios-container";
+        
+        // Inserir após o botão de análise personalizada
+        const whatsappButton = document.getElementById("whatsappButton");
+        if (whatsappButton && whatsappButton.parentNode) {
+          whatsappButton.parentNode.insertBefore(scenariosContainer, whatsappButton.nextSibling);
+        } else {
+          // Fallback: inserir antes dos containers de gráficos
+          const chartContainer = document.getElementById("chartUnicoContainer");
+          if (chartContainer && chartContainer.parentNode) {
+            chartContainer.parentNode.insertBefore(scenariosContainer, chartContainer);
+          } else {
+            // Último recurso: adicionar ao final do body
+            document.body.appendChild(scenariosContainer);
+          }
+        }
+      }
+      
+      // Atualizar a interface de cenários salvos
       displayScenarios();
-      // Atualizar comparação se houver mais de um cenário (implementar updateComparison)
+      
+      // Atualizar comparação se houver mais de um cenário
       if (scenarios.length > 1) {
         updateComparison();
       }
+      
+      // Exibir mensagem de sucesso
+      alert("Cenário salvo com sucesso!");
     }
 
-    // Função placeholder para displayScenarios (precisa ser implementada)
+    // Função para exibir os cenários salvos
     function displayScenarios() {
-      const scenariosList = document.getElementById("scenariosList");
-      scenariosList.innerHTML = ""; // Limpa a lista
-
-      if (scenarios.length === 0) {
-        document.getElementById("scenariosContainer").style.display = "none";
+      // Verificar se o container de cenários existe
+      const scenariosContainer = document.getElementById("scenariosContainer");
+      if (!scenariosContainer) {
+        console.log("Container de cenários não encontrado");
         return;
       }
-
-      document.getElementById("scenariosContainer").style.display = "block";
-
+      
+      // Verificar se há cenários para exibir
+      if (scenarios.length === 0) {
+        scenariosContainer.style.display = "none";
+        return;
+      }
+      
+      // Criar cabeçalho e lista se não existirem
+      let scenariosHeader = scenariosContainer.querySelector(".scenarios-header");
+      let scenariosList = document.getElementById("scenariosList");
+      
+      if (!scenariosHeader) {
+        scenariosHeader = document.createElement("div");
+        scenariosHeader.className = "scenarios-header";
+        scenariosHeader.innerHTML = "<h3>Cenários Salvos</h3>";
+        scenariosContainer.appendChild(scenariosHeader);
+      }
+      
+      if (!scenariosList) {
+        scenariosList = document.createElement("div");
+        scenariosList.id = "scenariosList";
+        scenariosContainer.appendChild(scenariosList);
+      }
+      
+      // Limpar a lista existente
+      scenariosList.innerHTML = "";
+      
+      // Exibir o container
+      scenariosContainer.style.display = "block";
+      
+      // Adicionar cada cenário à lista
       scenarios.forEach((scenario, index) => {
         const card = document.createElement("div");
         card.className = "scenario-card";
-        // Adicionar conteúdo do card aqui (nome, detalhes, botões)
+        
         card.innerHTML = `
           <div class="scenario-header">
             <h4 class="scenario-title">${scenario.name}</h4>
@@ -1137,9 +1191,9 @@
               <p><strong>Aporte:</strong> R$ ${formatMoney(scenario.currentContribution)}</p>
               <p><strong>Taxa:</strong> ${(scenario.rate * 100).toFixed(2).replace(".", ",")}% ${scenario.rateType === 'annual' ? 'a.a.' : 'a.m.'}</p>
             </div>
-            <!-- Adicionar mais detalhes se necessário -->
           </div>
         `;
+        
         scenariosList.appendChild(card);
       });
     }
@@ -1566,6 +1620,19 @@
       analysisText.innerHTML = analysis;
     }
 
+    // Função para mostrar elementos após o cálculo
+    function showResultElements() {
+      document.getElementById("result").style.display = "block";
+      document.getElementById("recommendation").style.display = "block";
+      document.getElementById("whatsappButton").style.display = "block";
+      document.getElementById("saveScenarioButton").style.display = "block";
+      document.getElementById("newScenarioButton").style.display = "block";
+      document.getElementById("chartUnicoContainer").style.display = "block";
+      document.getElementById("chartIdealContainer").style.display = "block";
+      document.getElementById("chartAtualContainer").style.display = "block";
+      document.getElementById("chartRentabilidadeContainer").style.display = "block";
+    }
+
     // Função para limpar resultados e gráficos
     function clearResults() {
       document.getElementById("result").innerHTML = "";
@@ -1576,12 +1643,12 @@
       document.getElementById("chartAtualContainer").style.display = "none";
       document.getElementById("chartRentabilidadeContainer").style.display = "none";
       document.getElementById("saveScenarioButton").style.display = "none";
+      document.getElementById("newScenarioButton").style.display = "none";
       document.getElementById("whatsappButton").style.display = "none";
 
       // Limpar canvases dos gráficos
       const chartIds = ["chartUnico", "chartIdeal", "chartAtual", "chartRentabilidade"];
-      chartIds.forEach(id => {
-        const ctx = document.getElementById(id)?.getContext('2d');
+      chartIds.forEach(id => {       const ctx = document.getElementById(id)?.getContext('2d');
         if (ctx) {
           const chart = Chart.getChart(ctx);
           if (chart) {
@@ -1594,31 +1661,14 @@
       currentCalculationData = null;
     }
 
-    // Função para salvar o cenário atual e preparar para um novo
-    function saveAndSimulateAnother() {
-      // Verificar se há dados do cálculo atual para salvar
-      if (!currentCalculationData) {
-        alert("Por favor, calcule um cenário antes de salvá-lo.");
-        return;
-      }
-
-      // Evitar duplicidade ao salvar cenários
-      if (isSavingScenario) {
-        return;
-      }
-
-      isSavingScenario = true;
-
-      // Adicionar o cenário atual (com dados simplificados)
-      addCurrentScenario();
-
+    // Função para preparar um novo cenário
+    function prepareNewScenario() {
       // Limpar os campos do formulário, exceto a descrição do objetivo
-      // document.getElementById("goalDescription").value = ""; // Manter descrição?
-      document.getElementById("goal").value = ""; // Corrigido: String vazia
-      document.getElementById("period").value = ""; // Corrigido: String vazia
-      document.getElementById("currentSavings").value = ""; // Corrigido: String vazia
-      document.getElementById("currentContribution").value = ""; // Corrigido: String vazia
-      document.getElementById("rate").value = ""; // Corrigido: String vazia
+      document.getElementById("goal").value = "";
+      document.getElementById("period").value = "";
+      document.getElementById("currentSavings").value = "";
+      document.getElementById("currentContribution").value = "";
+      document.getElementById("rate").value = "";
       document.getElementById("rateType").value = "annual";
       document.getElementById("knowsTax").value = "no";
       document.getElementById("knowsInflation").value = "no";
@@ -1630,11 +1680,6 @@
 
       // Rolar para o topo do formulário
       window.scrollTo(0, 0);
-
-      // Resetar a flag após um breve intervalo
-      setTimeout(() => {
-        isSavingScenario = false;
-      }, 500);
     }
 
     // Função principal de cálculo
