@@ -597,8 +597,7 @@
         <span id="toggleChartsIcon">▲</span>
       </button>
     </div>
-    
-    <div id="chartsContent">
+    <div id="chartsContent" style="display: block;">
       <div id="chartUnicoContainer" class="chart-container">
         <div class="chart-title">Evolução do Investimento Único</div>
         <div class="chart-nav">
@@ -1298,9 +1297,39 @@
       // Atualizar a interface de cenários salvos
       displayScenarios();
       
-      // Mostrar o botão de analisar cenários se houver mais de um cenário
-      if (scenarios.length >= 1) {
-        document.getElementById("analyzeScenarioButton").style.display = "block";
+      // Mostrar o botão de analisar cenários apenas se houver pelo menos dois cenários
+      if (scenarios.length >= 2) {
+        // Verificar se já existe um botão de análise abaixo dos cenários
+        let analyzeButton = document.getElementById("analyzeScenariosBelowContainer");
+        
+        if (!analyzeButton) {
+          // Criar um novo botão de análise abaixo dos cenários
+          analyzeButton = document.createElement("button");
+          analyzeButton.id = "analyzeScenariosBelowContainer";
+          analyzeButton.className = "analyze-scenario-button";
+          analyzeButton.type = "button";
+          analyzeButton.onclick = analyzeScenarios;
+          analyzeButton.textContent = "ANALISAR CENÁRIOS";
+          
+          // Inserir após o container de cenários
+          const scenariosContainer = document.getElementById("scenariosContainer");
+          if (scenariosContainer) {
+            scenariosContainer.appendChild(analyzeButton);
+          }
+        }
+        
+        // Mostrar o botão
+        analyzeButton.style.display = "block";
+        
+        // Esconder o botão original na área de botões
+        document.getElementById("analyzeScenarioButton").style.display = "none";
+      } else {
+        // Esconder ambos os botões se não houver pelo menos dois cenários
+        const analyzeButton = document.getElementById("analyzeScenariosBelowContainer");
+        if (analyzeButton) {
+          analyzeButton.style.display = "none";
+        }
+        document.getElementById("analyzeScenarioButton").style.display = "none";
       }
       
       // Exibir mensagem de sucesso
