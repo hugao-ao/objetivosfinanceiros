@@ -626,26 +626,45 @@
     <div id="recommendationText"></div>
   </div>
   
-  <!-- Container para gráficos e memórias de cálculo (retrátil) -->
-  <div id="chartsContainer" style="display: none;">
-    <div class="charts-toggle-container">
-      <button id="toggleChartsButton" class="toggle-charts-button toggle-charts-button-pulse" type="button" onclick="toggleAllCharts()">
-        <span id="toggleChartsText">EXPANDIR/RETRAIR GRÁFICOS E MEMÓRIAS DE CÁLCULO</span>
-        <span id="toggleChartsIcon">▼</span>
-      </button>
-      <div class="toggle-instruction">Clique no botão acima para mostrar ou ocultar todos os gráficos e memórias de cálculo</div>
+  <!-- Botões no final da página -->
+  <div id="buttonsContainer" class="fixed-buttons-container">
+    <!-- Botões para salvar cenário, analisar cenários e simular outro cenário -->
+    <div class="row buttons-row">
+      <div style="flex: 1; margin-right: 10px;">
+        <button id="saveScenarioButton" class="save-scenario-button" type="button" onclick="addCurrentScenario()" style="display: none;">
+          SALVAR CENÁRIO
+        </button>
+      </div>
+      <div style="flex: 1; margin-left: 10px; margin-right: 10px;">
+        <button id="analyzeScenarioButton" class="analyze-scenario-button" type="button" onclick="analyzeScenarios()" style="display: none;">
+          ANALISAR CENÁRIOS
+        </button>
+      </div>
+      <div style="flex: 1; margin-left: 10px;">
+        <button id="newScenarioButton" class="save-scenario-button" type="button" onclick="prepareNewScenario()" style="display: none;">
+          SIMULAR OUTRO CENÁRIO
+        </button>
+      </div>
     </div>
-    <div id="chartsContent" style="display: block;">
-      <div id="chartUnicoContainer" class="chart-container">
-        <div class="chart-title">Evolução do Investimento Único</div>
-        <div class="chart-nav">
-          <button type="button" onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
-          <button type="button" onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
+
+    <!-- Botão WhatsApp para análise personalizada - sempre visível após cálculo -->
+    <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
+      AVANÇAR PARA ANÁLISE PERSONALIZADA
+    </a>
+  </div>
+  
+  <!-- Container para gráficos e memórias de cálculo -->
+  <div id="chartsContainer" style="display: none;">
+    <div id="chartUnicoContainer" class="chart-container">
+      <div class="chart-title">Evolução do Investimento Único</div>
+      <div class="chart-nav">
+        <button type="button" onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
+        <button type="button" onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
+      </div>
+      <div class="chart-content">
+        <div id="chartUnicoSlide" class="chart-slide">
+          <canvas id="chartUnico"></canvas>
         </div>
-        <div class="chart-content">
-          <div id="chartUnicoSlide" class="chart-slide">
-            <canvas id="chartUnico"></canvas>
-          </div>
           <div id="tableUnicoSlide" class="table-slide" style="display: none;">
             <table id="tableUnico" class="data-table">
               <thead>
