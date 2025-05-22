@@ -434,16 +434,16 @@
     <div id="recommendationText"></div>
   </div>
 
-  <!-- Botão WhatsApp para análise personalizada - sempre visível após cálculo -->
-  <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
-    AVANÇAR PARA ANÁLISE PERSONALIZADA
-  </a>
-
-  <!-- Botões para salvar cenário e simular outro cenário -->
+  <!-- Botões para salvar cenário, analisar cenários e simular outro cenário -->
   <div class="row" style="margin-top: 20px;">
     <div style="flex: 1; margin-right: 10px;">
       <button id="saveScenarioButton" class="save-scenario-button" type="button" onclick="addCurrentScenario()" style="display: none;">
         SALVAR CENÁRIO
+      </button>
+    </div>
+    <div style="flex: 1; margin-left: 10px; margin-right: 10px;">
+      <button id="analyzeScenarioButton" class="analyze-scenario-button" type="button" onclick="analyzeScenarios()" style="display: none;">
+        ANALISAR CENÁRIOS
       </button>
     </div>
     <div style="flex: 1; margin-left: 10px;">
@@ -452,6 +452,11 @@
       </button>
     </div>
   </div>
+
+  <!-- Botão WhatsApp para análise personalizada - sempre visível após cálculo -->
+  <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
+    AVANÇAR PARA ANÁLISE PERSONALIZADA
+  </a>
 
   <div id="chartUnicoContainer" class="chart-container" style="display: none;">
     <div class="chart-title">Evolução do Investimento Único</div>
@@ -1123,13 +1128,33 @@
       // Atualizar a interface de cenários salvos
       displayScenarios();
       
-      // Atualizar comparação se houver mais de um cenário
-      if (scenarios.length > 1) {
-        updateComparison();
+      // Mostrar o botão de analisar cenários se houver mais de um cenário
+      if (scenarios.length >= 1) {
+        document.getElementById("analyzeScenarioButton").style.display = "block";
       }
       
       // Exibir mensagem de sucesso
       alert("Cenário salvo com sucesso!");
+    }
+    
+    // Função para analisar os cenários salvos
+    function analyzeScenarios() {
+      if (scenarios.length < 2) {
+        alert("É necessário salvar pelo menos 2 cenários para realizar uma análise comparativa.");
+        return;
+      }
+      
+      // Atualizar a comparação de cenários
+      updateComparison();
+      
+      // Mostrar a análise geral automatizada
+      document.getElementById("generalAnalysis").style.display = "block";
+      
+      // Gerar a análise geral
+      generateGeneralAnalysis();
+      
+      // Rolar até a análise
+      document.getElementById("comparisonContainer").scrollIntoView({ behavior: 'smooth' });
     }
 
     // Função para exibir os cenários salvos
@@ -1255,27 +1280,99 @@
       }
     }
 
-    // Função placeholder para updateComparison (precisa ser implementada)
+    // Função para atualizar a comparação de cenários
     function updateComparison() {
+      // Verificar se há elementos suficientes para comparação
       if (scenarios.length < 2) {
-        document.getElementById("comparisonContainer").style.display = "none";
-        document.getElementById("generalAnalysis").style.display = "none";
+        console.log("Não há cenários suficientes para comparação");
         return;
       }
-
-      document.getElementById("comparisonContainer").style.display = "block";
-      document.getElementById("generalAnalysis").style.display = "block";
-
+      
+      // Verificar se os elementos de comparação existem
+      let comparisonContainer = document.getElementById("comparisonContainer");
+      if (!comparisonContainer) {
+        console.log("Container de comparação não encontrado");
+        
+        // Criar o container de comparação
+        const newComparisonContainer = document.createElement("div");
+        newComparisonContainer.id = "comparisonContainer";
+        newComparisonContainer.className = "comparison-container";
+        
+        // Adicionar o cabeçalho
+        newComparisonContainer.innerHTML = `
+          <h3 class="comparison-header">Comparação de Cenários</h3>
+          <div class="comparison-chart-container">
+            <canvas id="comparisonChart"></canvas>
+          </div>
+          <div id="comparisonTableContainer">
+            <table id="comparisonTable" class="comparison-table">
+              <thead>
+                <tr>
+                  <th scope="col">Cenário</th>
+                  <th scope="col">Objetivo Corrigido</th>
+                  <th scope="col">Invest. Único Necessário</th>
+                  <th scope="col">Aporte Ideal Mensal</th>
+                  <th scope="col">Prazo Plano Atual (meses)</th>
+                  <th scope="col">Rentab. Necessária (% a.a.)</th>
+                </tr>
+              </thead>
+              <tbody id="comparisonTableBody"></tbody>
+            </table>
+          </div>
+        `;
+        
+        // Adicionar o container de análise geral
+        const generalAnalysis = document.createElement("div");
+        generalAnalysis.id = "generalAnalysis";
+        generalAnalysis.className = "general-analysis";
+        generalAnalysis.style.display = "none";
+        generalAnalysis.innerHTML = `
+          <h3>Análise Geral Automática</h3>
+          <div id="generalAnalysisText"></div>
+        `;
+        
+        // Inserir os elementos no DOM
+        const scenariosContainer = document.getElementById("scenariosContainer");
+        if (scenariosContainer && scenariosContainer.parentNode) {
+          scenariosContainer.parentNode.insertBefore(newComparisonContainer, scenariosContainer.nextSibling);
+          scenariosContainer.parentNode.insertBefore(generalAnalysis, newComparisonContainer.nextSibling);
+        } else {
+          // Fallback: inserir antes dos containers de gráficos
+          const chartContainer = document.getElementById("chartUnicoContainer");
+          if (chartContainer && chartContainer.parentNode) {
+            chartContainer.parentNode.insertBefore(newComparisonContainer, chartContainer);
+            chartContainer.parentNode.insertBefore(generalAnalysis, chartContainer);
+          } else {
+            // Último recurso: adicionar ao final do body
+            document.body.appendChild(newComparisonContainer);
+            document.body.appendChild(generalAnalysis);
+          }
+        }
+        
+        // Atualizar a referência
+        comparisonContainer = newComparisonContainer;
+      }
+      
+      // Verificar se a tabela de comparação existe
       const comparisonTableBody = document.getElementById("comparisonTableBody");
-      comparisonTableBody.innerHTML = ""; // Limpa a tabela
-
-      // Dados para o gráfico de comparação
+      if (!comparisonTableBody) {
+        console.log("Tabela de comparação não encontrada");
+        return;
+      }
+      
+      // Limpar a tabela
+      comparisonTableBody.innerHTML = "";
+      
+      // Exibir o container de comparação
+      comparisonContainer.style.display = "block";
+      
+      // Preparar dados para o gráfico e tabela
       const labels = scenarios.map(s => s.name);
-      const objectiveData = scenarios.map(s => s.finalGoal || s.goal); // Usar objetivo corrigido se disponível
-      const singleInvestmentData = scenarios.map(s => s.requiredInitialInvestment || 0); // Usar valor calculado se disponível
-      const idealContributionData = scenarios.map(s => s.idealContribution || 0); // Usar valor calculado se disponível
-      const currentPlanMonthsData = scenarios.map(s => s.monthsToGoalAtual || 0); // Usar valor calculado se disponível
-      const requiredRateData = scenarios.map(s => (s.requiredRate || 0) * 100); // Usar valor calculado se disponível
+      const objectiveData = scenarios.map(s => s.goal || 0);
+      const singleInvestmentData = scenarios.map(s => s.requiredInitialInvestment || 0);
+      const idealContributionData = scenarios.map(s => s.idealContribution || 0);
+      const currentPlanMonthsData = scenarios.map(s => s.monthsToGoalAtual || 0);
+      const requiredRateData = scenarios.map(s => (s.requiredRate || 0) * 100);
 
       // Preencher a tabela de comparação
       scenarios.forEach((scenario, index) => {
@@ -1291,17 +1388,25 @@
         comparisonTableBody.appendChild(row);
       });
 
-      // Adicionar destaque na tabela (exemplo: menor prazo, menor aporte ideal)
-      highlightComparisonTable();
+      // Adicionar destaque na tabela
+      try {
+        highlightComparisonTable();
+      } catch (error) {
+        console.log("Erro ao destacar tabela:", error);
+      }
 
       // Desenhar/Atualizar o gráfico de comparação
-      drawComparisonChart(labels, objectiveData, singleInvestmentData, idealContributionData, currentPlanMonthsData, requiredRateData);
-
-      // Gerar análise geral automática
-      generateGeneralAnalysis();
-    }
-
-    // Função placeholder para highlightComparisonTable (precisa ser implementada)
+      try {
+        const comparisonChart = document.getElementById('comparisonChart');
+        if (comparisonChart) {
+          drawComparisonChart(labels, objectiveData, singleInvestmentData, idealContributionData, currentPlanMonthsData, requiredRateData);
+        } else {
+          console.log("Canvas do gráfico de comparação não encontrado");
+        }
+      } catch (error) {
+        console.log("Erro ao desenhar gráfico:", error);
+      }
+    }// Função placeholder para highlightComparisonTable (precisa ser implementada)
     function highlightComparisonTable() {
       const tableBody = document.getElementById("comparisonTableBody");
       const rows = tableBody.getElementsByTagName("tr");
