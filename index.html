@@ -429,57 +429,29 @@
 
   <div id="result" class="result" style="display: none;"></div>
 
-  <!-- Container para cenários -->
-  <div id="scenariosContainer" class="scenarios-container" style="display: none;">
-    <div class="scenarios-header">
-      <h3>Cenários Salvos</h3>
-    </div>
-    <div id="scenariosList"></div>
-  </div>
-
-  <!-- Container para comparação de cenários -->
-  <div id="comparisonContainer" class="comparison-container" style="display: none;">
-    <h3 class="comparison-header">Comparação de Cenários</h3>
-    <div class="comparison-chart-container">
-      <canvas id="comparisonChart"></canvas>
-    </div>
-    <div id="comparisonTableContainer">
-      <table id="comparisonTable" class="comparison-table">
-        <thead>
-          <tr>
-            <th scope="col">Cenário</th>
-            <th scope="col">Objetivo Corrigido</th>
-            <th scope="col">Invest. Único Necessário</th>
-            <th scope="col">Aporte Ideal Mensal</th>
-            <th scope="col">Prazo Plano Atual (meses)</th>
-            <th scope="col">Rentab. Necessária (% a.a.)</th>
-          </tr>
-        </thead>
-        <tbody id="comparisonTableBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Análise Geral Automática -->
-  <div id="generalAnalysis" class="general-analysis" style="display: none;">
-    <h3>Análise Geral Automática</h3>
-    <div id="generalAnalysisText"></div>
-  </div>
-
   <div id="recommendation" class="recommendation" style="display: none;">
     <h3>Análise Automatizada</h3>
     <div id="recommendationText"></div>
   </div>
 
-  <!-- Botão para salvar e simular outro cenário -->
-  <button id="saveScenarioButton" class="save-scenario-button" type="button" onclick="saveAndSimulateAnother()" style="display: none;">
-    SALVAR E SIMULAR OUTRO CENÁRIO
-  </button>
-
-  <!-- Botão WhatsApp fora da caixa de análise automatizada -->
+  <!-- Botão WhatsApp para análise personalizada - sempre visível após cálculo -->
   <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
     AVANÇAR PARA ANÁLISE PERSONALIZADA
   </a>
+
+  <!-- Botões para salvar cenário e simular outro cenário -->
+  <div class="row" style="margin-top: 20px;">
+    <div style="flex: 1; margin-right: 10px;">
+      <button id="saveScenarioButton" class="save-scenario-button" type="button" onclick="addCurrentScenario()" style="display: none;">
+        SALVAR CENÁRIO
+      </button>
+    </div>
+    <div style="flex: 1; margin-left: 10px;">
+      <button id="newScenarioButton" class="save-scenario-button" type="button" onclick="prepareNewScenario()" style="display: none;">
+        SIMULAR OUTRO CENÁRIO
+      </button>
+    </div>
+  </div>
 
   <div id="chartUnicoContainer" class="chart-container" style="display: none;">
     <div class="chart-title">Evolução do Investimento Único</div>
@@ -670,62 +642,11 @@
       }
     }
 
-    // Função para capturar a página como imagem e enviar pelo WhatsApp
-    async function capturePageAndSend() {
-      try {
-        // Esconder botões durante a captura
-        const whatsappButton = document.getElementById("whatsappButton");
-        const saveButton = document.getElementById("saveScenarioButton");
-        const originalWhatsappDisplay = whatsappButton.style.display;
-        const originalSaveDisplay = saveButton.style.display;
-        whatsappButton.style.display = "none";
-        saveButton.style.display = "none";
-
-        // Capturar a página
-        const canvas = await html2canvas(document.body, {
-          scale: 1,
-          useCORS: true,
-          logging: false,
-          allowTaint: true,
-          scrollX: 0,
-          scrollY: -window.scrollY // Garante que a captura comece do topo
-        });
-
-        // Mostrar os botões novamente
-        whatsappButton.style.display = originalWhatsappDisplay;
-        saveButton.style.display = originalSaveDisplay;
-
-        // Converter para imagem
-        const imageData = canvas.toDataURL("image/jpeg", 0.7);
-
-        // Criar um link temporário para download (opcional, pode ser removido se não for necessário)
-        // const link = document.createElement("a");
-        // link.href = imageData;
-        // link.download = "analise_financeira.jpg";
-        // document.body.appendChild(link);
-        // link.click();
-        // document.body.removeChild(link);
-
-        return imageData;
-      } catch (error) {
-        console.error("Erro ao capturar a página:", error);
-        // Mostrar os botões novamente em caso de erro
-        const whatsappButton = document.getElementById("whatsappButton");
-        const saveButton = document.getElementById("saveScenarioButton");
-        whatsappButton.style.display = whatsappButton.dataset.originalDisplay || "block";
-        saveButton.style.display = saveButton.dataset.originalDisplay || "block";
-        return null;
-      }
-    }
-
     // Função para abrir o WhatsApp com a mensagem personalizada
     async function openWhatsAppChat() {
       // Obter o texto do objetivo
       goalDescriptionText = document.getElementById("goalDescription").value;
       const goalText = goalDescriptionText || "(Objetivo não descrito)";
-
-      // Capturar a página como imagem (opcional, pode ser pesado)
-      // await capturePageAndSend(); // Descomente se quiser enviar a imagem
 
       // Criar a string com os cenários simulados
       let scenariosText = "";
@@ -1511,32 +1432,136 @@
       });
     }
 
-    // Função placeholder para generateGeneralAnalysis (precisa ser implementada)
+    // Função para gerar análise geral automática detalhada
     function generateGeneralAnalysis() {
       const analysisText = document.getElementById("generalAnalysisText");
       if (scenarios.length < 2) {
-        analysisText.innerHTML = "<p>Simule pelo menos dois cenários para gerar uma análise comparativa.</p>";
+        analysisText.innerHTML = "<p>Simule pelo menos dois cenários para gerar uma análise comparativa detalhada.</p>";
         return;
       }
 
-      // Exemplo simples de análise
+      // Encontrar os melhores cenários para diferentes métricas
       let bestScenarioForContribution = scenarios.reduce((prev, curr) => (curr.idealContribution < prev.idealContribution) ? curr : prev);
       let bestScenarioForMonths = scenarios.reduce((prev, curr) => (curr.monthsToGoalAtual > 0 && curr.monthsToGoalAtual < prev.monthsToGoalAtual) ? curr : (prev.monthsToGoalAtual > 0 ? prev : curr));
       let bestScenarioForRate = scenarios.reduce((prev, curr) => (curr.requiredRate > 0 && curr.requiredRate < prev.requiredRate) ? curr : (prev.requiredRate > 0 ? prev : curr));
+      let bestScenarioForInitialInvestment = scenarios.reduce((prev, curr) => (curr.requiredInitialInvestment < prev.requiredInitialInvestment) ? curr : prev);
+      
+      // Encontrar os piores cenários para diferentes métricas
+      let worstScenarioForContribution = scenarios.reduce((prev, curr) => (curr.idealContribution > prev.idealContribution) ? curr : prev);
+      let worstScenarioForMonths = scenarios.reduce((prev, curr) => (curr.monthsToGoalAtual > 0 && curr.monthsToGoalAtual > prev.monthsToGoalAtual) ? curr : prev);
+      let worstScenarioForRate = scenarios.reduce((prev, curr) => (curr.requiredRate > 0 && curr.requiredRate > prev.requiredRate) ? curr : prev);
+      
+      // Calcular médias e diferenças percentuais
+      let avgContribution = scenarios.reduce((sum, scenario) => sum + scenario.idealContribution, 0) / scenarios.length;
+      let avgRate = scenarios.filter(s => s.requiredRate > 0).reduce((sum, scenario) => sum + scenario.requiredRate, 0) / 
+                    scenarios.filter(s => s.requiredRate > 0).length;
+      
+      let contributionDiffPercentage = ((worstScenarioForContribution.idealContribution - bestScenarioForContribution.idealContribution) / 
+                                      bestScenarioForContribution.idealContribution) * 100;
+      
+      let rateDiffPercentage = bestScenarioForRate.requiredRate > 0 && worstScenarioForRate.requiredRate > 0 ? 
+                              ((worstScenarioForRate.requiredRate - bestScenarioForRate.requiredRate) / 
+                              bestScenarioForRate.requiredRate) * 100 : 0;
 
-      let analysis = `<p>Comparando os ${scenarios.length} cenários simulados:</p><ul>`;
-
-      if (bestScenarioForContribution) {
-        analysis += `<li>O cenário <strong>${bestScenarioForContribution.name}</strong> exige o menor aporte mensal ideal (R$ ${formatMoney(bestScenarioForContribution.idealContribution)}).</li>`;
-      }
+      // Iniciar a análise detalhada
+      let analysis = `
+        <h4>Análise Comparativa Detalhada dos ${scenarios.length} Cenários</h4>
+        
+        <p>Após analisar detalhadamente todos os cenários simulados, podemos identificar importantes diferenças e oportunidades que podem influenciar significativamente sua estratégia para alcançar o objetivo financeiro desejado.</p>
+        
+        <h5>Comparação de Aportes Mensais</h5>
+        <p>O cenário <strong>${bestScenarioForContribution.name}</strong> apresenta a estratégia mais eficiente em termos de aporte mensal, exigindo apenas R$ ${formatMoney(bestScenarioForContribution.idealContribution)} por mês. Em contraste, o cenário <strong>${worstScenarioForContribution.name}</strong> demanda R$ ${formatMoney(worstScenarioForContribution.idealContribution)}, uma diferença de ${contributionDiffPercentage.toFixed(1).replace('.', ',')}%.</p>
+        
+        <p>A média de aporte mensal ideal entre todos os cenários é de R$ ${formatMoney(avgContribution)}. Se você conseguir manter um aporte mensal próximo ou superior a R$ ${formatMoney(bestScenarioForContribution.idealContribution * 1.1)}, terá uma margem de segurança que pode compensar eventuais flutuações na rentabilidade ou períodos sem aportes.</p>
+        
+        <h5>Análise de Prazos</h5>`;
+        
       if (bestScenarioForMonths && bestScenarioForMonths.monthsToGoalAtual > 0) {
-        analysis += `<li>O cenário <strong>${bestScenarioForMonths.name}</strong> permite alcançar o objetivo mais rapidamente com o plano atual (${bestScenarioForMonths.monthsToGoalAtual} meses).</li>`;
+        analysis += `
+        <p>Com seu plano de aportes atual, o cenário <strong>${bestScenarioForMonths.name}</strong> permite alcançar o objetivo em ${bestScenarioForMonths.monthsToGoalAtual} meses (aproximadamente ${(bestScenarioForMonths.monthsToGoalAtual / 12).toFixed(1).replace('.', ',')} anos).`;
+        
+        if (worstScenarioForMonths && worstScenarioForMonths.monthsToGoalAtual > 0) {
+          analysis += ` Já o cenário <strong>${worstScenarioForMonths.name}</strong> exigiria ${worstScenarioForMonths.monthsToGoalAtual} meses (aproximadamente ${(worstScenarioForMonths.monthsToGoalAtual / 12).toFixed(1).replace('.', ',')} anos), uma diferença de ${worstScenarioForMonths.monthsToGoalAtual - bestScenarioForMonths.monthsToGoalAtual} meses.</p>`;
+        } else {
+          analysis += `</p>`;
+        }
+        
+        // Adicionar recomendação sobre prazo
+        if (bestScenarioForMonths.monthsToGoalAtual > bestScenarioForMonths.period) {
+          analysis += `
+          <p>É importante notar que mesmo no melhor cenário, o prazo estimado (${bestScenarioForMonths.monthsToGoalAtual} meses) é superior ao prazo desejado inicialmente (${bestScenarioForMonths.period} meses). Isso sugere que você poderia considerar aumentar seus aportes mensais ou reavaliar o prazo para tornar seu objetivo mais realista.</p>`;
+        } else {
+          analysis += `
+          <p>É positivo observar que no melhor cenário, você consegue atingir seu objetivo antes do prazo desejado inicialmente, o que demonstra que sua estratégia atual está bem alinhada.</p>`;
+        }
+      } else {
+        analysis += `
+        <p>Com base nos aportes atuais, nenhum dos cenários simulados permite atingir o objetivo dentro do prazo máximo simulado (50 anos). Isso indica que seria necessário aumentar significativamente o valor dos aportes mensais ou reconsiderar o valor do objetivo.</p>`;
       }
+      
+      analysis += `
+        <h5>Rentabilidade Necessária</h5>`;
+        
       if (bestScenarioForRate && bestScenarioForRate.requiredRate > 0) {
-        analysis += `<li>O cenário <strong>${bestScenarioForRate.name}</strong> requer a menor rentabilidade anual para ser viável (${(bestScenarioForRate.requiredRate * 100).toFixed(2).replace('.', ',')}% a.a.).</li>`;
+        analysis += `
+        <p>O cenário <strong>${bestScenarioForRate.name}</strong> requer a menor rentabilidade anual (${(bestScenarioForRate.requiredRate * 100).toFixed(2).replace('.', ',')}% a.a.) para viabilizar seu objetivo com os aportes atuais.`;
+        
+        if (worstScenarioForRate && worstScenarioForRate.requiredRate > 0) {
+          analysis += ` Em contraste, o cenário <strong>${worstScenarioForRate.name}</strong> exige ${(worstScenarioForRate.requiredRate * 100).toFixed(2).replace('.', ',')}% a.a., uma diferença de ${rateDiffPercentage.toFixed(1).replace('.', ',')}%.</p>`;
+        } else {
+          analysis += `</p>`;
+        }
+        
+        // Adicionar contexto sobre a rentabilidade
+        if (bestScenarioForRate.requiredRate > 0.12) { // Se a taxa necessária for maior que 12% a.a.
+          analysis += `
+          <p>É importante destacar que a rentabilidade necessária de ${(bestScenarioForRate.requiredRate * 100).toFixed(2).replace('.', ',')}% a.a. está acima da média histórica de muitos investimentos conservadores e moderados no Brasil. Para atingir essa rentabilidade, seria necessário considerar uma carteira com maior exposição a ativos de renda variável, o que naturalmente implica em maior risco. Alternativamente, você poderia aumentar seus aportes mensais para reduzir a dependência de uma alta rentabilidade.</p>`;
+        } else if (bestScenarioForRate.requiredRate > 0.06) { // Se a taxa necessária for entre 6% e 12% a.a.
+          analysis += `
+          <p>A rentabilidade necessária de ${(bestScenarioForRate.requiredRate * 100).toFixed(2).replace('.', ',')}% a.a. está dentro de um patamar alcançável com uma estratégia de investimentos moderada no Brasil, possivelmente combinando renda fixa e uma parcela de renda variável. Esta taxa está próxima da média histórica de alguns fundos multimercado e carteiras diversificadas.</p>`;
+        } else { // Se a taxa necessária for menor que 6% a.a.
+          analysis += `
+          <p>A rentabilidade necessária de ${(bestScenarioForRate.requiredRate * 100).toFixed(2).replace('.', ',')}% a.a. é relativamente conservadora e pode ser alcançada com investimentos de menor risco, como títulos públicos, CDBs e outros produtos de renda fixa, dependendo do cenário econômico atual.</p>`;
+        }
+      } else {
+        analysis += `
+        <p>Não foi possível determinar uma taxa de rentabilidade viável para atingir o objetivo com os aportes atuais nos cenários simulados. Isso sugere que seria necessário aumentar significativamente o valor dos aportes mensais.</p>`;
       }
-
-      analysis += `</ul><p>Analise os detalhes de cada cenário na tabela e nos gráficos para tomar a melhor decisão.</p>`;
+      
+      // Análise do investimento único
+      analysis += `
+        <h5>Investimento Único</h5>
+        <p>Se você preferir fazer um único aporte em vez de contribuições mensais, o cenário <strong>${bestScenarioForInitialInvestment.name}</strong> exigiria o menor valor: R$ ${formatMoney(bestScenarioForInitialInvestment.requiredInitialInvestment)}. Esta opção pode ser interessante se você dispõe de um capital inicial significativo, como uma herança, venda de um bem ou reserva acumulada.</p>
+      
+        <h5>Recomendações Estratégicas</h5>
+        <ul>`;
+        
+      // Recomendações personalizadas baseadas na análise
+      if (bestScenarioForContribution.idealContribution > bestScenarioForContribution.currentContribution * 1.5) {
+        analysis += `
+          <li><strong>Aumente gradualmente seus aportes mensais:</strong> O aporte ideal (R$ ${formatMoney(bestScenarioForContribution.idealContribution)}) é significativamente maior que seu aporte atual. Considere aumentar gradualmente, por exemplo, 10% a cada três meses, até atingir o valor ideal.</li>`;
+      }
+      
+      if (scenarios.some(s => s.inflation > 0.05)) {
+        analysis += `
+          <li><strong>Considere o impacto da inflação:</strong> Alguns cenários consideram uma inflação elevada, o que pode corroer significativamente o poder de compra do seu objetivo. Reavalie periodicamente o valor do seu objetivo para garantir que ele mantenha o poder de compra desejado.</li>`;
+      }
+      
+      if (bestScenarioForRate.requiredRate > bestScenarioForRate.rate * 1.2) {
+        analysis += `
+          <li><strong>Revise sua estratégia de investimentos:</strong> A rentabilidade necessária (${(bestScenarioForRate.requiredRate * 100).toFixed(2).replace('.', ',')}% a.a.) é superior à taxa informada (${(bestScenarioForRate.rate * 100).toFixed(2).replace('.', ',')}% a.a.). Considere diversificar sua carteira para buscar uma rentabilidade maior, sempre respeitando seu perfil de risco.</li>`;
+      }
+      
+      analysis += `
+          <li><strong>Mantenha uma reserva de emergência:</strong> Antes de aumentar seus aportes para este objetivo específico, certifique-se de que possui uma reserva de emergência equivalente a 3-6 meses de suas despesas mensais.</li>
+          <li><strong>Reavalie periodicamente:</strong> Faça uma revisão trimestral do seu plano, ajustando os valores conforme necessário com base no desempenho real dos seus investimentos e mudanças na sua situação financeira.</li>
+        </ul>
+        
+        <h5>Conclusão</h5>
+        <p>Comparando todos os cenários simulados, o <strong>${bestScenarioForContribution.name}</strong> apresenta a melhor relação entre aporte mensal, prazo e rentabilidade necessária. Recomendamos que você utilize este cenário como base para seu planejamento financeiro, fazendo os ajustes necessários conforme sua realidade e preferências pessoais.</p>
+        
+        <p>Lembre-se que o planejamento financeiro é um processo contínuo e que pequenos ajustes ao longo do tempo podem fazer grande diferença no resultado final. Consulte a tabela comparativa e os gráficos para visualizar melhor as diferenças entre os cenários e tomar uma decisão mais informada.</p>
+      `;
 
       analysisText.innerHTML = analysis;
     }
