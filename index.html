@@ -49,31 +49,68 @@
     
     /* Estilos para o container retrátil de gráficos */
     .charts-toggle-container {
-      margin: 15px 0;
+      margin: 25px 0;
+      position: relative;
     }
     .toggle-charts-button {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       width: 100%;
-      padding: 12px 20px;
+      padding: 15px 20px;
       background-color: var(--verde-esmeralda);
       color: white;
-      text-align: left;
+      text-align: center;
       font-weight: bold;
-      font-size: 1rem;
+      font-size: 1.2rem;
       border: none;
       border-radius: var(--borda-arredondada);
       cursor: pointer;
       transition: var(--transicao-padrao);
       box-shadow: var(--sombra-padrao);
+      position: relative;
+      overflow: hidden;
     }
     .toggle-charts-button:hover {
       background-color: var(--verde-esmeralda-escuro);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+    .toggle-charts-button:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+      pointer-events: none;
     }
     .toggle-charts-button span#toggleChartsIcon {
-      font-size: 1.2rem;
+      font-size: 1.5rem;
+      margin-left: 15px;
       transition: transform 0.3s ease;
+    }
+    .toggle-charts-button-pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(4, 108, 78, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(4, 108, 78, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(4, 108, 78, 0);
+      }
+    }
+    .toggle-instruction {
+      text-align: center;
+      color: var(--cinza-escuro);
+      font-style: italic;
+      margin-top: 8px;
+      font-size: 0.9rem;
     }
     
     /* Estilos para os botões no final da página */
@@ -592,10 +629,11 @@
   <!-- Container para gráficos e memórias de cálculo (retrátil) -->
   <div id="chartsContainer" style="display: none;">
     <div class="charts-toggle-container">
-      <button id="toggleChartsButton" class="toggle-charts-button" type="button" onclick="toggleAllCharts()">
-        <span id="toggleChartsText">Ocultar Gráficos e Memórias de Cálculo</span>
-        <span id="toggleChartsIcon">▲</span>
+      <button id="toggleChartsButton" class="toggle-charts-button toggle-charts-button-pulse" type="button" onclick="toggleAllCharts()">
+        <span id="toggleChartsText">EXPANDIR/RETRAIR GRÁFICOS E MEMÓRIAS DE CÁLCULO</span>
+        <span id="toggleChartsIcon">▼</span>
       </button>
+      <div class="toggle-instruction">Clique no botão acima para mostrar ou ocultar todos os gráficos e memórias de cálculo</div>
     </div>
     <div id="chartsContent" style="display: block;">
       <div id="chartUnicoContainer" class="chart-container">
@@ -934,28 +972,34 @@
               label: "Valor Bruto",
               data: bruto,
               borderColor: corBruto,
-              backgroundColor: "transparent",
+              backgroundColor: "rgba(255, 100, 100, 0.2)", // Vermelho translúcido
               borderWidth: 2,
               pointRadius: 0,
-              pointHoverRadius: 5
+              pointHoverRadius: 5,
+              fill: 'origin',
+              hoverBackgroundColor: "rgba(255, 100, 100, 0.4)"
             },
             {
               label: "Valor Líquido",
               data: liquido,
               borderColor: corLiquido,
-              backgroundColor: "transparent",
+              backgroundColor: "rgba(100, 255, 100, 0.2)", // Verde translúcido
               borderWidth: 2,
               pointRadius: 0,
-              pointHoverRadius: 5
+              pointHoverRadius: 5,
+              fill: '+1', // Preenche até o próximo dataset (Valor Bruto)
+              hoverBackgroundColor: "rgba(100, 255, 100, 0.4)"
             },
             {
               label: "Total Investido",
               data: investido,
               borderColor: corInvestido,
-              backgroundColor: "transparent",
+              backgroundColor: "rgba(100, 100, 255, 0.2)", // Azul translúcido
               borderWidth: 2,
               pointRadius: 0,
-              pointHoverRadius: 5
+              pointHoverRadius: 5,
+              fill: 'origin', // Preenche até o eixo
+              hoverBackgroundColor: "rgba(100, 100, 255, 0.4)"
             },
             {
               label: "Objetivo Corrigido",
@@ -965,7 +1009,8 @@
               borderWidth: 2,
               borderDash: [5, 5], // Linha tracejada
               pointRadius: 0,
-              pointHoverRadius: 5
+              pointHoverRadius: 5,
+              fill: false
             }
           ]
         },
