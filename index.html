@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Novos Objetivos</title>
+  <!-- Adicionando um favicon simples para evitar erro 404 -->
+  <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
@@ -1096,7 +1098,7 @@
       // Análise da situação atual
       if (currentSavings > 0) {
         const savingsPercentage = (currentSavings / goal) * 100;
-        analysis += `<p>Valor já guardado: R$ ${formatMoney(currentSavings)}, o que representa ${savingsPercentage.toFixed(1).replace(".", ",")}% do objetivo. `;
+        analysis += `<p>Valor já guardado: R$ ${formatMoney(currentSavings)}, o que representa ${savingsPercentage.toFixed(1).replace(".", ",")} % do objetivo. `;
         
         if (savingsPercentage < 10) {
           analysis += `Este é um bom começo, mas ainda há um longo caminho pela frente.</p>`;
@@ -1130,12 +1132,12 @@
       if (rateGap > 0) {
         const rateGapPercentage = rateGap * 100;
         if (rateGapPercentage > 10) {
-          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace(".", ",")}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace(".", ",")} pontos percentuais acima da taxa informada. Esta diferença é significativa e pode representar um risco maior.</p>`;
+          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace(".", ",")} % ao ano, o que está ${rateGapPercentage.toFixed(2).replace(".", ",")} pontos percentuais acima da taxa informada. Esta diferença é significativa e pode representar um risco maior.</p>`;
         } else {
-          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace(".", ",")}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace(".", ",")} pontos percentuais acima da taxa informada. Esta diferença é relativamente pequena e pode ser alcançável com ajustes na estratégia de investimento.</p>`;
+          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace(".", ",")} % ao ano, o que está ${rateGapPercentage.toFixed(2).replace(".", ",")} pontos percentuais acima da taxa informada. Esta diferença é relativamente pequena e pode ser alcançável com ajustes na estratégia de investimento.</p>`;
         }
       } else {
-        analysis += `<p>A rentabilidade informada de ${(rate * 100).toFixed(2).replace(".", ",")}% ao ano é suficiente para atingir o objetivo no prazo desejado, desde que sejam mantidos os aportes mensais adequados.</p>`;
+        analysis += `<p>A rentabilidade informada de ${(rate * 100).toFixed(2).replace(".", ",")} % ao ano é suficiente para atingir o objetivo no prazo desejado, desde que sejam mantidos os aportes mensais adequados.</p>`;
       }
       
       recommendationText.innerHTML = analysis;
@@ -1553,7 +1555,7 @@
       // Calcular a diferença percentual entre o mais caro e o mais barato
       const costDifferencePercent = ((mostExpensiveScenario.costPerUnit / cheapestScenario.costPerUnit) - 1) * 100;
       
-      analysis += `<p><strong>Custo do Objetivo:</strong> O "${cheapestScenario.name}" é o cenário mais econômico, custando R$ ${formatMoney(cheapestScenario.totalInvested)} (R$ ${formatMoney(cheapestScenario.costPerUnit)} por real do objetivo). Já o "${mostExpensiveScenario.name}" é o mais caro, custando R$ ${formatMoney(mostExpensiveScenario.totalInvested)} (R$ ${formatMoney(mostExpensiveScenario.costPerUnit)} por real do objetivo), uma diferença de ${costDifferencePercent.toFixed(2).replace(".", ",")}%.</p>`;
+      analysis += `<p><strong>Custo do Objetivo:</strong> O "${cheapestScenario.name}" é o cenário mais econômico, custando R$ ${formatMoney(cheapestScenario.totalInvested)} (R$ ${formatMoney(cheapestScenario.costPerUnit)} por real do objetivo). Já o "${mostExpensiveScenario.name}" é o mais caro, custando R$ ${formatMoney(mostExpensiveScenario.totalInvested)} (R$ ${formatMoney(mostExpensiveScenario.costPerUnit)} por real do objetivo), uma diferença de ${costDifferencePercent.toFixed(2).replace(".", ",")} %.</p>`;
       
       // Análise de prazo em relação ao prazo desejado pelo preenchedor
       const scenariosWithinDesiredPeriod = scenarios.filter(s => s.resultAtual.goalReached && s.resultAtual.monthsToGoal <= s.period);
@@ -1666,7 +1668,7 @@
       }
 
       const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace(".", ",")}%) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
+      resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace(".", ",")} %) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
       resultDiv.style.display = "block";
 
       // Cálculo do investimento único necessário
@@ -1733,7 +1735,7 @@
       const liquidoRentabilidade = requiredRateResult.valoresMensais.slice(1).map(m => m.valorLiquido);
       const investidoRentabilidade = requiredRateResult.valoresMensais.slice(1).map(m => m.totalInvestido);
       const objetivoRentabilidade = requiredRateResult.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
-      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo no prazo desejado com o aporte mensal atual, você precisaria de uma rentabilidade de <strong>${(requiredAnnualRate * 100).toFixed(2).replace(".", ",")}% ao ano</strong>.</p>`;
+      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo no prazo desejado com o aporte mensal atual, você precisaria de uma rentabilidade de <strong>${(requiredAnnualRate * 100).toFixed(2).replace(".", ",")} % ao ano</strong>.</p>`;
       document.getElementById("chartRentabilidadeContainer").style.display = "block";
       fillDataTable("tableRentabilidade", requiredRateResult.valoresMensais);
       drawChart(document.getElementById("chartRentabilidade").getContext("2d"), brutoRentabilidade, liquidoRentabilidade, investidoRentabilidade, objetivoRentabilidade, "#dc3545", "#e35d6a", "#b02a37");
