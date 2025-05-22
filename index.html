@@ -45,7 +45,6 @@
       margin-left: auto;
       margin-right: auto;
       line-height: 1.6;
-      padding-bottom: 120px; /* Espaço para os botões fixos */
     }
     
     /* Estilos para o container retrátil de gráficos */
@@ -77,23 +76,14 @@
       transition: transform 0.3s ease;
     }
     
-    /* Estilos para os botões fixos no final da página */
+    /* Estilos para os botões no final da página */
     .fixed-buttons-container {
       margin-top: 30px;
       padding: 20px 0;
       width: 100%;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
       background-color: var(--fundo-claro);
       border-top: 1px solid var(--cinza-claro);
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-      z-index: 100;
-      padding: 15px var(--espacamento-padrao);
-      max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
+      padding: 15px 0;
     }
     .buttons-row {
       display: flex;
@@ -731,8 +721,8 @@
     </div>
   </div>
   
-  <!-- Botões fixados no final da página -->
-  <div id="fixedButtonsContainer" class="fixed-buttons-container">
+  <!-- Botões no final da página -->
+  <div id="buttonsContainer" class="fixed-buttons-container">
     <!-- Botões para salvar cenário, analisar cenários e simular outro cenário -->
     <div class="row buttons-row">
       <div style="flex: 1; margin-right: 10px;">
