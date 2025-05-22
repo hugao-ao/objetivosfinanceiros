@@ -45,6 +45,61 @@
       margin-left: auto;
       margin-right: auto;
       line-height: 1.6;
+      padding-bottom: 120px; /* Espaço para os botões fixos */
+    }
+    
+    /* Estilos para o container retrátil de gráficos */
+    .charts-toggle-container {
+      margin: 15px 0;
+    }
+    .toggle-charts-button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 12px 20px;
+      background-color: var(--verde-esmeralda);
+      color: white;
+      text-align: left;
+      font-weight: bold;
+      font-size: 1rem;
+      border: none;
+      border-radius: var(--borda-arredondada);
+      cursor: pointer;
+      transition: var(--transicao-padrao);
+      box-shadow: var(--sombra-padrao);
+    }
+    .toggle-charts-button:hover {
+      background-color: var(--verde-esmeralda-escuro);
+    }
+    .toggle-charts-button span#toggleChartsIcon {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+    
+    /* Estilos para os botões fixos no final da página */
+    .fixed-buttons-container {
+      margin-top: 30px;
+      padding: 20px 0;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--fundo-claro);
+      border-top: 1px solid var(--cinza-claro);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+      padding: 15px var(--espacamento-padrao);
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .buttons-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
     }
     h1, h2, h3, h4, h5, h6 {
       color: var(--verde-esmeralda);
@@ -543,149 +598,164 @@
     <h3>Análise Automatizada</h3>
     <div id="recommendationText"></div>
   </div>
-
-  <!-- Botões para salvar cenário, analisar cenários e simular outro cenário -->
-  <div class="row" style="margin-top: 20px;">
-    <div style="flex: 1; margin-right: 10px;">
-      <button id="saveScenarioButton" class="save-scenario-button" type="button" onclick="addCurrentScenario()" style="display: none;">
-        SALVAR CENÁRIO
+  
+  <!-- Container para gráficos e memórias de cálculo (retrátil) -->
+  <div id="chartsContainer" style="display: none;">
+    <div class="charts-toggle-container">
+      <button id="toggleChartsButton" class="toggle-charts-button" type="button" onclick="toggleAllCharts()">
+        <span id="toggleChartsText">Ocultar Gráficos e Memórias de Cálculo</span>
+        <span id="toggleChartsIcon">▲</span>
       </button>
     </div>
-    <div style="flex: 1; margin-left: 10px; margin-right: 10px;">
-      <button id="analyzeScenarioButton" class="analyze-scenario-button" type="button" onclick="analyzeScenarios()" style="display: none;">
-        ANALISAR CENÁRIOS
-      </button>
-    </div>
-    <div style="flex: 1; margin-left: 10px;">
-      <button id="newScenarioButton" class="save-scenario-button" type="button" onclick="prepareNewScenario()" style="display: none;">
-        SIMULAR OUTRO CENÁRIO
-      </button>
+    
+    <div id="chartsContent">
+      <div id="chartUnicoContainer" class="chart-container">
+        <div class="chart-title">Evolução do Investimento Único</div>
+        <div class="chart-nav">
+          <button type="button" onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
+          <button type="button" onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
+        </div>
+        <div class="chart-content">
+          <div id="chartUnicoSlide" class="chart-slide">
+            <canvas id="chartUnico"></canvas>
+          </div>
+          <div id="tableUnicoSlide" class="table-slide" style="display: none;">
+            <table id="tableUnico" class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Mês</th>
+                  <th scope="col">Total Investido</th>
+                  <th scope="col">Juros</th>
+                  <th scope="col">Total Juros</th>
+                  <th scope="col">Total Acumulado</th>
+                  <th scope="col">Imposto</th>
+                  <th scope="col">Valor Líquido</th>
+                  <th scope="col">Objetivo Corrigido</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="chartIdealContainer" class="chart-container">
+        <div class="chart-title">Evolução do Plano Ideal</div>
+        <div class="chart-nav">
+          <button type="button" onclick="showChartSlide('Ideal', 'chart')">Gráfico</button>
+          <button type="button" onclick="showChartSlide('Ideal', 'table')">Memória de Cálculo</button>
+        </div>
+        <div class="chart-content">
+          <div id="chartIdealSlide" class="chart-slide">
+            <canvas id="chartIdeal"></canvas>
+          </div>
+          <div id="tableIdealSlide" class="table-slide" style="display: none;">
+            <table id="tableIdeal" class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Mês</th>
+                  <th scope="col">Total Investido</th>
+                  <th scope="col">Juros</th>
+                  <th scope="col">Total Juros</th>
+                  <th scope="col">Total Acumulado</th>
+                  <th scope="col">Imposto</th>
+                  <th scope="col">Valor Líquido</th>
+                  <th scope="col">Objetivo Corrigido</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="chartAtualContainer" class="chart-container">
+        <div class="chart-title">Evolução da Poupança Atual</div>
+        <div class="chart-nav">
+          <button type="button" onclick="showChartSlide('Atual', 'chart')">Gráfico</button>
+          <button type="button" onclick="showChartSlide('Atual', 'table')">Memória de Cálculo</button>
+        </div>
+        <div class="chart-content">
+          <div id="chartAtualSlide" class="chart-slide">
+            <canvas id="chartAtual"></canvas>
+          </div>
+          <div id="tableAtualSlide" class="table-slide" style="display: none;">
+            <table id="tableAtual" class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Mês</th>
+                  <th scope="col">Total Investido</th>
+                  <th scope="col">Juros</th>
+                  <th scope="col">Total Juros</th>
+                  <th scope="col">Total Acumulado</th>
+                  <th scope="col">Imposto</th>
+                  <th scope="col">Valor Líquido</th>
+                  <th scope="col">Objetivo Corrigido</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="chartRentabilidadeContainer" class="chart-container">
+        <div class="chart-title">Evolução da Rentabilidade Necessária</div>
+        <div class="chart-nav">
+          <button type="button" onclick="showChartSlide('Rentabilidade', 'chart')">Gráfico</button>
+          <button type="button" onclick="showChartSlide('Rentabilidade', 'table')">Memória de Cálculo</button>
+        </div>
+        <div class="chart-content">
+          <div id="chartRentabilidadeSlide" class="chart-slide">
+            <canvas id="chartRentabilidade"></canvas>
+          </div>
+          <div id="tableRentabilidadeSlide" class="table-slide" style="display: none;">
+            <table id="tableRentabilidade" class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Mês</th>
+                  <th scope="col">Total Investido</th>
+                  <th scope="col">Juros</th>
+                  <th scope="col">Total Juros</th>
+                  <th scope="col">Total Acumulado</th>
+                  <th scope="col">Imposto</th>
+                  <th scope="col">Valor Líquido</th>
+                  <th scope="col">Objetivo Corrigido</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+  
+  <!-- Botões fixados no final da página -->
+  <div id="fixedButtonsContainer" class="fixed-buttons-container">
+    <!-- Botões para salvar cenário, analisar cenários e simular outro cenário -->
+    <div class="row buttons-row">
+      <div style="flex: 1; margin-right: 10px;">
+        <button id="saveScenarioButton" class="save-scenario-button" type="button" onclick="addCurrentScenario()" style="display: none;">
+          SALVAR CENÁRIO
+        </button>
+      </div>
+      <div style="flex: 1; margin-left: 10px; margin-right: 10px;">
+        <button id="analyzeScenarioButton" class="analyze-scenario-button" type="button" onclick="analyzeScenarios()" style="display: none;">
+          ANALISAR CENÁRIOS
+        </button>
+      </div>
+      <div style="flex: 1; margin-left: 10px;">
+        <button id="newScenarioButton" class="save-scenario-button" type="button" onclick="prepareNewScenario()" style="display: none;">
+          SIMULAR OUTRO CENÁRIO
+        </button>
+      </div>
+    </div>
 
-  <!-- Botão WhatsApp para análise personalizada - sempre visível após cálculo -->
-  <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
-    AVANÇAR PARA ANÁLISE PERSONALIZADA
-  </a>
-
-  <div id="chartUnicoContainer" class="chart-container" style="display: none;">
-    <div class="chart-title">Evolução do Investimento Único</div>
-    <div class="chart-nav">
-      <button type="button" onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
-      <button type="button" onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
-    </div>
-    <div class="chart-content">
-      <div id="chartUnicoSlide" class="chart-slide">
-        <canvas id="chartUnico"></canvas>
-      </div>
-      <div id="tableUnicoSlide" class="table-slide" style="display: none;">
-        <table id="tableUnico" class="data-table">
-          <thead>
-            <tr>
-              <th scope="col">Mês</th>
-              <th scope="col">Total Investido</th>
-              <th scope="col">Juros</th>
-              <th scope="col">Total Juros</th>
-              <th scope="col">Total Acumulado</th>
-              <th scope="col">Imposto</th>
-              <th scope="col">Valor Líquido</th>
-              <th scope="col">Objetivo Corrigido</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="chartIdealContainer" class="chart-container" style="display: none;">
-    <div class="chart-title">Evolução do Plano Ideal</div>
-    <div class="chart-nav">
-      <button type="button" onclick="showChartSlide('Ideal', 'chart')">Gráfico</button>
-      <button type="button" onclick="showChartSlide('Ideal', 'table')">Memória de Cálculo</button>
-    </div>
-    <div class="chart-content">
-      <div id="chartIdealSlide" class="chart-slide">
-        <canvas id="chartIdeal"></canvas>
-      </div>
-      <div id="tableIdealSlide" class="table-slide" style="display: none;">
-        <table id="tableIdeal" class="data-table">
-          <thead>
-            <tr>
-              <th scope="col">Mês</th>
-              <th scope="col">Total Investido</th>
-              <th scope="col">Juros</th>
-              <th scope="col">Total Juros</th>
-              <th scope="col">Total Acumulado</th>
-              <th scope="col">Imposto</th>
-              <th scope="col">Valor Líquido</th>
-              <th scope="col">Objetivo Corrigido</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="chartAtualContainer" class="chart-container" style="display: none;">
-    <div class="chart-title">Evolução da Poupança Atual</div>
-    <div class="chart-nav">
-      <button type="button" onclick="showChartSlide('Atual', 'chart')">Gráfico</button>
-      <button type="button" onclick="showChartSlide('Atual', 'table')">Memória de Cálculo</button>
-    </div>
-    <div class="chart-content">
-      <div id="chartAtualSlide" class="chart-slide">
-        <canvas id="chartAtual"></canvas>
-      </div>
-      <div id="tableAtualSlide" class="table-slide" style="display: none;">
-        <table id="tableAtual" class="data-table">
-          <thead>
-            <tr>
-              <th scope="col">Mês</th>
-              <th scope="col">Total Investido</th>
-              <th scope="col">Juros</th>
-              <th scope="col">Total Juros</th>
-              <th scope="col">Total Acumulado</th>
-              <th scope="col">Imposto</th>
-              <th scope="col">Valor Líquido</th>
-              <th scope="col">Objetivo Corrigido</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="chartRentabilidadeContainer" class="chart-container" style="display: none;">
-    <div class="chart-title">Evolução da Rentabilidade Necessária</div>
-    <div class="chart-nav">
-      <button type="button" onclick="showChartSlide('Rentabilidade', 'chart')">Gráfico</button>
-      <button type="button" onclick="showChartSlide('Rentabilidade', 'table')">Memória de Cálculo</button>
-    </div>
-    <div class="chart-content">
-      <div id="chartRentabilidadeSlide" class="chart-slide">
-        <canvas id="chartRentabilidade"></canvas>
-      </div>
-      <div id="tableRentabilidadeSlide" class="table-slide" style="display: none;">
-        <table id="tableRentabilidade" class="data-table">
-          <thead>
-            <tr>
-              <th scope="col">Mês</th>
-              <th scope="col">Total Investido</th>
-              <th scope="col">Juros</th>
-              <th scope="col">Total Juros</th>
-              <th scope="col">Total Acumulado</th>
-              <th scope="col">Imposto</th>
-              <th scope="col">Valor Líquido</th>
-              <th scope="col">Objetivo Corrigido</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
+    <!-- Botão WhatsApp para análise personalizada - sempre visível após cálculo -->
+    <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
+      AVANÇAR PARA ANÁLISE PERSONALIZADA
+    </a>
   </div>
 
   <script>
