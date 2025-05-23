@@ -995,6 +995,7 @@
           objetivoCorrigido: objetivoCorrigido
         });
       }
+      // Retornar apenas valoresMensais, pois os totais estão no último item
       return { valoresMensais };
     }
 
@@ -1046,6 +1047,7 @@
         iterations++;
       }
       const requiredAnnualRate = Math.pow(1 + requiredMonthlyRate, 12) - 1;
+      // Retornar valoresMensais para o gráfico
       return { annualRate: requiredAnnualRate, valoresMensais: result.valoresMensais };
     }
 
@@ -1392,6 +1394,9 @@
       document.getElementById("buttonsContainer").style.display = "none"; // Esconder botões de ação
       document.getElementById("toggleChartsSection").style.display = "none"; // Esconder botão de toggle
       document.getElementById("chartsContainer").style.display = "none"; // Esconder container principal dos gráficos
+      document.getElementById("scenariosContainer").style.display = "none";
+      document.getElementById("comparisonContainer").style.display = "none";
+      document.getElementById("generalAnalysis").style.display = "none";
 
       // Esconder containers individuais de gráficos
       const chartContainerIds = ["chartUnicoContainer", "chartIdealContainer", "chartAtualContainer", "chartRentabilidadeContainer"];
@@ -1437,21 +1442,26 @@
       if (scenarios.length > 0) {
         scenariosText = "Cenários simulados:\n";
         scenarios.forEach(s => {
-          scenariosText += `\n${s.name}: Obj R$${formatMoney(s.goal)}, Prazo ${s.period}m, Guard R$${formatMoney(s.currentSavings)}, Aporte R$${formatMoney(s.currentContribution)}, Taxa ${(s.rate * 100).toFixed(2).replace(".", ",")}%, Infl ${(s.inflation * 100).toFixed(2).replace(".", ",")}%. Result: Aporte Ideal R$${formatMoney(s.idealContribution)}, Prazo Atual ${s.monthsToGoalAtual > 0 ? s.monthsToGoalAtual + 'm' : 'N/A'}, Rent. Nec. ${(s.requiredRate * 100).toFixed(2).replace(".", ",")}%.`;
+          // Formatando a mensagem do cenário de forma mais legível
+          scenariosText += `\n${s.name}: Obj R$${formatMoney(s.goal)}, Prazo ${s.period}m, Guard R$${formatMoney(s.currentSavings)}, Aporte R$${formatMoney(s.currentContribution)}, Taxa ${(s.rate * 100).toFixed(2).replace('.', ',')}%, Infl ${(s.inflation * 100).toFixed(2).replace('.', ',')}%. Result: Aporte Ideal R$${formatMoney(s.idealContribution)}, Prazo Atual ${s.monthsToGoalAtual > 0 ? s.monthsToGoalAtual + 'm' : 'N/A'}, Rent. Nec. ${(s.requiredRate * 100).toFixed(2).replace('.', ',')}%.`;
         });
       }
 
-      const message = `Olá! Gostaria de uma análise personalizada para meu objetivo financeiro:\n\n*Objetivo:* ${goalText}\n\n*Resultados da Simulação Atual:*\n${resultText.replace(/<[^>]*>/g, "\n").replace(/\n\n+/g, "\n").trim()}\n\n${scenariosText}`;
+      // Limpando o texto do resultado para remover HTML
+      const cleanResultText = resultText.replace(/<[^>]*>/g, "\n").replace(/\n\n+/g, "\n").trim();
+
+      const message = `Olá! Gostaria de uma análise personalizada para meu objetivo financeiro:\n\n*Objetivo:* ${goalText}\n\n*Resultados da Simulação Atual:*\n${cleanResultText}\n\n${scenariosText}`;
 
       const encodedMessage = encodeURIComponent(message);
-      const whatsappUrl = `https://wa.me/SEUNUMERO?text=${encodedMessage}`; // SUBSTITUA SEUNUMERO
+      // IMPORTANTE: Substitua SEUNUMERO pelo número de WhatsApp correto
+      const whatsappUrl = `https://wa.me/SEUNUMERO?text=${encodedMessage}`;
 
-      // Tentar capturar a tela (opcional, pode falhar dependendo do navegador/permissões)
+      // Tentar capturar a tela (opcional)
       try {
         const canvas = await html2canvas(document.body);
         const imageDataUrl = canvas.toDataURL('image/png');
-        // Aqui você poderia enviar a imagem para um servidor ou tentar anexá-la (difícil via URL)
         console.log("Screenshot capturado (Data URL no console)");
+        // A imagem pode ser enviada para um servidor ou exibida para o usuário baixar
       } catch (error) {
         console.error("Erro ao capturar screenshot:", error);
       }
@@ -1470,8 +1480,7 @@
       allChartsExpanded = !allChartsExpanded; // Inverte o estado
 
       chartContainers.forEach(container => {
-        // Mostra/esconde apenas os containers que foram originalmente exibidos pelo cálculo
-        // Isso evita mostrar containers vazios (ex: chartAtual se não atingiu o objetivo)
+        // Mostra/esconde apenas os containers que foram marcados como visíveis inicialmente
         if (container.dataset.initiallyVisible === 'true') {
              container.style.display = allChartsExpanded ? 'block' : 'none';
         }
@@ -1513,11 +1522,23 @@
       const annualRate = rateType === "monthly" ? Math.pow(1 + rate, 12) - 1 : rate;
 
       // Cálculos
-      let inflatedGoalSingle = goal * Math.pow(1 + inflation, Math.floor(period / 12));
-      const singleInvestmentResult = calculateCompoundInterest(0, 0, monthlyRate, period, tax, goal, inflation); // Simula juros puros
-      const requiredInitialInvestmentNet = inflatedGoalSingle / Math.pow(1 + monthlyRate, period) / (1 - tax * (1 - 1/Math.pow(1 + monthlyRate, period))); // Aproximação considerando imposto no final
+      // 1. Investimento Único
+      // Calcular objetivo corrigido pela inflação para o investimento único
+      let inflatedGoalSingle = goal;
+      for (let y = 0; y < Math.floor(period / 12); y++) {
+        inflatedGoalSingle *= (1 + inflation);
+      }
+      // Calcular investimento inicial bruto necessário
+      const requiredInitialInvestmentGross = inflatedGoalSingle / Math.pow(1 + monthlyRate, period);
+      // Calcular juros totais e imposto sobre o investimento único
+      const totalJurosSingle = requiredInitialInvestmentGross * (Math.pow(1 + monthlyRate, period) - 1);
+      const impostoSingle = totalJurosSingle * tax;
+      // Calcular investimento inicial líquido (considerando imposto a ser pago no futuro sobre os juros)
+      // PV_net = (FV + Imposto) / (1+r)^n
+      const requiredInitialInvestmentNet = (inflatedGoalSingle + impostoSingle) / Math.pow(1 + monthlyRate, period);
       const singleInvestmentData = calculateCompoundInterest(requiredInitialInvestmentNet, 0, monthlyRate, period, tax, goal, inflation);
 
+      // 2. Aporte Ideal
       let lowContribution = 0, highContribution = goal * 2, idealContribution = 0, iterations = 0, idealResult;
       while (iterations < 100) {
         idealContribution = (lowContribution + highContribution) / 2;
@@ -1529,9 +1550,11 @@
         iterations++;
       }
 
+      // 3. Prazo Atual
       const currentPlanResult = calculateCompoundInterestUntilGoal(currentSavings, currentContribution, monthlyRate, tax, goal, inflation);
       const monthsToGoalAtual = currentPlanResult.goalReached ? currentPlanResult.monthsToGoal : -1;
 
+      // 4. Rentabilidade Necessária
       const requiredRateResult = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
       const requiredAnnualRate = requiredRateResult.annualRate;
 
@@ -1544,10 +1567,10 @@
         <p><strong>Valor do Objetivo (Corrigido p/ Inflação):</strong> R$ ${formatMoney(finalObjectiveValue)}</p>
         <p><strong>Prazo Desejado:</strong> ${period} meses</p>
         <hr>
-        <p><strong>1. Investimento Único Hoje:</strong> R$ ${formatMoney(requiredInitialInvestmentNet)}</p>
-        <p><strong>2. Aporte Ideal Mensal:</strong> R$ ${formatMoney(idealContribution)}</p>
-        <p><strong>3. Prazo com Plano Atual:</strong> ${monthsToGoalAtual > 0 ? `${monthsToGoalAtual} meses` : 'Não atinge no prazo simulado'}</p>
-        <p><strong>4. Rentabilidade Necessária:</strong> ${formatMoney(requiredAnnualRate * 100)}% a.a.</p>
+        <p><strong>1. Investimento Único Necessário Hoje:</strong> R$ ${formatMoney(requiredInitialInvestmentNet)}<br><small>(Valor que você precisaria investir hoje, de uma só vez, com a taxa de ${formatMoney(annualRate * 100)}% a.a., para atingir o objetivo no prazo, já considerando imposto de ${formatMoney(tax * 100)}% sobre o rendimento).</small></p>
+        <p><strong>2. Aporte Ideal Mensal:</strong> R$ ${formatMoney(idealContribution)}<br><small>(Valor que você precisaria poupar todo mês, somado ao que já tem, com a taxa de ${formatMoney(annualRate * 100)}% a.a., para atingir o objetivo no prazo, já considerando imposto de ${formatMoney(tax * 100)}% sobre o rendimento).</small></p>
+        <p><strong>3. Prazo com o Plano Atual:</strong> ${monthsToGoalAtual > 0 ? `${monthsToGoalAtual} meses` : 'Não atinge o objetivo no prazo simulado (50 anos)'}<br><small>(Tempo estimado para atingir o objetivo se mantiver o aporte mensal atual de R$ ${formatMoney(currentContribution)} e a taxa de ${formatMoney(annualRate * 100)}% a.a.).</small></p>
+        <p><strong>4. Rentabilidade Necessária:</strong> ${formatMoney(requiredAnnualRate * 100)}% ao ano<br><small>(Taxa de juros anual que seu dinheiro precisaria render para atingir o objetivo no prazo, mantendo o aporte mensal atual de R$ ${formatMoney(currentContribution)}).</small></p>
       `;
       resultDiv.innerHTML = resultText;
       resultDiv.style.display = "block";
@@ -1566,6 +1589,7 @@
       const chartAtualContainer = document.getElementById("chartAtualContainer");
       const chartRentabilidadeContainer = document.getElementById("chartRentabilidadeContainer");
 
+      // Marcar containers individuais como visíveis ou não, e desenhar gráficos
       if (chartUnicoContainer) {
           const ctxUnico = document.getElementById("chartUnico").getContext("2d");
           const dataUnico = singleInvestmentData.valoresMensais;
@@ -1597,7 +1621,7 @@
           chartsToShow.push(chartAtualContainer);
       } else if (chartAtualContainer) {
           chartAtualContainer.style.display = "none";
-          chartAtualContainer.dataset.initiallyVisible = 'false';
+          chartAtualContainer.dataset.initiallyVisible = 'false'; // Marcar para não ser afetado pelo toggle
       }
       if (chartRentabilidadeContainer) {
           const ctxRentabilidade = document.getElementById("chartRentabilidade").getContext("2d");
