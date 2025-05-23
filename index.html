@@ -577,7 +577,7 @@
     <label>Você sabe a alíquota de imposto sobre o rendimento?</label>
     <div class="row">
       <div>
-        <select id="knowsTax" onchange="toggleTaxInput(\'tax\', \'15,00 %\')">
+        <select id="knowsTax" onchange="toggleTaxInput('tax', '15,00 %')">
           <option value="no">Não</option>
           <option value="yes">Sim</option>
         </select>
@@ -590,7 +590,7 @@
     <label>Você sabe a taxa de inflação dos últimos 12 meses?</label>
     <div class="row">
       <div>
-        <select id="knowsInflation" onchange="toggleTaxInput(\'inflation\', \'5,00 %\')">
+        <select id="knowsInflation" onchange="toggleTaxInput('inflation', '5,00 %')">
           <option value="no">Não</option>
           <option value="yes">Sim</option>
         </select>
@@ -660,8 +660,8 @@
     <div id="chartUnicoContainer" class="chart-container" style="display: none;">
       <div class="chart-title">Evolução do Investimento Único</div>
       <div class="chart-nav">
-        <button type="button" onclick="showChartSlide(\'Unico\', \'chart\')">Gráfico</button>
-        <button type="button" onclick="showChartSlide(\'Unico\', \'table\')">Memória de Cálculo</button>
+        <button type="button" onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
+        <button type="button" onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
       </div>
       <div class="chart-content">
         <div id="chartUnicoSlide" class="chart-slide">
@@ -690,8 +690,8 @@
     <div id="chartIdealContainer" class="chart-container" style="display: none;">
       <div class="chart-title">Evolução do Plano Ideal</div>
       <div class="chart-nav">
-        <button type="button" onclick="showChartSlide(\'Ideal\', \'chart\')">Gráfico</button>
-        <button type="button" onclick="showChartSlide(\'Ideal\', \'table\')">Memória de Cálculo</button>
+        <button type="button" onclick="showChartSlide('Ideal', 'chart')">Gráfico</button>
+        <button type="button" onclick="showChartSlide('Ideal', 'table')">Memória de Cálculo</button>
       </div>
       <div class="chart-content">
         <div id="chartIdealSlide" class="chart-slide">
@@ -720,8 +720,8 @@
     <div id="chartAtualContainer" class="chart-container" style="display: none;">
       <div class="chart-title">Evolução da Poupança Atual</div>
       <div class="chart-nav">
-        <button type="button" onclick="showChartSlide(\'Atual\', \'chart\')">Gráfico</button>
-        <button type="button" onclick="showChartSlide(\'Atual\', \'table\')">Memória de Cálculo</button>
+        <button type="button" onclick="showChartSlide('Atual', 'chart')">Gráfico</button>
+        <button type="button" onclick="showChartSlide('Atual', 'table')">Memória de Cálculo</button>
       </div>
       <div class="chart-content">
         <div id="chartAtualSlide" class="chart-slide">
@@ -750,8 +750,8 @@
     <div id="chartRentabilidadeContainer" class="chart-container" style="display: none;">
       <div class="chart-title">Evolução da Rentabilidade Necessária</div>
       <div class="chart-nav">
-        <button type="button" onclick="showChartSlide(\'Rentabilidade\', \'chart\')">Gráfico</button>
-        <button type="button" onclick="showChartSlide(\'Rentabilidade\', \'table\')">Memória de Cálculo</button>
+        <button type="button" onclick="showChartSlide('Rentabilidade', 'chart')">Gráfico</button>
+        <button type="button" onclick="showChartSlide('Rentabilidade', 'table')">Memória de Cálculo</button>
       </div>
       <div class="chart-content">
         <div id="chartRentabilidadeSlide" class="chart-slide">
@@ -827,8 +827,8 @@
 
     function formatMoney(value) {
       // Adiciona verificação para evitar erros com valores não numéricos
-      if (typeof value !== \'number\' || isNaN(value)) {
-        return \'N/A\'; // Ou retorna 0.00 ou outra string indicativa
+      if (typeof value !== 'number' || isNaN(value)) {
+        return 'N/A'; // Ou retorna 0.00 ou outra string indicativa
       }
       return value.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
@@ -899,7 +899,7 @@
               borderWidth: 2,
               pointRadius: 0,
               pointHoverRadius: 5,
-              fill: \'+1\',
+              fill: '+1',
               hoverBackgroundColor: "rgba(100, 255, 100, 0.4)"
             },
             {
@@ -910,7 +910,7 @@
               borderWidth: 2,
               pointRadius: 0,
               pointHoverRadius: 5,
-              fill: \'origin\',
+              fill: 'origin',
               hoverBackgroundColor: "rgba(100, 100, 255, 0.4)"
             },
             {
@@ -941,7 +941,7 @@
             x: {
               title: {
                 display: true,
-                text: \'Meses\'
+                text: 'Meses'
               }
             }
           },
@@ -1146,14 +1146,13 @@
       if (scenarios.length >= 2) {
         document.getElementById("analyzeScenarioButton").style.display = "block";
         // Não analisar automaticamente ao adicionar, esperar clique no botão
-        // analyzeScenarios();
       }
     }
 
     function displayScenarios() {
       const container = document.getElementById("scenariosContainer");
       if (!container) return;
-      container.innerHTML = \'<div class="scenarios-header"><h3>Cenários Salvos</h3></div>\'; // Limpa e adiciona header
+      container.innerHTML = '<div class="scenarios-header"><h3>Cenários Salvos</h3></div>'; // Limpa e adiciona header
 
       if (scenarios.length === 0) {
         container.style.display = "none";
@@ -1179,7 +1178,7 @@
             </div>
             <div class="scenario-info">
               <p><strong>Aporte:</strong> R$ ${formatMoney(scenario.currentContribution)}/mês</p>
-              <p><strong>Taxa:</strong> ${(scenario.rate * 100).toFixed(2).replace(".", ",")}% ${scenario.rateType === \'annual\' ? \'a.a.\' : \'a.m.\'}</p>
+              <p><strong>Taxa:</strong> ${(scenario.rate * 100).toFixed(2).replace(".", ",")}% ${scenario.rateType === 'annual' ? 'a.a.' : 'a.m.'}</p>
               <p><strong>Inflação:</strong> ${(scenario.inflation * 100).toFixed(2).replace(".", ",")}%</p>
             </div>
           </div>
@@ -1222,8 +1221,8 @@
       clearResults();
       calculateSavings();
 
-      const cards = document.querySelectorAll(\'.scenario-card\');
-      cards.forEach((card, i) => card.classList.toggle(\'active\', i === index));
+      const cards = document.querySelectorAll('.scenario-card');
+      cards.forEach((card, i) => card.classList.toggle('active', i === index));
     }
 
     function deleteScenario(index) {
@@ -1245,7 +1244,7 @@
       }
     }
 
-    // Função CORRIGIDA para analisar cenários (chamada pelo botão)
+    // Função para analisar cenários
     function analyzeScenarios() {
       if (scenarios.length < 2) {
         alert("É necessário salvar pelo menos dois cenários para realizar a análise comparativa.");
@@ -1335,8 +1334,8 @@
           <td>R$ ${formatMoney(objectiveData[index])}</td>
           <td>R$ ${formatMoney(singleInvestmentData[index])}</td>
           <td>R$ ${formatMoney(idealContributionData[index])}</td>
-          <td>${isNaN(currentPlanMonthsData[index]) ? \'N/A\' : currentPlanMonthsData[index]}</td>
-          <td>${isNaN(requiredRateData[index]) ? \'N/A\' : requiredRateData[index].toFixed(2).replace(\'\.\', \',\') + \'%\'}</td>
+          <td>${isNaN(currentPlanMonthsData[index]) ? 'N/A' : currentPlanMonthsData[index]}</td>
+          <td>${isNaN(requiredRateData[index]) ? 'N/A' : requiredRateData[index].toFixed(2).replace('.', ',') + '%'}</td>
         `;
       });
 
@@ -1346,9 +1345,10 @@
       generateGeneralAnalysis();
 
       // Scroll para a área de comparação
-      comparisonContainer.scrollIntoView({ behavior: \'smooth\', block: \'start\' });
+      comparisonContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // Função para destacar valores na tabela de comparação
     function highlightComparisonTable() {
       const tableBody = document.getElementById("comparisonTableBody");
       if (!tableBody) return;
@@ -1360,7 +1360,7 @@
         const cell = row.cells[colIndex];
         if (!cell) return NaN;
         const text = cell.textContent.replace(/R\$\s?/g, "").replace(/\./g, "").replace(/,/g, ".").replace(/%/g, "").trim();
-        return text === \'N/A\' ? NaN : parseFloat(text);
+        return text === 'N/A' ? NaN : parseFloat(text);
       };
 
       Object.values(columnsToCompare).forEach(colIndex => {
@@ -1384,41 +1384,42 @@
       });
     }
 
+    // Função para desenhar o gráfico de comparação
     function drawComparisonChart(labels, objectiveData, singleInvestmentData, idealContributionData, currentPlanMonthsData, requiredRateData) {
-      const canvas = document.getElementById(\'comparisonChart\');
+      const canvas = document.getElementById('comparisonChart');
       if (!canvas) return;
-      const ctx = canvas.getContext(\'2d\');
+      const ctx = canvas.getContext('2d');
       const existingChart = Chart.getChart(ctx);
       if (existingChart) existingChart.destroy();
 
       new Chart(ctx, {
-        type: \'bar\',
+        type: 'bar',
         data: {
           labels: labels,
           datasets: [
-            { label: \'Obj. Corrigido (R$)\', data: objectiveData, backgroundColor: \'rgba(4, 108, 78, 0.6)\', yAxisID: \'y-money\' },
-            { label: \'Aporte Ideal (R$)\', data: idealContributionData, backgroundColor: \'rgba(212, 175, 55, 0.6)\', yAxisID: \'y-money\' },
-            { label: \'Prazo Atual (Meses)\', data: currentPlanMonthsData, backgroundColor: \'rgba(111, 66, 193, 0.6)\', yAxisID: \'y-months\' },
-            { label: \'Rentab. Nec. (%aa)\', data: requiredRateData, backgroundColor: \'rgba(220, 53, 69, 0.6)\', yAxisID: \'y-rate\' }
+            { label: 'Obj. Corrigido (R$)', data: objectiveData, backgroundColor: 'rgba(4, 108, 78, 0.6)', yAxisID: 'y-money' },
+            { label: 'Aporte Ideal (R$)', data: idealContributionData, backgroundColor: 'rgba(212, 175, 55, 0.6)', yAxisID: 'y-money' },
+            { label: 'Prazo Atual (Meses)', data: currentPlanMonthsData, backgroundColor: 'rgba(111, 66, 193, 0.6)', yAxisID: 'y-months' },
+            { label: 'Rentab. Nec. (%aa)', data: requiredRateData, backgroundColor: 'rgba(220, 53, 69, 0.6)', yAxisID: 'y-rate' }
           ]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
           scales: {
-            \'y-money\': { type: \'linear\', position: \'left\', beginAtZero: true, title: { display: true, text: \'Valor (R$)\' }, ticks: { callback: v => "R$ " + v.toLocaleString("pt-BR") } },
-            \'y-months\': { type: \'linear\', position: \'right\', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: \'Meses\' } },
-            \'y-rate\': { type: \'linear\', position: \'right\', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: \'Taxa (% a.a.)\' }, ticks: { callback: v => v.toFixed(2).replace(\'\.\', \',\') + \'%\' } },
-            x: { title: { display: true, text: \'Cenários\' } }
+            'y-money': { type: 'linear', position: 'left', beginAtZero: true, title: { display: true, text: 'Valor (R$)' }, ticks: { callback: v => "R$ " + v.toLocaleString("pt-BR") } },
+            'y-months': { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: 'Meses' } },
+            'y-rate': { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: 'Taxa (% a.a.)' }, ticks: { callback: v => v.toFixed(2).replace('.', ',') + '%' } },
+            x: { title: { display: true, text: 'Cenários' } }
           },
           plugins: {
             tooltip: {
               callbacks: {
                 label: function(context) {
-                  let label = context.dataset.label || \'\';
-                  if (label) label += \': \';
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
                   if (context.parsed.y !== null) {
-                    if (context.dataset.yAxisID === \'y-money\') label += "R$ " + context.parsed.y.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    else if (context.dataset.yAxisID === \'y-rate\') label += context.parsed.y.toFixed(2).replace(\'\.\', \',\') + \'%\';
+                    if (context.dataset.yAxisID === 'y-money') label += "R$ " + context.parsed.y.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    else if (context.dataset.yAxisID === 'y-rate') label += context.parsed.y.toFixed(2).replace('.', ',') + '%';
                     else label += context.parsed.y;
                   }
                   return label;
@@ -1430,6 +1431,7 @@
       });
     }
 
+    // Função para gerar análise geral automática
     function generateGeneralAnalysis() {
       const analysisText = document.getElementById("generalAnalysisText");
       if (!analysisText || scenarios.length < 2) return;
@@ -1447,7 +1449,7 @@
         analysis += `<li>Nenhum cenário atinge o objetivo com o plano atual dentro do prazo máximo simulado.</li>`;
       }
       if (bestRateScenario.requiredRate !== Infinity) {
-        analysis += `<li>O cenário <strong>${bestRateScenario.name}</strong> exige a menor <strong>Rentabilidade Necessária</strong> (${(bestRateScenario.requiredRate * 100).toFixed(2).replace(\'\.\', \',\')}% a.a.).</li>`;
+        analysis += `<li>O cenário <strong>${bestRateScenario.name}</strong> exige a menor <strong>Rentabilidade Necessária</strong> (${(bestRateScenario.requiredRate * 100).toFixed(2).replace('.', ',')}% a.a.).</li>`;
       } else {
         analysis += `<li>Não foi possível calcular a rentabilidade necessária para todos os cenários (verifique aportes e taxas).</li>`;
       }
@@ -1483,7 +1485,7 @@
       chartIds.forEach(id => {
         const canvas = document.getElementById(id);
         if (canvas) {
-          const ctx = canvas.getContext(\'2d\');
+          const ctx = canvas.getContext('2d');
           const chart = Chart.getChart(ctx);
           if (chart) chart.destroy();
         }
@@ -1506,7 +1508,7 @@
       toggleTaxInput("tax", "15,00 %");
       toggleTaxInput("inflation", "5,00 %");
       clearResults();
-      document.getElementById("savingsForm").scrollIntoView({ behavior: \'smooth\', block: \'start\' });
+      document.getElementById("savingsForm").scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     async function openWhatsAppChat() {
@@ -1516,7 +1518,7 @@
       if (scenarios.length > 0) {
         scenariosText = "Cenários simulados:\n";
         scenarios.forEach(s => {
-          scenariosText += `\n${s.name}: Obj R$${formatMoney(s.goal)}, Prazo ${s.period}m, Guard R$${formatMoney(s.currentSavings)}, Aporte R$${formatMoney(s.currentContribution)}, Taxa ${(s.rate * 100).toFixed(2).replace(\'\.\', \',\')}%, Infl ${(s.inflation * 100).toFixed(2).replace(\'\.\', \',\')}%. Result: Aporte Ideal R$${formatMoney(s.idealContribution)}, Prazo Atual ${s.monthsToGoalAtual > 0 ? s.monthsToGoalAtual + \'m\' : \'N/A\'}, Rent. Nec. ${(s.requiredRate * 100).toFixed(2).replace(\'\.\', \',\')}%.`;
+          scenariosText += `\n${s.name}: Obj R$${formatMoney(s.goal)}, Prazo ${s.period}m, Guard R$${formatMoney(s.currentSavings)}, Aporte R$${formatMoney(s.currentContribution)}, Taxa ${(s.rate * 100).toFixed(2).replace('.', ',')}%, Infl ${(s.inflation * 100).toFixed(2).replace('.', ',')}%. Result: Aporte Ideal R$${formatMoney(s.idealContribution)}, Prazo Atual ${s.monthsToGoalAtual > 0 ? s.monthsToGoalAtual + 'm' : 'N/A'}, Rent. Nec. ${(s.requiredRate * 100).toFixed(2).replace('.', ',')}%.`;
         });
       }
 
@@ -1528,37 +1530,37 @@
 
       try {
         const canvas = await html2canvas(document.body);
-        const imageDataUrl = canvas.toDataURL(\'image/png\');
+        const imageDataUrl = canvas.toDataURL('image/png');
         console.log("Screenshot capturado (Data URL no console)");
       } catch (error) {
         console.error("Erro ao capturar screenshot:", error);
       }
 
-      window.open(whatsappUrl, \'_blank\');
+      window.open(whatsappUrl, '_blank');
     }
 
     // --- Função de Toggle Geral dos Gráficos ---
     function toggleAllCharts() {
-      const chartsContainer = document.getElementById(\'chartsContainer\');
-      const chartContainers = chartsContainer.querySelectorAll(\'.chart-container\');
-      const button = document.getElementById(\'toggleAllChartsButton\');
-      const icon = document.getElementById(\'toggleChartsIcon\');
+      const chartsContainer = document.getElementById('chartsContainer');
+      const chartContainers = chartsContainer.querySelectorAll('.chart-container');
+      const button = document.getElementById('toggleAllChartsButton');
+      const icon = document.getElementById('toggleChartsIcon');
       if (!chartsContainer || !button || !icon) return;
 
       allChartsExpanded = !allChartsExpanded;
 
       chartContainers.forEach(container => {
-        if (container.dataset.initiallyVisible === \'true\') {
-             container.style.display = allChartsExpanded ? \'block\' : \'none\';
+        if (container.dataset.initiallyVisible === 'true') {
+             container.style.display = allChartsExpanded ? 'block' : 'none';
         }
       });
 
       if (allChartsExpanded) {
-        button.textContent = \'Retrair Todos os Gráficos e Memórias \';
-        icon.textContent = \'➖\';
+        button.textContent = 'Retrair Todos os Gráficos e Memórias ';
+        icon.textContent = '➖';
       } else {
-        button.textContent = \'Expandir Todos os Gráficos e Memórias \';
-        icon.textContent = \'➕\';
+        button.textContent = 'Expandir Todos os Gráficos e Memórias ';
+        icon.textContent = '➕';
       }
       button.appendChild(icon);
     }
@@ -1628,13 +1630,13 @@
       const finalObjectiveValue = idealResult.valoresMensais[period]?.objetivoCorrigido || goal;
       resultText = `
         <h3>Resultados da Simulação</h3>
-        <p><strong>Objetivo Financeiro:</strong> ${goalDescriptionText || \'(Não especificado)\'}</p>
+        <p><strong>Objetivo Financeiro:</strong> ${goalDescriptionText || '(Não especificado)'}</p>
         <p><strong>Valor do Objetivo (Corrigido p/ Inflação):</strong> R$ ${formatMoney(finalObjectiveValue)}</p>
         <p><strong>Prazo Desejado:</strong> ${period} meses</p>
         <hr>
         <p><strong>1. Investimento Único Necessário Hoje:</strong> R$ ${formatMoney(requiredInitialInvestmentNet)}<br><small>(Valor que você precisaria investir hoje, de uma só vez, com a taxa de ${formatMoney(annualRate * 100)}% a.a., para atingir o objetivo no prazo, já considerando imposto de ${formatMoney(tax * 100)}% sobre o rendimento).</small></p>
         <p><strong>2. Aporte Ideal Mensal:</strong> R$ ${formatMoney(idealContribution)}<br><small>(Valor que você precisaria poupar todo mês, somado ao que já tem, com a taxa de ${formatMoney(annualRate * 100)}% a.a., para atingir o objetivo no prazo, já considerando imposto de ${formatMoney(tax * 100)}% sobre o rendimento).</small></p>
-        <p><strong>3. Prazo com o Plano Atual:</strong> ${monthsToGoalAtual > 0 ? `${monthsToGoalAtual} meses` : \'Não atinge o objetivo no prazo simulado (50 anos)\'}<br><small>(Tempo estimado para atingir o objetivo se mantiver o aporte mensal atual de R$ ${formatMoney(currentContribution)} e a taxa de ${formatMoney(annualRate * 100)}% a.a.).</small></p>
+        <p><strong>3. Prazo com o Plano Atual:</strong> ${monthsToGoalAtual > 0 ? `${monthsToGoalAtual} meses` : 'Não atinge o objetivo no prazo simulado (50 anos)'}<br><small>(Tempo estimado para atingir o objetivo se mantiver o aporte mensal atual de R$ ${formatMoney(currentContribution)} e a taxa de ${formatMoney(annualRate * 100)}% a.a.).</small></p>
         <p><strong>4. Rentabilidade Necessária:</strong> ${formatMoney(requiredAnnualRate * 100)}% ao ano<br><small>(Taxa de juros anual que seu dinheiro precisaria render para atingir o objetivo no prazo, mantendo o aporte mensal atual de R$ ${formatMoney(currentContribution)}).</small></p>
       `;
       resultDiv.innerHTML = resultText;
@@ -1658,43 +1660,43 @@
       if (chartUnicoContainer) {
           const ctxUnico = document.getElementById("chartUnico").getContext("2d");
           const dataUnico = singleInvestmentData.valoresMensais;
-          drawChart(ctxUnico, dataUnico.map(d => d.totalAcumulado), dataUnico.map(d => d.valorLiquido), dataUnico.map(d => d.totalInvestido), dataUnico.map(d => d.objetivoCorrigido), \'rgba(255, 99, 132, 1)\', \'rgba(54, 162, 235, 1)\', \'rgba(75, 192, 192, 1)\');
+          drawChart(ctxUnico, dataUnico.map(d => d.totalAcumulado), dataUnico.map(d => d.valorLiquido), dataUnico.map(d => d.totalInvestido), dataUnico.map(d => d.objetivoCorrigido), 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)');
           fillDataTable("tableUnico", dataUnico);
           chartUnicoContainer.style.display = "block";
-          chartUnicoContainer.dataset.initiallyVisible = \'true\';
+          chartUnicoContainer.dataset.initiallyVisible = 'true';
           showChartSlide("Unico", "chart");
           chartsToShow.push(chartUnicoContainer);
       }
       if (chartIdealContainer) {
           const ctxIdeal = document.getElementById("chartIdeal").getContext("2d");
           const dataIdeal = idealResult.valoresMensais;
-          drawChart(ctxIdeal, dataIdeal.map(d => d.totalAcumulado), dataIdeal.map(d => d.valorLiquido), dataIdeal.map(d => d.totalInvestido), dataIdeal.map(d => d.objetivoCorrigido), \'rgba(255, 159, 64, 1)\', \'rgba(153, 102, 255, 1)\', \'rgba(255, 205, 86, 1)\');
+          drawChart(ctxIdeal, dataIdeal.map(d => d.totalAcumulado), dataIdeal.map(d => d.valorLiquido), dataIdeal.map(d => d.totalInvestido), dataIdeal.map(d => d.objetivoCorrigido), 'rgba(255, 159, 64, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 205, 86, 1)');
           fillDataTable("tableIdeal", dataIdeal);
           chartIdealContainer.style.display = "block";
-          chartIdealContainer.dataset.initiallyVisible = \'true\';
+          chartIdealContainer.dataset.initiallyVisible = 'true';
           showChartSlide("Ideal", "chart");
           chartsToShow.push(chartIdealContainer);
       }
       if (monthsToGoalAtual > 0 && chartAtualContainer) {
           const ctxAtual = document.getElementById("chartAtual").getContext("2d");
           const dataAtual = currentPlanResult.valoresMensais.slice(0, monthsToGoalAtual + 1);
-          drawChart(ctxAtual, dataAtual.map(d => d.totalAcumulado), dataAtual.map(d => d.valorLiquido), dataAtual.map(d => d.totalInvestido), dataAtual.map(d => d.objetivoCorrigido), \'rgba(201, 203, 207, 1)\', \'rgba(0, 0, 0, 1)\', \'rgba(100, 100, 100, 1)\');
+          drawChart(ctxAtual, dataAtual.map(d => d.totalAcumulado), dataAtual.map(d => d.valorLiquido), dataAtual.map(d => d.totalInvestido), dataAtual.map(d => d.objetivoCorrigido), 'rgba(201, 203, 207, 1)', 'rgba(0, 0, 0, 1)', 'rgba(100, 100, 100, 1)');
           fillDataTable("tableAtual", dataAtual);
           chartAtualContainer.style.display = "block";
-          chartAtualContainer.dataset.initiallyVisible = \'true\';
+          chartAtualContainer.dataset.initiallyVisible = 'true';
           showChartSlide("Atual", "chart");
           chartsToShow.push(chartAtualContainer);
       } else if (chartAtualContainer) {
           chartAtualContainer.style.display = "none";
-          chartAtualContainer.dataset.initiallyVisible = \'false\';
+          chartAtualContainer.dataset.initiallyVisible = 'false';
       }
       if (chartRentabilidadeContainer) {
           const ctxRentabilidade = document.getElementById("chartRentabilidade").getContext("2d");
           const dataRentabilidade = requiredRateResult.valoresMensais; // Usando dados da função corrigida
-          drawChart(ctxRentabilidade, dataRentabilidade.map(d => d.totalAcumulado), dataRentabilidade.map(d => d.valorLiquido), dataRentabilidade.map(d => d.totalInvestido), dataRentabilidade.map(d => d.objetivoCorrigido), \'rgba(255, 99, 132, 0.6)\', \'rgba(54, 162, 235, 0.6)\', \'rgba(75, 192, 192, 0.6)\');
+          drawChart(ctxRentabilidade, dataRentabilidade.map(d => d.totalAcumulado), dataRentabilidade.map(d => d.valorLiquido), dataRentabilidade.map(d => d.totalInvestido), dataRentabilidade.map(d => d.objetivoCorrigido), 'rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(75, 192, 192, 0.6)');
           fillDataTable("tableRentabilidade", dataRentabilidade);
           chartRentabilidadeContainer.style.display = "block";
-          chartRentabilidadeContainer.dataset.initiallyVisible = \'true\';
+          chartRentabilidadeContainer.dataset.initiallyVisible = 'true';
           showChartSlide("Rentabilidade", "chart");
           chartsToShow.push(chartRentabilidadeContainer);
       }
@@ -1706,10 +1708,10 @@
           chartsContainer.style.display = "block";
           toggleChartsSection.style.display = "block";
           allChartsExpanded = true;
-          const button = document.getElementById(\'toggleAllChartsButton\');
-          const icon = document.getElementById(\'toggleChartsIcon\');
-          button.textContent = \'Retrair Todos os Gráficos e Memórias \';
-          icon.textContent = \'➖\';
+          const button = document.getElementById('toggleAllChartsButton');
+          const icon = document.getElementById('toggleChartsIcon');
+          button.textContent = 'Retrair Todos os Gráficos e Memórias ';
+          icon.textContent = '➖';
           button.appendChild(icon);
       } else {
           chartsContainer.style.display = "none";
@@ -1729,13 +1731,13 @@
       }
 
       // Scroll para os resultados
-      document.getElementById(\'result\').scrollIntoView({ behavior: \'smooth\', block: \'start\' });
+      document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // --- Inicialização ---
-    document.addEventListener(\'DOMContentLoaded\', (event) => {
-      toggleTaxInput(\'tax\', \'15,00 %\');
-      toggleTaxInput(\'inflation\', \'5,00 %\');
+    document.addEventListener('DOMContentLoaded', (event) => {
+      toggleTaxInput('tax', '15,00 %');
+      toggleTaxInput('inflation', '5,00 %');
       displayScenarios(); // Exibir cenários salvos (se houver)
       clearResults(); // Garantir estado inicial limpo
     });
@@ -1743,4 +1745,3 @@
   </script>
 </body>
 </html>
-
