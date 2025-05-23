@@ -809,20 +809,32 @@
     // --- Funções de Gerenciamento de Objetivos --- 
     function populateObjectiveSelector() {
         const selector = document.getElementById('objectiveSelector');
+        if (!selector) return; // Proteção contra elemento não encontrado
+        
         selector.innerHTML = ''; // Limpa opções existentes
         const objectiveIds = Object.keys(objectives);
 
         if (objectiveIds.length === 0) {
             selector.innerHTML = '<option value="">Nenhum objetivo criado</option>';
             selector.disabled = true;
-            document.getElementById('saveObjectiveButton').disabled = true;
-            document.getElementById('deleteObjectiveButton').disabled = true;
+            
+            // Verificar se os elementos existem antes de manipulá-los
+            const saveButton = document.getElementById('saveObjectiveButton');
+            const deleteButton = document.getElementById('deleteObjectiveButton');
+            
+            if (saveButton) saveButton.disabled = true;
+            if (deleteButton) deleteButton.disabled = true;
             return;
         }
 
         selector.disabled = false;
-        document.getElementById('saveObjectiveButton').disabled = false;
-        document.getElementById('deleteObjectiveButton').disabled = false;
+        
+        // Verificar se os elementos existem antes de manipulá-los
+        const saveButton = document.getElementById('saveObjectiveButton');
+        const deleteButton = document.getElementById('deleteObjectiveButton');
+        
+        if (saveButton) saveButton.disabled = false;
+        if (deleteButton) deleteButton.disabled = false;
 
         objectiveIds.forEach(id => {
             const option = document.createElement('option');
@@ -1084,11 +1096,12 @@
         const idealContributionResult = calculateCompoundInterest(objective.currentSavings, idealContribution, monthlyRate, objective.period, objective.tax, objective.goal, objective.inflation);
         const initialOnlyResult = calculateCompoundInterest(objective.currentSavings, 0, monthlyRate, objective.period, objective.tax, objective.goal, objective.inflation);
 
-        // --- Exibir resultados (igual ao original, mas usando 'objective') ---
+        // --- Exibir resultados (adaptado para mostrar o mês em que o objetivo é atingido) ---
         const resultDiv = document.getElementById("result");
         const finalNetValueCurrent = currentResult.valoresMensais[objective.period].valorLiquido;
         const finalGoalValue = currentResult.valoresMensais[objective.period].objetivoCorrigido;
         const difference = finalNetValueCurrent - finalGoalValue;
+        const goalReachedMonth = currentResult.goalReachedMonth;
 
         let resultText = `<h3>Resultado da Simulação para '${objective.name}'</h3>`;
         resultText += `<p>Com um aporte mensal de <strong>${formatMoney(objective.currentContribution)}</strong> e uma taxa de juros de <strong>${formatPercent(annualRate)} ao ano</strong>, em <strong>${objective.period} meses</strong>, você terá acumulado um valor líquido de <strong>${formatMoney(finalNetValueCurrent)}</strong>.</p>`;
@@ -1096,8 +1109,33 @@
 
         if (difference >= 0) {
             resultText += `<p style="color: var(--verde-esmeralda); font-weight: bold;">Parabéns! Você atingirá seu objetivo, superando-o em ${formatMoney(difference)}.</p>`;
+            
+            // Se o objetivo for atingido antes do período especificado
+            if (goalReachedMonth > 0 && goalReachedMonth < objective.period) {
+                resultText += `<p style="color: var(--verde-esmeralda);">Na verdade, seu objetivo será atingido no <strong>mês ${goalReachedMonth}</strong>, antes do prazo estipulado!</p>`;
+            }
         } else {
-            resultText += `<p style="color: #dc3545; font-weight: bold;">Atenção! Faltarão ${formatMoney(Math.abs(difference))} para atingir seu objetivo.</p>`;
+            resultText += `<p style="color: #dc3545; font-weight: bold;">Atenção! Faltarão ${formatMoney(Math.abs(difference))} para atingir seu objetivo no prazo estipulado.</p>`;
+            
+            // Se o objetivo for atingido após o período especificado
+            if (goalReachedMonth > objective.period) {
+                const anosAdicionais = Math.floor((goalReachedMonth - objective.period) / 12);
+                const mesesAdicionais = (goalReachedMonth - objective.period) % 12;
+                let tempoAdicional = "";
+                
+                if (anosAdicionais > 0) {
+                    tempoAdicional += `${anosAdicionais} ${anosAdicionais === 1 ? 'ano' : 'anos'}`;
+                }
+                if (mesesAdicionais > 0) {
+                    if (anosAdicionais > 0) tempoAdicional += " e ";
+                    tempoAdicional += `${mesesAdicionais} ${mesesAdicionais === 1 ? 'mês' : 'meses'}`;
+                }
+                
+                resultText += `<p style="color: #dc3545;">Com os valores atuais, seu objetivo será atingido no <strong>mês ${goalReachedMonth}</strong>, ou seja, serão necessários mais <strong>${tempoAdicional}</strong> além do prazo estipulado.</p>`;
+            } else if (goalReachedMonth === -1) {
+                resultText += `<p style="color: #dc3545;">Com os valores atuais, seu objetivo <strong>não será atingido</strong> mesmo após um longo período adicional.</p>`;
+            }
+            
             resultText += `<p>Para atingir seu objetivo no prazo desejado, você precisaria:</p><ul>`;
             resultText += `<li>Aumentar seu aporte mensal para <strong>${formatMoney(idealContribution)}</strong> (um acréscimo de ${formatMoney(idealContribution - objective.currentContribution)}).</li>`;
             resultText += `<li>Ou obter uma rentabilidade anual de <strong>${formatPercent(requiredRateResult.annualRate)}</strong> (considerando o imposto e a inflação).</li></ul>`;
@@ -1149,7 +1187,11 @@
       let totalJuros = 0;
       let valoresMensais = [];
       let objetivoCorrigido = goal;
+      let goalReachedMonth = -1; // Mês em que o objetivo é atingido (-1 significa não atingido)
+      
       valoresMensais.push({ month: 0, juros: 0, totalInvestido: totalInvested, totalJuros: 0, imposto: 0, valorLiquido: totalValue, totalAcumulado: totalValue, objetivoCorrigido: objetivoCorrigido });
+      
+      // Primeiro, calcular até o período especificado
       for (let month = 1; month <= months; month++) {
         const jurosDoMes = totalValue * monthlyRate;
         totalJuros += jurosDoMes;
@@ -1158,9 +1200,77 @@
         const impostoTotal = totalJuros * tax;
         const valorLiquido = totalValue - impostoTotal;
         if (month % 12 === 0) objetivoCorrigido *= (1 + inflation);
-        valoresMensais.push({ month: month, juros: jurosDoMes, totalInvestido: totalInvested, totalJuros: totalJuros, imposto: impostoTotal, valorLiquido: valorLiquido, totalAcumulado: totalValue, objetivoCorrigido: objetivoCorrigido });
+        
+        // Verificar se o objetivo foi atingido neste mês
+        if (goalReachedMonth === -1 && valorLiquido >= objetivoCorrigido) {
+            goalReachedMonth = month;
+        }
+        
+        valoresMensais.push({ 
+            month: month, 
+            juros: jurosDoMes, 
+            totalInvestido: totalInvested, 
+            totalJuros: totalJuros, 
+            imposto: impostoTotal, 
+            valorLiquido: valorLiquido, 
+            totalAcumulado: totalValue, 
+            objetivoCorrigido: objetivoCorrigido 
+        });
       }
-      return { finalValue: totalValue, totalInvested: totalInvested, totalJuros: totalJuros, totalImposto: totalJuros * tax, valoresMensais: valoresMensais };
+      
+      // Se o objetivo não foi atingido no período especificado, continuar calculando até atingir
+      // ou até um limite máximo (para evitar loops infinitos)
+      const maxExtraMonths = 600; // Limite de 50 anos adicionais
+      let month = months;
+      
+      while (goalReachedMonth === -1 && month < months + maxExtraMonths) {
+        month++;
+        const jurosDoMes = totalValue * monthlyRate;
+        totalJuros += jurosDoMes;
+        totalValue += jurosDoMes + monthlyContribution;
+        totalInvested += monthlyContribution;
+        const impostoTotal = totalJuros * tax;
+        const valorLiquido = totalValue - impostoTotal;
+        if (month % 12 === 0) objetivoCorrigido *= (1 + inflation);
+        
+        // Verificar se o objetivo foi atingido neste mês
+        if (valorLiquido >= objetivoCorrigido) {
+            goalReachedMonth = month;
+            // Adicionar este mês aos valores mensais
+            valoresMensais.push({ 
+                month: month, 
+                juros: jurosDoMes, 
+                totalInvestido: totalInvested, 
+                totalJuros: totalJuros, 
+                imposto: impostoTotal, 
+                valorLiquido: valorLiquido, 
+                totalAcumulado: totalValue, 
+                objetivoCorrigido: objetivoCorrigido 
+            });
+            break; // Sair do loop quando o objetivo for atingido
+        }
+        
+        // Opcional: adicionar este mês aos valores mensais se quiser mostrar a progressão completa
+        valoresMensais.push({ 
+            month: month, 
+            juros: jurosDoMes, 
+            totalInvestido: totalInvested, 
+            totalJuros: totalJuros, 
+            imposto: impostoTotal, 
+            valorLiquido: valorLiquido, 
+            totalAcumulado: totalValue, 
+            objetivoCorrigido: objetivoCorrigido 
+        });
+      }
+      
+      return { 
+          finalValue: totalValue, 
+          totalInvested: totalInvested, 
+          totalJuros: totalJuros, 
+          totalImposto: totalJuros * tax, 
+          valoresMensais: valoresMensais,
+          goalReachedMonth: goalReachedMonth // Retorna o mês em que o objetivo foi atingido
+      };
     }
 
     function calculateCompoundInterestUntilGoal(initialValue, monthlyContribution, monthlyRate, tax, goal, inflation, maxMonths = 600) {
@@ -1719,4 +1829,3 @@
   </script>
 </body>
 </html>
-
