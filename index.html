@@ -45,82 +45,55 @@
       margin-left: auto;
       margin-right: auto;
       line-height: 1.6;
+      padding-bottom: 120px; /* Espaço para os botões fixos */
     }
     
     /* Estilos para o container retrátil de gráficos */
     .charts-toggle-container {
-      margin: 25px 0;
-      position: relative;
+      margin: 15px 0;
     }
     .toggle-charts-button {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 15px 20px;
+      padding: 12px 20px;
       background-color: var(--verde-esmeralda);
       color: white;
-      text-align: center;
+      text-align: left;
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1rem;
       border: none;
       border-radius: var(--borda-arredondada);
       cursor: pointer;
       transition: var(--transicao-padrao);
       box-shadow: var(--sombra-padrao);
-      position: relative;
-      overflow: hidden;
     }
     .toggle-charts-button:hover {
       background-color: var(--verde-esmeralda-escuro);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-    }
-    .toggle-charts-button:before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
-      pointer-events: none;
     }
     .toggle-charts-button span#toggleChartsIcon {
-      font-size: 1.5rem;
-      margin-left: 15px;
+      font-size: 1.2rem;
       transition: transform 0.3s ease;
     }
-    .toggle-charts-button-pulse {
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(4, 108, 78, 0.7);
-      }
-      70% {
-        box-shadow: 0 0 0 10px rgba(4, 108, 78, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(4, 108, 78, 0);
-      }
-    }
-    .toggle-instruction {
-      text-align: center;
-      color: var(--cinza-escuro);
-      font-style: italic;
-      margin-top: 8px;
-      font-size: 0.9rem;
-    }
     
-    /* Estilos para os botões no final da página */
+    /* Estilos para os botões fixos no final da página */
     .fixed-buttons-container {
       margin-top: 30px;
       padding: 20px 0;
       width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background-color: var(--fundo-claro);
       border-top: 1px solid var(--cinza-claro);
-      padding: 15px 0;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+      padding: 15px var(--espacamento-padrao);
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .buttons-row {
       display: flex;
@@ -626,45 +599,26 @@
     <div id="recommendationText"></div>
   </div>
   
-  <!-- Botões no final da página -->
-  <div id="buttonsContainer" class="fixed-buttons-container">
-    <!-- Botões para salvar cenário, analisar cenários e simular outro cenário -->
-    <div class="row buttons-row">
-      <div style="flex: 1; margin-right: 10px;">
-        <button id="saveScenarioButton" class="save-scenario-button" type="button" onclick="addCurrentScenario()" style="display: none;">
-          SALVAR CENÁRIO
-        </button>
-      </div>
-      <div style="flex: 1; margin-left: 10px; margin-right: 10px;">
-        <button id="analyzeScenarioButton" class="analyze-scenario-button" type="button" onclick="analyzeScenarios()" style="display: none;">
-          ANALISAR CENÁRIOS
-        </button>
-      </div>
-      <div style="flex: 1; margin-left: 10px;">
-        <button id="newScenarioButton" class="save-scenario-button" type="button" onclick="prepareNewScenario()" style="display: none;">
-          SIMULAR OUTRO CENÁRIO
-        </button>
-      </div>
-    </div>
-
-    <!-- Botão WhatsApp para análise personalizada - sempre visível após cálculo -->
-    <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
-      AVANÇAR PARA ANÁLISE PERSONALIZADA
-    </a>
-  </div>
-  
-  <!-- Container para gráficos e memórias de cálculo -->
+  <!-- Container para gráficos e memórias de cálculo (retrátil) -->
   <div id="chartsContainer" style="display: none;">
-    <div id="chartUnicoContainer" class="chart-container">
-      <div class="chart-title">Evolução do Investimento Único</div>
-      <div class="chart-nav">
-        <button type="button" onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
-        <button type="button" onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
-      </div>
-      <div class="chart-content">
-        <div id="chartUnicoSlide" class="chart-slide">
-          <canvas id="chartUnico"></canvas>
+    <div class="charts-toggle-container">
+      <button id="toggleChartsButton" class="toggle-charts-button" type="button" onclick="toggleAllCharts()">
+        <span id="toggleChartsText">Ocultar Gráficos e Memórias de Cálculo</span>
+        <span id="toggleChartsIcon">▲</span>
+      </button>
+    </div>
+    
+    <div id="chartsContent">
+      <div id="chartUnicoContainer" class="chart-container">
+        <div class="chart-title">Evolução do Investimento Único</div>
+        <div class="chart-nav">
+          <button type="button" onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
+          <button type="button" onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
         </div>
+        <div class="chart-content">
+          <div id="chartUnicoSlide" class="chart-slide">
+            <canvas id="chartUnico"></canvas>
+          </div>
           <div id="tableUnicoSlide" class="table-slide" style="display: none;">
             <table id="tableUnico" class="data-table">
               <thead>
@@ -777,8 +731,8 @@
     </div>
   </div>
   
-  <!-- Botões no final da página -->
-  <div id="buttonsContainer" class="fixed-buttons-container">
+  <!-- Botões fixados no final da página -->
+  <div id="fixedButtonsContainer" class="fixed-buttons-container">
     <!-- Botões para salvar cenário, analisar cenários e simular outro cenário -->
     <div class="row buttons-row">
       <div style="flex: 1; margin-right: 10px;">
@@ -991,34 +945,28 @@
               label: "Valor Bruto",
               data: bruto,
               borderColor: corBruto,
-              backgroundColor: "rgba(255, 100, 100, 0.2)", // Vermelho translúcido
+              backgroundColor: "transparent",
               borderWidth: 2,
               pointRadius: 0,
-              pointHoverRadius: 5,
-              fill: 'origin',
-              hoverBackgroundColor: "rgba(255, 100, 100, 0.4)"
+              pointHoverRadius: 5
             },
             {
               label: "Valor Líquido",
               data: liquido,
               borderColor: corLiquido,
-              backgroundColor: "rgba(100, 255, 100, 0.2)", // Verde translúcido
+              backgroundColor: "transparent",
               borderWidth: 2,
               pointRadius: 0,
-              pointHoverRadius: 5,
-              fill: '+1', // Preenche até o próximo dataset (Valor Bruto)
-              hoverBackgroundColor: "rgba(100, 255, 100, 0.4)"
+              pointHoverRadius: 5
             },
             {
               label: "Total Investido",
               data: investido,
               borderColor: corInvestido,
-              backgroundColor: "rgba(100, 100, 255, 0.2)", // Azul translúcido
+              backgroundColor: "transparent",
               borderWidth: 2,
               pointRadius: 0,
-              pointHoverRadius: 5,
-              fill: 'origin', // Preenche até o eixo
-              hoverBackgroundColor: "rgba(100, 100, 255, 0.4)"
+              pointHoverRadius: 5
             },
             {
               label: "Objetivo Corrigido",
@@ -1028,8 +976,7 @@
               borderWidth: 2,
               borderDash: [5, 5], // Linha tracejada
               pointRadius: 0,
-              pointHoverRadius: 5,
-              fill: false
+              pointHoverRadius: 5
             }
           ]
         },
@@ -1361,39 +1308,9 @@
       // Atualizar a interface de cenários salvos
       displayScenarios();
       
-      // Mostrar o botão de analisar cenários apenas se houver pelo menos dois cenários
-      if (scenarios.length >= 2) {
-        // Verificar se já existe um botão de análise abaixo dos cenários
-        let analyzeButton = document.getElementById("analyzeScenariosBelowContainer");
-        
-        if (!analyzeButton) {
-          // Criar um novo botão de análise abaixo dos cenários
-          analyzeButton = document.createElement("button");
-          analyzeButton.id = "analyzeScenariosBelowContainer";
-          analyzeButton.className = "analyze-scenario-button";
-          analyzeButton.type = "button";
-          analyzeButton.onclick = analyzeScenarios;
-          analyzeButton.textContent = "ANALISAR CENÁRIOS";
-          
-          // Inserir após o container de cenários
-          const scenariosContainer = document.getElementById("scenariosContainer");
-          if (scenariosContainer) {
-            scenariosContainer.appendChild(analyzeButton);
-          }
-        }
-        
-        // Mostrar o botão
-        analyzeButton.style.display = "block";
-        
-        // Esconder o botão original na área de botões
-        document.getElementById("analyzeScenarioButton").style.display = "none";
-      } else {
-        // Esconder ambos os botões se não houver pelo menos dois cenários
-        const analyzeButton = document.getElementById("analyzeScenariosBelowContainer");
-        if (analyzeButton) {
-          analyzeButton.style.display = "none";
-        }
-        document.getElementById("analyzeScenarioButton").style.display = "none";
+      // Mostrar o botão de analisar cenários se houver mais de um cenário
+      if (scenarios.length >= 1) {
+        document.getElementById("analyzeScenarioButton").style.display = "block";
       }
       
       // Exibir mensagem de sucesso
