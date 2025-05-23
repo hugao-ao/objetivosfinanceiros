@@ -1,1831 +1,811 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora Multi-Objetivos</title>
-  <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <style>
-    :root {
-      --verde-esmeralda: #046c4e;
-      --verde-esmeralda-escuro: #034e38;
-      --verde-claro: #28a745;
-      --verde-medio: #218838;
-      --dourado: #d4af37;
-      --dourado-claro: #f5e2a9;
-      --dourado-escuro: #b38e2e;
-      --roxo: #6f42c1;
-      --roxo-claro: #9f75e5;
-      --roxo-escuro: #4b2882;
-      --fundo-claro: #f9f9f9;
-      --fundo-container: #ffffff;
-      --vermelho-translucido: rgba(255, 0, 0, 0.1);
-      --azul-translucido: rgba(0, 0, 255, 0.1);
-      --roxo-translucido: rgba(111, 66, 193, 0.1);
-      --cinza-claro: #e9ecef;
-      --cinza-medio: #ced4da;
-      --cinza-escuro: #6c757d;
-      --verde-destaque: rgba(4, 108, 78, 0.1);
-      --vermelho-destaque: rgba(220, 53, 69, 0.1);
-      --sombra-padrao: 0 4px 12px rgba(0,0,0,0.1);
-      --borda-arredondada: 8px;
-      --espacamento-padrao: 20px;
-      --transicao-padrao: all 0.3s ease;
-    }
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background-color: var(--fundo-claro);
-      color: var(--verde-esmeralda-escuro);
-      margin: 0;
-      padding: var(--espacamento-padrao);
-      max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.6;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      color: var(--verde-esmeralda);
-      margin-top: 0;
-      margin-bottom: var(--espacamento-padrao);
-      font-weight: 600;
-      line-height: 1.3;
-    }
-    h1 {
-      color: var(--verde-esmeralda-escuro);
-      text-align: center;
-      font-size: 2.2rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 3px solid var(--dourado);
-      padding-bottom: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    form {
-      background-color: var(--fundo-container);
-      padding: var(--espacamento-padrao);
-      border-radius: var(--borda-arredondada);
-      box-shadow: var(--sombra-padrao);
-      margin-bottom: var(--espacamento-padrao);
-      border: 1px solid var(--cinza-claro);
-    }
-    .result, .recommendation, .scenarios-container, .comparison-container, .general-analysis {
-      margin-top: var(--espacamento-padrao);
-      padding: var(--espacamento-padrao);
-      border: 2px solid var(--dourado);
-      background-color: var(--fundo-container);
-      border-radius: var(--borda-arredondada);
-      box-shadow: var(--sombra-padrao);
-    }
-    .recommendation {
-      border-color: var(--verde-esmeralda);
-    }
-    .comparison-container, .general-analysis {
-        border-color: var(--roxo);
-    }
-    .recommendation h3, .scenarios-header h3, .comparison-header, .general-analysis h3 {
-      color: var(--verde-esmeralda-escuro);
-      margin-top: 0;
-      border-bottom: 2px solid var(--dourado);
-      padding-bottom: 10px;
-      font-size: 1.4rem;
-      text-align: center;
-    }
-    .comparison-header, .general-analysis h3 {
-        color: var(--roxo);
-        border-bottom-color: var(--dourado-claro);
-    }
-    .whatsapp-button {
-      display: block;
-      width: 100%;
-      padding: 15px;
-      margin: var(--espacamento-padrao) 0;
-      background-color: var(--verde-esmeralda);
-      color: white;
-      text-align: center;
-      font-weight: bold;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: var(--borda-arredondada);
-      cursor: pointer;
-      text-decoration: none;
-      box-shadow: var(--sombra-padrao);
-      transition: var(--transicao-padrao);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .whatsapp-button:hover {
-      background-color: var(--verde-esmeralda-escuro);
-      transform: translateY(-2px);
-    }
-    .action-button {
-        padding: 15px;
-        margin: 0; /* Reset margin for buttons inside rows */
-        text-align: center;
-        font-weight: bold;
-        font-size: 1rem;
-        border: none;
-        border-radius: var(--borda-arredondada);
-        cursor: pointer;
-        text-decoration: none;
-        box-shadow: var(--sombra-padrao);
-        transition: var(--transicao-padrao);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        width: 100%; /* Make buttons fill their container */
-    }
-    .save-scenario-button {
-      background-color: var(--dourado);
-      color: white;
-    }
-    .save-scenario-button:hover {
-      background-color: var(--dourado-escuro);
-      transform: translateY(-2px);
-    }
-    .analyze-scenario-button {
-      background-color: var(--verde-esmeralda);
-      color: white;
-    }
-    .analyze-scenario-button:hover {
-      background-color: var(--verde-esmeralda-escuro);
-      transform: translateY(-2px);
-    }
-    .new-scenario-button {
-        background-color: var(--cinza-escuro);
-        color: white;
-    }
-    .new-scenario-button:hover {
-        background-color: #5a6268;
-        transform: translateY(-2px);
-    }
-    .add-objective-button {
-        background-color: var(--verde-claro);
-        color: white;
-    }
-    .add-objective-button:hover {
-        background-color: var(--verde-medio);
-        transform: translateY(-2px);
-    }
-    .save-objective-button {
-        background-color: var(--dourado);
-        color: white;
-    }
-    .save-objective-button:hover {
-        background-color: var(--dourado-escuro);
-        transform: translateY(-2px);
-    }
-    .delete-objective-button {
-        background-color: #dc3545;
-        color: white;
-    }
-    .delete-objective-button:hover {
-        background-color: #c82333;
-        transform: translateY(-2px);
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 5px;
-      font-weight: 500;
-      color: var(--verde-esmeralda-escuro);
-    }
-    .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      margin-bottom: 15px;
-      align-items: flex-end; /* Align items at the bottom for button rows */
-    }
-    .row > div {
-      flex: 1;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 5px;
-      box-sizing: border-box;
-      border: 1px solid var(--cinza-medio);
-      border-radius: var(--borda-arredondada);
-      transition: var(--transicao-padrao);
-      font-size: 1rem;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--dourado);
-      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
-    }
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    button#calculateButton {
-      margin-top: 20px;
-      padding: 14px;
-      background-color: var(--verde-esmeralda);
-      color: white;
-      border: none;
-      border-radius: var(--borda-arredondada);
-      cursor: pointer;
-      width: 100%;
-      font-weight: bold;
-      font-size: 1rem;
-      transition: var(--transicao-padrao);
-      letter-spacing: 0.5px;
-    }
-    button#calculateButton:hover {
-      background-color: var(--verde-esmeralda-escuro);
-      transform: translateY(-2px);
-    }
-    .chart-container {
-      margin-top: 30px;
-      position: relative;
-      border: 2px solid var(--dourado-claro);
-      border-radius: var(--borda-arredondada);
-      padding: 20px;
-      background-color: var(--fundo-container);
-      box-shadow: var(--sombra-padrao);
-    }
-    .chart-title {
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 20px;
-      color: var(--verde-esmeralda-escuro);
-      font-size: 1.2rem;
-      border-bottom: 1px solid var(--dourado);
-      padding-bottom: 10px;
-    }
-    .chart-nav {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-    .chart-nav button {
-      padding: 10px 20px;
-      margin-top: 0;
-      width: auto;
-      font-size: 0.9rem;
-      background-color: var(--dourado);
-      border-radius: var(--borda-arredondada);
-      transition: var(--transicao-padrao);
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .chart-nav button:hover {
-      background-color: var(--dourado-escuro);
-    }
-    .chart-content {
-      display: flex;
-      overflow: hidden;
-      position: relative;
-      height: 400px;
-      border: 1px solid var(--cinza-claro);
-      border-radius: var(--borda-arredondada);
-      background-color: var(--fundo-container);
-    }
-    .chart-slide {
-      flex: 0 0 100%;
-      transition: transform 0.3s ease;
-    }
-    .table-slide {
-      flex: 0 0 100%;
-      overflow-x: auto;
-      overflow-y: auto;
-      padding: 15px;
-      background-color: var(--fundo-container);
-      max-height: 400px; /* Limit table height */
-    }
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-      min-width: 800px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .data-table th, .data-table td {
-      border: 1px solid var(--cinza-claro);
-      padding: 10px;
-      text-align: right;
-      white-space: nowrap;
-    }
-    .data-table th {
-      background-color: var(--verde-esmeralda);
-      color: white;
-      font-weight: 600;
-      text-align: center;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 0.5px;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    .data-table tr:nth-child(even) {
-      background-color: var(--verde-destaque);
-    }
-    .data-table tr:hover {
-      background-color: var(--dourado-claro);
-    }
-    .scenarios-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    .scenario-card {
-      border: 1px solid var(--cinza-medio);
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 15px;
-      background-color: var(--cinza-claro);
-      position: relative;
-    }
-    .scenario-card.active {
-      border: 2px solid var(--verde-esmeralda);
-      background-color: white;
-    }
-    .scenario-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .scenario-title {
-      font-weight: bold;
-      color: var(--verde-esmeralda);
-      margin: 0;
-    }
-    .scenario-actions {
-      display: flex;
-      gap: 10px;
-    }
-    .scenario-actions button {
-      padding: 5px 10px;
-      margin: 0;
-      width: auto;
-      font-size: 12px;
-      color: white;
-      border: none;
-      border-radius: var(--borda-arredondada);
-      cursor: pointer;
-      transition: var(--transicao-padrao);
-    }
-    .scenario-delete {
-      background-color: #dc3545;
-    }
-    .scenario-delete:hover {
-      background-color: #c82333;
-    }
-    .scenario-select {
-      background-color: var(--dourado);
-    }
-    .scenario-select:hover {
-      background-color: var(--dourado-escuro);
-    }
-    .scenario-content {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .scenario-info {
-      flex: 1;
-      min-width: 200px;
-    }
-    .scenario-info p {
-      margin: 5px 0;
-      font-size: 0.9rem;
-    }
-    .scenario-info strong {
-      color: var(--verde-esmeralda);
-    }
-    /* Estilos para comparação de cenários */
-    .comparison-chart-container {
-      height: 400px;
-      margin: 20px 0;
-    }
-    #comparisonTableContainer {
-      overflow-x: auto; /* Habilitar rolagem horizontal */
-      max-height: 400px; /* Limit table height */
-    }
-    .comparison-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      min-width: 900px; /* Garantir largura mínima para forçar rolagem se necessário */
-    }
-    .comparison-table th, .comparison-table td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-      white-space: nowrap; /* Evitar quebra de linha nas células */
-    }
-    .comparison-table th {
-      background-color: var(--roxo-translucido);
-      color: var(--roxo-escuro);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    .comparison-table tr:nth-child(even) {
-      background-color: var(--fundo-claro);
-    }
-    .comparison-table .best-value {
-      font-weight: bold;
-      color: var(--verde-esmeralda);
-      background-color: var(--verde-destaque);
-    }
-    .comparison-table .worst-value {
-      font-weight: bold;
-      color: #dc3545;
-      background-color: var(--vermelho-destaque);
-    }
-    .hidden {
-        display: none;
-    }
-    #objectiveManagement {
-        background-color: var(--fundo-container);
-        padding: var(--espacamento-padrao);
-        border-radius: var(--borda-arredondada);
-        box-shadow: var(--sombra-padrao);
-        margin-bottom: var(--espacamento-padrao);
-        border: 1px solid var(--cinza-claro);
-    }
-    #objectiveManagement h2 {
-        text-align: center;
-        margin-bottom: 1rem;
-        color: var(--verde-esmeralda-escuro);
-        font-size: 1.5rem;
-    }
-    .objective-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-    }
-    .objective-actions button {
-        margin-top: 0;
-        font-size: 0.9rem;
-    }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Financiamento Imobiliário</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --info-color: #0dcaf0;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            padding-top: 20px;
+            padding-bottom: 50px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            font-weight: 600;
+            background-color: var(--light-color);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--dark-color);
+        }
+        
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .tooltip-inner {
+            max-width: 300px;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .dark-mode {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .card {
+            background-color: #454d55;
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .card-header {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .form-control {
+            background-color: #495057;
+            color: #f8f9fa;
+            border-color: #6c757d;
+        }
+        
+        .dark-mode .table {
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .nav-tabs .nav-link {
+            color: #f8f9fa;
+        }
+        
+        .dark-mode .nav-tabs .nav-link.active {
+            background-color: #495057;
+            color: #f8f9fa;
+            border-color: #6c757d;
+        }
+        
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 0.75rem;
+            }
+            
+            .btn {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Calculadora Multi-Objetivos</h1>
-
-  <!-- Seção de Gerenciamento de Objetivos -->
-  <div id="objectiveManagement">
-    <h2>Gerenciar Objetivos</h2>
-    <div class="row">
-        <div>
-            <label for="objectiveSelector">Selecionar Objetivo:</label>
-            <select id="objectiveSelector"></select>
+    <div class="container">
+        <div class="theme-switch">
+            <button class="btn btn-sm btn-outline-secondary" id="themeToggle">
+                <i class="bi bi-moon"></i> Tema Escuro
+            </button>
         </div>
-        <div>
-            <label>&nbsp;</label> <!-- Placeholder for alignment -->
-            <button type="button" class="action-button add-objective-button" onclick="addNewObjective()">Adicionar Novo Objetivo</button>
-        </div>
-    </div>
-    <div class="objective-actions">
-        <button type="button" class="action-button save-objective-button" onclick="saveCurrentObjective()">Salvar Alterações no Objetivo</button>
-        <button type="button" class="action-button delete-objective-button" onclick="deleteCurrentObjective()">Excluir Objetivo Atual</button>
-    </div>
-  </div>
-
-  <!-- Formulário Principal (Contextual ao Objetivo Selecionado) -->
-  <form id="savingsForm" onsubmit="event.preventDefault(); calculateSavings();">
-    <h3 id="currentObjectiveTitle">Novo Objetivo</h3> <!-- Título dinâmico -->
-
-    <label for="objectiveName">Nome do Objetivo:</label>
-    <input type="text" id="objectiveName" placeholder="Ex: Comprar Casa, Viagem Europa" required>
-
-    <label for="goalDescription">Descrição do Objetivo (Opcional):</label>
-    <textarea id="goalDescription" placeholder="Ex: Comprar um imóvel para ter segurança e estabilidade..."></textarea>
-
-    <label for="goal">Valor do Objetivo (R$):</label>
-    <input type="text" id="goal" required oninput="formatCurrency(this)">
-
-    <label for="period">Prazo (em meses):</label>
-    <input type="number" id="period" required>
-
-    <label for="currentSavings">Valor já Guardado (R$):</label>
-    <input type="text" id="currentSavings" required oninput="formatCurrency(this)">
-
-    <label for="currentContribution">Quanto você poupa atualmente por mês (R$):</label>
-    <input type="text" id="currentContribution" required oninput="formatCurrency(this)">
-
-    <div class="row">
-      <div>
-        <label for="rate">Taxa de Juros (%):</label>
-        <input type="text" id="rate" required oninput="formatPercentage(this)">
-      </div>
-      <div>
-        <label for="rateType">Tipo de Taxa:</label>
-        <select id="rateType">
-          <option value="annual">Anual</option>
-          <option value="monthly">Mensal</option>
-        </select>
-      </div>
-    </div>
-
-    <label>Você sabe a alíquota de imposto sobre o rendimento?</label>
-    <div class="row">
-      <div>
-        <select id="knowsTax" onchange="toggleTaxInput('tax', '15,00 %')">
-          <option value="no">Não</option>
-          <option value="yes">Sim</option>
-        </select>
-      </div>
-      <div>
-        <input type="text" id="tax" placeholder="15,00 %" oninput="formatPercentage(this)" disabled>
-      </div>
-    </div>
-
-    <label>Você sabe a taxa de inflação dos últimos 12 meses?</label>
-    <div class="row">
-      <div>
-        <select id="knowsInflation" onchange="toggleTaxInput('inflation', '5,00 %')">
-          <option value="no">Não</option>
-          <option value="yes">Sim</option>
-        </select>
-      </div>
-      <div>
-        <input type="text" id="inflation" placeholder="5,00 %" oninput="formatPercentage(this)" disabled>
-      </div>
-    </div>
-
-    <button id="calculateButton" type="submit">Calcular Simulação</button>
-  </form>
-
-  <!-- Seção de Resultados e Análise (Contextual ao Objetivo Selecionado) -->
-  <div id="resultsSection" class="hidden">
-      <div id="result" class="result"></div>
-      <div id="recommendation" class="recommendation">
-        <h3>Análise Automatizada</h3>
-        <div id="recommendationText"></div>
-      </div>
-
-      <!-- Botões de Ação do Cenário -->
-      <div class="row" style="margin-top: 20px;">
-        <div style="flex: 1;">
-          <button id="saveScenarioButton" class="action-button save-scenario-button" type="button" onclick="addCurrentScenario()">
-            SALVAR CENÁRIO ATUAL
-          </button>
-        </div>
-        <div style="flex: 1;">
-          <button id="analyzeScenarioButton" class="action-button analyze-scenario-button" type="button" onclick="analyzeScenarios()">
-            ANALISAR CENÁRIOS SALVOS
-          </button>
-        </div>
-        <div style="flex: 1;">
-          <button id="newScenarioButton" class="action-button new-scenario-button" type="button" onclick="prepareNewScenario()">
-            LIMPAR PARA NOVA SIMULAÇÃO
-          </button>
-        </div>
-      </div>
-
-      <!-- Botão WhatsApp -->
-      <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()">
-        AVANÇAR PARA ANÁLISE PERSONALIZADA
-      </a>
-
-      <!-- Gráficos e Tabelas -->
-      <div id="chartUnicoContainer" class="chart-container">
-        <div class="chart-title">Evolução do Investimento Único</div>
-        <div class="chart-nav">
-          <button type="button" onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
-          <button type="button" onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
-        </div>
-        <div class="chart-content">
-          <div id="chartUnicoSlide" class="chart-slide">
-            <canvas id="chartUnico"></canvas>
-          </div>
-          <div id="tableUnicoSlide" class="table-slide" style="display: none;">
-            <table id="tableUnico" class="data-table">
-              <thead>
-                <tr>
-                  <th scope="col">Mês</th> <th scope="col">Total Investido</th> <th scope="col">Juros</th> <th scope="col">Total Juros</th> <th scope="col">Total Acumulado</th> <th scope="col">Imposto</th> <th scope="col">Valor Líquido</th> <th scope="col">Objetivo Corrigido</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div id="chartIdealContainer" class="chart-container">
-        <div class="chart-title">Evolução do Plano Ideal</div>
-        <div class="chart-nav">
-          <button type="button" onclick="showChartSlide('Ideal', 'chart')">Gráfico</button>
-          <button type="button" onclick="showChartSlide('Ideal', 'table')">Memória de Cálculo</button>
-        </div>
-        <div class="chart-content">
-          <div id="chartIdealSlide" class="chart-slide">
-            <canvas id="chartIdeal"></canvas>
-          </div>
-          <div id="tableIdealSlide" class="table-slide" style="display: none;">
-            <table id="tableIdeal" class="data-table">
-              <thead>
-                 <tr>
-                  <th scope="col">Mês</th> <th scope="col">Total Investido</th> <th scope="col">Juros</th> <th scope="col">Total Juros</th> <th scope="col">Total Acumulado</th> <th scope="col">Imposto</th> <th scope="col">Valor Líquido</th> <th scope="col">Objetivo Corrigido</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div id="chartAtualContainer" class="chart-container">
-        <div class="chart-title">Evolução da Poupança Atual</div>
-        <div class="chart-nav">
-          <button type="button" onclick="showChartSlide('Atual', 'chart')">Gráfico</button>
-          <button type="button" onclick="showChartSlide('Atual', 'table')">Memória de Cálculo</button>
-        </div>
-        <div class="chart-content">
-          <div id="chartAtualSlide" class="chart-slide">
-            <canvas id="chartAtual"></canvas>
-          </div>
-          <div id="tableAtualSlide" class="table-slide" style="display: none;">
-            <table id="tableAtual" class="data-table">
-              <thead>
-                 <tr>
-                  <th scope="col">Mês</th> <th scope="col">Total Investido</th> <th scope="col">Juros</th> <th scope="col">Total Juros</th> <th scope="col">Total Acumulado</th> <th scope="col">Imposto</th> <th scope="col">Valor Líquido</th> <th scope="col">Objetivo Corrigido</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div id="chartRentabilidadeContainer" class="chart-container">
-        <div class="chart-title">Evolução da Rentabilidade Necessária</div>
-        <div class="chart-nav">
-          <button type="button" onclick="showChartSlide('Rentabilidade', 'chart')">Gráfico</button>
-          <button type="button" onclick="showChartSlide('Rentabilidade', 'table')">Memória de Cálculo</button>
-        </div>
-        <div class="chart-content">
-          <div id="chartRentabilidadeSlide" class="chart-slide">
-            <canvas id="chartRentabilidade"></canvas>
-          </div>
-          <div id="tableRentabilidadeSlide" class="table-slide" style="display: none;">
-            <table id="tableRentabilidade" class="data-table">
-              <thead>
-                 <tr>
-                  <th scope="col">Mês</th> <th scope="col">Total Investido</th> <th scope="col">Juros</th> <th scope="col">Total Juros</th> <th scope="col">Total Acumulado</th> <th scope="col">Imposto</th> <th scope="col">Valor Líquido</th> <th scope="col">Objetivo Corrigido</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Seção de Cenários Salvos (Contextual ao Objetivo Selecionado) -->
-      <div id="scenariosContainer" class="scenarios-container hidden">
-        <div class="scenarios-header">
-          <h3>Cenários Salvos para este Objetivo</h3>
-        </div>
-        <div id="scenariosList"></div>
-      </div>
-
-      <!-- Seção de Comparação de Cenários (Contextual ao Objetivo Selecionado) -->
-      <div id="comparisonContainer" class="comparison-container hidden">
-          <h3 class="comparison-header">Comparação de Cenários (Objetivo Atual)</h3>
-          <div class="comparison-chart-container">
-              <canvas id="comparisonChart"></canvas>
-          </div>
-          <div id="comparisonTableContainer">
-              <table id="comparisonTable" class="comparison-table">
-                  <thead>
-                      <tr>
-                          <th>Métrica</th>
-                          <!-- Cabeçalhos dos cenários serão adicionados dinamicamente -->
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <!-- Linhas de métricas serão adicionadas dinamicamente -->
-                  </tbody>
-              </table>
-          </div>
-      </div>
-
-      <!-- Análise Geral dos Cenários (Contextual ao Objetivo Selecionado) -->
-      <div id="generalAnalysis" class="general-analysis hidden">
-          <h3>Análise Geral Automatizada (Cenários do Objetivo Atual)</h3>
-          <div id="generalAnalysisText"></div>
-      </div>
-  </div> <!-- Fim da #resultsSection -->
-
-  <script>
-    // --- Variáveis Globais --- 
-    let objectives = {}; // Armazena todos os objetivos e seus dados
-    let activeObjectiveId = null; // ID do objetivo atualmente selecionado
-    let scenarioCounter = 1; // Contador global para nomes de cenários (pode ser resetado por objetivo se preferir)
-    let chartInstances = {}; // Armazena instâncias dos gráficos para destruí-las
-    let comparisonChart = null; // Instância do gráfico de comparação
-
-    // --- Funções Utilitárias --- 
-    function generateUUID() { // Gerador simples de ID único
-        return 'obj-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
-    }
-
-    function formatCurrency(input) {
-      let value = input.value.replace(/\D/g, "");
-      value = (parseFloat(value) / 100).toFixed(2);
-      if (isNaN(value)) value = "0.00";
-      input.value = "R$ " + parseFloat(value).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    }
-
-    function formatPercentage(input) {
-      let value = input.value.replace(/\D/g, "");
-      value = (parseFloat(value) / 100).toFixed(2);
-      if (isNaN(value)) value = "0.00";
-      input.value = parseFloat(value).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " %";
-    }
-
-    function toggleTaxInput(id, defaultValue) {
-      const selectElementId = id === "tax" ? "knowsTax" : "knowsInflation";
-      const select = document.getElementById(selectElementId);
-      const input = document.getElementById(id);
-      if (select.value === "yes") {
-        input.disabled = false;
-        input.value = "";
-        input.placeholder = defaultValue;
-      } else {
-        input.disabled = true;
-        input.value = defaultValue;
-      }
-    }
-
-    function parseCurrency(value) {
-      return parseFloat(String(value).replace(/R\$\s?/g, "").replace(/\./g, "").replace(",", ".")) || 0;
-    }
-
-    function parsePercentage(value) {
-      return parseFloat(String(value).replace(/%\s?/g, "").replace(",", ".")) / 100 || 0;
-    }
-
-    function formatMoney(value) {
-        if (typeof value !== 'number' || isNaN(value)) {
-            return "R$ 0,00";
-        }
-        return "R$ " + value.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    }
-
-    function formatPercent(value) {
-        if (typeof value !== 'number' || isNaN(value)) {
-            return "0,00 %";
-        }
-        return (value * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " %";
-    }
-
-    // --- Funções de Persistência (LocalStorage) --- 
-    function saveObjectivesToLocalStorage() {
-        localStorage.setItem('financialObjectives', JSON.stringify(objectives));
-        localStorage.setItem('activeObjectiveId', activeObjectiveId);
-    }
-
-    function loadObjectivesFromLocalStorage() {
-        const storedObjectives = localStorage.getItem('financialObjectives');
-        const storedActiveId = localStorage.getItem('activeObjectiveId');
-        if (storedObjectives) {
-            objectives = JSON.parse(storedObjectives);
-            // Garantir que cada objetivo tenha um array de cenários e currentCalculationData
-            Object.keys(objectives).forEach(id => {
-                if (!objectives[id].scenarios) objectives[id].scenarios = [];
-                if (!objectives[id].currentCalculationData) objectives[id].currentCalculationData = null;
-            });
-        }
-        if (storedActiveId && objectives[storedActiveId]) {
-            activeObjectiveId = storedActiveId;
-        } else if (Object.keys(objectives).length > 0) {
-            activeObjectiveId = Object.keys(objectives)[0]; // Seleciona o primeiro se o ativo não for válido
-        }
-    }
-
-    // --- Funções de Gerenciamento de Objetivos --- 
-    function populateObjectiveSelector() {
-        const selector = document.getElementById('objectiveSelector');
-        if (!selector) return; // Proteção contra elemento não encontrado
         
-        selector.innerHTML = ''; // Limpa opções existentes
-        const objectiveIds = Object.keys(objectives);
-
-        if (objectiveIds.length === 0) {
-            selector.innerHTML = '<option value="">Nenhum objetivo criado</option>';
-            selector.disabled = true;
-            
-            // Verificar se os elementos existem antes de manipulá-los
-            const saveButton = document.getElementById('saveObjectiveButton');
-            const deleteButton = document.getElementById('deleteObjectiveButton');
-            
-            if (saveButton) saveButton.disabled = true;
-            if (deleteButton) deleteButton.disabled = true;
-            return;
-        }
-
-        selector.disabled = false;
+        <header class="text-center mb-4">
+            <h1 class="display-4">Calculadora de Financiamento Imobiliário</h1>
+            <p class="lead">Simule, compare e analise diferentes cenários de financiamento imobiliário no Brasil</p>
+        </header>
         
-        // Verificar se os elementos existem antes de manipulá-los
-        const saveButton = document.getElementById('saveObjectiveButton');
-        const deleteButton = document.getElementById('deleteObjectiveButton');
+        <!-- Formulário Principal -->
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="formTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="imovel-tab" data-bs-toggle="tab" data-bs-target="#imovel" type="button" role="tab" aria-controls="imovel" aria-selected="true">Dados do Imóvel</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="financiamento-tab" data-bs-toggle="tab" data-bs-target="#financiamento" type="button" role="tab" aria-controls="financiamento" aria-selected="false">Condições do Financiamento</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="comprador-tab" data-bs-toggle="tab" data-bs-target="#comprador" type="button" role="tab" aria-controls="comprador" aria-selected="false">Dados do Comprador</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="custos-tab" data-bs-toggle="tab" data-bs-target="#custos" type="button" role="tab" aria-controls="custos" aria-selected="false">Custos Adicionais</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <form id="calculadoraForm">
+                    <div class="tab-content" id="formTabsContent">
+                        <!-- Aba: Dados do Imóvel -->
+                        <div class="tab-pane fade show active" id="imovel" role="tabpanel" aria-labelledby="imovel-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="valorImovel" class="form-label">Valor do Imóvel (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Valor total do imóvel a ser financiado"></i></label>
+                                        <input type="number" class="form-control" id="valorImovel" required min="0" step="0.01">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="valorEntrada" class="form-label">Valor de Entrada (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Valor que será pago como entrada do financiamento"></i></label>
+                                        <input type="number" class="form-control" id="valorEntrada" min="0" step="0.01">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="estadoImovel" class="form-label">Estado do Imóvel <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Condição atual do imóvel"></i></label>
+                                        <select class="form-select" id="estadoImovel">
+                                            <option value="novo">Novo</option>
+                                            <option value="usado">Usado</option>
+                                            <option value="construcao">Em Construção</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="localizacao" class="form-label">UF <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Estado onde o imóvel está localizado"></i></label>
+                                        <select class="form-select" id="localizacao">
+                                            <option value="AC">Acre</option>
+                                            <option value="AL">Alagoas</option>
+                                            <option value="AP">Amapá</option>
+                                            <option value="AM">Amazonas</option>
+                                            <option value="BA">Bahia</option>
+                                            <option value="CE">Ceará</option>
+                                            <option value="DF">Distrito Federal</option>
+                                            <option value="ES">Espírito Santo</option>
+                                            <option value="GO">Goiás</option>
+                                            <option value="MA">Maranhão</option>
+                                            <option value="MT">Mato Grosso</option>
+                                            <option value="MS">Mato Grosso do Sul</option>
+                                            <option value="MG">Minas Gerais</option>
+                                            <option value="PA">Pará</option>
+                                            <option value="PB">Paraíba</option>
+                                            <option value="PR">Paraná</option>
+                                            <option value="PE">Pernambuco</option>
+                                            <option value="PI">Piauí</option>
+                                            <option value="RJ">Rio de Janeiro</option>
+                                            <option value="RN">Rio Grande do Norte</option>
+                                            <option value="RS">Rio Grande do Sul</option>
+                                            <option value="RO">Rondônia</option>
+                                            <option value="RR">Roraima</option>
+                                            <option value="SC">Santa Catarina</option>
+                                            <option value="SP">São Paulo</option>
+                                            <option value="SE">Sergipe</option>
+                                            <option value="TO">Tocantins</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="alert alert-info">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-info-circle-fill me-2"></i>
+                                        <div>
+                                            <strong>Valor a ser financiado:</strong> <span id="valorFinanciado">R$ 0,00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <div></div>
+                                <button type="button" class="btn btn-primary" id="btnProximoFinanciamento">Próximo <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Aba: Condições do Financiamento -->
+                        <div class="tab-pane fade" id="financiamento" role="tabpanel" aria-labelledby="financiamento-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="sistemaAmortizacao" class="form-label">Sistema de Amortização <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Método utilizado para calcular as parcelas do financiamento"></i></label>
+                                        <select class="form-select" id="sistemaAmortizacao">
+                                            <option value="sac">SAC - Sistema de Amortização Constante</option>
+                                            <option value="price">Tabela Price</option>
+                                            <option value="sacre">SACRE - Sistema de Amortização Crescente</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="sistemaCorrecao" class="form-label">Sistema de Correção Monetária <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Índice utilizado para corrigir o valor do financiamento ao longo do tempo"></i></label>
+                                        <select class="form-select" id="sistemaCorrecao">
+                                            <option value="tr">TR</option>
+                                            <option value="ipca">IPCA</option>
+                                            <option value="fixo">Taxa Fixa</option>
+                                            <option value="poupanca">Poupança</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="taxaJuros" class="form-label">Taxa de Juros Nominal (% ao ano) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Taxa de juros anual aplicada ao financiamento"></i></label>
+                                        <input type="number" step="0.01" class="form-control" id="taxaJuros" required min="0" max="30">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="prazoFinanciamento" class="form-label">Prazo (meses) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Duração total do financiamento em meses"></i></label>
+                                        <input type="number" class="form-control" id="prazoFinanciamento" required min="12" max="420">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="dataInicio" class="form-label">Data de Início <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Data de início do financiamento"></i></label>
+                                <input type="date" class="form-control" id="dataInicio">
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="btnVoltarImovel"><i class="bi bi-arrow-left"></i> Anterior</button>
+                                <button type="button" class="btn btn-primary" id="btnProximoComprador">Próximo <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Aba: Dados do Comprador -->
+                        <div class="tab-pane fade" id="comprador" role="tabpanel" aria-labelledby="comprador-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="rendaFamiliar" class="form-label">Renda Familiar Mensal (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Soma da renda mensal de todos os compradores"></i></label>
+                                        <input type="number" class="form-control" id="rendaFamiliar" required min="0" step="0.01">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="idadeComprador" class="form-label">Idade do Principal Comprador <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Idade do comprador principal para cálculo de seguros"></i></label>
+                                        <input type="number" class="form-control" id="idadeComprador" min="18" max="100">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="usarFgts" class="form-label">Usar FGTS? <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Indica se utilizará recursos do FGTS no financiamento"></i></label>
+                                        <select class="form-select" id="usarFgts">
+                                            <option value="nao">Não</option>
+                                            <option value="sim">Sim</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3" id="fgtsOptions" style="display:none;">
+                                        <label for="valorFgts" class="form-label">Valor disponível no FGTS (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Valor disponível para uso no financiamento"></i></label>
+                                        <input type="number" class="form-control" id="valorFgts" min="0" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="programaGoverno" class="form-label">Programa Governamental <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Programa habitacional do governo, se aplicável"></i></label>
+                                <select class="form-select" id="programaGoverno">
+                                    <option value="nenhum">Nenhum</option>
+                                    <option value="mcmv1">Minha Casa Minha Vida - Faixa 1</option>
+                                    <option value="mcmv2">Minha Casa Minha Vida - Faixa 2</option>
+                                    <option value="mcmv3">Minha Casa Minha Vida - Faixa 3</option>
+                                    <option value="mcmv4">Minha Casa Minha Vida - Faixa 4</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="btnVoltarFinanciamento"><i class="bi bi-arrow-left"></i> Anterior</button>
+                                <button type="button" class="btn btn-primary" id="btnProximoCustos">Próximo <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Aba: Custos Adicionais -->
+                        <div class="tab-pane fade" id="custos" role="tabpanel" aria-labelledby="custos-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="taxaMIP" class="form-label">Taxa MIP (% ao ano) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Taxa do seguro de Morte e Invalidez Permanente"></i></label>
+                                        <input type="number" step="0.01" class="form-control" id="taxaMIP" value="0.44" min="0" max="5">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="taxaDFI" class="form-label">Taxa DFI (% ao ano) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Taxa do seguro de Danos Físicos ao Imóvel"></i></label>
+                                        <input type="number" step="0.01" class="form-control" id="taxaDFI" value="0.17" min="0" max="5">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="tarifaAvaliacao" class="form-label">Tarifa de Avaliação (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Custo da avaliação do imóvel pelo banco"></i></label>
+                                        <input type="number" class="form-control" id="tarifaAvaliacao" value="2500" min="0" step="0.01">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="custosCartorarios" class="form-label">Custos Cartorários Estimados (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Custos de registro e documentação em cartório"></i></label>
+                                        <input type="number" class="form-control" id="custosCartorarios" value="3000" min="0" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="outrosCustos" class="form-label">Outros Custos (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Outros custos adicionais não listados acima"></i></label>
+                                <input type="number" class="form-control" id="outrosCustos" value="0" min="0" step="0.01">
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="btnVoltarComprador"><i class="bi bi-arrow-left"></i> Anterior</button>
+                                <button type="button" class="btn btn-primary" id="btnCalcular">Calcular <i class="bi bi-calculator"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
         
-        if (saveButton) saveButton.disabled = false;
-        if (deleteButton) deleteButton.disabled = false;
-
-        objectiveIds.forEach(id => {
-            const option = document.createElement('option');
-            option.value = id;
-            option.textContent = objectives[id].name || `Objetivo ${id.substring(4, 8)}`; // Usa nome ou parte do ID
-            option.selected = id === activeObjectiveId;
-            selector.appendChild(option);
-        });
-    }
-
-    function handleObjectiveSelectionChange() {
-        const selector = document.getElementById('objectiveSelector');
-        const selectedId = selector.value;
-        if (selectedId && objectives[selectedId]) {
-            activeObjectiveId = selectedId;
-            loadObjectiveDataToForm(activeObjectiveId);
-            displayResultsForObjective(activeObjectiveId); // Mostra resultados/cenários salvos
-            saveObjectivesToLocalStorage(); // Salva o ID ativo
-        } else {
-            clearFormAndResults(); // Limpa se nenhum objetivo válido for selecionado
-        }
-    }
-
-    function addNewObjective() {
-        const newId = generateUUID();
-        const newObjectiveName = `Novo Objetivo ${Object.keys(objectives).length + 1}`;
-        objectives[newId] = {
-            id: newId,
-            name: newObjectiveName,
-            goalDescription: '',
-            goal: 0,
-            period: 12,
-            currentSavings: 0,
-            currentContribution: 0,
-            rate: 0.10, // Default rate
-            rateType: 'annual',
-            tax: 0.15, // Default tax
-            inflation: 0.05, // Default inflation
-            knowsTax: 'no',
-            knowsInflation: 'no',
-            scenarios: [],
-            currentCalculationData: null
-        };
-        activeObjectiveId = newId;
-        populateObjectiveSelector();
-        loadObjectiveDataToForm(activeObjectiveId);
-        clearResultsDisplay(); // Limpa a área de resultados para o novo objetivo
-        document.getElementById('objectiveName').focus();
-        saveObjectivesToLocalStorage();
-        alert(`'${newObjectiveName}' adicionado. Preencha os detalhes e salve.`);
-    }
-
-    function saveCurrentObjective() {
-        if (!activeObjectiveId || !objectives[activeObjectiveId]) {
-            alert("Nenhum objetivo selecionado para salvar.");
-            return;
-        }
-
-        const objective = objectives[activeObjectiveId];
-        objective.name = document.getElementById('objectiveName').value.trim() || `Objetivo ${activeObjectiveId.substring(4, 8)}`;
-        objective.goalDescription = document.getElementById('goalDescription').value;
-        objective.goal = parseCurrency(document.getElementById('goal').value);
-        objective.period = parseInt(document.getElementById('period').value) || 0;
-        objective.currentSavings = parseCurrency(document.getElementById('currentSavings').value);
-        objective.currentContribution = parseCurrency(document.getElementById('currentContribution').value);
-        objective.rate = parsePercentage(document.getElementById('rate').value);
-        objective.rateType = document.getElementById('rateType').value;
-        objective.knowsTax = document.getElementById('knowsTax').value;
-        objective.tax = objective.knowsTax === 'yes' ? parsePercentage(document.getElementById('tax').value) : 0.15;
-        objective.knowsInflation = document.getElementById('knowsInflation').value;
-        objective.inflation = objective.knowsInflation === 'yes' ? parsePercentage(document.getElementById('inflation').value) : 0.05;
-
-        // Atualiza o nome no seletor
-        const selector = document.getElementById('objectiveSelector');
-        const option = selector.querySelector(`option[value="${activeObjectiveId}"]`);
-        if (option) {
-            option.textContent = objective.name;
-        }
-
-        saveObjectivesToLocalStorage();
-        alert(`Objetivo '${objective.name}' salvo com sucesso!`);
-    }
-
-    function deleteCurrentObjective() {
-        if (!activeObjectiveId || !objectives[activeObjectiveId]) {
-            alert("Nenhum objetivo selecionado para excluir.");
-            return;
-        }
-
-        const objectiveName = objectives[activeObjectiveId].name;
-        if (confirm(`Tem certeza que deseja excluir o objetivo "${objectiveName}" e todos os seus cenários?`)) {
-            delete objectives[activeObjectiveId];
-            activeObjectiveId = Object.keys(objectives).length > 0 ? Object.keys(objectives)[0] : null;
-            populateObjectiveSelector();
-            if (activeObjectiveId) {
-                loadObjectiveDataToForm(activeObjectiveId);
-                displayResultsForObjective(activeObjectiveId);
-            } else {
-                clearFormAndResults();
-            }
-            saveObjectivesToLocalStorage();
-            alert(`Objetivo "${objectiveName}" excluído.`);
-        }
-    }
-
-    function loadObjectiveDataToForm(objectiveId) {
-        const objective = objectives[objectiveId];
-        if (!objective) return;
-
-        document.getElementById('currentObjectiveTitle').textContent = objective.name || 'Editar Objetivo';
-        document.getElementById('objectiveName').value = objective.name || '';
-        document.getElementById('goalDescription').value = objective.goalDescription || '';
-        document.getElementById('goal').value = formatMoney(objective.goal);
-        formatCurrency(document.getElementById('goal')); // Reformatar
-        document.getElementById('period').value = objective.period || '';
-        document.getElementById('currentSavings').value = formatMoney(objective.currentSavings);
-        formatCurrency(document.getElementById('currentSavings')); // Reformatar
-        document.getElementById('currentContribution').value = formatMoney(objective.currentContribution);
-        formatCurrency(document.getElementById('currentContribution')); // Reformatar
-        document.getElementById('rate').value = formatPercent(objective.rate);
-        formatPercentage(document.getElementById('rate')); // Reformatar
-        document.getElementById('rateType').value = objective.rateType || 'annual';
-
-        document.getElementById('knowsTax').value = objective.knowsTax || 'no';
-        toggleTaxInput('tax', formatPercent(0.15));
-        document.getElementById('tax').value = formatPercent(objective.tax);
-        formatPercentage(document.getElementById('tax'));
-
-        document.getElementById('knowsInflation').value = objective.knowsInflation || 'no';
-        toggleTaxInput('inflation', formatPercent(0.05));
-        document.getElementById('inflation').value = formatPercent(objective.inflation);
-        formatPercentage(document.getElementById('inflation'));
-
-        // Limpar resultados anteriores ao carregar novo objetivo
-        clearResultsDisplay();
-    }
-
-    function clearFormAndResults() {
-        document.getElementById('savingsForm').reset();
-        document.getElementById('currentObjectiveTitle').textContent = 'Nenhum Objetivo Selecionado';
-        // Resetar valores padrão para campos desabilitados
-        document.getElementById('tax').value = formatPercent(0.15);
-        document.getElementById('tax').disabled = true;
-        document.getElementById('inflation').value = formatPercent(0.05);
-        document.getElementById('inflation').disabled = true;
-        clearResultsDisplay();
-        activeObjectiveId = null;
-        populateObjectiveSelector(); // Atualiza o seletor para refletir nenhum ativo
-    }
-
-    function clearResultsDisplay() {
-        document.getElementById("resultsSection").classList.add("hidden");
-        document.getElementById("result").innerHTML = "";
-        document.getElementById("recommendationText").innerHTML = "";
-        document.getElementById("scenariosContainer").classList.add("hidden");
-        document.getElementById("scenariosList").innerHTML = "";
-        document.getElementById("comparisonContainer").classList.add("hidden");
-        document.getElementById("generalAnalysis").classList.add("hidden");
-
-        // Limpar canvases e tabelas
-        const chartIds = ["Unico", "Ideal", "Atual", "Rentabilidade"];
-        chartIds.forEach(id => {
-            const canvas = document.getElementById(`chart${id}`);
-            if (canvas) {
-                const ctx = canvas.getContext("2d");
-                if (chartInstances[id]) {
-                    chartInstances[id].destroy();
-                    delete chartInstances[id];
-                }
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            const tableBody = document.getElementById(`table${id}`)?.querySelector("tbody");
-            if (tableBody) tableBody.innerHTML = "";
-            // Esconder containers de gráfico
-            const container = document.getElementById(`chart${id}Container`);
-            if(container) container.style.display = 'none';
-        });
-
-        // Limpar gráfico e tabela de comparação
-        const comparisonCanvas = document.getElementById("comparisonChart");
-        if (comparisonCanvas) {
-            const ctx = comparisonCanvas.getContext("2d");
-            if (comparisonChart) {
-                comparisonChart.destroy();
-                comparisonChart = null;
-            }
-            ctx.clearRect(0, 0, comparisonCanvas.width, comparisonCanvas.height);
-        }
-        const comparisonTableBody = document.getElementById("comparisonTable")?.querySelector("tbody");
-        if (comparisonTableBody) comparisonTableBody.innerHTML = "";
-        const comparisonTableHeader = document.getElementById("comparisonTable")?.querySelector("thead tr");
-        if (comparisonTableHeader) comparisonTableHeader.innerHTML = "<th>Métrica</th>"; // Reset header
-
-        document.getElementById("generalAnalysisText").innerHTML = "";
-    }
-
-    // --- Funções de Cálculo (Adaptadas) ---
-    function calculateSavings() {
-        if (!activeObjectiveId || !objectives[activeObjectiveId]) {
-            alert("Por favor, selecione ou adicione um objetivo antes de calcular.");
-            return;
-        }
-        const objective = objectives[activeObjectiveId];
-
-        // Salva os dados atuais do formulário no objeto do objetivo ANTES de calcular
-        // Isso garante que o cálculo use os valores mais recentes digitados
-        objective.name = document.getElementById('objectiveName').value.trim() || `Objetivo ${activeObjectiveId.substring(4, 8)}`;
-        objective.goalDescription = document.getElementById('goalDescription').value;
-        objective.goal = parseCurrency(document.getElementById('goal').value);
-        objective.period = parseInt(document.getElementById('period').value) || 0;
-        objective.currentSavings = parseCurrency(document.getElementById('currentSavings').value);
-        objective.currentContribution = parseCurrency(document.getElementById('currentContribution').value);
-        objective.rate = parsePercentage(document.getElementById('rate').value);
-        objective.rateType = document.getElementById('rateType').value;
-        objective.knowsTax = document.getElementById('knowsTax').value;
-        objective.tax = objective.knowsTax === 'yes' ? parsePercentage(document.getElementById('tax').value) : 0.15;
-        objective.knowsInflation = document.getElementById('knowsInflation').value;
-        objective.inflation = objective.knowsInflation === 'yes' ? parsePercentage(document.getElementById('inflation').value) : 0.05;
-        document.getElementById('currentObjectiveTitle').textContent = objective.name; // Atualiza título
-        saveObjectivesToLocalStorage(); // Salva estado atual do objetivo
-
-        // Validar entradas
-        if (isNaN(objective.goal) || objective.goal <= 0 || isNaN(objective.period) || objective.period <= 0 || isNaN(objective.currentSavings) || objective.currentSavings < 0 || isNaN(objective.currentContribution) || objective.currentContribution < 0 || isNaN(objective.rate) || objective.rate < 0 || isNaN(objective.tax) || objective.tax < 0 || isNaN(objective.inflation) || objective.inflation < 0) {
-            alert("Por favor, preencha todos os campos do objetivo com valores válidos.");
-            return;
-        }
-
-        // --- Lógica de cálculo (igual à original, mas usando 'objective' como fonte) ---
-        const monthlyRate = objective.rateType === "annual" ? Math.pow(1 + objective.rate, 1/12) - 1 : objective.rate;
-        const annualRate = objective.rateType === "annual" ? objective.rate : Math.pow(1 + objective.rate, 12) - 1;
-
-        const idealResult = calculateCompoundInterestUntilGoal(objective.currentSavings, 0, monthlyRate, objective.tax, objective.goal, objective.inflation);
-        let idealContribution = 0;
-        if (idealResult.goalReached && idealResult.monthsToGoal <= objective.period) {
-            idealContribution = 0;
-        } else {
-            let lowContribution = 0;
-            let highContribution = objective.goal; 
-            let midContribution = 0;
-            let iterations = 0;
-            while (iterations < 100) {
-                midContribution = (lowContribution + highContribution) / 2;
-                const tempResult = calculateCompoundInterest(objective.currentSavings, midContribution, monthlyRate, objective.period, objective.tax, objective.goal, objective.inflation);
-                const finalNetValue = tempResult.valoresMensais[objective.period].valorLiquido;
-                const finalGoalValue = tempResult.valoresMensais[objective.period].objetivoCorrigido;
-                if (Math.abs(finalNetValue - finalGoalValue) < 0.01) {
-                    idealContribution = midContribution;
-                    break;
-                }
-                if (finalNetValue > finalGoalValue) highContribution = midContribution;
-                else lowContribution = midContribution;
-                iterations++;
-            }
-            if (idealContribution === 0 && iterations === 100) idealContribution = midContribution;
-        }
-
-        const currentResult = calculateCompoundInterest(objective.currentSavings, objective.currentContribution, monthlyRate, objective.period, objective.tax, objective.goal, objective.inflation);
-        const requiredRateResult = calculateRequiredRate(objective.goal, objective.currentSavings, objective.currentContribution, objective.period, objective.tax, objective.inflation);
-        const idealContributionResult = calculateCompoundInterest(objective.currentSavings, idealContribution, monthlyRate, objective.period, objective.tax, objective.goal, objective.inflation);
-        const initialOnlyResult = calculateCompoundInterest(objective.currentSavings, 0, monthlyRate, objective.period, objective.tax, objective.goal, objective.inflation);
-
-        // --- Exibir resultados (adaptado para mostrar o mês em que o objetivo é atingido) ---
-        const resultDiv = document.getElementById("result");
-        const finalNetValueCurrent = currentResult.valoresMensais[objective.period].valorLiquido;
-        const finalGoalValue = currentResult.valoresMensais[objective.period].objetivoCorrigido;
-        const difference = finalNetValueCurrent - finalGoalValue;
-        const goalReachedMonth = currentResult.goalReachedMonth;
-
-        let resultText = `<h3>Resultado da Simulação para '${objective.name}'</h3>`;
-        resultText += `<p>Com um aporte mensal de <strong>${formatMoney(objective.currentContribution)}</strong> e uma taxa de juros de <strong>${formatPercent(annualRate)} ao ano</strong>, em <strong>${objective.period} meses</strong>, você terá acumulado um valor líquido de <strong>${formatMoney(finalNetValueCurrent)}</strong>.</p>`;
-        resultText += `<p>O valor do seu objetivo, corrigido pela inflação estimada de <strong>${formatPercent(objective.inflation)} ao ano</strong>, será de <strong>${formatMoney(finalGoalValue)}</strong>.</p>`;
-
-        if (difference >= 0) {
-            resultText += `<p style="color: var(--verde-esmeralda); font-weight: bold;">Parabéns! Você atingirá seu objetivo, superando-o em ${formatMoney(difference)}.</p>`;
-            
-            // Se o objetivo for atingido antes do período especificado
-            if (goalReachedMonth > 0 && goalReachedMonth < objective.period) {
-                resultText += `<p style="color: var(--verde-esmeralda);">Na verdade, seu objetivo será atingido no <strong>mês ${goalReachedMonth}</strong>, antes do prazo estipulado!</p>`;
-            }
-        } else {
-            resultText += `<p style="color: #dc3545; font-weight: bold;">Atenção! Faltarão ${formatMoney(Math.abs(difference))} para atingir seu objetivo no prazo estipulado.</p>`;
-            
-            // Se o objetivo for atingido após o período especificado
-            if (goalReachedMonth > objective.period) {
-                const anosAdicionais = Math.floor((goalReachedMonth - objective.period) / 12);
-                const mesesAdicionais = (goalReachedMonth - objective.period) % 12;
-                let tempoAdicional = "";
-                
-                if (anosAdicionais > 0) {
-                    tempoAdicional += `${anosAdicionais} ${anosAdicionais === 1 ? 'ano' : 'anos'}`;
-                }
-                if (mesesAdicionais > 0) {
-                    if (anosAdicionais > 0) tempoAdicional += " e ";
-                    tempoAdicional += `${mesesAdicionais} ${mesesAdicionais === 1 ? 'mês' : 'meses'}`;
-                }
-                
-                resultText += `<p style="color: #dc3545;">Com os valores atuais, seu objetivo será atingido no <strong>mês ${goalReachedMonth}</strong>, ou seja, serão necessários mais <strong>${tempoAdicional}</strong> além do prazo estipulado.</p>`;
-            } else if (goalReachedMonth === -1) {
-                resultText += `<p style="color: #dc3545;">Com os valores atuais, seu objetivo <strong>não será atingido</strong> mesmo após um longo período adicional.</p>`;
-            }
-            
-            resultText += `<p>Para atingir seu objetivo no prazo desejado, você precisaria:</p><ul>`;
-            resultText += `<li>Aumentar seu aporte mensal para <strong>${formatMoney(idealContribution)}</strong> (um acréscimo de ${formatMoney(idealContribution - objective.currentContribution)}).</li>`;
-            resultText += `<li>Ou obter uma rentabilidade anual de <strong>${formatPercent(requiredRateResult.annualRate)}</strong> (considerando o imposto e a inflação).</li></ul>`;
-        }
-        resultDiv.innerHTML = resultText;
-
-        // --- Gerar análise e armazenar dados (igual ao original, mas no 'objective') ---
-        generateRecommendation(objective.goalDescription, finalGoalValue, objective.currentSavings, objective.currentContribution, idealContribution, objective.period, requiredRateResult.annualRate, annualRate);
-
-        objective.currentCalculationData = {
-            // Salvar os inputs usados para este cálculo específico
-            goal: objective.goal,
-            period: objective.period,
-            currentSavings: objective.currentSavings,
-            currentContribution: objective.currentContribution,
-            rate: annualRate, // Salvar a taxa anual
-            rateType: 'annual',
-            tax: objective.tax,
-            inflation: objective.inflation,
-            // Resultados calculados
-            calculated: {
-                finalNetValueCurrent: finalNetValueCurrent,
-                finalGoalValue: finalGoalValue,
-                difference: difference,
-                idealContribution: idealContribution,
-                requiredAnnualRate: requiredRateResult.annualRate,
-                // Armazenar dados mensais para gráficos/tabelas
-                currentResultData: currentResult.valoresMensais,
-                idealResultData: idealContributionResult.valoresMensais,
-                requiredRateResultData: requiredRateResult.valoresMensais,
-                initialOnlyResultData: initialOnlyResult.valoresMensais
-            }
-        };
-        saveObjectivesToLocalStorage(); // Salva o resultado do cálculo no objetivo
-
-        // --- Exibir gráficos e seções --- 
-        displayChartsAndTables(currentResult, idealContributionResult, initialOnlyResult, requiredRateResult);
-        document.getElementById("resultsSection").classList.remove("hidden");
-        displayScenarios(activeObjectiveId); // Mostra cenários salvos para este objetivo
-
-        // Rolar para os resultados
-        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // --- Funções de Cálculo Internas (Inalteradas) --- 
-    function calculateCompoundInterest(initialValue, monthlyContribution, monthlyRate, months, tax, goal, inflation) {
-      let totalValue = initialValue;
-      let totalInvested = initialValue;
-      let totalJuros = 0;
-      let valoresMensais = [];
-      let objetivoCorrigido = goal;
-      let goalReachedMonth = -1; // Mês em que o objetivo é atingido (-1 significa não atingido)
-      
-      valoresMensais.push({ month: 0, juros: 0, totalInvestido: totalInvested, totalJuros: 0, imposto: 0, valorLiquido: totalValue, totalAcumulado: totalValue, objetivoCorrigido: objetivoCorrigido });
-      
-      // Primeiro, calcular até o período especificado
-      for (let month = 1; month <= months; month++) {
-        const jurosDoMes = totalValue * monthlyRate;
-        totalJuros += jurosDoMes;
-        totalValue += jurosDoMes + monthlyContribution;
-        totalInvested += monthlyContribution;
-        const impostoTotal = totalJuros * tax;
-        const valorLiquido = totalValue - impostoTotal;
-        if (month % 12 === 0) objetivoCorrigido *= (1 + inflation);
-        
-        // Verificar se o objetivo foi atingido neste mês
-        if (goalReachedMonth === -1 && valorLiquido >= objetivoCorrigido) {
-            goalReachedMonth = month;
-        }
-        
-        valoresMensais.push({ 
-            month: month, 
-            juros: jurosDoMes, 
-            totalInvestido: totalInvested, 
-            totalJuros: totalJuros, 
-            imposto: impostoTotal, 
-            valorLiquido: valorLiquido, 
-            totalAcumulado: totalValue, 
-            objetivoCorrigido: objetivoCorrigido 
-        });
-      }
-      
-      // Se o objetivo não foi atingido no período especificado, continuar calculando até atingir
-      // ou até um limite máximo (para evitar loops infinitos)
-      const maxExtraMonths = 600; // Limite de 50 anos adicionais
-      let month = months;
-      
-      while (goalReachedMonth === -1 && month < months + maxExtraMonths) {
-        month++;
-        const jurosDoMes = totalValue * monthlyRate;
-        totalJuros += jurosDoMes;
-        totalValue += jurosDoMes + monthlyContribution;
-        totalInvested += monthlyContribution;
-        const impostoTotal = totalJuros * tax;
-        const valorLiquido = totalValue - impostoTotal;
-        if (month % 12 === 0) objetivoCorrigido *= (1 + inflation);
-        
-        // Verificar se o objetivo foi atingido neste mês
-        if (valorLiquido >= objetivoCorrigido) {
-            goalReachedMonth = month;
-            // Adicionar este mês aos valores mensais
-            valoresMensais.push({ 
-                month: month, 
-                juros: jurosDoMes, 
-                totalInvestido: totalInvested, 
-                totalJuros: totalJuros, 
-                imposto: impostoTotal, 
-                valorLiquido: valorLiquido, 
-                totalAcumulado: totalValue, 
-                objetivoCorrigido: objetivoCorrigido 
-            });
-            break; // Sair do loop quando o objetivo for atingido
-        }
-        
-        // Opcional: adicionar este mês aos valores mensais se quiser mostrar a progressão completa
-        valoresMensais.push({ 
-            month: month, 
-            juros: jurosDoMes, 
-            totalInvestido: totalInvested, 
-            totalJuros: totalJuros, 
-            imposto: impostoTotal, 
-            valorLiquido: valorLiquido, 
-            totalAcumulado: totalValue, 
-            objetivoCorrigido: objetivoCorrigido 
-        });
-      }
-      
-      return { 
-          finalValue: totalValue, 
-          totalInvested: totalInvested, 
-          totalJuros: totalJuros, 
-          totalImposto: totalJuros * tax, 
-          valoresMensais: valoresMensais,
-          goalReachedMonth: goalReachedMonth // Retorna o mês em que o objetivo foi atingido
-      };
-    }
-
-    function calculateCompoundInterestUntilGoal(initialValue, monthlyContribution, monthlyRate, tax, goal, inflation, maxMonths = 600) {
-      let totalValue = initialValue;
-      let totalInvested = initialValue;
-      let totalJuros = 0;
-      let valoresMensais = [];
-      let objetivoCorrigido = goal;
-      let month = 0;
-      let goalReached = false;
-      valoresMensais.push({ month: 0, juros: 0, totalInvestido: totalInvested, totalJuros: 0, imposto: 0, valorLiquido: totalValue, totalAcumulado: totalValue, objetivoCorrigido: objetivoCorrigido });
-      while (!goalReached && month < maxMonths) {
-        month++;
-        const jurosDoMes = totalValue * monthlyRate;
-        totalJuros += jurosDoMes;
-        totalValue += jurosDoMes + monthlyContribution;
-        totalInvested += monthlyContribution;
-        const impostoTotal = totalJuros * tax;
-        const valorLiquido = totalValue - impostoTotal;
-        if (month % 12 === 0) objetivoCorrigido *= (1 + inflation);
-        valoresMensais.push({ month: month, juros: jurosDoMes, totalInvestido: totalInvested, totalJuros: totalJuros, imposto: impostoTotal, valorLiquido: valorLiquido, totalAcumulado: totalValue, objetivoCorrigido: objetivoCorrigido });
-        if (valorLiquido >= objetivoCorrigido) goalReached = true;
-      }
-      return { finalValue: totalValue, totalInvested: totalInvested, totalJuros: totalJuros, totalImposto: totalJuros * tax, valoresMensais: valoresMensais, monthsToGoal: month, goalReached: goalReached };
-    }
-
-    function calculateRequiredRate(goal, currentSavings, monthlyContribution, period, tax, inflation) {
-      let inflatedGoal = goal;
-      const yearsCount = Math.floor(period / 12);
-      for (let i = 0; i < yearsCount; i++) inflatedGoal *= (1 + inflation);
-      let lowRate = 0, highRate = 1, requiredMonthlyRate = 0, iterations = 0, result;
-      while (iterations < 100) {
-        requiredMonthlyRate = (lowRate + highRate) / 2;
-        result = calculateCompoundInterest(currentSavings, monthlyContribution, requiredMonthlyRate, period, tax, goal, inflation);
-        const valorLiquidoFinal = result.valoresMensais[period].valorLiquido;
-        const objetivoFinal = result.valoresMensais[period].objetivoCorrigido;
-        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) break;
-        if (valorLiquidoFinal > objetivoFinal) highRate = requiredMonthlyRate;
-        else lowRate = requiredMonthlyRate;
-        iterations++;
-      }
-      const requiredAnnualRate = Math.pow(1 + requiredMonthlyRate, 12) - 1;
-      return { monthlyRate: requiredMonthlyRate, annualRate: requiredAnnualRate, finalValue: result.finalValue, finalGoal: inflatedGoal, valoresMensais: result.valoresMensais };
-    }
-
-    // --- Funções de Exibição (Gráficos, Tabelas, Análise - Adaptadas) ---
-    function displayChartsAndTables(currentResult, idealResult, initialOnlyResult, requiredRateResult) {
-        const chartIds = ["Atual", "Ideal", "Unico", "Rentabilidade"];
-        const resultsData = [currentResult, idealResult, initialOnlyResult, requiredRateResult];
-        const colors = [["#046c4e", "#28a745", "#6c757d"], ["#046c4e", "#28a745", "#6c757d"], ["#046c4e", "#28a745", "#6c757d"], ["#046c4e", "#28a745", "#6c757d"]]; // Cores podem ser customizadas
-
-        chartIds.forEach((id, index) => {
-            const container = document.getElementById(`chart${id}Container`);
-            if (!container) return;
-            container.style.display = 'block'; // Mostra o container
-
-            const canvas = document.getElementById(`chart${id}`);
-            const tableBody = document.getElementById(`table${id}`)?.querySelector("tbody");
-            const data = resultsData[index].valoresMensais;
-
-            if (canvas) {
-                const ctx = canvas.getContext("2d");
-                const bruto = data.map(v => v.totalAcumulado);
-                const liquido = data.map(v => v.valorLiquido);
-                const investido = data.map(v => v.totalInvestido);
-                const objetivo = data.map(v => v.objetivoCorrigido);
-                drawChart(ctx, id, bruto, liquido, investido, objetivo, ...colors[index]);
-            }
-            if (tableBody) {
-                fillDataTable(tableBody, data);
-            }
-            showChartSlide(id, 'chart'); // Mostra gráfico por padrão
-        });
-    }
-
-    function drawChart(ctx, chartId, bruto, liquido, investido, objetivo, corBruto, corLiquido, corInvestido) {
-        if (chartInstances[chartId]) {
-            chartInstances[chartId].destroy();
-        }
-        chartInstances[chartId] = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: Array.from({length: bruto.length}, (_, i) => i),
-                datasets: [
-                    { label: "Valor Bruto", data: bruto, borderColor: corBruto, backgroundColor: "transparent", borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
-                    { label: "Valor Líquido", data: liquido, borderColor: corLiquido, backgroundColor: "transparent", borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
-                    { label: "Total Investido", data: investido, borderColor: corInvestido, backgroundColor: "transparent", borderWidth: 2, pointRadius: 0, pointHoverRadius: 5 },
-                    { label: "Objetivo Corrigido", data: objetivo, borderColor: "#FF0000", backgroundColor: "transparent", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, pointHoverRadius: 5 }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { title: { display: true, text: "Meses" } },
-                    y: { title: { display: true, text: "Valor (R$)" }, ticks: { callback: value => formatMoney(value) } }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: context => {
-                                let label = context.dataset.label || "";
-                                if (label) label += ": ";
-                                if (context.parsed.y !== null) label += formatMoney(context.parsed.y);
-                                return label;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    function fillDataTable(tbody, data) {
-        tbody.innerHTML = "";
-        for (let i = 1; i < data.length; i++) { // Começa do mês 1
-            const row = data[i];
-            const tr = tbody.insertRow();
-            tr.insertCell().textContent = row.month;
-            tr.insertCell().textContent = formatMoney(row.totalInvestido);
-            tr.insertCell().textContent = formatMoney(row.juros);
-            tr.insertCell().textContent = formatMoney(row.totalJuros);
-            tr.insertCell().textContent = formatMoney(row.totalAcumulado);
-            tr.insertCell().textContent = formatMoney(row.imposto);
-            tr.insertCell().textContent = formatMoney(row.valorLiquido);
-            tr.insertCell().textContent = formatMoney(row.objetivoCorrigido);
-        }
-    }
-
-    function showChartSlide(chartId, slideType) {
-        const chartSlide = document.getElementById(`chart${chartId}Slide`);
-        const tableSlide = document.getElementById(`table${chartId}Slide`);
-        if (!chartSlide || !tableSlide) return;
-        chartSlide.style.display = slideType === "chart" ? "block" : "none";
-        tableSlide.style.display = slideType === "table" ? "block" : "none";
-    }
-
-    function generateRecommendation(goalDescription, goal, currentSavings, currentContribution, idealContribution, months, requiredRate, rate) {
-        const recommendationText = document.getElementById("recommendationText");
-        const contributionGap = idealContribution - currentContribution;
-        const contributionPercentage = (idealContribution > 0) ? (currentContribution / idealContribution) * 100 : (currentContribution > 0 ? Infinity : 0);
-        const rateGap = requiredRate - rate;
-        let analysis = "";
-
-        if (currentSavings > 0) {
-            const savingsPercentage = (goal > 0) ? (currentSavings / goal) * 100 : 0;
-            analysis += `<p>Valor já guardado: ${formatMoney(currentSavings)} (${formatPercent(savingsPercentage/100)} do objetivo). `;
-            if (savingsPercentage < 10) analysis += `Bom começo, mas há um longo caminho.</p>`;
-            else if (savingsPercentage < 30) analysis += `Passos importantes já foram dados.</p>`;
-            else if (savingsPercentage < 60) analysis += `Parte significativa percorrida.</p>`;
-            else analysis += `Objetivo muito próximo.</p>`;
-        } else {
-            analysis += `<p>Ainda não foi iniciada a poupança para este objetivo.</p>`;
-        }
-
-        if (currentContribution > 0) {
-            if (contributionPercentage >= 100) analysis += `<p>O aporte mensal atual (${formatMoney(currentContribution)}) é suficiente.</p>`;
-            else if (contributionPercentage >= 80) analysis += `<p>O aporte atual (${formatMoney(currentContribution)}) está próximo do ideal. Ajuste de ${formatMoney(contributionGap)} seria suficiente.</p>`;
-            else if (contributionPercentage >= 50) analysis += `<p>O aporte atual (${formatMoney(currentContribution)}) é um bom esforço, mas seria necessário aumentar para ${formatMoney(idealContribution)} (acréscimo de ${formatMoney(contributionGap)}).</p>`;
-            else analysis += `<p>O aporte atual (${formatMoney(currentContribution)}) está significativamente abaixo do ideal (${formatMoney(idealContribution)}).</p>`;
-        } else {
-            analysis += `<p>Não há aportes mensais. Seria necessário poupar ${formatMoney(idealContribution)} por mês.</p>`;
-        }
-
-        if (rateGap > 0) {
-            const rateGapPercentage = rateGap * 100;
-            analysis += `<p>A rentabilidade necessária (${formatPercent(requiredRate)}) está ${rateGapPercentage.toFixed(2).replace(".", ",")} p.p. acima da taxa informada (${formatPercent(rate)}). `;
-            if (rateGapPercentage > 10) analysis += `Esta diferença é significativa e pode representar maior risco.</p>`;
-            else analysis += `Esta diferença é relativamente pequena e pode ser alcançável.</p>`;
-        } else {
-            analysis += `<p>A rentabilidade informada (${formatPercent(rate)}) é suficiente, mantendo os aportes adequados.</p>`;
-        }
-        recommendationText.innerHTML = analysis;
-    }
-
-    // --- Funções de Gerenciamento de Cenários (Adaptadas) ---
-    function addCurrentScenario() {
-        if (!activeObjectiveId || !objectives[activeObjectiveId] || !objectives[activeObjectiveId].currentCalculationData) {
-            alert("Calcule uma simulação para o objetivo atual antes de salvar um cenário.");
-            return;
-        }
-        const objective = objectives[activeObjectiveId];
-        const calculationData = objective.currentCalculationData;
-
-        // Usar os dados que FORAM USADOS no cálculo, não os atuais do form
-        const scenarioData = {
-            name: `Cenário ${objective.scenarios.length + 1}`,
-            // Inputs usados no cálculo
-            goal: calculationData.goal,
-            period: calculationData.period,
-            currentSavings: calculationData.currentSavings,
-            currentContribution: calculationData.currentContribution,
-            rate: calculationData.rate,
-            rateType: calculationData.rateType,
-            tax: calculationData.tax,
-            inflation: calculationData.inflation,
-            // Resultados calculados
-            calculated: calculationData.calculated
-        };
-
-        objective.scenarios.push(scenarioData);
-        saveObjectivesToLocalStorage();
-        displayScenarios(activeObjectiveId);
-        alert(`Cenário '${scenarioData.name}' salvo para o objetivo '${objective.name}'!`);
-    }
-
-    function displayScenarios(objectiveId) {
-        const objective = objectives[objectiveId];
-        const scenariosContainer = document.getElementById("scenariosContainer");
-        const scenariosList = document.getElementById("scenariosList");
-        scenariosList.innerHTML = "";
-
-        if (!objective || objective.scenarios.length === 0) {
-            scenariosContainer.classList.add("hidden");
-            document.getElementById("analyzeScenarioButton").disabled = true;
-            return;
-        }
-
-        scenariosContainer.classList.remove("hidden");
-        document.getElementById("analyzeScenarioButton").disabled = objective.scenarios.length < 2;
-
-        objective.scenarios.forEach((scenario, index) => {
-            const card = document.createElement("div");
-            card.className = "scenario-card";
-            card.innerHTML = `
-              <div class="scenario-header">
-                <h4 class="scenario-title">${scenario.name}</h4>
-                <div class="scenario-actions">
-                  <button type="button" class="scenario-select" onclick="selectScenario(${index})">Carregar</button>
-                  <button type="button" class="scenario-delete" onclick="deleteScenario(${index})">Excluir</button>
+        <!-- Painel de Resultados e Resumo -->
+        <div class="card" id="resultadosCard" style="display: none;">
+            <div class="card-header">Resumo do Financiamento</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Valor Financiado:</strong> <span id="resultadoValorFinanciado">R$ 0,00</span></p>
+                        <p><strong>Primeira Prestação:</strong> <span id="resultadoPrimeiraPrestacao">R$ 0,00</span></p>
+                        <p><strong>Total de Juros:</strong> <span id="resultadoTotalJuros">R$ 0,00</span></p>
+                        <p><strong>Total de Seguros:</strong> <span id="resultadoTotalSeguros">R$ 0,00</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Custo Efetivo Total (CET):</strong> <span id="resultadoCET">0,00%</span></p>
+                        <p><strong>Comprometimento de Renda:</strong> <span id="resultadoComprometimento">0,00%</span></p>
+                        <p><strong>Valor Final Pago:</strong> <span id="resultadoValorFinal">R$ 0,00</span></p>
+                        <p><strong>Prazo Total:</strong> <span id="resultadoPrazoTotal">0 meses</span></p>
+                    </div>
                 </div>
-              </div>
-              <div class="scenario-content">
-                <div class="scenario-info">
-                  <p><strong>Obj:</strong> ${formatMoney(scenario.goal)}</p>
-                  <p><strong>Prazo:</strong> ${scenario.period}m</p>
-                  <p><strong>Inic:</strong> ${formatMoney(scenario.currentSavings)}</p>
-                  <p><strong>Aporte:</strong> ${formatMoney(scenario.currentContribution)}</p>
-                  <p><strong>Taxa:</strong> ${formatPercent(scenario.rate)} a.a.</p>
-                  <p><strong>Resultado Líq:</strong> ${formatMoney(scenario.calculated.finalNetValueCurrent)}</p>
-                  <p><strong>Diferença:</strong> <span style="color:${scenario.calculated.difference >= 0 ? 'var(--verde-esmeralda)' : '#dc3545'}">${formatMoney(scenario.calculated.difference)}</span></p>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <button class="btn btn-primary" id="btnSalvarCenario" data-bs-toggle="modal" data-bs-target="#salvarCenarioModal">
+                        <i class="bi bi-save"></i> Salvar Cenário
+                    </button>
+                    <button class="btn btn-secondary" id="btnExportarPDF">
+                        <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn btn-secondary" id="btnNovoCalculo">
+                        <i class="bi bi-plus-circle"></i> Novo Cálculo
+                    </button>
                 </div>
-              </div>
-            `;
-            scenariosList.appendChild(card);
-        });
-    }
-
-    function selectScenario(index) {
-        if (!activeObjectiveId || !objectives[activeObjectiveId]) return;
-        const objective = objectives[activeObjectiveId];
-        if (index < 0 || index >= objective.scenarios.length) return;
-        const scenario = objective.scenarios[index];
-
-        // Preencher o formulário com os dados do cenário
-        document.getElementById('objectiveName').value = objective.name;
-        document.getElementById('goalDescription').value = objective.goalDescription;
-        document.getElementById('goal').value = formatMoney(scenario.goal);
-        formatCurrency(document.getElementById('goal'));
-        document.getElementById('period').value = scenario.period;
-        document.getElementById('currentSavings').value = formatMoney(scenario.currentSavings);
-        formatCurrency(document.getElementById('currentSavings'));
-        document.getElementById('currentContribution').value = formatMoney(scenario.currentContribution);
-        formatCurrency(document.getElementById('currentContribution'));
-        document.getElementById('rate').value = formatPercent(scenario.rate);
-        formatPercentage(document.getElementById('rate'));
-        document.getElementById('rateType').value = scenario.rateType;
-
-        // Assumir que 'knows' é 'yes' se taxa > 0, simplificação
-        document.getElementById('knowsTax').value = scenario.tax > 0 ? 'yes' : 'no';
-        toggleTaxInput('tax', formatPercent(0.15));
-        document.getElementById('tax').value = formatPercent(scenario.tax);
-        formatPercentage(document.getElementById('tax'));
-
-        document.getElementById('knowsInflation').value = scenario.inflation > 0 ? 'yes' : 'no';
-        toggleTaxInput('inflation', formatPercent(0.05));
-        document.getElementById('inflation').value = formatPercent(scenario.inflation);
-        formatPercentage(document.getElementById('inflation'));
-
-        // Recalcular para mostrar os gráficos e análises deste cenário
-        calculateSavings();
-
-        // Destacar o card (opcional)
-        const cards = document.querySelectorAll(`#scenariosList .scenario-card`);
-        cards.forEach((card, i) => card.classList.toggle("active", i === index));
-
-        document.getElementById('savingsForm').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function deleteScenario(index) {
-        if (!activeObjectiveId || !objectives[activeObjectiveId]) return;
-        const objective = objectives[activeObjectiveId];
-        if (index < 0 || index >= objective.scenarios.length) return;
-        const scenarioName = objective.scenarios[index].name;
-
-        if (confirm(`Tem certeza que deseja excluir o ${scenarioName} do objetivo "${objective.name}"?`)) {
-            objective.scenarios.splice(index, 1);
-            saveObjectivesToLocalStorage();
-            displayScenarios(activeObjectiveId);
-            // Esconder análise se não houver mais cenários suficientes
-            if (objective.scenarios.length < 2) {
-                document.getElementById("comparisonContainer").classList.add("hidden");
-                document.getElementById("generalAnalysis").classList.add("hidden");
-            }
-             // Se ainda houver cenários suficientes, reanalisar (opcional, pode esperar clique)
-            // else { analyzeScenarios(); }
-        }
-    }
-
-    function prepareNewScenario() {
-        // Limpa apenas os campos variáveis da simulação, mantendo os dados base do objetivo
-        if (!activeObjectiveId || !objectives[activeObjectiveId]) {
-             alert("Selecione um objetivo primeiro.");
-             return;
-        }
-        const objective = objectives[activeObjectiveId];
-        document.getElementById('currentSavings').value = formatMoney(0);
-        formatCurrency(document.getElementById('currentSavings'));
-        document.getElementById('currentContribution').value = formatMoney(0);
-        formatCurrency(document.getElementById('currentContribution'));
-        document.getElementById('rate').value = formatPercent(objective.rate); // Mantém taxa do objetivo
-        formatPercentage(document.getElementById('rate'));
-        document.getElementById('rateType').value = objective.rateType;
-        document.getElementById('knowsTax').value = objective.knowsTax;
-        toggleTaxInput('tax', formatPercent(0.15));
-        document.getElementById('tax').value = formatPercent(objective.tax);
-        formatPercentage(document.getElementById('tax'));
-        document.getElementById('knowsInflation').value = objective.knowsInflation;
-        toggleTaxInput('inflation', formatPercent(0.05));
-        document.getElementById('inflation').value = formatPercent(objective.inflation);
-        formatPercentage(document.getElementById('inflation'));
-
-        clearResultsDisplay(); // Limpa a área de resultados
-        document.getElementById('currentSavings').focus();
-    }
-
-    // --- Funções de Comparação de Cenários (Adaptadas) ---
-    function analyzeScenarios() {
-        if (!activeObjectiveId || !objectives[activeObjectiveId]) return;
-        const objective = objectives[activeObjectiveId];
-        if (objective.scenarios.length < 2) {
-            alert("É necessário ter pelo menos 2 cenários salvos para este objetivo para comparar.");
-            return;
-        }
-        updateComparison(objective.scenarios);
-        generateGeneralAnalysis(objective.scenarios);
-        document.getElementById("comparisonContainer").classList.remove("hidden");
-        document.getElementById("generalAnalysis").classList.remove("hidden");
-        document.getElementById('comparisonContainer').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function updateComparison(scenariosToCompare) {
-        const comparisonChartCtx = document.getElementById("comparisonChart").getContext("2d");
-        const comparisonTableBody = document.getElementById("comparisonTable").querySelector("tbody");
-        const comparisonTableHeader = document.getElementById("comparisonTable").querySelector("thead tr");
-        comparisonTableBody.innerHTML = "";
-        comparisonTableHeader.innerHTML = "<th>Métrica</th>"; // Reset header
-
-        // Dados para gráfico e tabela
-        const labels = scenariosToCompare.map(s => s.name);
-        const finalNetValues = scenariosToCompare.map(s => s.calculated.finalNetValueCurrent);
-        const finalGoalValues = scenariosToCompare.map(s => s.calculated.finalGoalValue);
-
-        // Adicionar cabeçalhos da tabela
-        labels.forEach(label => {
-            const th = document.createElement('th');
-            th.textContent = label;
-            comparisonTableHeader.appendChild(th);
-        });
-
-        // Destruir gráfico anterior
-        if (comparisonChart) comparisonChart.destroy();
-
-        // Criar novo gráfico
-        comparisonChart = new Chart(comparisonChartCtx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    { label: 'Valor Líquido Final (R$)', data: finalNetValues, backgroundColor: 'rgba(4, 108, 78, 0.7)', borderColor: 'rgba(4, 108, 78, 1)', borderWidth: 1 },
-                    { label: 'Objetivo Corrigido (R$)', data: finalGoalValues, backgroundColor: 'rgba(220, 53, 69, 0.7)', borderColor: 'rgba(220, 53, 69, 1)', borderWidth: 1 }
-                ]
-            },
-            options: { /* ... opções do gráfico ... */ }
-        });
-
-        // Preencher tabela
-        const metrics = [
-            { label: "Aporte Mensal (R$)", key: "currentContribution", format: formatMoney },
-            { label: "Taxa Anual (%)", key: "rate", format: formatPercent },
-            { label: "Valor Líquido Final (R$)", key: "calculated.finalNetValueCurrent", format: formatMoney, isResult: true, higherIsBetter: true },
-            { label: "Diferença (R$)", key: "calculated.difference", format: formatMoney, isResult: true, higherIsBetter: true },
-            { label: "Aporte Ideal (R$)", key: "calculated.idealContribution", format: formatMoney, isResult: true, lowerIsBetter: true },
-            { label: "Rentabilidade Necessária (% a.a.)", key: "calculated.requiredAnnualRate", format: formatPercent, isResult: true, lowerIsBetter: true }
-            // Adicionar mais métricas se necessário (Prazo, Valor Inicial, etc.)
-        ];
-
-        metrics.forEach(metric => {
-            const row = comparisonTableBody.insertRow();
-            const headerCell = row.insertCell();
-            headerCell.textContent = metric.label;
-            headerCell.style.fontWeight = "bold";
-            headerCell.style.textAlign = "left";
-            headerCell.style.backgroundColor = "var(--cinza-claro)";
-
-            let values = [];
-            scenariosToCompare.forEach(scenario => {
-                const getValue = (obj, path) => path.split('.').reduce((o, k) => (o || {})[k], obj);
-                const value = getValue(scenario, metric.key);
-                values.push(value);
-                const cell = row.insertCell();
-                cell.textContent = metric.format(value);
-            });
-
-            if (metric.isResult && values.length > 1) {
-                const numericValues = values.filter(v => typeof v === 'number' && !isNaN(v));
-                if (numericValues.length > 0) {
-                    const bestValue = metric.higherIsBetter ? Math.max(...numericValues) : Math.min(...numericValues);
-                    const worstValue = metric.higherIsBetter ? Math.min(...numericValues) : Math.max(...numericValues);
-                    Array.from(row.cells).slice(1).forEach((cell, index) => {
-                        const value = values[index];
-                        if (typeof value === 'number' && !isNaN(value)) {
-                            if (value === bestValue) cell.classList.add("best-value");
-                            else if (value === worstValue) cell.classList.add("worst-value");
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    function generateGeneralAnalysis(scenariosToAnalyze) {
-        const analysisDiv = document.getElementById("generalAnalysisText");
-        let analysis = "";
-
-        // Lógica de análise (similar à original, mas usando scenariosToAnalyze)
-        let bestScenarioDifference = null, bestDifferenceValue = -Infinity;
-        let closestScenario = null, smallestGap = -Infinity;
-        let bestScenarioContribution = null, lowestIdealContribution = Infinity;
-        let bestScenarioRate = null, lowestRequiredRate = Infinity;
-
-        scenariosToAnalyze.forEach(s => {
-            if (s.calculated.difference >= 0 && s.calculated.difference > bestDifferenceValue) { bestDifferenceValue = s.calculated.difference; bestScenarioDifference = s; }
-            if (s.calculated.difference > smallestGap) { smallestGap = s.calculated.difference; closestScenario = s; }
-            if (s.calculated.idealContribution < lowestIdealContribution) { lowestIdealContribution = s.calculated.idealContribution; bestScenarioContribution = s; }
-            if (s.calculated.requiredAnnualRate < lowestRequiredRate) { lowestRequiredRate = s.calculated.requiredAnnualRate; bestScenarioRate = s; }
-        });
-
-        analysis += "<h4>Principais Destaques da Comparação (Objetivo Atual):</h4><ul>";
-        if (bestScenarioDifference) analysis += `<li>Melhor resultado: <strong>${bestScenarioDifference.name}</strong> (supera o objetivo em ${formatMoney(bestScenarioDifference.calculated.difference)}).</li>`;
-        else if (closestScenario) analysis += `<li>Nenhum atinge. Mais próximo: <strong>${closestScenario.name}</strong> (falta ${formatMoney(Math.abs(closestScenario.calculated.difference))}).</li>`;
-        if (bestScenarioContribution) analysis += `<li>Menor aporte ideal necessário: <strong>${bestScenarioContribution.name}</strong> (${formatMoney(bestScenarioContribution.calculated.idealContribution)}).</li>`;
-        if (bestScenarioRate) analysis += `<li>Menor rentabilidade necessária: <strong>${bestScenarioRate.name}</strong> (${formatPercent(bestScenarioRate.calculated.requiredAnnualRate)} a.a.).</li>`;
-        analysis += "</ul><p><strong>Recomendação Geral:</strong> Analise os detalhes na tabela e gráfico. Considere os cenários alinhados à sua capacidade de aporte e tolerância a risco.</p>";
-
-        analysisDiv.innerHTML = analysis;
-    }
-
-    // --- Função do WhatsApp (Adaptada) ---
-    async function openWhatsAppChat() {
-        if (!activeObjectiveId || !objectives[activeObjectiveId]) {
-            alert("Selecione um objetivo para gerar a mensagem.");
-            return;
-        }
-        const objective = objectives[activeObjectiveId];
-        const goalText = objective.goalDescription || `Objetivo: ${objective.name}`;
-        let scenariosText = "";
-
-        if (objective.scenarios.length > 0) {
-            scenariosText = "Cenários simulados para este objetivo:\n";
-            objective.scenarios.forEach(s => {
-                scenariosText += `\n${s.name}:\n`;
-                scenariosText += `  - Objetivo: ${formatMoney(s.goal)}\n`;
-                scenariosText += `  - Prazo: ${s.period} meses\n`;
-                scenariosText += `  - Guardado: ${formatMoney(s.currentSavings)}\n`;
-                scenariosText += `  - Aporte: ${formatMoney(s.currentContribution)}\n`;
-                scenariosText += `  - Taxa: ${formatPercent(s.rate)} a.a.\n`;
-                // Adicionar mais detalhes se necessário
-            });
-        } else if (objective.currentCalculationData) {
-            const calc = objective.currentCalculationData;
-            scenariosText = "Última simulação para este objetivo:\n";
-            scenariosText += `  - Objetivo: ${formatMoney(calc.goal)}\n`;
-            scenariosText += `  - Prazo: ${calc.period} meses\n`;
-            scenariosText += `  - Guardado: ${formatMoney(calc.currentSavings)}\n`;
-            scenariosText += `  - Aporte: ${formatMoney(calc.currentContribution)}\n`;
-            scenariosText += `  - Taxa: ${formatPercent(calc.rate)} a.a.\n`;
-            scenariosText += `  - Resultado Líq: ${formatMoney(calc.calculated.finalNetValueCurrent)}\n`;
-            scenariosText += `  - Diferença: ${formatMoney(calc.calculated.difference)}\n`;
-        } else {
-            scenariosText = "(Nenhuma simulação ou cenário salvo para este objetivo)";
-        }
-
-        const message = `Oi Hugo, queria tua ajuda com meu objetivo:\n${goalText}\n\n${scenariosText}\n\nEstou usando a calculadora multi-objetivos.`;
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://api.whatsapp.com/send?phone=5581994297920&text=${encodedMessage}`;
-        window.open(whatsappUrl, "_blank");
-    }
-
-    // --- Inicialização --- 
-    document.addEventListener("DOMContentLoaded", () => {
-        loadObjectivesFromLocalStorage();
-        populateObjectiveSelector();
-        if (activeObjectiveId) {
-            loadObjectiveDataToForm(activeObjectiveId);
-            displayResultsForObjective(activeObjectiveId); // Mostra último estado salvo
-        } else {
-            clearFormAndResults();
-        }
-        // Adiciona listener ao seletor de objetivos
-        document.getElementById('objectiveSelector').addEventListener('change', handleObjectiveSelectionChange);
-    });
-
-    // Função auxiliar para exibir resultados/cenários ao selecionar objetivo
-    function displayResultsForObjective(objectiveId) {
-        const objective = objectives[objectiveId];
-        if (!objective) return;
-
-        clearResultsDisplay(); // Limpa antes de mostrar
-
-        // Se houver dados de cálculo salvos, exibe-os
-        if (objective.currentCalculationData && objective.currentCalculationData.calculated) {
-            const calc = objective.currentCalculationData;
-            const calcResults = calc.calculated;
-
-            // Recria a estrutura de resultados necessária para displayChartsAndTables
-            const currentResult = { valoresMensais: calcResults.currentResultData || [] };
-            const idealResult = { valoresMensais: calcResults.idealResultData || [] };
-            const initialOnlyResult = { valoresMensais: calcResults.initialOnlyResultData || [] };
-            const requiredRateResult = { valoresMensais: calcResults.requiredRateResultData || [], annualRate: calcResults.requiredAnnualRate }; // Precisa da taxa anual aqui
-
-            // Exibe texto do resultado
-            const resultDiv = document.getElementById("result");
-            let resultText = `<h3>Última Simulação para '${objective.name}'</h3>`;
-            resultText += `<p>Com aporte de ${formatMoney(calc.currentContribution)}, taxa de ${formatPercent(calc.rate)} a.a., em ${calc.period} meses, o valor líquido foi ${formatMoney(calcResults.finalNetValueCurrent)}.</p>`;
-            resultText += `<p>Objetivo corrigido: ${formatMoney(calcResults.finalGoalValue)}. Diferença: ${formatMoney(calcResults.difference)}.</p>`;
-            resultDiv.innerHTML = resultText;
-
-            // Exibe análise
-            generateRecommendation(objective.goalDescription, calcResults.finalGoalValue, calc.currentSavings, calc.currentContribution, calcResults.idealContribution, calc.period, calcResults.requiredAnnualRate, calc.rate);
-
-            // Exibe gráficos e tabelas
-            displayChartsAndTables(currentResult, idealResult, initialOnlyResult, requiredRateResult);
-            document.getElementById("resultsSection").classList.remove("hidden");
-        }
-
-        // Exibe cenários salvos
-        displayScenarios(objectiveId);
-
-        // Exibe comparação se houver cenários suficientes
-        if (objective.scenarios.length >= 2) {
-             analyzeScenarios(); // Chama a análise para mostrar comparação
-        }
-    }
-
-  </script>
+            </div>
+        </div>
+        
+        <!-- Tabela de Memória de Cálculo -->
+        <div class="card mt-4" id="memoriaCalculoCard" style="display: none;">
+            <div class="card-header">Memória de Cálculo</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm" id="tabelaMemoriaCalculo">
+                        <thead>
+                            <tr>
+                                <th>Parcela</th>
+                                <th>Data</th>
+                                <th>Prestação (R$)</th>
+                                <th>Amortização (R$)</th>
+                                <th>Juros (R$)</th>
+                                <th>MIP (R$)</th>
+                                <th>DFI (R$)</th>
+                                <th>Correção (R$)</th>
+                                <th>Saldo Devedor (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaMemoriaCalculoBody">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <nav>
+                    <ul class="pagination justify-content-center" id="paginacaoTabela">
+                        <!-- Paginação gerada via JavaScript -->
+                    </ul>
+                </nav>
+                <button class="btn btn-secondary" id="btnExportarCSV">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar CSV
+                </button>
+            </div>
+        </div>
+        
+        <!-- Visualizações Gráficas -->
+        <div class="card mt-4" id="graficosCard" style="display: none;">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="graficosTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="saldo-tab" data-bs-toggle="tab" data-bs-target="#saldoGrafico" type="button" role="tab" aria-controls="saldoGrafico" aria-selected="true">Evolução do Saldo</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="composicao-tab" data-bs-toggle="tab" data-bs-target="#composicaoGrafico" type="button" role="tab" aria-controls="composicaoGrafico" aria-selected="false">Composição das Parcelas</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="distribuicao-tab" data-bs-toggle="tab" data-bs-target="#distribuicaoGrafico" type="button" role="tab" aria-controls="distribuicaoGrafico" aria-selected="false">Distribuição de Pagamentos</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="comparativo-tab" data-bs-toggle="tab" data-bs-target="#comparativoGrafico" type="button" role="tab" aria-controls="comparativoGrafico" aria-selected="false">Comparativo</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="graficosTabContent">
+                    <div class="tab-pane fade show active" id="saldoGrafico" role="tabpanel" aria-labelledby="saldo-tab">
+                        <canvas id="graficoSaldoDevedor" height="300"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="composicaoGrafico" role="tabpanel" aria-labelledby="composicao-tab">
+                        <canvas id="graficoComposicaoParcelas" height="300"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="distribuicaoGrafico" role="tabpanel" aria-labelledby="distribuicao-tab">
+                        <canvas id="graficoDistribuicao" height="300"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="comparativoGrafico" role="tabpanel" aria-labelledby="comparativo-tab">
+                        <canvas id="graficoComparativo" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gerenciador de Cenários -->
+        <div class="card mt-4" id="cenariosCard" style="display: none;">
+            <div class="card-header">Cenários Salvos</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="tabelaCenarios">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Valor Financiado</th>
+                                <th>Sistema</th>
+                                <th>Prazo</th>
+                                <th>Taxa</th>
+                                <th>Primeira Parcela</th>
+                                <th>Valor Final</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaCenariosBody">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 d-flex flex-wrap gap-2">
+                    <button class="btn btn-secondary" id="btnExportarCenarios">
+                        <i class="bi bi-download"></i> Exportar Cenários
+                    </button>
+                    <button class="btn btn-secondary" id="btnImportarCenarios">
+                        <i class="bi bi-upload"></i> Importar Cenários
+                    </button>
+                    <input type="file" id="importarCenariosFile" style="display:none">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Análises Comparativas -->
+        <div class="card mt-4" id="analiseCard" style="display: none;">
+            <div class="card-header">Análise Comparativa</div>
+            <div class="card-body">
+                <div id="analiseUltimoCenario">
+                    <h5>Análise do Último Cenário</h5>
+                    <div id="analiseUltimoCenarioConteudo" class="mb-4">
+                        <!-- Preenchido via JavaScript -->
+                        <div class="alert alert-info">
+                            <p>Calcule um cenário para visualizar a análise detalhada.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="analiseComparativa" class="mt-4">
+                    <h5>Comparação entre Cenários</h5>
+                    <div class="form-group">
+                        <label>Selecione os cenários para comparar:</label>
+                        <div id="checkboxesCenarios" class="mb-3">
+                            <!-- Checkboxes gerados via JavaScript -->
+                            <div class="alert alert-info">
+                                <p>Salve pelo menos dois cenários para habilitar a comparação.</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mt-2" id="btnCompararCenarios" disabled>
+                            <i class="bi bi-bar-chart"></i> Comparar Selecionados
+                        </button>
+                    </div>
+                    <div id="resultadoComparacao" class="mt-3">
+                        <!-- Preenchido via JavaScript -->
+                    </div>
+                    <div class="mt-3">
+                        <canvas id="graficoComparacaoCenarios" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ferramentas Adicionais -->
+        <div class="card mt-4" id="ferramentasCard" style="display: none;">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="ferramentasTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="amortizacao-tab" data-bs-toggle="tab" data-bs-target="#amortizacaoExtra" type="button" role="tab" aria-controls="amortizacaoExtra" aria-selected="true">Amortizações Extraordinárias</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="portabilidade-tab" data-bs-toggle="tab" data-bs-target="#portabilidade" type="button" role="tab" aria-controls="portabilidade" aria-selected="false">Portabilidade</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="capacidade-tab" data-bs-toggle="tab" data-bs-target="#capacidade" type="button" role="tab" aria-controls="capacidade" aria-selected="false">Capacidade de Pagamento</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="ferramentasTabContent">
+                    <!-- Amortizações Extraordinárias -->
+                    <div class="tab-pane fade show active" id="amortizacaoExtra" role="tabpanel" aria-labelledby="amortizacao-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="valorAmortizacao" class="form-label">Valor da Amortização (R$)</label>
+                                    <input type="number" class="form-control" id="valorAmortizacao" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="parcelaAmortizacao" class="form-label">Aplicar após parcela nº</label>
+                                    <input type="number" class="form-control" id="parcelaAmortizacao" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tipoReducao" class="form-label">Tipo de Redução</label>
+                                    <select class="form-select" id="tipoReducao">
+                                        <option value="parcela">Reduzir valor da parcela</option>
+                                        <option value="prazo">Reduzir prazo</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" id="btnSimularAmortizacao">
+                                    <i class="bi bi-calculator"></i> Simular Amortização
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="resultadoAmortizacao" class="border p-3 rounded">
+                                    <h6>Resultado da Simulação</h6>
+                                    <div id="resultadoAmortizacaoConteudo">
+                                        <p class="text-muted">Preencha os dados e clique em Simular Amortização.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Portabilidade -->
+                    <div class="tab-pane fade" id="portabilidade" role="tabpanel" aria-labelledby="portabilidade-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Condições Atuais</h6>
+                                <div class="mb-3">
+                                    <label for="saldoDevedorAtual" class="form-label">Saldo Devedor Atual (R$)</label>
+                                    <input type="number" class="form-control" id="saldoDevedorAtual" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="taxaJurosAtual" class="form-label">Taxa de Juros Atual (% ao ano)</label>
+                                    <input type="number" class="form-control" id="taxaJurosAtual" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="prazoRestante" class="form-label">Prazo Restante (meses)</label>
+                                    <input type="number" class="form-control" id="prazoRestante" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Novas Condições</h6>
+                                <div class="mb-3">
+                                    <label for="taxaJurosNova" class="form-label">Nova Taxa de Juros (% ao ano)</label>
+                                    <input type="number" class="form-control" id="taxaJurosNova" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="prazoNovo" class="form-label">Novo Prazo (meses)</label>
+                                    <input type="number" class="form-control" id="prazoNovo" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="custoPortabilidade" class="form-label">Custo da Portabilidade (R$)</label>
+                                    <input type="number" class="form-control" id="custoPortabilidade" min="0" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary" id="btnSimularPortabilidade">
+                                <i class="bi bi-calculator"></i> Simular Portabilidade
+                            </button>
+                        </div>
+                        <div class="mt-3" id="resultadoPortabilidade">
+                            <!-- Preenchido via JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Capacidade de Pagamento -->
+                    <div class="tab-pane fade" id="capacidade" role="tabpanel" aria-labelledby="capacidade-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="rendaFamiliarCapacidade" class="form-label">Renda Familiar Mensal (R$)</label>
+                                    <input type="number" class="form-control" id="rendaFamiliarCapacidade" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="compromissosMensais" class="form-label">Compromissos Mensais (R$)</label>
+                                    <input type="number" class="form-control" id="compromissosMensais" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="percentualMaximo" class="form-label">Percentual Máximo de Comprometimento (%)</label>
+                                    <input type="number" class="form-control" id="percentualMaximo" min="0" max="100" step="0.1" value="30">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="taxaJurosCapacidade" class="form-label">Taxa de Juros (% ao ano)</label>
+                                    <input type="number" class="form-control" id="taxaJurosCapacidade" min="0" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="prazoCapacidade" class="form-label">Prazo (meses)</label>
+                                    <input type="number" class="form-control" id="prazoCapacidade" min="12" max="420">
+                                </div>
+                                <button class="btn btn-primary" id="btnCalcularCapacidade">
+                                    <i class="bi bi-calculator"></i> Calcular Capacidade
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="resultadoCapacidade" class="border p-3 rounded">
+                                    <h6>Resultado da Análise</h6>
+                                    <div id="resultadoCapacidadeConteudo">
+                                        <p class="text-muted">Preencha os dados e clique em Calcular Capacidade.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Glossário e Informações -->
+        <div class="card mt-4" id="glossarioCard" style="display: none;">
+            <div class="card-header">Glossário e Informações</div>
+            <div class="card-body">
+                <div class="accordion" id="accordionGlossario">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                Sistemas de Amortização
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>SAC (Sistema de Amortização Constante):</strong> Neste sistema, o valor da amortização é constante ao longo de todo o financiamento. Como o saldo devedor diminui a cada mês, o valor dos juros também diminui, fazendo com que o valor da prestação seja decrescente ao longo do tempo.</p>
+                                <p><strong>Tabela Price:</strong> Também conhecido como Sistema Francês de Amortização, caracteriza-se por prestações iguais ao longo de todo o financiamento. No início, a maior parte da prestação é composta por juros, e com o passar do tempo, a parcela de amortização aumenta.</p>
+                                <p><strong>SACRE (Sistema de Amortização Crescente):</strong> É um sistema híbrido que combina características do SAC e da Tabela Price. A amortização é crescente ao longo do tempo, resultando em prestações mais estáveis que no SAC, mas com redução mais rápida do saldo devedor que na Tabela Price.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Sistemas de Correção Monetária
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>TR (Taxa Referencial):</strong> É uma taxa de juros de referência, instituída pela Lei nº 8.177/91, calculada pelo Banco Central do Brasil. É utilizada principalmente em financiamentos habitacionais e cadernetas de poupança.</p>
+                                <p><strong>IPCA (Índice Nacional de Preços ao Consumidor Amplo):</strong> É o índice oficial de inflação do Brasil, calculado pelo IBGE. Quando utilizado em financiamentos, o saldo devedor é corrigido mensalmente pela variação do IPCA.</p>
+                                <p><strong>Taxa Fixa:</strong> Neste sistema, não há correção monetária do saldo devedor. A taxa de juros contratada permanece constante durante todo o financiamento.</p>
+                                <p><strong>Poupança:</strong> Utiliza a remuneração básica da caderneta de poupança como índice de correção do saldo devedor.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Seguros Obrigatórios
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>MIP (Morte e Invalidez Permanente):</strong> Este seguro quita o saldo devedor do financiamento em caso de morte ou invalidez permanente do mutuário. O valor do prêmio é calculado sobre o saldo devedor e varia conforme a idade do mutuário.</p>
+                                <p><strong>DFI (Danos Físicos ao Imóvel):</strong> Este seguro cobre danos físicos ao imóvel causados por incêndio, explosão, vendaval, desmoronamento, entre outros. O valor do prêmio é calculado sobre o valor de avaliação do imóvel.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                Programas Governamentais
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>Minha Casa Minha Vida:</strong> Programa habitacional do governo federal que oferece condições especiais de financiamento para famílias de diferentes faixas de renda.</p>
+                                <p><strong>Faixa 1:</strong> Destinada a famílias com renda mensal bruta de até R$ 2.640.</p>
+                                <p><strong>Faixa 2:</strong> Destinada a famílias com renda mensal bruta entre R$ 2.640,01 e R$ 4.400.</p>
+                                <p><strong>Faixa 3:</strong> Destinada a famílias com renda mensal bruta entre R$ 4.400,01 e R$ 8.000.</p>
+                                <p><strong>Faixa 4:</strong> Destinada a famílias com renda mensal bruta até R$ 11.000 (antiga faixa 1,5 do Sistema Brasileiro de Poupança e Empréstimo - SBPE).</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                Termos Financeiros
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionGlossario">
+                            <div class="accordion-body">
+                                <p><strong>CET (Custo Efetivo Total):</strong> Representa o custo total do financiamento, incluindo não apenas os juros, mas também todos os encargos e despesas, como seguros, tarifas bancárias e impostos.</p>
+                                <p><strong>Amortização:</strong> É a parcela do pagamento mensal destinada a reduzir o saldo devedor do financiamento.</p>
+                                <p><strong>Juros:</strong> É a remuneração cobrada pelo banco pelo empréstimo do dinheiro, calculada sobre o saldo devedor.</p>
+                                <p><strong>Saldo Devedor:</strong> É o valor que ainda resta a pagar do financiamento, após descontadas as amortizações já realizadas.</p>
+                                <p><strong>Amortização Extraordinária:</strong> É o pagamento adicional, além da prestação mensal, destinado a reduzir o saldo devedor do financiamento.</p>
+                                <p><strong>Portabilidade:</strong> É a transferência do financiamento de uma instituição financeira para outra, geralmente em busca de melhores condições de juros e prazo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Disclaimer</h5>
+                    <div class="alert alert-warning">
+                        <p>Esta ferramenta é apenas uma simulação e os resultados apresentados são aproximados. As condições reais de financiamento podem variar de acordo com a política de cada instituição financeira, perfil de crédito do cliente e condições de mercado. Consulte sempre um profissional especializado antes de tomar decisões financeiras importantes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal para Salvar Cenário -->
+        <div class="modal fade" id="salvarCenarioModal" tabindex="-1" aria-labelledby="salvarCenarioModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="salvarCenarioModalLabel">Salvar Cenário</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nomeCenario" class="form-label">Nome do Cenário</label>
+                            <input type="text" class="form-control" id="nomeCenario" placeholder="Ex: Apartamento 2 quartos - Banco XYZ">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btnConfirmarSalvarCenario">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
