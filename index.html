@@ -1,811 +1,1605 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Financiamento Imobiliário</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Custom CSS -->
-    <style>
-        :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --success-color: #198754;
-            --info-color: #0dcaf0;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-        }
-        
-        body {
-            padding-top: 20px;
-            padding-bottom: 50px;
-        }
-        
-        .form-label {
-            font-weight: 500;
-            margin-top: 10px;
-        }
-        
-        .card {
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card-header {
-            font-weight: 600;
-            background-color: var(--light-color);
-        }
-        
-        .nav-tabs .nav-link {
-            color: var(--dark-color);
-        }
-        
-        .nav-tabs .nav-link.active {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-        }
-        
-        .btn-secondary {
-            background-color: var(--secondary-color);
-        }
-        
-        .tooltip-inner {
-            max-width: 300px;
-        }
-        
-        .table-responsive {
-            overflow-x: auto;
-        }
-        
-        .theme-switch {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-        
-        .dark-mode {
-            background-color: #343a40;
-            color: #f8f9fa;
-        }
-        
-        .dark-mode .card {
-            background-color: #454d55;
-            color: #f8f9fa;
-        }
-        
-        .dark-mode .card-header {
-            background-color: #343a40;
-            color: #f8f9fa;
-        }
-        
-        .dark-mode .form-control {
-            background-color: #495057;
-            color: #f8f9fa;
-            border-color: #6c757d;
-        }
-        
-        .dark-mode .table {
-            color: #f8f9fa;
-        }
-        
-        .dark-mode .nav-tabs .nav-link {
-            color: #f8f9fa;
-        }
-        
-        .dark-mode .nav-tabs .nav-link.active {
-            background-color: #495057;
-            color: #f8f9fa;
-            border-color: #6c757d;
-        }
-        
-        @media (max-width: 768px) {
-            .card-body {
-                padding: 0.75rem;
-            }
-            
-            .btn {
-                margin-bottom: 5px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Múltiplos Objetivos</title>
+  <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --verde-esmeralda: #046c4e;
+      --verde-esmeralda-escuro: #034e38;
+      --verde-claro: #28a745;
+      --verde-medio: #218838;
+      --dourado: #d4af37;
+      --dourado-claro: #f5e2a9;
+      --dourado-escuro: #b38e2e;
+      --roxo: #6f42c1;
+      --roxo-claro: #9f75e5;
+      --roxo-escuro: #4b2882;
+      --fundo-claro: #f9f9f9;
+      --fundo-container: #ffffff;
+      --vermelho-translucido: rgba(255, 0, 0, 0.1);
+      --azul-translucido: rgba(0, 0, 255, 0.1);
+      --roxo-translucido: rgba(111, 66, 193, 0.1);
+      --cinza-claro: #e9ecef;
+      --cinza-medio: #ced4da;
+      --cinza-escuro: #6c757d;
+      --verde-destaque: rgba(4, 108, 78, 0.1);
+      --vermelho-destaque: rgba(220, 53, 69, 0.1);
+      --sombra-padrao: 0 4px 12px rgba(0,0,0,0.1);
+      --borda-arredondada: 8px;
+      --espacamento-padrao: 20px;
+      --transicao-padrao: all 0.3s ease;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--fundo-claro);
+      color: var(--verde-esmeralda-escuro);
+      margin: 0;
+      padding: var(--espacamento-padrao);
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--verde-esmeralda);
+      margin-top: 0;
+      margin-bottom: var(--espacamento-padrao);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    h1 {
+      color: var(--verde-esmeralda-escuro);
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 3px solid var(--dourado);
+      padding-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    form {
+      background-color: var(--fundo-container);
+      padding: var(--espacamento-padrao);
+      border-radius: var(--borda-arredondada);
+      box-shadow: var(--sombra-padrao);
+      margin-bottom: var(--espacamento-padrao);
+      border: 1px solid var(--cinza-claro);
+    }
+    .result {
+      margin-top: var(--espacamento-padrao);
+      padding: var(--espacamento-padrao);
+      border: 2px solid var(--dourado);
+      background-color: var(--fundo-container);
+      border-radius: var(--borda-arredondada);
+      box-shadow: var(--sombra-padrao);
+    }
+    .recommendation {
+      margin: var(--espacamento-padrao) 0;
+      padding: var(--espacamento-padrao);
+      border: 2px solid var(--verde-esmeralda);
+      background-color: var(--fundo-container);
+      border-radius: var(--borda-arredondada);
+      box-shadow: var(--sombra-padrao);
+    }
+    .recommendation h3 {
+      color: var(--verde-esmeralda-escuro);
+      margin-top: 0;
+      border-bottom: 2px solid var(--dourado);
+      padding-bottom: 10px;
+      font-size: 1.4rem;
+    }
+    .whatsapp-button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: var(--espacamento-padrao) 0;
+      background-color: var(--verde-esmeralda);
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: var(--borda-arredondada);
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--sombra-padrao);
+      transition: var(--transicao-padrao);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .whatsapp-button:hover {
+      background-color: var(--verde-esmeralda-escuro);
+      transform: translateY(-2px);
+    }
+    .save-scenario-button, .analyze-scenario-button, .new-scenario-button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: var(--espacamento-padrao) 0;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1rem;
+      border: none;
+      border-radius: var(--borda-arredondada);
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--sombra-padrao);
+      transition: var(--transicao-padrao);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .save-scenario-button { background-color: var(--dourado); }
+    .save-scenario-button:hover { background-color: var(--dourado-escuro); transform: translateY(-2px); }
+    .analyze-scenario-button { background-color: var(--verde-esmeralda); }
+    .analyze-scenario-button:hover { background-color: var(--verde-esmeralda-escuro); transform: translateY(-2px); }
+    .new-scenario-button { background-color: var(--dourado); }
+    .new-scenario-button:hover { background-color: var(--dourado-escuro); transform: translateY(-2px); }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: var(--verde-esmeralda-escuro);
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap; /* Allow wrapping on smaller screens */
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .row > div {
+      flex: 1;
+      min-width: 150px; /* Prevent fields from becoming too narrow */
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      box-sizing: border-box;
+      border: 1px solid var(--cinza-medio);
+      border-radius: var(--borda-arredondada);
+      transition: var(--transicao-padrao);
+      font-size: 1rem;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--dourado);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+    }
+    textarea {
+      min-height: 80px; /* Reduced height */
+      resize: vertical;
+    }
+    button {
+      margin-top: 20px;
+      padding: 14px;
+      background-color: var(--verde-esmeralda);
+      color: white;
+      border: none;
+      border-radius: var(--borda-arredondada);
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: var(--transicao-padrao);
+      letter-spacing: 0.5px;
+    }
+    button:hover {
+      background-color: var(--verde-esmeralda-escuro);
+      transform: translateY(-2px);
+    }
+    .chart-container {
+      margin-top: 30px;
+      position: relative;
+      border: 2px solid var(--dourado-claro);
+      border-radius: var(--borda-arredondada);
+      padding: 20px;
+      background-color: var(--fundo-container);
+      box-shadow: var(--sombra-padrao);
+    }
+    .chart-title {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: var(--verde-esmeralda-escuro);
+      font-size: 1.2rem;
+      border-bottom: 1px solid var(--dourado);
+      padding-bottom: 10px;
+    }
+    .chart-nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .chart-nav button {
+      padding: 10px 20px;
+      margin-top: 0;
+      width: auto;
+      font-size: 0.9rem;
+      background-color: var(--dourado);
+      border-radius: var(--borda-arredondada);
+      transition: var(--transicao-padrao);
+    }
+    .chart-nav button:hover {
+      background-color: var(--dourado-escuro);
+    }
+    .chart-content {
+      display: flex;
+      overflow: hidden;
+      position: relative;
+      height: 400px;
+      border: 1px solid var(--cinza-claro);
+      border-radius: var(--borda-arredondada);
+      background-color: var(--fundo-container);
+    }
+    .chart-slide {
+      flex: 0 0 100%;
+      transition: transform 0.3s ease;
+    }
+    .table-slide {
+      flex: 0 0 100%;
+      overflow-x: auto;
+      overflow-y: auto;
+      padding: 15px;
+      background-color: var(--fundo-container);
+      max-height: 400px; /* Limit table height */
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      min-width: 800px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .data-table th, .data-table td {
+      border: 1px solid var(--cinza-claro);
+      padding: 10px;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .data-table th {
+      background-color: var(--verde-esmeralda);
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .data-table tr:nth-child(even) {
+      background-color: var(--verde-destaque);
+    }
+    .data-table tr:hover {
+      background-color: var(--dourado-claro);
+    }
+    .scenarios-container {
+      margin: 30px 0;
+      padding: 20px;
+      border: 2px solid var(--dourado);
+      background-color: var(--fundo-container);
+      border-radius: var(--borda-arredondada);
+      box-shadow: var(--sombra-padrao);
+    }
+    .scenarios-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--verde-esmeralda);
+      padding-bottom: 10px;
+    }
+    .scenarios-header h3 {
+      color: var(--verde-esmeralda-escuro);
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    .scenario-card {
+      border: 1px solid var(--cinza-medio);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: var(--cinza-claro);
+      position: relative;
+    }
+    .scenario-card.active {
+      border: 2px solid var(--verde-esmeralda);
+      background-color: white;
+    }
+    .scenario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .scenario-title {
+      font-weight: bold;
+      color: var(--verde-esmeralda);
+      margin: 0;
+    }
+    .scenario-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .scenario-actions button {
+      padding: 5px 10px;
+      margin: 0;
+      width: auto;
+      font-size: 12px;
+    }
+    .scenario-delete {
+      background-color: #dc3545;
+    }
+    .scenario-delete:hover {
+      background-color: #c82333;
+    }
+    .scenario-select {
+      background-color: var(--dourado);
+    }
+    .scenario-select:hover {
+      background-color: var(--dourado-escuro);
+    }
+    .scenario-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .scenario-info {
+      flex: 1;
+      min-width: 200px;
+    }
+    .scenario-info p {
+      margin: 5px 0;
+    }
+    .scenario-info strong {
+      color: var(--verde-esmeralda);
+    }
+    .scenario-details {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: var(--fundo-claro);
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .scenario-details ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .scenario-details li {
+      margin-bottom: 5px;
+    }
+    /* Estilos para comparação de cenários */
+    .comparison-container {
+      margin-top: 30px;
+      border: 2px solid var(--roxo);
+      border-radius: 8px;
+      padding: 15px;
+      background-color: white;
+    }
+    .comparison-header {
+      color: var(--roxo);
+      margin-top: 0;
+      border-bottom: 1px solid var(--dourado-claro);
+      padding-bottom: 10px;
+      text-align: center;
+    }
+    .comparison-chart-container {
+      height: 400px;
+      margin: 20px 0;
+    }
+    #comparisonTableContainer {
+      overflow-x: auto; /* Habilitar rolagem horizontal */
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      min-width: 900px; /* Garantir largura mínima para forçar rolagem se necessário */
+    }
+    .comparison-table th, .comparison-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      white-space: nowrap; /* Evitar quebra de linha nas células */
+    }
+    .comparison-table th {
+      background-color: var(--roxo-translucido);
+      color: var(--roxo-escuro);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .comparison-table tr:nth-child(even) {
+      background-color: var(--fundo-claro);
+    }
+    .comparison-table .best-value {
+      font-weight: bold;
+      color: var(--verde-esmeralda);
+      background-color: var(--verde-destaque);
+    }
+    .comparison-table .worst-value {
+      font-weight: bold;
+      color: #dc3545;
+      background-color: var(--vermelho-destaque);
+    }
+    .general-analysis {
+      margin-top: 30px;
+      padding: 20px;
+      border: 2px solid var(--roxo);
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .general-analysis h3 {
+      color: var(--roxo);
+      margin-top: 0;
+      border-bottom: 1px solid var(--dourado-claro);
+      padding-bottom: 10px;
+      text-align: center;
+    }
+
+    /* Estilos para a seção de múltiplos objetivos */
+    .objectives-section {
+      background-color: var(--fundo-container);
+      padding: var(--espacamento-padrao);
+      border-radius: var(--borda-arredondada);
+      box-shadow: var(--sombra-padrao);
+      margin-bottom: var(--espacamento-padrao);
+      border: 1px solid var(--cinza-claro);
+    }
+    .objectives-section h3 {
+      color: var(--verde-esmeralda);
+      margin-top: 0;
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--dourado);
+      padding-bottom: 10px;
+    }
+    .objective-input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: flex-end; /* Align items to bottom for button */
+      margin-bottom: 15px;
+    }
+    .objective-input-group > div {
+      flex: 1;
+      min-width: 120px;
+    }
+    .objective-input-group button {
+      flex-basis: 100px; /* Fixed width for button */
+      margin-top: 0; /* Remove default top margin */
+      padding: 12px; /* Match input padding */
+      height: 46px; /* Match input height */
+      font-size: 0.9rem;
+      width: auto;
+    }
+    #objectivesList {
+      margin-top: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid var(--cinza-medio);
+      border-radius: var(--borda-arredondada);
+      padding: 10px;
+    }
+    .objective-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid var(--cinza-claro);
+      background-color: var(--fundo-claro);
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    .objective-item:last-child {
+      border-bottom: none;
+    }
+    .objective-item span {
+      flex-grow: 1;
+      margin-right: 10px;
+      font-size: 0.9rem;
+    }
+    .objective-item button {
+      padding: 4px 8px;
+      margin: 0;
+      width: auto;
+      font-size: 0.8rem;
+      background-color: #dc3545;
+      line-height: 1;
+    }
+    .objective-item button:hover {
+      background-color: #c82333;
+    }
+
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="theme-switch">
-            <button class="btn btn-sm btn-outline-secondary" id="themeToggle">
-                <i class="bi bi-moon"></i> Tema Escuro
-            </button>
-        </div>
-        
-        <header class="text-center mb-4">
-            <h1 class="display-4">Calculadora de Financiamento Imobiliário</h1>
-            <p class="lead">Simule, compare e analise diferentes cenários de financiamento imobiliário no Brasil</p>
-        </header>
-        
-        <!-- Formulário Principal -->
-        <div class="card">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs" id="formTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="imovel-tab" data-bs-toggle="tab" data-bs-target="#imovel" type="button" role="tab" aria-controls="imovel" aria-selected="true">Dados do Imóvel</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="financiamento-tab" data-bs-toggle="tab" data-bs-target="#financiamento" type="button" role="tab" aria-controls="financiamento" aria-selected="false">Condições do Financiamento</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="comprador-tab" data-bs-toggle="tab" data-bs-target="#comprador" type="button" role="tab" aria-controls="comprador" aria-selected="false">Dados do Comprador</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="custos-tab" data-bs-toggle="tab" data-bs-target="#custos" type="button" role="tab" aria-controls="custos" aria-selected="false">Custos Adicionais</button>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body">
-                <form id="calculadoraForm">
-                    <div class="tab-content" id="formTabsContent">
-                        <!-- Aba: Dados do Imóvel -->
-                        <div class="tab-pane fade show active" id="imovel" role="tabpanel" aria-labelledby="imovel-tab">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="valorImovel" class="form-label">Valor do Imóvel (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Valor total do imóvel a ser financiado"></i></label>
-                                        <input type="number" class="form-control" id="valorImovel" required min="0" step="0.01">
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="valorEntrada" class="form-label">Valor de Entrada (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Valor que será pago como entrada do financiamento"></i></label>
-                                        <input type="number" class="form-control" id="valorEntrada" min="0" step="0.01">
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="estadoImovel" class="form-label">Estado do Imóvel <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Condição atual do imóvel"></i></label>
-                                        <select class="form-select" id="estadoImovel">
-                                            <option value="novo">Novo</option>
-                                            <option value="usado">Usado</option>
-                                            <option value="construcao">Em Construção</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="localizacao" class="form-label">UF <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Estado onde o imóvel está localizado"></i></label>
-                                        <select class="form-select" id="localizacao">
-                                            <option value="AC">Acre</option>
-                                            <option value="AL">Alagoas</option>
-                                            <option value="AP">Amapá</option>
-                                            <option value="AM">Amazonas</option>
-                                            <option value="BA">Bahia</option>
-                                            <option value="CE">Ceará</option>
-                                            <option value="DF">Distrito Federal</option>
-                                            <option value="ES">Espírito Santo</option>
-                                            <option value="GO">Goiás</option>
-                                            <option value="MA">Maranhão</option>
-                                            <option value="MT">Mato Grosso</option>
-                                            <option value="MS">Mato Grosso do Sul</option>
-                                            <option value="MG">Minas Gerais</option>
-                                            <option value="PA">Pará</option>
-                                            <option value="PB">Paraíba</option>
-                                            <option value="PR">Paraná</option>
-                                            <option value="PE">Pernambuco</option>
-                                            <option value="PI">Piauí</option>
-                                            <option value="RJ">Rio de Janeiro</option>
-                                            <option value="RN">Rio Grande do Norte</option>
-                                            <option value="RS">Rio Grande do Sul</option>
-                                            <option value="RO">Rondônia</option>
-                                            <option value="RR">Roraima</option>
-                                            <option value="SC">Santa Catarina</option>
-                                            <option value="SP">São Paulo</option>
-                                            <option value="SE">Sergipe</option>
-                                            <option value="TO">Tocantins</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <div class="alert alert-info">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-info-circle-fill me-2"></i>
-                                        <div>
-                                            <strong>Valor a ser financiado:</strong> <span id="valorFinanciado">R$ 0,00</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="d-flex justify-content-between">
-                                <div></div>
-                                <button type="button" class="btn btn-primary" id="btnProximoFinanciamento">Próximo <i class="bi bi-arrow-right"></i></button>
-                            </div>
-                        </div>
-                        
-                        <!-- Aba: Condições do Financiamento -->
-                        <div class="tab-pane fade" id="financiamento" role="tabpanel" aria-labelledby="financiamento-tab">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="sistemaAmortizacao" class="form-label">Sistema de Amortização <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Método utilizado para calcular as parcelas do financiamento"></i></label>
-                                        <select class="form-select" id="sistemaAmortizacao">
-                                            <option value="sac">SAC - Sistema de Amortização Constante</option>
-                                            <option value="price">Tabela Price</option>
-                                            <option value="sacre">SACRE - Sistema de Amortização Crescente</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="sistemaCorrecao" class="form-label">Sistema de Correção Monetária <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Índice utilizado para corrigir o valor do financiamento ao longo do tempo"></i></label>
-                                        <select class="form-select" id="sistemaCorrecao">
-                                            <option value="tr">TR</option>
-                                            <option value="ipca">IPCA</option>
-                                            <option value="fixo">Taxa Fixa</option>
-                                            <option value="poupanca">Poupança</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="taxaJuros" class="form-label">Taxa de Juros Nominal (% ao ano) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Taxa de juros anual aplicada ao financiamento"></i></label>
-                                        <input type="number" step="0.01" class="form-control" id="taxaJuros" required min="0" max="30">
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="prazoFinanciamento" class="form-label">Prazo (meses) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Duração total do financiamento em meses"></i></label>
-                                        <input type="number" class="form-control" id="prazoFinanciamento" required min="12" max="420">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="dataInicio" class="form-label">Data de Início <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Data de início do financiamento"></i></label>
-                                <input type="date" class="form-control" id="dataInicio">
-                            </div>
-                            
-                            <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" id="btnVoltarImovel"><i class="bi bi-arrow-left"></i> Anterior</button>
-                                <button type="button" class="btn btn-primary" id="btnProximoComprador">Próximo <i class="bi bi-arrow-right"></i></button>
-                            </div>
-                        </div>
-                        
-                        <!-- Aba: Dados do Comprador -->
-                        <div class="tab-pane fade" id="comprador" role="tabpanel" aria-labelledby="comprador-tab">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="rendaFamiliar" class="form-label">Renda Familiar Mensal (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Soma da renda mensal de todos os compradores"></i></label>
-                                        <input type="number" class="form-control" id="rendaFamiliar" required min="0" step="0.01">
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="idadeComprador" class="form-label">Idade do Principal Comprador <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Idade do comprador principal para cálculo de seguros"></i></label>
-                                        <input type="number" class="form-control" id="idadeComprador" min="18" max="100">
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="usarFgts" class="form-label">Usar FGTS? <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Indica se utilizará recursos do FGTS no financiamento"></i></label>
-                                        <select class="form-select" id="usarFgts">
-                                            <option value="nao">Não</option>
-                                            <option value="sim">Sim</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="mb-3" id="fgtsOptions" style="display:none;">
-                                        <label for="valorFgts" class="form-label">Valor disponível no FGTS (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Valor disponível para uso no financiamento"></i></label>
-                                        <input type="number" class="form-control" id="valorFgts" min="0" step="0.01">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="programaGoverno" class="form-label">Programa Governamental <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Programa habitacional do governo, se aplicável"></i></label>
-                                <select class="form-select" id="programaGoverno">
-                                    <option value="nenhum">Nenhum</option>
-                                    <option value="mcmv1">Minha Casa Minha Vida - Faixa 1</option>
-                                    <option value="mcmv2">Minha Casa Minha Vida - Faixa 2</option>
-                                    <option value="mcmv3">Minha Casa Minha Vida - Faixa 3</option>
-                                    <option value="mcmv4">Minha Casa Minha Vida - Faixa 4</option>
-                                </select>
-                            </div>
-                            
-                            <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" id="btnVoltarFinanciamento"><i class="bi bi-arrow-left"></i> Anterior</button>
-                                <button type="button" class="btn btn-primary" id="btnProximoCustos">Próximo <i class="bi bi-arrow-right"></i></button>
-                            </div>
-                        </div>
-                        
-                        <!-- Aba: Custos Adicionais -->
-                        <div class="tab-pane fade" id="custos" role="tabpanel" aria-labelledby="custos-tab">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="taxaMIP" class="form-label">Taxa MIP (% ao ano) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Taxa do seguro de Morte e Invalidez Permanente"></i></label>
-                                        <input type="number" step="0.01" class="form-control" id="taxaMIP" value="0.44" min="0" max="5">
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="taxaDFI" class="form-label">Taxa DFI (% ao ano) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Taxa do seguro de Danos Físicos ao Imóvel"></i></label>
-                                        <input type="number" step="0.01" class="form-control" id="taxaDFI" value="0.17" min="0" max="5">
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="tarifaAvaliacao" class="form-label">Tarifa de Avaliação (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Custo da avaliação do imóvel pelo banco"></i></label>
-                                        <input type="number" class="form-control" id="tarifaAvaliacao" value="2500" min="0" step="0.01">
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label for="custosCartorarios" class="form-label">Custos Cartorários Estimados (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Custos de registro e documentação em cartório"></i></label>
-                                        <input type="number" class="form-control" id="custosCartorarios" value="3000" min="0" step="0.01">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="outrosCustos" class="form-label">Outros Custos (R$) <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Outros custos adicionais não listados acima"></i></label>
-                                <input type="number" class="form-control" id="outrosCustos" value="0" min="0" step="0.01">
-                            </div>
-                            
-                            <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" id="btnVoltarComprador"><i class="bi bi-arrow-left"></i> Anterior</button>
-                                <button type="button" class="btn btn-primary" id="btnCalcular">Calcular <i class="bi bi-calculator"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Painel de Resultados e Resumo -->
-        <div class="card" id="resultadosCard" style="display: none;">
-            <div class="card-header">Resumo do Financiamento</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Valor Financiado:</strong> <span id="resultadoValorFinanciado">R$ 0,00</span></p>
-                        <p><strong>Primeira Prestação:</strong> <span id="resultadoPrimeiraPrestacao">R$ 0,00</span></p>
-                        <p><strong>Total de Juros:</strong> <span id="resultadoTotalJuros">R$ 0,00</span></p>
-                        <p><strong>Total de Seguros:</strong> <span id="resultadoTotalSeguros">R$ 0,00</span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Custo Efetivo Total (CET):</strong> <span id="resultadoCET">0,00%</span></p>
-                        <p><strong>Comprometimento de Renda:</strong> <span id="resultadoComprometimento">0,00%</span></p>
-                        <p><strong>Valor Final Pago:</strong> <span id="resultadoValorFinal">R$ 0,00</span></p>
-                        <p><strong>Prazo Total:</strong> <span id="resultadoPrazoTotal">0 meses</span></p>
-                    </div>
-                </div>
-                <div class="d-flex flex-wrap gap-2 mt-3">
-                    <button class="btn btn-primary" id="btnSalvarCenario" data-bs-toggle="modal" data-bs-target="#salvarCenarioModal">
-                        <i class="bi bi-save"></i> Salvar Cenário
-                    </button>
-                    <button class="btn btn-secondary" id="btnExportarPDF">
-                        <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
-                    </button>
-                    <button class="btn btn-secondary" id="btnNovoCalculo">
-                        <i class="bi bi-plus-circle"></i> Novo Cálculo
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Tabela de Memória de Cálculo -->
-        <div class="card mt-4" id="memoriaCalculoCard" style="display: none;">
-            <div class="card-header">Memória de Cálculo</div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm" id="tabelaMemoriaCalculo">
-                        <thead>
-                            <tr>
-                                <th>Parcela</th>
-                                <th>Data</th>
-                                <th>Prestação (R$)</th>
-                                <th>Amortização (R$)</th>
-                                <th>Juros (R$)</th>
-                                <th>MIP (R$)</th>
-                                <th>DFI (R$)</th>
-                                <th>Correção (R$)</th>
-                                <th>Saldo Devedor (R$)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaMemoriaCalculoBody">
-                            <!-- Preenchido via JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                <nav>
-                    <ul class="pagination justify-content-center" id="paginacaoTabela">
-                        <!-- Paginação gerada via JavaScript -->
-                    </ul>
-                </nav>
-                <button class="btn btn-secondary" id="btnExportarCSV">
-                    <i class="bi bi-file-earmark-excel"></i> Exportar CSV
-                </button>
-            </div>
-        </div>
-        
-        <!-- Visualizações Gráficas -->
-        <div class="card mt-4" id="graficosCard" style="display: none;">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs" id="graficosTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="saldo-tab" data-bs-toggle="tab" data-bs-target="#saldoGrafico" type="button" role="tab" aria-controls="saldoGrafico" aria-selected="true">Evolução do Saldo</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="composicao-tab" data-bs-toggle="tab" data-bs-target="#composicaoGrafico" type="button" role="tab" aria-controls="composicaoGrafico" aria-selected="false">Composição das Parcelas</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="distribuicao-tab" data-bs-toggle="tab" data-bs-target="#distribuicaoGrafico" type="button" role="tab" aria-controls="distribuicaoGrafico" aria-selected="false">Distribuição de Pagamentos</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="comparativo-tab" data-bs-toggle="tab" data-bs-target="#comparativoGrafico" type="button" role="tab" aria-controls="comparativoGrafico" aria-selected="false">Comparativo</button>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body">
-                <div class="tab-content" id="graficosTabContent">
-                    <div class="tab-pane fade show active" id="saldoGrafico" role="tabpanel" aria-labelledby="saldo-tab">
-                        <canvas id="graficoSaldoDevedor" height="300"></canvas>
-                    </div>
-                    <div class="tab-pane fade" id="composicaoGrafico" role="tabpanel" aria-labelledby="composicao-tab">
-                        <canvas id="graficoComposicaoParcelas" height="300"></canvas>
-                    </div>
-                    <div class="tab-pane fade" id="distribuicaoGrafico" role="tabpanel" aria-labelledby="distribuicao-tab">
-                        <canvas id="graficoDistribuicao" height="300"></canvas>
-                    </div>
-                    <div class="tab-pane fade" id="comparativoGrafico" role="tabpanel" aria-labelledby="comparativo-tab">
-                        <canvas id="graficoComparativo" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Gerenciador de Cenários -->
-        <div class="card mt-4" id="cenariosCard" style="display: none;">
-            <div class="card-header">Cenários Salvos</div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="tabelaCenarios">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Valor Financiado</th>
-                                <th>Sistema</th>
-                                <th>Prazo</th>
-                                <th>Taxa</th>
-                                <th>Primeira Parcela</th>
-                                <th>Valor Final</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaCenariosBody">
-                            <!-- Preenchido via JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-3 d-flex flex-wrap gap-2">
-                    <button class="btn btn-secondary" id="btnExportarCenarios">
-                        <i class="bi bi-download"></i> Exportar Cenários
-                    </button>
-                    <button class="btn btn-secondary" id="btnImportarCenarios">
-                        <i class="bi bi-upload"></i> Importar Cenários
-                    </button>
-                    <input type="file" id="importarCenariosFile" style="display:none">
-                </div>
-            </div>
-        </div>
-        
-        <!-- Análises Comparativas -->
-        <div class="card mt-4" id="analiseCard" style="display: none;">
-            <div class="card-header">Análise Comparativa</div>
-            <div class="card-body">
-                <div id="analiseUltimoCenario">
-                    <h5>Análise do Último Cenário</h5>
-                    <div id="analiseUltimoCenarioConteudo" class="mb-4">
-                        <!-- Preenchido via JavaScript -->
-                        <div class="alert alert-info">
-                            <p>Calcule um cenário para visualizar a análise detalhada.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="analiseComparativa" class="mt-4">
-                    <h5>Comparação entre Cenários</h5>
-                    <div class="form-group">
-                        <label>Selecione os cenários para comparar:</label>
-                        <div id="checkboxesCenarios" class="mb-3">
-                            <!-- Checkboxes gerados via JavaScript -->
-                            <div class="alert alert-info">
-                                <p>Salve pelo menos dois cenários para habilitar a comparação.</p>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary mt-2" id="btnCompararCenarios" disabled>
-                            <i class="bi bi-bar-chart"></i> Comparar Selecionados
-                        </button>
-                    </div>
-                    <div id="resultadoComparacao" class="mt-3">
-                        <!-- Preenchido via JavaScript -->
-                    </div>
-                    <div class="mt-3">
-                        <canvas id="graficoComparacaoCenarios" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Ferramentas Adicionais -->
-        <div class="card mt-4" id="ferramentasCard" style="display: none;">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs" id="ferramentasTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="amortizacao-tab" data-bs-toggle="tab" data-bs-target="#amortizacaoExtra" type="button" role="tab" aria-controls="amortizacaoExtra" aria-selected="true">Amortizações Extraordinárias</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="portabilidade-tab" data-bs-toggle="tab" data-bs-target="#portabilidade" type="button" role="tab" aria-controls="portabilidade" aria-selected="false">Portabilidade</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="capacidade-tab" data-bs-toggle="tab" data-bs-target="#capacidade" type="button" role="tab" aria-controls="capacidade" aria-selected="false">Capacidade de Pagamento</button>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body">
-                <div class="tab-content" id="ferramentasTabContent">
-                    <!-- Amortizações Extraordinárias -->
-                    <div class="tab-pane fade show active" id="amortizacaoExtra" role="tabpanel" aria-labelledby="amortizacao-tab">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="valorAmortizacao" class="form-label">Valor da Amortização (R$)</label>
-                                    <input type="number" class="form-control" id="valorAmortizacao" min="0" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="parcelaAmortizacao" class="form-label">Aplicar após parcela nº</label>
-                                    <input type="number" class="form-control" id="parcelaAmortizacao" min="1">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tipoReducao" class="form-label">Tipo de Redução</label>
-                                    <select class="form-select" id="tipoReducao">
-                                        <option value="parcela">Reduzir valor da parcela</option>
-                                        <option value="prazo">Reduzir prazo</option>
-                                    </select>
-                                </div>
-                                <button class="btn btn-primary" id="btnSimularAmortizacao">
-                                    <i class="bi bi-calculator"></i> Simular Amortização
-                                </button>
-                            </div>
-                            <div class="col-md-6">
-                                <div id="resultadoAmortizacao" class="border p-3 rounded">
-                                    <h6>Resultado da Simulação</h6>
-                                    <div id="resultadoAmortizacaoConteudo">
-                                        <p class="text-muted">Preencha os dados e clique em Simular Amortização.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Portabilidade -->
-                    <div class="tab-pane fade" id="portabilidade" role="tabpanel" aria-labelledby="portabilidade-tab">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>Condições Atuais</h6>
-                                <div class="mb-3">
-                                    <label for="saldoDevedorAtual" class="form-label">Saldo Devedor Atual (R$)</label>
-                                    <input type="number" class="form-control" id="saldoDevedorAtual" min="0" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="taxaJurosAtual" class="form-label">Taxa de Juros Atual (% ao ano)</label>
-                                    <input type="number" class="form-control" id="taxaJurosAtual" min="0" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="prazoRestante" class="form-label">Prazo Restante (meses)</label>
-                                    <input type="number" class="form-control" id="prazoRestante" min="1">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Novas Condições</h6>
-                                <div class="mb-3">
-                                    <label for="taxaJurosNova" class="form-label">Nova Taxa de Juros (% ao ano)</label>
-                                    <input type="number" class="form-control" id="taxaJurosNova" min="0" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="prazoNovo" class="form-label">Novo Prazo (meses)</label>
-                                    <input type="number" class="form-control" id="prazoNovo" min="1">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="custoPortabilidade" class="form-label">Custo da Portabilidade (R$)</label>
-                                    <input type="number" class="form-control" id="custoPortabilidade" min="0" step="0.01">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <button class="btn btn-primary" id="btnSimularPortabilidade">
-                                <i class="bi bi-calculator"></i> Simular Portabilidade
-                            </button>
-                        </div>
-                        <div class="mt-3" id="resultadoPortabilidade">
-                            <!-- Preenchido via JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <!-- Capacidade de Pagamento -->
-                    <div class="tab-pane fade" id="capacidade" role="tabpanel" aria-labelledby="capacidade-tab">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="rendaFamiliarCapacidade" class="form-label">Renda Familiar Mensal (R$)</label>
-                                    <input type="number" class="form-control" id="rendaFamiliarCapacidade" min="0" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="compromissosMensais" class="form-label">Compromissos Mensais (R$)</label>
-                                    <input type="number" class="form-control" id="compromissosMensais" min="0" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="percentualMaximo" class="form-label">Percentual Máximo de Comprometimento (%)</label>
-                                    <input type="number" class="form-control" id="percentualMaximo" min="0" max="100" step="0.1" value="30">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="taxaJurosCapacidade" class="form-label">Taxa de Juros (% ao ano)</label>
-                                    <input type="number" class="form-control" id="taxaJurosCapacidade" min="0" step="0.01">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="prazoCapacidade" class="form-label">Prazo (meses)</label>
-                                    <input type="number" class="form-control" id="prazoCapacidade" min="12" max="420">
-                                </div>
-                                <button class="btn btn-primary" id="btnCalcularCapacidade">
-                                    <i class="bi bi-calculator"></i> Calcular Capacidade
-                                </button>
-                            </div>
-                            <div class="col-md-6">
-                                <div id="resultadoCapacidade" class="border p-3 rounded">
-                                    <h6>Resultado da Análise</h6>
-                                    <div id="resultadoCapacidadeConteudo">
-                                        <p class="text-muted">Preencha os dados e clique em Calcular Capacidade.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Glossário e Informações -->
-        <div class="card mt-4" id="glossarioCard" style="display: none;">
-            <div class="card-header">Glossário e Informações</div>
-            <div class="card-body">
-                <div class="accordion" id="accordionGlossario">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                Sistemas de Amortização
-                            </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionGlossario">
-                            <div class="accordion-body">
-                                <p><strong>SAC (Sistema de Amortização Constante):</strong> Neste sistema, o valor da amortização é constante ao longo de todo o financiamento. Como o saldo devedor diminui a cada mês, o valor dos juros também diminui, fazendo com que o valor da prestação seja decrescente ao longo do tempo.</p>
-                                <p><strong>Tabela Price:</strong> Também conhecido como Sistema Francês de Amortização, caracteriza-se por prestações iguais ao longo de todo o financiamento. No início, a maior parte da prestação é composta por juros, e com o passar do tempo, a parcela de amortização aumenta.</p>
-                                <p><strong>SACRE (Sistema de Amortização Crescente):</strong> É um sistema híbrido que combina características do SAC e da Tabela Price. A amortização é crescente ao longo do tempo, resultando em prestações mais estáveis que no SAC, mas com redução mais rápida do saldo devedor que na Tabela Price.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Sistemas de Correção Monetária
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionGlossario">
-                            <div class="accordion-body">
-                                <p><strong>TR (Taxa Referencial):</strong> É uma taxa de juros de referência, instituída pela Lei nº 8.177/91, calculada pelo Banco Central do Brasil. É utilizada principalmente em financiamentos habitacionais e cadernetas de poupança.</p>
-                                <p><strong>IPCA (Índice Nacional de Preços ao Consumidor Amplo):</strong> É o índice oficial de inflação do Brasil, calculado pelo IBGE. Quando utilizado em financiamentos, o saldo devedor é corrigido mensalmente pela variação do IPCA.</p>
-                                <p><strong>Taxa Fixa:</strong> Neste sistema, não há correção monetária do saldo devedor. A taxa de juros contratada permanece constante durante todo o financiamento.</p>
-                                <p><strong>Poupança:</strong> Utiliza a remuneração básica da caderneta de poupança como índice de correção do saldo devedor.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingThree">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Seguros Obrigatórios
-                            </button>
-                        </h2>
-                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionGlossario">
-                            <div class="accordion-body">
-                                <p><strong>MIP (Morte e Invalidez Permanente):</strong> Este seguro quita o saldo devedor do financiamento em caso de morte ou invalidez permanente do mutuário. O valor do prêmio é calculado sobre o saldo devedor e varia conforme a idade do mutuário.</p>
-                                <p><strong>DFI (Danos Físicos ao Imóvel):</strong> Este seguro cobre danos físicos ao imóvel causados por incêndio, explosão, vendaval, desmoronamento, entre outros. O valor do prêmio é calculado sobre o valor de avaliação do imóvel.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingFour">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                                Programas Governamentais
-                            </button>
-                        </h2>
-                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionGlossario">
-                            <div class="accordion-body">
-                                <p><strong>Minha Casa Minha Vida:</strong> Programa habitacional do governo federal que oferece condições especiais de financiamento para famílias de diferentes faixas de renda.</p>
-                                <p><strong>Faixa 1:</strong> Destinada a famílias com renda mensal bruta de até R$ 2.640.</p>
-                                <p><strong>Faixa 2:</strong> Destinada a famílias com renda mensal bruta entre R$ 2.640,01 e R$ 4.400.</p>
-                                <p><strong>Faixa 3:</strong> Destinada a famílias com renda mensal bruta entre R$ 4.400,01 e R$ 8.000.</p>
-                                <p><strong>Faixa 4:</strong> Destinada a famílias com renda mensal bruta até R$ 11.000 (antiga faixa 1,5 do Sistema Brasileiro de Poupança e Empréstimo - SBPE).</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingFive">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                                Termos Financeiros
-                            </button>
-                        </h2>
-                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionGlossario">
-                            <div class="accordion-body">
-                                <p><strong>CET (Custo Efetivo Total):</strong> Representa o custo total do financiamento, incluindo não apenas os juros, mas também todos os encargos e despesas, como seguros, tarifas bancárias e impostos.</p>
-                                <p><strong>Amortização:</strong> É a parcela do pagamento mensal destinada a reduzir o saldo devedor do financiamento.</p>
-                                <p><strong>Juros:</strong> É a remuneração cobrada pelo banco pelo empréstimo do dinheiro, calculada sobre o saldo devedor.</p>
-                                <p><strong>Saldo Devedor:</strong> É o valor que ainda resta a pagar do financiamento, após descontadas as amortizações já realizadas.</p>
-                                <p><strong>Amortização Extraordinária:</strong> É o pagamento adicional, além da prestação mensal, destinado a reduzir o saldo devedor do financiamento.</p>
-                                <p><strong>Portabilidade:</strong> É a transferência do financiamento de uma instituição financeira para outra, geralmente em busca de melhores condições de juros e prazo.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h5>Disclaimer</h5>
-                    <div class="alert alert-warning">
-                        <p>Esta ferramenta é apenas uma simulação e os resultados apresentados são aproximados. As condições reais de financiamento podem variar de acordo com a política de cada instituição financeira, perfil de crédito do cliente e condições de mercado. Consulte sempre um profissional especializado antes de tomar decisões financeiras importantes.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Modal para Salvar Cenário -->
-        <div class="modal fade" id="salvarCenarioModal" tabindex="-1" aria-labelledby="salvarCenarioModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="salvarCenarioModalLabel">Salvar Cenário</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="nomeCenario" class="form-label">Nome do Cenário</label>
-                            <input type="text" class="form-control" id="nomeCenario" placeholder="Ex: Apartamento 2 quartos - Banco XYZ">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="btnConfirmarSalvarCenario">Salvar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <h1>Calculadora de Múltiplos Objetivos</h1>
+
+  <!-- Seção para Adicionar/Gerenciar Objetivos -->
+  <div class="objectives-section">
+    <h3>Seus Objetivos</h3>
+    <div class="objective-input-group">
+      <div>
+        <label for="newObjectiveDescription">Descrição</label>
+        <input type="text" id="newObjectiveDescription" placeholder="Ex: Viagem Europa">
+      </div>
+      <div>
+        <label for="newObjectiveValue">Valor (R$)</label>
+        <input type="text" id="newObjectiveValue" placeholder="R$ 15.000,00" oninput="formatCurrency(this)">
+      </div>
+      <div>
+        <label for="newObjectivePeriod">Prazo (meses)</label>
+        <input type="number" id="newObjectivePeriod" placeholder="24">
+      </div>
+      <button type="button" onclick="addObjective()">Adicionar</button>
     </div>
-    
-    <!-- Bootstrap 5 JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- html2canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <!-- Custom JavaScript -->
-    <script src="script.js"></script>
+    <div id="objectivesListContainer">
+      <label>Objetivos Adicionados:</label>
+      <div id="objectivesList">
+        <!-- Objetivos serão listados aqui -->
+        <p style="text-align: center; color: var(--cinza-escuro);">Nenhum objetivo adicionado ainda.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulário Principal com Parâmetros Financeiros Comuns -->
+  <form id="savingsForm" onsubmit="event.preventDefault(); calculateSavings();">
+    <h3>Parâmetros Financeiros</h3>
+
+    <label for="currentSavings">Valor já Guardado (R$):</label>
+    <input type="text" id="currentSavings" required oninput="formatCurrency(this)">
+
+    <label for="currentContribution">Quanto você poupa atualmente por mês (R$):</label>
+    <input type="text" id="currentContribution" required oninput="formatCurrency(this)">
+
+    <div class="row">
+      <div>
+        <label for="rate">Taxa de Juros (%):</label>
+        <input type="text" id="rate" required oninput="formatPercentage(this)">
+      </div>
+      <div>
+        <label for="rateType">Tipo de Taxa:</label>
+        <select id="rateType">
+          <option value="annual">Anual</option>
+          <option value="monthly">Mensal</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Você sabe a alíquota de imposto sobre o rendimento?</label>
+    <div class="row">
+      <div>
+        <select id="knowsTax" onchange="toggleTaxInput('tax', '15,00 %')">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" id="tax" placeholder="15,00 %" value="15,00 %" oninput="formatPercentage(this)" disabled>
+      </div>
+    </div>
+
+    <label>Você sabe a taxa de inflação anual?</label>
+    <div class="row">
+      <div>
+        <select id="knowsInflation" onchange="toggleTaxInput('inflation', '5,00 %')">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" id="inflation" placeholder="5,00 %" value="5,00 %" oninput="formatPercentage(this)" disabled>
+      </div>
+    </div>
+
+    <button type="submit">Calcular Cenário</button>
+  </form>
+
+  <div id="result" class="result" style="display: none;"></div>
+
+  <div id="recommendation" class="recommendation" style="display: none;">
+    <h3>Análise Automatizada</h3>
+    <div id="recommendationText"></div>
+  </div>
+
+  <!-- Botões para salvar cenário, analisar cenários e simular outro cenário -->
+  <div class="row" style="margin-top: 20px;">
+    <div style="flex: 1; margin-right: 10px;">
+      <button id="saveScenarioButton" class="save-scenario-button" type="button" onclick="addCurrentScenario()" style="display: none;">
+        SALVAR CENÁRIO
+      </button>
+    </div>
+    <div style="flex: 1; margin-left: 10px; margin-right: 10px;">
+      <button id="analyzeScenarioButton" class="analyze-scenario-button" type="button" onclick="analyzeScenarios()" style="display: none;">
+        ANALISAR CENÁRIOS
+      </button>
+    </div>
+    <div style="flex: 1; margin-left: 10px;">
+      <button id="newScenarioButton" class="new-scenario-button" type="button" onclick="prepareNewScenario()" style="display: none;">
+        LIMPAR PARA NOVO CÁLCULO
+      </button>
+    </div>
+  </div>
+
+  <!-- Botão WhatsApp para análise personalizada - sempre visível após cálculo -->
+  <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
+    AVANÇAR PARA ANÁLISE PERSONALIZADA
+  </a>
+
+  <!-- Container Único para Gráfico/Tabela de Projeção -->
+  <div id="projectionChartContainer" class="chart-container" style="display: none;">
+    <div class="chart-title">Evolução da Projeção Financeira</div>
+    <div class="chart-nav">
+      <button type="button" onclick="showChartSlide('Projection', 'chart')">Gráfico</button>
+      <button type="button" onclick="showChartSlide('Projection', 'table')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartProjectionSlide" class="chart-slide">
+        <canvas id="chartProjection"></canvas>
+      </div>
+      <div id="tableProjectionSlide" class="table-slide" style="display: none;">
+        <table id="tableProjection" class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Mês</th>
+              <th scope="col">Total Investido</th>
+              <th scope="col">Juros</th>
+              <th scope="col">Total Juros</th>
+              <th scope="col">Total Acumulado</th>
+              <th scope="col">Imposto</th>
+              <th scope="col">Valor Líquido</th>
+              <!-- <th scope="col">Objetivo Corrigido</th> Coluna removida/adaptada -->
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container para Cenários Salvos -->
+  <div id="scenariosContainer" class="scenarios-container" style="display: none;">
+    <div class="scenarios-header">
+      <h3>Cenários Salvos</h3>
+    </div>
+    <div id="scenariosList"></div>
+  </div>
+
+  <!-- Container para Comparação de Cenários -->
+  <div id="comparisonContainer" class="comparison-container" style="display: none;">
+    <h3 class="comparison-header">Comparação de Cenários</h3>
+    <div id="comparisonChartContainer" class="comparison-chart-container">
+      <canvas id="comparisonChart"></canvas>
+    </div>
+    <div id="comparisonTableContainer">
+      <table id="comparisonTable" class="comparison-table">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Container para Análise Geral -->
+   <div id="generalAnalysis" class="general-analysis" style="display: none;">
+    <h3>Análise Geral dos Cenários</h3>
+    <div id="generalAnalysisText"></div>
+  </div>
+
+
+  <script>
+    // --- Variáveis Globais ---
+    let objectives = []; // Array para armazenar os múltiplos objetivos
+    let scenarios = []; // Array para armazenar os cenários salvos
+    let scenarioCounter = 1; // Contador para nomeação automática de cenários
+    let currentCalculationData = null; // Armazena os dados do cálculo atual
+    let projectionChart = null; // Referência para o gráfico de projeção
+    let comparisonChart = null; // Referência para o gráfico de comparação
+
+    // --- Funções de Formatação e Utilitários ---
+    function formatCurrency(input) {
+      let value = input.value.replace(/\D/g, "");
+      value = (parseFloat(value) / 100).toFixed(2);
+      if (isNaN(value) || value === "NaN") value = "0.00";
+      input.value = "R$ " + parseFloat(value).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function formatPercentage(input) {
+      let value = input.value.replace(/[^\d,]/g, "").replace(",", "."); // Permite vírgula como decimal
+      value = parseFloat(value);
+      if (isNaN(value)) value = 0;
+      // Formata com duas casas decimais e vírgula
+      input.value = value.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " %";
+    }
+
+    function toggleTaxInput(id, defaultValue) {
+      const selectElementId = id === "tax" ? "knowsTax" : "knowsInflation";
+      const select = document.getElementById(selectElementId);
+      const input = document.getElementById(id);
+      if (select.value === "yes") {
+        input.disabled = false;
+        input.value = ""; // Limpa o valor se o usuário sabe
+        input.placeholder = defaultValue; // Mantém o placeholder como guia
+      } else {
+        input.disabled = true;
+        input.value = defaultValue; // Define o valor padrão se o usuário não sabe
+      }
+    }
+
+    function parseCurrency(value) {
+      if (typeof value !== 'string') return 0;
+      return parseFloat(value.replace(/R\$\s?/g, "").replace(/\./g, "").replace(",", ".")) || 0;
+    }
+
+    function parsePercentage(value) {
+       if (typeof value !== 'string') return 0;
+      return parseFloat(value.replace(/%\s?/g, "").replace(",", ".")) / 100 || 0;
+    }
+
+    function formatMoney(value) {
+        if (typeof value !== 'number' || isNaN(value)) {
+            return "R$ 0,00";
+        }
+        return "R$ " + value.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function showChartSlide(containerId, slideType) {
+      const chartSlide = document.getElementById(`chart${containerId}Slide`);
+      const tableSlide = document.getElementById(`table${containerId}Slide`);
+
+      if (slideType === "chart") {
+        chartSlide.style.display = "block";
+        tableSlide.style.display = "none";
+      } else {
+        chartSlide.style.display = "none";
+        tableSlide.style.display = "block";
+      }
+    }
+
+    // --- Funções de Gerenciamento de Objetivos ---
+    function addObjective() {
+      const descriptionInput = document.getElementById("newObjectiveDescription");
+      const valueInput = document.getElementById("newObjectiveValue");
+      const periodInput = document.getElementById("newObjectivePeriod");
+
+      const description = descriptionInput.value.trim();
+      const value = parseCurrency(valueInput.value);
+      const period = parseInt(periodInput.value);
+
+      if (!description) {
+        alert("Por favor, insira uma descrição para o objetivo.");
+        return;
+      }
+      if (isNaN(value) || value <= 0) {
+        alert("Por favor, insira um valor válido para o objetivo.");
+        return;
+      }
+      if (isNaN(period) || period <= 0) {
+        alert("Por favor, insira um prazo válido (em meses) para o objetivo.");
+        return;
+      }
+
+      objectives.push({ description, value, period });
+      displayObjectives();
+
+      // Limpar campos
+      descriptionInput.value = "";
+      valueInput.value = "";
+      periodInput.value = "";
+    }
+
+    function deleteObjective(index) {
+      objectives.splice(index, 1);
+      displayObjectives();
+    }
+
+    function displayObjectives() {
+      const listDiv = document.getElementById("objectivesList");
+      listDiv.innerHTML = ""; // Limpar lista
+
+      if (objectives.length === 0) {
+        listDiv.innerHTML = '<p style="text-align: center; color: var(--cinza-escuro);">Nenhum objetivo adicionado ainda.</p>';
+        return;
+      }
+
+      objectives.forEach((obj, index) => {
+        const item = document.createElement("div");
+        item.className = "objective-item";
+        item.innerHTML = `
+          <span>${obj.description} - ${formatMoney(obj.value)} em ${obj.period} meses</span>
+          <button type="button" onclick="deleteObjective(${index})">Excluir</button>
+        `;
+        listDiv.appendChild(item);
+      });
+    }
+
+    // --- Funções de Cálculo ---
+    function calculateCompoundInterest(initialValue, monthlyContribution, monthlyRate, maxMonths, tax, annualInflation) {
+      let totalValue = initialValue;
+      let totalInvested = initialValue;
+      let totalJuros = 0;
+      let valoresMensais = [];
+      const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
+
+      // Registrar valores iniciais (mês 0)
+      valoresMensais.push({
+        month: 0,
+        juros: 0,
+        totalInvestido: totalInvested,
+        totalJuros: 0,
+        imposto: 0,
+        valorLiquido: totalValue,
+        totalAcumulado: totalValue
+      });
+
+      for (let month = 1; month <= maxMonths; month++) {
+        const jurosDoMes = totalValue * monthlyRate;
+        totalJuros += jurosDoMes;
+        totalValue += jurosDoMes + monthlyContribution;
+        totalInvested += monthlyContribution;
+
+        const impostoTotal = totalJuros * tax;
+        const valorLiquido = totalValue - impostoTotal;
+
+        valoresMensais.push({
+          month: month,
+          juros: jurosDoMes,
+          totalInvestido: totalInvested,
+          totalJuros: totalJuros,
+          imposto: impostoTotal,
+          valorLiquido: valorLiquido,
+          totalAcumulado: totalValue
+        });
+      }
+
+      return {
+        finalValue: totalValue,
+        totalInvested: totalInvested,
+        totalJuros: totalJuros,
+        totalImposto: totalJuros * tax,
+        valoresMensais: valoresMensais
+      };
+    }
+
+    function calculateSavings() {
+      // Validar se há objetivos
+      if (objectives.length === 0) {
+        alert("Por favor, adicione pelo menos um objetivo antes de calcular.");
+        return;
+      }
+
+      // Obter parâmetros financeiros comuns
+      const currentSavings = parseCurrency(document.getElementById("currentSavings").value);
+      const currentContribution = parseCurrency(document.getElementById("currentContribution").value);
+      let rate = parsePercentage(document.getElementById("rate").value);
+      const rateType = document.getElementById("rateType").value;
+      const tax = parsePercentage(document.getElementById("tax").value);
+      const inflation = parsePercentage(document.getElementById("inflation").value);
+
+      // Converter taxa para mensal se for anual
+      const monthlyRate = rateType === "annual" ? Math.pow(1 + rate, 1/12) - 1 : rate;
+
+      // Determinar o período máximo de simulação baseado nos objetivos
+      const maxPeriod = Math.max(...objectives.map(o => o.period), 0);
+      if (maxPeriod <= 0) {
+          alert("Erro ao determinar o prazo máximo dos objetivos.");
+          return;
+      }
+
+      // Calcular a projeção financeira
+      const projection = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, maxPeriod, tax, inflation);
+      const valoresMensais = projection.valoresMensais;
+
+      // Analisar atingimento de cada objetivo
+      let resultHTML = "<h4>Resultado da Projeção:</h4>";
+      let allGoalsMet = true;
+      let recommendationDetails = [];
+
+      objectives.forEach(obj => {
+        const targetMonth = obj.period;
+        let objectiveMet = false;
+        let monthMet = -1;
+        let finalNetValueForObjective = 0;
+
+        if (targetMonth < valoresMensais.length) {
+          const monthlyInflation = Math.pow(1 + inflation, 1/12) - 1;
+          const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, targetMonth);
+          finalNetValueForObjective = valoresMensais[targetMonth].valorLiquido;
+
+          if (finalNetValueForObjective >= inflatedObjectiveValue) {
+            objectiveMet = true;
+            // Encontrar o mês exato em que foi atingido (opcional, mas bom ter)
+            for(let m = 1; m <= targetMonth; m++) {
+                const currentInflatedValue = obj.value * Math.pow(1 + monthlyInflation, m);
+                if (valoresMensais[m].valorLiquido >= currentInflatedValue) {
+                    monthMet = m;
+                    break;
+                }
+            }
+          } else {
+            allGoalsMet = false;
+          }
+
+          resultHTML += `<p><strong>${obj.description}:</strong> `;
+          if (objectiveMet) {
+            resultHTML += `<span style="color: var(--verde-esmeralda);">Atingido!</span> (Valor líquido no mês ${targetMonth}: ${formatMoney(finalNetValueForObjective)} vs Objetivo corrigido: ${formatMoney(inflatedObjectiveValue)}). Atingido no mês ${monthMet}.</p>`;
+          } else {
+            resultHTML += `<span style="color: #dc3545;">Não Atingido.</span> (Valor líquido no mês ${targetMonth}: ${formatMoney(finalNetValueForObjective)} vs Objetivo corrigido: ${formatMoney(inflatedObjectiveValue)}). Faltam ${formatMoney(inflatedObjectiveValue - finalNetValueForObjective)}.</p>`;
+          }
+          recommendationDetails.push({ description: obj.description, met: objectiveMet, period: targetMonth, netValue: finalNetValueForObjective, targetValue: inflatedObjectiveValue });
+        } else {
+           resultHTML += `<p><strong>${obj.description}:</strong> Erro - Prazo do objetivo (${targetMonth} meses) excede a simulação.</p>`;
+           allGoalsMet = false;
+           recommendationDetails.push({ description: obj.description, met: false, period: targetMonth, netValue: 0, targetValue: obj.value });
+        }
+      });
+
+      resultHTML += `<p><strong>Projeção Final (${maxPeriod} meses):</strong> Valor Líquido ${formatMoney(valoresMensais[maxPeriod].valorLiquido)} (Total Investido: ${formatMoney(valoresMensais[maxPeriod].totalInvestido)}, Juros Brutos: ${formatMoney(valoresMensais[maxPeriod].totalJuros)}, Imposto Estimado: ${formatMoney(valoresMensais[maxPeriod].imposto)})</p>`;
+
+      document.getElementById("result").innerHTML = resultHTML;
+      document.getElementById("result").style.display = "block";
+
+      // Gerar recomendação
+      generateRecommendation(recommendationDetails, currentContribution);
+
+      // Desenhar gráfico e preencher tabela de projeção
+      drawProjectionChart(valoresMensais);
+      fillDataTable("tableProjection", valoresMensais);
+      document.getElementById("projectionChartContainer").style.display = "block";
+      showChartSlide('Projection', 'chart'); // Mostrar gráfico por padrão
+
+      // Armazenar dados do cálculo atual para salvar cenário
+      currentCalculationData = {
+        objectives: JSON.parse(JSON.stringify(objectives)), // Deep copy
+        currentSavings,
+        currentContribution,
+        rate: rateType === "annual" ? rate : monthlyRate, // Salvar a taxa original informada
+        rateType,
+        tax,
+        inflation,
+        calculationResult: projection, // Salvar os resultados calculados
+        maxPeriod // Salvar o período máximo usado
+      };
+
+      // Mostrar botões de ação
+      document.getElementById("saveScenarioButton").style.display = "block";
+      document.getElementById("newScenarioButton").style.display = "block";
+      document.getElementById("whatsappButton").style.display = "block";
+      if (scenarios.length >= 1) { // Mostrar botão de análise se já houver cenários salvos
+          document.getElementById("analyzeScenarioButton").style.display = "block";
+      }
+    }
+
+    // --- Funções de Análise e Recomendação ---
+    function generateRecommendation(objectiveResults, currentContribution) {
+      const recommendationDiv = document.getElementById("recommendation");
+      const recommendationText = document.getElementById("recommendationText");
+      let analysis = "";
+      let needsImprovement = false;
+
+      objectiveResults.forEach(res => {
+        if (!res.met) {
+          needsImprovement = true;
+          analysis += `<p><strong>${res.description}:</strong> O objetivo não foi atingido no prazo de ${res.period} meses. O valor líquido projetado é de ${formatMoney(res.netValue)}, enquanto o objetivo corrigido pela inflação seria ${formatMoney(res.targetValue)}. Seria necessário um valor adicional de ${formatMoney(res.targetValue - res.netValue)}.</p>`;
+        }
+      });
+
+      if (!needsImprovement) {
+        analysis += "<p><strong>Parabéns!</strong> Com os parâmetros atuais, todos os seus objetivos são atingidos dentro dos prazos definidos.</p>";
+      } else {
+        analysis += "<p><strong>Pontos de Atenção:</strong></p><ul>";
+        if (currentContribution <= 0) {
+            analysis += "<li>Iniciar aportes mensais é fundamental.</li>";
+        } else {
+            analysis += `<li>Avalie aumentar o aporte mensal atual de ${formatMoney(currentContribution)}.</li>`;
+        }
+        analysis += "<li>Considere buscar investimentos com maior rentabilidade (lembre-se que maior rentabilidade geralmente implica maior risco).</li>";
+        analysis += "<li>Reavalie os prazos ou valores dos objetivos não atingidos, se possível.</li>";
+        analysis += "</ul>";
+      }
+
+      recommendationText.innerHTML = analysis;
+      recommendationDiv.style.display = "block";
+    }
+
+    // --- Funções de Gráficos e Tabelas ---
+    function drawProjectionChart(valoresMensais) {
+      const ctx = document.getElementById("chartProjection").getContext("2d");
+      const labels = valoresMensais.map(v => v.month);
+      const bruto = valoresMensais.map(v => v.totalAcumulado);
+      const liquido = valoresMensais.map(v => v.valorLiquido);
+      const investido = valoresMensais.map(v => v.totalInvestido);
+
+      // Destruir gráfico existente se houver
+      if (projectionChart) {
+        projectionChart.destroy();
+      }
+
+      projectionChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Valor Bruto",
+              data: bruto,
+              borderColor: "rgba(4, 108, 78, 0.8)", // Verde Esmeralda
+              backgroundColor: "transparent",
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              tension: 0.1
+            },
+            {
+              label: "Valor Líquido (após IR)",
+              data: liquido,
+              borderColor: "rgba(212, 175, 55, 0.8)", // Dourado
+              backgroundColor: "transparent",
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              tension: 0.1
+            },
+            {
+              label: "Total Investido",
+              data: investido,
+              borderColor: "rgba(111, 66, 193, 0.6)", // Roxo
+              backgroundColor: "transparent",
+              borderWidth: 2,
+              borderDash: [5, 5],
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              tension: 0.1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return formatMoney(value);
+                }
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Meses'
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    label += formatMoney(context.parsed.y);
+                  }
+                  return label;
+                }
+              }
+            },
+            legend: {
+                position: 'top',
+            }
+          }
+        }
+      });
+    }
+
+    function fillDataTable(tableId, data) {
+      const table = document.getElementById(tableId);
+      const tbody = table.querySelector("tbody");
+      tbody.innerHTML = ""; // Limpar tabela
+
+      // Começar do mês 1
+      for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.month}</td>
+          <td>${formatMoney(row.totalInvestido)}</td>
+          <td>${formatMoney(row.juros)}</td>
+          <td>${formatMoney(row.totalJuros)}</td>
+          <td>${formatMoney(row.totalAcumulado)}</td>
+          <td>${formatMoney(row.imposto)}</td>
+          <td>${formatMoney(row.valorLiquido)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    // --- Funções de Gerenciamento de Cenários ---
+    function addCurrentScenario() {
+      if (!currentCalculationData) {
+        alert("Nenhum cálculo foi realizado para salvar como cenário.");
+        return;
+      }
+
+      const scenarioData = {
+        name: `Cenário ${scenarioCounter++}`,
+        ...currentCalculationData // Inclui objectives, parâmetros financeiros, resultados
+      };
+
+      scenarios.push(scenarioData);
+      displayScenarios();
+
+      // Mostrar o botão de analisar cenários se houver mais de um cenário
+      if (scenarios.length >= 1) { // Mudado para >= 1 para mostrar sempre que houver cenário salvo
+        document.getElementById("analyzeScenarioButton").style.display = "block";
+      }
+
+      alert("Cenário salvo com sucesso!");
+    }
+
+    function displayScenarios() {
+      const scenariosContainer = document.getElementById("scenariosContainer");
+      const scenariosListDiv = document.getElementById("scenariosList");
+      scenariosListDiv.innerHTML = ""; // Limpar lista
+
+      if (scenarios.length === 0) {
+        scenariosContainer.style.display = "none";
+        return;
+      }
+
+      scenariosContainer.style.display = "block";
+
+      scenarios.forEach((scenario, index) => {
+        const card = document.createElement("div");
+        card.className = "scenario-card";
+
+        let objectivesSummary = "Nenhum";
+        if (scenario.objectives && scenario.objectives.length > 0) {
+            objectivesSummary = scenario.objectives.map(o => o.description).join(', ');
+            if (objectivesSummary.length > 50) { // Limitar tamanho do resumo
+                objectivesSummary = objectivesSummary.substring(0, 47) + '...';
+            }
+        }
+
+        // Calcular status geral dos objetivos para este cenário
+        let scenarioAllGoalsMet = true;
+        let objectivesStatusHTML = "<ul>";
+        if (scenario.objectives && scenario.calculationResult) {
+            const valoresMensais = scenario.calculationResult.valoresMensais;
+            const annualInflation = scenario.inflation;
+            const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
+
+            scenario.objectives.forEach(obj => {
+                const targetMonth = obj.period;
+                let objectiveMet = false;
+                if (targetMonth < valoresMensais.length) {
+                    const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, targetMonth);
+                    if (valoresMensais[targetMonth].valorLiquido >= inflatedObjectiveValue) {
+                        objectiveMet = true;
+                    }
+                }
+                if (!objectiveMet) scenarioAllGoalsMet = false;
+                objectivesStatusHTML += `<li>${obj.description}: <span style="color: ${objectiveMet ? 'var(--verde-esmeralda)' : '#dc3545'}">${objectiveMet ? 'Atingido' : 'Não Atingido'}</span></li>`;
+            });
+        } else {
+            scenarioAllGoalsMet = false; // Considerar não atingido se não houver dados
+            objectivesStatusHTML += "<li>Dados de objetivos ou cálculo indisponíveis.</li>";
+        }
+        objectivesStatusHTML += "</ul>";
+
+
+        card.innerHTML = `
+          <div class="scenario-header">
+            <h4 class="scenario-title">${scenario.name}</h4>
+            <div class="scenario-actions">
+              <button type="button" class="scenario-select" onclick="selectScenario(${index})">Carregar</button>
+              <button type="button" class="scenario-delete" onclick="deleteScenario(${index})">Excluir</button>
+            </div>
+          </div>
+          <div class="scenario-content">
+            <div class="scenario-info">
+              <p><strong>Guardado:</strong> ${formatMoney(scenario.currentSavings)}</p>
+              <p><strong>Aporte:</strong> ${formatMoney(scenario.currentContribution)}</p>
+              <p><strong>Taxa:</strong> ${(scenario.rate * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}% ${scenario.rateType === 'annual' ? 'a.a.' : 'a.m.'}</p>
+              <p><strong>Inflação:</strong> ${(scenario.inflation * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
+              <p><strong>Imposto:</strong> ${(scenario.tax * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
+              <p><strong>Status Geral:</strong> <span style="font-weight: bold; color: ${scenarioAllGoalsMet ? 'var(--verde-esmeralda)' : '#dc3545'}">${scenarioAllGoalsMet ? 'Todos Objetivos Atingidos' : 'Objetivos Pendentes'}</span></p>
+            </div>
+            <div class="scenario-details">
+              <strong>Objetivos:</strong>
+              ${objectivesStatusHTML}
+            </div>
+          </div>
+        `;
+        scenariosListDiv.appendChild(card);
+      });
+    }
+
+    function selectScenario(index) {
+      if (index < 0 || index >= scenarios.length) return;
+      const scenario = scenarios[index];
+
+      // Restaurar objetivos
+      objectives = JSON.parse(JSON.stringify(scenario.objectives || [])); // Deep copy
+      displayObjectives();
+
+      // Restaurar parâmetros financeiros
+      document.getElementById("currentSavings").value = formatMoney(scenario.currentSavings);
+      formatCurrency(document.getElementById("currentSavings"));
+      document.getElementById("currentContribution").value = formatMoney(scenario.currentContribution);
+      formatCurrency(document.getElementById("currentContribution"));
+      document.getElementById("rate").value = (scenario.rate * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " %";
+      formatPercentage(document.getElementById("rate"));
+      document.getElementById("rateType").value = scenario.rateType;
+      document.getElementById("tax").value = (scenario.tax * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " %";
+      formatPercentage(document.getElementById("tax"));
+      document.getElementById("inflation").value = (scenario.inflation * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " %";
+      formatPercentage(document.getElementById("inflation"));
+
+      // Habilitar/desabilitar campos de taxa/inflação baseado no 'knows'
+      document.getElementById("knowsTax").value = scenario.tax > 0 ? "yes" : "no"; // Simplificação: assume 'yes' se taxa > 0
+      toggleTaxInput("tax", "15,00 %");
+      document.getElementById("knowsInflation").value = scenario.inflation > 0 ? "yes" : "no"; // Simplificação
+      toggleTaxInput("inflation", "5,00 %");
+
+      // Limpar resultados anteriores e recalcular
+      clearResults();
+      calculateSavings(); // Recalcula com os dados carregados
+
+      // Rolar para o topo do formulário
+      document.getElementById("savingsForm").scrollIntoView({ behavior: 'smooth' });
+      alert(`Cenário "${scenario.name}" carregado. Os resultados foram recalculados.`);
+    }
+
+    function deleteScenario(index) {
+      if (index < 0 || index >= scenarios.length) return;
+      const scenarioName = scenarios[index].name;
+      if (confirm(`Tem certeza que deseja excluir o "${scenarioName}"?`)) {
+        scenarios.splice(index, 1);
+        displayScenarios();
+        // Esconder botão de análise se não houver mais cenários suficientes
+        if (scenarios.length < 1) {
+          document.getElementById("analyzeScenarioButton").style.display = "none";
+          document.getElementById("comparisonContainer").style.display = "none";
+          document.getElementById("generalAnalysis").style.display = "none";
+        }
+         // Se houver apenas 1 cenário, esconder análise mas manter botão visível
+        if (scenarios.length === 1) {
+             document.getElementById("comparisonContainer").style.display = "none";
+             document.getElementById("generalAnalysis").style.display = "none";
+        }
+        alert(`"${scenarioName}" excluído.`);
+      }
+    }
+
+    function prepareNewScenario() {
+        // Limpar objetivos
+        objectives = [];
+        displayObjectives();
+
+        // Limpar campos do formulário principal (opcional, pode manter para facilitar)
+        // document.getElementById("savingsForm").reset(); // Cuidado: reseta selects também
+        document.getElementById("currentSavings").value = "";
+        document.getElementById("currentContribution").value = "";
+        document.getElementById("rate").value = "";
+        // Manter taxas padrão IR/Inflação
+        document.getElementById("knowsTax").value = "no";
+        toggleTaxInput('tax', '15,00 %');
+        document.getElementById("knowsInflation").value = "no";
+        toggleTaxInput('inflation', '5,00 %');
+
+        // Limpar resultados
+        clearResults();
+
+        // Focar no primeiro campo de objetivo
+        document.getElementById("newObjectiveDescription").focus();
+        alert("Campos de objetivos e resultados limpos. Pronto para um novo cálculo.");
+    }
+
+    function clearResults() {
+        document.getElementById("result").style.display = "none";
+        document.getElementById("result").innerHTML = "";
+        document.getElementById("recommendation").style.display = "none";
+        document.getElementById("recommendationText").innerHTML = "";
+        document.getElementById("projectionChartContainer").style.display = "none";
+        document.getElementById("whatsappButton").style.display = "none";
+        document.getElementById("saveScenarioButton").style.display = "none";
+        document.getElementById("newScenarioButton").style.display = "none";
+        // Não esconder o botão de análise aqui, pois depende dos cenários salvos
+        currentCalculationData = null;
+        if (projectionChart) {
+            projectionChart.destroy();
+            projectionChart = null;
+        }
+    }
+
+    // --- Funções de Comparação de Cenários ---
+    function analyzeScenarios() {
+      if (scenarios.length < 2) {
+        alert("É necessário ter pelo menos 2 cenários salvos para comparar.");
+        return;
+      }
+
+      updateComparisonChart();
+      updateComparisonTable();
+      generateGeneralAnalysis();
+
+      document.getElementById("comparisonContainer").style.display = "block";
+      document.getElementById("generalAnalysis").style.display = "block";
+      document.getElementById("comparisonContainer").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateComparisonChart() {
+        const ctx = document.getElementById('comparisonChart').getContext('2d');
+        const maxPeriodOverall = Math.max(...scenarios.map(s => s.maxPeriod), 0);
+        const labels = Array.from({ length: maxPeriodOverall + 1 }, (_, i) => i);
+        const datasets = [];
+        const colors = [
+            'rgba(4, 108, 78, 0.8)',   // Verde Esmeralda
+            'rgba(212, 175, 55, 0.8)', // Dourado
+            'rgba(111, 66, 193, 0.8)', // Roxo
+            'rgba(220, 53, 69, 0.8)',  // Vermelho
+            'rgba(0, 123, 255, 0.8)', // Azul
+            'rgba(255, 193, 7, 0.8)',  // Amarelo
+            'rgba(108, 117, 125, 0.8)' // Cinza
+        ];
+
+        scenarios.forEach((scenario, index) => {
+            const color = colors[index % colors.length];
+            const data = new Array(maxPeriodOverall + 1).fill(null);
+            if (scenario.calculationResult && scenario.calculationResult.valoresMensais) {
+                scenario.calculationResult.valoresMensais.forEach((val, month) => {
+                    if (month <= maxPeriodOverall) {
+                        data[month] = val.valorLiquido;
+                    }
+                });
+            }
+
+            datasets.push({
+                label: scenario.name,
+                data: data,
+                borderColor: color,
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                tension: 0.1
+            });
+        });
+
+        if (comparisonChart) {
+            comparisonChart.destroy();
+        }
+
+        comparisonChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return formatMoney(value); }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Meses'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    label += formatMoney(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    }
+
+    function updateComparisonTable() {
+        const table = document.getElementById('comparisonTable');
+        const thead = table.querySelector('thead');
+        const tbody = table.querySelector('tbody');
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
+
+        if (scenarios.length === 0) return;
+
+        // Cabeçalho
+        let headerRow = '<tr><th>Métrica</th>';
+        scenarios.forEach(s => headerRow += `<th>${s.name}</th>`);
+        headerRow += '</tr>';
+        thead.innerHTML = headerRow;
+
+        // Linhas de Dados
+        const metrics = [
+            { key: 'currentSavings', label: 'Valor Guardado', format: formatMoney },
+            { key: 'currentContribution', label: 'Aporte Mensal', format: formatMoney },
+            { key: 'rate', label: 'Taxa Juros', format: (v, s) => `${(v * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}% ${s.rateType === 'annual' ? 'a.a.' : 'a.m.'}` },
+            { key: 'inflation', label: 'Inflação Anual', format: v => `${(v * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%` },
+            { key: 'tax', label: 'Imposto (IR)', format: v => `${(v * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%` },
+            { key: 'finalNetValue', label: 'Valor Líquido Final', format: formatMoney, calc: s => s.calculationResult?.valoresMensais[s.maxPeriod]?.valorLiquido ?? 0 },
+            { key: 'totalInvested', label: 'Total Investido Final', format: formatMoney, calc: s => s.calculationResult?.valoresMensais[s.maxPeriod]?.totalInvestido ?? 0 },
+            { key: 'totalInterest', label: 'Juros Brutos Finais', format: formatMoney, calc: s => s.calculationResult?.valoresMensais[s.maxPeriod]?.totalJuros ?? 0 },
+            { key: 'goalsMetStatus', label: 'Status Objetivos', format: (v, s) => {
+                let allMet = true;
+                if (!s.objectives || s.objectives.length === 0) return 'N/A';
+                const annualInflation = s.inflation;
+                const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
+                s.objectives.forEach(obj => {
+                    const targetMonth = obj.period;
+                    if (targetMonth >= s.calculationResult.valoresMensais.length || s.calculationResult.valoresMensais[targetMonth].valorLiquido < (obj.value * Math.pow(1 + monthlyInflation, targetMonth))) {
+                        allMet = false;
+                    }
+                });
+                return allMet ? '<span style="color: var(--verde-esmeralda);">Todos Atingidos</span>' : '<span style="color: #dc3545;">Pendentes</span>';
+            } }
+        ];
+
+        metrics.forEach(metric => {
+            let row = `<tr><td>${metric.label}</td>`;
+            const values = scenarios.map(s => metric.calc ? metric.calc(s) : s[metric.key]);
+
+            // Para métricas numéricas, encontrar melhor/pior
+            let bestValue = -Infinity, worstValue = Infinity;
+            let isNumeric = values.every(v => typeof v === 'number');
+            if (isNumeric && metric.key !== 'tax' && metric.key !== 'inflation') { // Maximizar (exceto imposto/inflação)
+                bestValue = Math.max(...values);
+                worstValue = Math.min(...values);
+            } else if (isNumeric && (metric.key === 'tax' || metric.key === 'inflation')) { // Minimizar
+                bestValue = Math.min(...values);
+                worstValue = Math.max(...values);
+            }
+
+            scenarios.forEach((s, index) => {
+                const value = values[index];
+                let formattedValue = metric.format(value, s);
+                let className = '';
+                if (isNumeric && values.length > 1) {
+                    if (value === bestValue) className = 'best-value';
+                    else if (value === worstValue) className = 'worst-value';
+                }
+                row += `<td class="${className}">${formattedValue}</td>`;
+            });
+            row += '</tr>';
+            tbody.innerHTML += row;
+        });
+    }
+
+    function generateGeneralAnalysis() {
+        const analysisDiv = document.getElementById('generalAnalysisText');
+        let text = "<p>Comparando os cenários:</p><ul>";
+
+        if (scenarios.length < 2) {
+            analysisDiv.innerHTML = "<p>Adicione pelo menos dois cenários para gerar uma análise comparativa.</p>";
+            return;
+        }
+
+        // Encontrar cenário com maior valor líquido final
+        let bestFinalValue = -Infinity;
+        let bestFinalValueScenario = null;
+        scenarios.forEach(s => {
+            const finalValue = s.calculationResult?.valoresMensais[s.maxPeriod]?.valorLiquido ?? 0;
+            if (finalValue > bestFinalValue) {
+                bestFinalValue = finalValue;
+                bestFinalValueScenario = s;
+            }
+        });
+        if (bestFinalValueScenario) {
+            text += `<li>O <strong>${bestFinalValueScenario.name}</strong> apresenta o maior valor líquido final projetado (${formatMoney(bestFinalValue)}).</li>`;
+        }
+
+        // Encontrar cenário que atinge todos os objetivos (se houver)
+        const allGoalsMetScenarios = scenarios.filter(s => {
+            if (!s.objectives || s.objectives.length === 0) return false;
+            let allMet = true;
+            const annualInflation = s.inflation;
+            const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
+            s.objectives.forEach(obj => {
+                const targetMonth = obj.period;
+                 if (targetMonth >= s.calculationResult.valoresMensais.length || s.calculationResult.valoresMensais[targetMonth].valorLiquido < (obj.value * Math.pow(1 + monthlyInflation, targetMonth))) {
+                    allMet = false;
+                }
+            });
+            return allMet;
+        });
+
+        if (allGoalsMetScenarios.length > 0) {
+            text += `<li>Os cenários: <strong>${allGoalsMetScenarios.map(s => s.name).join(', ')}</strong> atingem todos os objetivos definidos.</li>`;
+        } else {
+            text += `<li>Nenhum dos cenários atuais atinge todos os objetivos definidos nos prazos estipulados.</li>`;
+        }
+
+        // Comparar Aportes
+        let highestContribution = -Infinity, lowestContribution = Infinity;
+        let highestContributionScenario = null, lowestContributionScenario = null;
+        scenarios.forEach(s => {
+            if (s.currentContribution > highestContribution) { highestContribution = s.currentContribution; highestContributionScenario = s; }
+            if (s.currentContribution < lowestContribution) { lowestContribution = s.currentContribution; lowestContributionScenario = s; }
+        });
+        if (highestContributionScenario && lowestContributionScenario && highestContribution !== lowestContribution) {
+             text += `<li>O aporte mensal varia de ${formatMoney(lowestContribution)} (${lowestContributionScenario.name}) a ${formatMoney(highestContribution)} (${highestContributionScenario.name}).</li>`;
+        }
+
+        text += "</ul><p>Analise a tabela e o gráfico acima para mais detalhes sobre as diferenças entre os parâmetros e resultados de cada cenário.</p>";
+        analysisDiv.innerHTML = text;
+    }
+
+
+    // --- Função de Integração WhatsApp ---
+    async function openWhatsAppChat() {
+      let objectivesText = "Objetivos:\n";
+      if (objectives.length > 0) {
+        objectives.forEach(obj => {
+          objectivesText += `- ${obj.description}: ${formatMoney(obj.value)} em ${obj.period} meses\n`;
+        });
+      } else {
+        objectivesText = "Nenhum objetivo definido.\n";
+      }
+
+      let parametersText = "Parâmetros Financeiros:\n";
+      if (currentCalculationData) {
+         parametersText += `  - Valor Guardado: ${formatMoney(currentCalculationData.currentSavings)}\n`;
+         parametersText += `  - Aporte Mensal: ${formatMoney(currentCalculationData.currentContribution)}\n`;
+         parametersText += `  - Taxa Juros: ${(currentCalculationData.rate * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}% ${currentCalculationData.rateType === "annual" ? "a.a." : "a.m."}\n`;
+         parametersText += `  - Inflação: ${(currentCalculationData.inflation * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%\n`;
+         parametersText += `  - Imposto: ${(currentCalculationData.tax * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%\n`;
+      } else {
+          parametersText = "Parâmetros financeiros não calculados.\n";
+      }
+
+      // Tenta pegar a descrição geral do primeiro objetivo como contexto, se existir
+      const goalContext = objectives.length > 0 ? objectives[0].description : "(Objetivo não descrito)";
+
+      const message = `Oi Hugo, queria tua ajuda com meus objetivos:\n${goalContext}\n\n${objectivesText}\n${parametersText}\nEstou usando a calculadora que você criou.`;
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=5581994297920&text=${encodedMessage}`;
+      window.open(whatsappUrl, "_blank");
+    }
+
+    // --- Inicialização ---
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Inicializar exibição de objetivos (vazia no início)
+        displayObjectives();
+        // Configurar valores padrão para IR e Inflação
+        toggleTaxInput('tax', '15,00 %');
+        toggleTaxInput('inflation', '5,00 %');
+    });
+
+  </script>
 </body>
 </html>
