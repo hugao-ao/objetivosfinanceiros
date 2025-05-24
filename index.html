@@ -676,6 +676,106 @@
     </div>
   </div>
 
+  <!-- Container para Análise 1: Valor Inicial Necessário -->
+  <div id="analysisInitialValueContainer" class="chart-container" style="display: none; border-color: var(--verde-claro);">
+    <div class="chart-title">Análise: Valor Inicial Necessário (sem aportes)</div>
+    <p id="resultInitialValue" style="text-align: center; font-weight: bold; margin-bottom: 15px;"></p>
+    <div class="chart-nav">
+      <button type="button" onclick="showChartSlide(\'InitialValue\', \'chart\')">Gráfico</button>
+      <button type="button" onclick="showChartSlide(\'InitialValue\', \'table\')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartInitialValueSlide" class="chart-slide">
+        <canvas id="chartInitialValue"></canvas>
+      </div>
+      <div id="tableInitialValueSlide" class="table-slide" style="display: none;">
+        <table id="tableInitialValue" class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Mês</th><th scope="col">Total Investido</th><th scope="col">Juros</th><th scope="col">Total Juros</th><th scope="col">Total Acumulado</th><th scope="col">Imposto</th><th scope="col">Valor Líquido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container para Análise 2: Aporte Mensal Ideal -->
+  <div id="analysisIdealContributionContainer" class="chart-container" style="display: none; border-color: var(--verde-medio);">
+    <div class="chart-title">Análise: Aporte Mensal Ideal</div>
+    <p id="resultIdealContribution" style="text-align: center; font-weight: bold; margin-bottom: 15px;"></p>
+    <div class="chart-nav">
+      <button type="button" onclick="showChartSlide(\'IdealContribution\', \'chart\')">Gráfico</button>
+      <button type="button" onclick="showChartSlide(\'IdealContribution\', \'table\')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartIdealContributionSlide" class="chart-slide">
+        <canvas id="chartIdealContribution"></canvas>
+      </div>
+      <div id="tableIdealContributionSlide" class="table-slide" style="display: none;">
+        <table id="tableIdealContribution" class="data-table">
+          <thead>
+             <tr>
+              <th scope="col">Mês</th><th scope="col">Total Investido</th><th scope="col">Juros</th><th scope="col">Total Juros</th><th scope="col">Total Acumulado</th><th scope="col">Imposto</th><th scope="col">Valor Líquido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container para Análise 3: Tempo Necessário -->
+  <div id="analysisRequiredTimeContainer" class="chart-container" style="display: none; border-color: var(--roxo-claro);">
+    <div class="chart-title">Análise: Tempo Necessário</div>
+    <p id="resultRequiredTime" style="text-align: center; font-weight: bold; margin-bottom: 15px;"></p>
+    <div class="chart-nav">
+      <button type="button" onclick="showChartSlide(\'RequiredTime\', \'chart\')">Gráfico</button>
+      <button type="button" onclick="showChartSlide(\'RequiredTime\', \'table\')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartRequiredTimeSlide" class="chart-slide">
+        <canvas id="chartRequiredTime"></canvas>
+      </div>
+      <div id="tableRequiredTimeSlide" class="table-slide" style="display: none;">
+        <table id="tableRequiredTime" class="data-table">
+          <thead>
+             <tr>
+              <th scope="col">Mês</th><th scope="col">Total Investido</th><th scope="col">Juros</th><th scope="col">Total Juros</th><th scope="col">Total Acumulado</th><th scope="col">Imposto</th><th scope="col">Valor Líquido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container para Análise 4: Rentabilidade Anual Ideal -->
+  <div id="analysisIdealRateContainer" class="chart-container" style="display: none; border-color: var(--dourado-escuro);">
+    <div class="chart-title">Análise: Rentabilidade Anual Ideal</div>
+    <p id="resultIdealRate" style="text-align: center; font-weight: bold; margin-bottom: 15px;"></p>
+    <div class="chart-nav">
+      <button type="button" onclick="showChartSlide(\'IdealRate\', \'chart\')">Gráfico</button>
+      <button type="button" onclick="showChartSlide(\'IdealRate\', \'table\')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartIdealRateSlide" class="chart-slide">
+        <canvas id="chartIdealRate"></canvas>
+      </div>
+      <div id="tableIdealRateSlide" class="table-slide" style="display: none;">
+        <table id="tableIdealRate" class="data-table">
+          <thead>
+             <tr>
+              <th scope="col">Mês</th><th scope="col">Total Investido</th><th scope="col">Juros</th><th scope="col">Total Juros</th><th scope="col">Total Acumulado</th><th scope="col">Imposto</th><th scope="col">Valor Líquido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <!-- Container para Cenários Salvos -->
   <div id="scenariosContainer" class="scenarios-container" style="display: none;">
     <div class="scenarios-header">
@@ -713,6 +813,11 @@
     let currentCalculationData = null; // Armazena os dados do cálculo atual
     let projectionChart = null; // Referência para o gráfico de projeção
     let comparisonChart = null; // Referência para o gráfico de comparação
+    // Referências para os gráficos das análises adicionais
+    let initialValueChart = null;
+    let idealContributionChart = null;
+    let requiredTimeChart = null;
+    let idealRateChart = null;
 
     // --- Funções de Formatação e Utilitários ---
     function formatCurrency(input) {
@@ -934,19 +1039,18 @@
 
     // --- Funções de Cálculo Adicionais --- //
 
-    // 1. Calcular Valor Inicial Necessário (sem aportes)
+    // 1. Calcular Valor Inicial Necessário (sem aportes) - Retorna { value: number | Infinity, simulation: object | null }
     function calculateRequiredInitialValue(objectives, monthlyRate, tax, annualInflation) {
-        if (!objectives || objectives.length === 0) return 0;
+        if (!objectives || objectives.length === 0) return { value: 0, simulation: null };
 
         let low = 0;
-        // Estimativa inicial alta: soma dos valores nominais dos objetivos trazidos a valor presente?
-        // Simplificação: Usar a soma dos valores corrigidos pela inflação máxima como teto.
         const maxPeriod = Math.max(...objectives.map(o => o.period), 0);
-        if (maxPeriod <= 0) return 0;
+        if (maxPeriod <= 0) return { value: 0, simulation: null };
         const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-        let high = objectives.reduce((sum, obj) => sum + obj.value * Math.pow(1 + monthlyInflation, obj.period), 0) * 1.5; // Soma dos valores corrigidos + margem
+        let high = objectives.reduce((sum, obj) => sum + obj.value * Math.pow(1 + monthlyInflation, obj.period), 0) * 1.5;
 
-        let requiredInitialValue = Infinity; // Começa com infinito
+        let requiredInitialValue = Infinity;
+        let finalSimulation = null;
         const maxIterations = 100;
         let iterations = 0;
 
@@ -955,78 +1059,84 @@
             let maxRequired = 0;
             for (const obj of objectives) {
                  const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, obj.period);
-                 // Sem rendimento, o valor inicial precisa ser o maior valor corrigido
-                 // O imposto é zero se não há juros.
                  maxRequired = Math.max(maxRequired, inflatedObjectiveValue);
             }
-            // Simula com esse valor máximo para confirmar
             const simulation = calculateCompoundInterest(maxRequired, 0, monthlyRate, maxPeriod, tax, annualInflation);
              if (checkAllObjectivesMet(objectives, simulation.valoresMensais, annualInflation)) {
-                 return maxRequired;
+                 return { value: maxRequired, simulation: simulation };
              } else {
-                 return Infinity; // Impossível se taxa <= 0 e o valor não for suficiente
+                 return { value: Infinity, simulation: null };
              }
         }
 
         while (iterations < maxIterations && (high - low) > 0.01) {
             const mid = low + (high - low) / 2;
-            if (mid === low || mid === high) break; // Evita loop se não houver progresso
+            if (mid === low || mid === high) break;
 
-            const simulation = calculateCompoundInterest(mid, 0, monthlyRate, maxPeriod, tax, annualInflation);
+            const currentSim = calculateCompoundInterest(mid, 0, monthlyRate, maxPeriod, tax, annualInflation);
 
-            if (checkAllObjectivesMet(objectives, simulation.valoresMensais, annualInflation)) {
-                // Consegue atingir com 'mid', tentar um valor menor
-                requiredInitialValue = mid; // Armazena o valor que funcionou
+            if (checkAllObjectivesMet(objectives, currentSim.valoresMensais, annualInflation)) {
+                requiredInitialValue = mid;
+                finalSimulation = currentSim; // Guarda a simulação que funcionou
                 high = mid;
             } else {
-                // Não consegue atingir com 'mid', precisa de mais
                 low = mid;
             }
             iterations++;
         }
 
-        // Retorna o menor valor inicial encontrado que satisfaz todos os objetivos
-        // Se nunca encontrou (permaneceu Infinity), retorna Infinity
-        return requiredInitialValue === Infinity ? Infinity : (requiredInitialValue < 0.01 ? 0 : requiredInitialValue);
+        if (requiredInitialValue === Infinity) {
+            // Se não encontrou, retorna Infinity e nenhuma simulação
+             return { value: Infinity, simulation: null };
+        } else {
+            // Retorna o valor encontrado e a simulação correspondente
+            const finalValue = requiredInitialValue < 0.01 ? 0 : requiredInitialValue;
+            // Recalcular a simulação final com o valor exato encontrado (se necessário, mas já temos finalSimulation)
+            // Se o valor final for 0, a simulação deve ser recalculada
+            if (finalValue === 0 && requiredInitialValue >= 0.01) {
+                 finalSimulation = calculateCompoundInterest(0, 0, monthlyRate, maxPeriod, tax, annualInflation);
+            }
+            return { value: finalValue, simulation: finalSimulation };
+        }
     }
 
-    // 2. Calcular Aporte Mensal Ideal Constante
+    // 2. Calcular Aporte Mensal Ideal Constante - Retorna { value: number | Infinity, simulation: object | null }
     function calculateIdealMonthlyContribution(objectives, initialSavings, monthlyRate, tax, annualInflation) {
-        if (!objectives || objectives.length === 0) return 0;
+        if (!objectives || objectives.length === 0) return { value: 0, simulation: null };
 
         let low = 0;
         const maxPeriod = Math.max(...objectives.map(o => o.period), 0);
-        if (maxPeriod <= 0) return 0;
+        if (maxPeriod <= 0) return { value: 0, simulation: null };
         const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-        // Estimativa alta: soma dos déficits corrigidos dividido pelo menor prazo?
         let totalDeficit = 0;
         objectives.forEach(obj => {
             const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, obj.period);
-            // Valor futuro do saving inicial (simplificado, sem imposto aqui)
             const fvInitialSavings = initialSavings * Math.pow(1 + monthlyRate, obj.period);
             totalDeficit += Math.max(0, inflatedObjectiveValue - fvInitialSavings);
         });
-        let high = (totalDeficit / maxPeriod) * 2 + 100; // Média do déficit + margem
-        if (high < 100) high = 100; // Garantir um mínimo para busca
+        let high = (totalDeficit / maxPeriod) * 2 + 100;
+        if (high < 100) high = 100;
 
         let idealContribution = Infinity;
+        let finalSimulation = null;
         const maxIterations = 100;
         let iterations = 0;
 
         // Caso base: verificar se já atinge com 0 aporte
         const initialSimulation = calculateCompoundInterest(initialSavings, 0, monthlyRate, maxPeriod, tax, annualInflation);
         if (checkAllObjectivesMet(objectives, initialSimulation.valoresMensais, annualInflation)) {
-            return 0; // Nenhum aporte necessário
+            return { value: 0, simulation: initialSimulation }; // Nenhum aporte necessário
         }
 
         while (iterations < maxIterations && (high - low) > 0.01) {
             const mid = low + (high - low) / 2;
              if (mid === low || mid === high) break;
 
-            const simulation = calculateCompoundInterest(initialSavings, mid, monthlyRate, maxPeriod, tax, annualInflation);
+            const currentSim = calculateCompoundInterest(initialSavings, mid, monthlyRate, maxPeriod, tax, annualInflation);
 
-            if (checkAllObjectivesMet(objectives, simulation.valoresMensais, annualInflation)) {
+            if (checkAllObjectivesMet(objectives, currentSim.valoresMensais, annualInflation)) {
                 idealContribution = mid;
+                finalSimulation = currentSim; // Guarda a simulação que funcionou
                 high = mid;
             } else {
                 low = mid;
@@ -1034,24 +1144,29 @@
             iterations++;
         }
 
-        // Se idealContribution permaneceu Infinity, verificar o limite superior 'high' inicial (ou o último 'low')
         if (idealContribution === Infinity) {
-            const finalCheckSimulation = calculateCompoundInterest(initialSavings, high, monthlyRate, maxPeriod, tax, annualInflation);
-            if (!checkAllObjectivesMet(objectives, finalCheckSimulation.valoresMensais, annualInflation)) {
-                 console.warn("Não foi possível encontrar um aporte mensal suficiente dentro dos limites/iterações.");
-                 return Infinity;
+            // Verificar o limite superior inicial
+            const highSim = calculateCompoundInterest(initialSavings, high, monthlyRate, maxPeriod, tax, annualInflation);
+            if (checkAllObjectivesMet(objectives, highSim.valoresMensais, annualInflation)) {
+                 // Se o high inicial funcionou, mas a busca não convergiu para ele
+                 return { value: high, simulation: highSim };
             } else {
-                // Se o high inicial funcionou, mas a busca não convergiu para ele, retornamos high.
-                idealContribution = high;
+                console.warn("Não foi possível encontrar um aporte mensal suficiente dentro dos limites/iterações.");
+                return { value: Infinity, simulation: null };
             }
+        } else {
+             const finalValue = idealContribution < 0.01 ? 0 : idealContribution;
+             // Se o valor final for 0, a simulação deve ser a inicial
+             if (finalValue === 0 && idealContribution >= 0.01) {
+                 finalSimulation = initialSimulation;
+             }
+             return { value: finalValue, simulation: finalSimulation };
         }
-
-        return idealContribution === Infinity ? Infinity : (idealContribution < 0.01 ? 0 : idealContribution);
     }
 
-    // 3. Calcular Tempo Necessário para Atingir Objetivos
+    // 3. Calcular Tempo Necessário para Atingir Objetivos - Retorna { value: number | Infinity, simulation: object | null }
     function calculateRequiredTime(objectives, initialSavings, monthlyContribution, monthlyRate, tax, annualInflation) {
-        if (!objectives || objectives.length === 0) return 0;
+        if (!objectives || objectives.length === 0) return { value: 0, simulation: null };
 
         let totalValue = initialSavings;
         let totalInvested = initialSavings;
@@ -1059,23 +1174,33 @@
         const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
         const maxSimulationMonths = 1200; // Limite máximo de simulação (100 anos)
         let month = 0;
+        let valoresMensaisSimulacao = []; // Para guardar a simulação completa
 
         let objectivesMetStatus = objectives.map(obj => ({ ...obj, met: false, monthMet: -1 }));
         let allObjectivesMet = false;
         let requiredMonths = Infinity; // Começa com infinito
 
+        // Adicionar estado inicial à simulação
+        valoresMensaisSimulacao.push({
+            month: 0, juros: 0, totalInvestido: initialSavings, totalJuros: 0,
+            imposto: 0, valorLiquido: initialSavings, totalAcumulado: initialSavings
+        });
+
         // Verificar se já foram atingidos no mês 0
         let numMetAtStart = 0;
         objectivesMetStatus.forEach(objStatus => {
-            const inflatedObjectiveValue = objStatus.value; // Mês 0
-            const netValueAtTargetMonth = initialSavings * (1 - tax * 0); // Valor líquido inicial (sem juros, sem imposto)
+            const inflatedObjectiveValue = objStatus.value;
+            const netValueAtTargetMonth = initialSavings;
             if (objStatus.period === 0 && netValueAtTargetMonth >= inflatedObjectiveValue) {
                  objStatus.met = true;
                  objStatus.monthMet = 0;
                  numMetAtStart++;
             }
         });
-        if (numMetAtStart === objectives.length) return 0;
+        if (numMetAtStart === objectives.length) {
+             // Simulação contém apenas o mês 0
+             return { value: 0, simulation: { valoresMensais: valoresMensaisSimulacao } };
+        }
 
         while (month < maxSimulationMonths) {
             month++;
@@ -1088,21 +1213,17 @@
             const impostoTotal = totalJuros * tax;
             const valorLiquido = totalValue - impostoTotal;
 
+            // Adicionar dados do mês atual à simulação
+            valoresMensaisSimulacao.push({
+                month: month, juros: jurosDoMes, totalInvestido: totalInvested, totalJuros: totalJuros,
+                imposto: impostoTotal, valorLiquido: valorLiquido, totalAcumulado: totalValue
+            });
+
             let objectivesMetCount = 0;
             objectivesMetStatus.forEach(objStatus => {
                 if (!objStatus.met) {
-                    // Atinge quando o valor líquido atual supera o valor do objetivo corrigido para o MÊS ATUAL
-                    // E o mês atual é maior ou igual ao prazo original do objetivo?
-                    // NÃO, a regra é atingir o valor corrigido DENTRO DO PRAZO ORIGINAL.
-                    // A função deve retornar o TEMPO necessário para que TODOS sejam atingidos.
-                    // Isso significa que o último a ser atingido define o tempo.
-
                     const inflatedObjectiveValue = objStatus.value * Math.pow(1 + monthlyInflation, month);
                     if (valorLiquido >= inflatedObjectiveValue) {
-                        // Objetivo atingido NESTE mês (valor líquido superou valor corrigido)
-                        // Mas só conta se o mês atual for <= prazo original? NÃO.
-                        // A pergunta é: QUANTO TEMPO LEVA para atingir TODOS, dadas as condições.
-                        // Marcamos como atingido quando o valor líquido supera o valor corrigido para aquele mês.
                         objStatus.met = true;
                         objStatus.monthMet = month;
                     }
@@ -1114,44 +1235,52 @@
 
             if (objectivesMetCount === objectives.length) {
                 allObjectivesMet = true;
-                // O tempo necessário é o mês em que o ÚLTIMO objetivo foi marcado como atingido.
                 requiredMonths = Math.max(...objectivesMetStatus.map(o => o.monthMet));
                 break;
             }
         }
 
-        return requiredMonths; // Retorna o número de meses ou Infinity
+        if (requiredMonths === Infinity) {
+            // Se não atingiu, retorna Infinity e a simulação até o limite máximo
+            return { value: Infinity, simulation: { valoresMensais: valoresMensaisSimulacao } };
+        } else {
+            // Se atingiu, retorna os meses e a simulação até esse ponto
+            // (A simulação já foi construída até o mês 'requiredMonths')
+            return { value: requiredMonths, simulation: { valoresMensais: valoresMensaisSimulacao.slice(0, requiredMonths + 1) } };
+        }
     }
 
-    // 4. Calcular Rentabilidade Anual Ideal Constante
+    // 4. Cal    // 4. Calcular Rentabilidade Anual Ideal Constante - Retorna { value: number | Infinity, simulation: object | null }
     function calculateIdealAnnualRate(objectives, initialSavings, monthlyContribution, tax, annualInflation) {
-        if (!objectives || objectives.length === 0) return 0;
+        if (!objectives || objectives.length === 0) return { value: 0, simulation: null };
 
         let lowMonthlyRate = -0.05; // Permitir taxas negativas pequenas
         let highMonthlyRate = 1.0; // 100% ao mês
         let idealMonthlyRate = Infinity; // Começa com infinito
+        let finalSimulation = null;
         const maxIterations = 100;
         let iterations = 0;
 
         const maxPeriod = Math.max(...objectives.map(o => o.period), 0);
-        if (maxPeriod <= 0) return 0; // Sem prazo válido
+        if (maxPeriod <= 0) return { value: 0, simulation: null }; // Sem prazo válido
 
         // Caso base: verificar se já atinge com taxa mínima (lowMonthlyRate)
         const lowRateSimulation = calculateCompoundInterest(initialSavings, monthlyContribution, lowMonthlyRate, maxPeriod, tax, annualInflation);
         if (checkAllObjectivesMet(objectives, lowRateSimulation.valoresMensais, annualInflation)) {
-             // Se atinge com taxa mínima, a taxa ideal é essa mínima (ou 0 se for positiva)
              const lowAnnualRate = Math.pow(1 + lowMonthlyRate, 12) - 1;
-             return Math.max(0, lowAnnualRate); // Retorna 0 se a taxa mínima for negativa mas funcionar
+             // Retorna 0 se a taxa mínima for negativa mas funcionar
+             return { value: Math.max(0, lowAnnualRate), simulation: lowRateSimulation };
         }
 
-        while (iterations < maxIterations && (highMonthlyRate - lowMonthlyRate) > 1e-7) { // Precisão maior para taxas
+        while (iterations < maxIterations && (highMonthlyRate - lowMonthlyRate) > 1e-7) {
             const midMonthlyRate = lowMonthlyRate + (highMonthlyRate - lowMonthlyRate) / 2;
             if (midMonthlyRate === lowMonthlyRate || midMonthlyRate === highMonthlyRate) break;
 
-            const simulation = calculateCompoundInterest(initialSavings, monthlyContribution, midMonthlyRate, maxPeriod, tax, annualInflation);
+            const currentSim = calculateCompoundInterest(initialSavings, monthlyContribution, midMonthlyRate, maxPeriod, tax, annualInflation);
 
-            if (checkAllObjectivesMet(objectives, simulation.valoresMensais, annualInflation)) {
+            if (checkAllObjectivesMet(objectives, currentSim.valoresMensais, annualInflation)) {
                 idealMonthlyRate = midMonthlyRate;
+                finalSimulation = currentSim; // Guarda a simulação que funcionou
                 highMonthlyRate = midMonthlyRate;
             } else {
                 lowMonthlyRate = midMonthlyRate;
@@ -1159,21 +1288,26 @@
             iterations++;
         }
 
-        // Se encontrou uma taxa mensal ideal
         if (idealMonthlyRate !== Infinity) {
             const idealAnnualRate = Math.pow(1 + idealMonthlyRate, 12) - 1;
-            // Retorna a taxa anual, garantindo que não seja negativa se 0% for suficiente.
-            return idealAnnualRate < 1e-6 ? 0 : idealAnnualRate;
+            const finalValue = idealAnnualRate < 1e-6 ? 0 : idealAnnualRate;
+            // Se a taxa final for 0, a simulação correta é a de taxa 0 (que pode não ter sido a 'lowRateSimulation' inicial)
+            if (finalValue === 0 && idealAnnualRate >= 1e-6) {
+                 finalSimulation = calculateCompoundInterest(initialSavings, monthlyContribution, 0, maxPeriod, tax, annualInflation);
+            }
+            return { value: finalValue, simulation: finalSimulation };
         } else {
-             // Se idealMonthlyRate permaneceu Infinity, verificar o limite superior
+             // Verificar o limite superior
              const highRateSimulation = calculateCompoundInterest(initialSavings, monthlyContribution, highMonthlyRate, maxPeriod, tax, annualInflation);
-             if (!checkAllObjectivesMet(objectives, highRateSimulation.valoresMensais, annualInflation)) {
-                 console.warn("Não foi possível encontrar uma taxa de rentabilidade suficiente dentro dos limites/iterações.");
-                 return Infinity; // Indica impossibilidade
-             } else {
-                 // Se highMonthlyRate funciona, mas a busca não convergiu
+             if (checkAllObjectivesMet(objectives, highRateSimulation.valoresMensais, annualInflation)) {
                  console.warn("Taxa ideal pode ser muito alta, retornando limite superior.");
-                 return Math.pow(1 + highMonthlyRate, 12) - 1;
+                 return { value: Math.pow(1 + highMonthlyRate, 12) - 1, simulation: highRateSimulation };
+             } else {
+                 console.warn("Não foi possível encontrar uma taxa de rentabilidade suficiente dentro dos limites/iterações.");
+                 return { value: Infinity, simulation: null }; // Indica impossibilidade
+             }
+        }
+    }      return Math.pow(1 + highMonthlyRate, 12) - 1;
              }
         }
     }
@@ -1208,12 +1342,12 @@
       const projection = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, maxPeriod, tax, annualInflation);
       const valoresMensais = projection.valoresMensais;
 
-      // --- Calcular Análises Adicionais --- //
+      // --- Calcular Análises Adicionais (agora retornam { value, simulation }) --- //
       console.time("Additional Calculations");
-      const requiredInitial = calculateRequiredInitialValue(objectives, monthlyRate, tax, annualInflation);
-      const idealContribution = calculateIdealMonthlyContribution(objectives, currentSavings, monthlyRate, tax, annualInflation);
-      const requiredTime = calculateRequiredTime(objectives, currentSavings, currentContribution, monthlyRate, tax, annualInflation);
-      const idealAnnualRate = calculateIdealAnnualRate(objectives, currentSavings, currentContribution, tax, annualInflation);
+      const analysisInitial = calculateRequiredInitialValue(objectives, monthlyRate, tax, annualInflation);
+      const analysisContribution = calculateIdealMonthlyContribution(objectives, currentSavings, monthlyRate, tax, annualInflation);
+      const analysisTime = calculateRequiredTime(objectives, currentSavings, currentContribution, monthlyRate, tax, annualInflation);
+      const analysisRate = calculateIdealAnnualRate(objectives, currentSavings, currentContribution, tax, annualInflation);
       console.timeEnd("Additional Calculations");
 
       // --- Exibir Resultados --- //
@@ -1222,7 +1356,7 @@
       let allGoalsMet = true;
       let recommendationDetails = [];
 
-      // Status dos objetivos na simulação atual
+      // Status dos objetivos na simulação principal
       objectives.forEach(obj => {
         const targetMonth = obj.period;
         let objectiveMet = false;
@@ -1266,24 +1400,75 @@
 
       resultHTML += `<p><strong>Projeção Final (${maxPeriod} meses):</strong> Valor Líquido ${formatMoney(valoresMensais[maxPeriod].valorLiquido)} (Total Investido: ${formatMoney(valoresMensais[maxPeriod].totalInvestido)}, Juros Brutos: ${formatMoney(valoresMensais[maxPeriod].totalJuros)}, Imposto Estimado: ${formatMoney(valoresMensais[maxPeriod].imposto)})</p>`;
 
-      // Adicionar resultados das análises adicionais
-      resultHTML += "<hr><h4>Análises Adicionais:</h4>";
+      // Limpar resultados das análises adicionais antes de exibir
+      clearAnalysisResults();
 
-      // 1. Valor Inicial Necessário
-      resultHTML += `<p><strong>1. Valor Inicial Necessário (sem aportes):</strong> Para atingir todos os objetivos nos prazos com a taxa informada (${formatRate(rateType === 'annual' ? rateInput : Math.pow(1+monthlyRate,12)-1)}), seria necessário iniciar com <strong>${formatMoney(requiredInitial)}</strong>.</p>`;
-
-      // 2. Aporte Mensal Ideal
-      resultHTML += `<p><strong>2. Aporte Mensal Ideal:</strong> Para atingir todos os objetivos nos prazos com o valor inicial informado (${formatMoney(currentSavings)}) e a taxa informada, o aporte mensal constante ideal seria de <strong>${formatMoney(idealContribution)}</strong>.</p>`;
-
-      // 3. Tempo Necessário
-      resultHTML += `<p><strong>3. Tempo Necessário:</strong> Com o valor inicial (${formatMoney(currentSavings)}), aporte mensal (${formatMoney(currentContribution)}) e taxa informados, o tempo estimado para atingir <strong>todos</strong> os objetivos é de <strong>${formatMonths(requiredTime)}</strong>.</p>`;
-
-      // 4. Rentabilidade Anual Ideal
-      resultHTML += `<p><strong>4. Rentabilidade Anual Ideal:</strong> Para atingir todos os objetivos nos prazos com o valor inicial (${formatMoney(currentSavings)}) e aporte mensal (${formatMoney(currentContribution)}) informados, a rentabilidade anual constante necessária seria de <strong>${formatRate(idealAnnualRate)}</strong>.</p>`;
-
+      // Adicionar resultados das análises adicionais ao DIV principal (opcional, pois terão seções próprias)
+      resultHTML += "<hr><h4>Análises Adicionais (Resumo):</h4>";
+      resultHTML += `<p><strong>1. Valor Inicial Necessário (sem aportes):</strong> ${formatMoney(analysisInitial.value)}</p>`;
+      resultHTML += `<p><strong>2. Aporte Mensal Ideal:</strong> ${formatMoney(analysisContribution.value)}</p>`;
+      resultHTML += `<p><strong>3. Tempo Necessário:</strong> ${formatMonths(analysisTime.value)}</p>`;
+      resultHTML += `<p><strong>4. Rentabilidade Anual Ideal:</strong> ${formatRate(analysisRate.value)}</p>`;
+      resultHTML += `<p><i>(Veja detalhes, gráficos e memórias de cálculo de cada análise abaixo)</i></p>`;
 
       resultDiv.innerHTML = resultHTML;
       resultDiv.style.display = "block";
+
+      // --- Exibir Gráficos e Tabelas das Análises Adicionais ---
+
+      // Análise 1: Valor Inicial
+      const initialValueContainer = document.getElementById("analysisInitialValueContainer");
+      const resultInitialValueP = document.getElementById("resultInitialValue");
+      resultInitialValueP.textContent = `Valor Inicial Necessário (sem aportes): ${formatMoney(analysisInitial.value)}`;
+      if (analysisInitial.simulation && analysisInitial.simulation.valoresMensais) {
+          drawInitialValueChart(analysisInitial.simulation.valoresMensais);
+          fillDataTable("tableInitialValue", analysisInitial.simulation.valoresMensais);
+          initialValueContainer.style.display = "block";
+          showChartSlide("InitialValue", "chart");
+      } else {
+          initialValueContainer.style.display = "none";
+      }
+
+      // Análise 2: Aporte Ideal
+      const idealContributionContainer = document.getElementById("analysisIdealContributionContainer");
+      const resultIdealContributionP = document.getElementById("resultIdealContribution");
+      resultIdealContributionP.textContent = `Aporte Mensal Ideal: ${formatMoney(analysisContribution.value)}`;
+      if (analysisContribution.simulation && analysisContribution.simulation.valoresMensais) {
+          drawIdealContributionChart(analysisContribution.simulation.valoresMensais);
+          fillDataTable("tableIdealContribution", analysisContribution.simulation.valoresMensais);
+          idealContributionContainer.style.display = "block";
+          showChartSlide("IdealContribution", "chart");
+      } else {
+           idealContributionContainer.style.display = "none";
+      }
+
+      // Análise 3: Tempo Necessário
+      const requiredTimeContainer = document.getElementById("analysisRequiredTimeContainer");
+      const resultRequiredTimeP = document.getElementById("resultRequiredTime");
+      resultRequiredTimeP.textContent = `Tempo Necessário: ${formatMonths(analysisTime.value)}`;
+      if (analysisTime.simulation && analysisTime.simulation.valoresMensais) {
+          // A simulação pode ser longa se o tempo for Infinity, limitar exibição?
+          // Por ora, exibimos tudo.
+          drawRequiredTimeChart(analysisTime.simulation.valoresMensais);
+          fillDataTable("tableRequiredTime", analysisTime.simulation.valoresMensais);
+          requiredTimeContainer.style.display = "block";
+          showChartSlide("RequiredTime", "chart");
+      } else {
+          requiredTimeContainer.style.display = "none";
+      }
+
+      // Análise 4: Taxa Ideal
+      const idealRateContainer = document.getElementById("analysisIdealRateContainer");
+      const resultIdealRateP = document.getElementById("resultIdealRate");
+      resultIdealRateP.textContent = `Rentabilidade Anual Ideal: ${formatRate(analysisRate.value)}`;
+      if (analysisRate.simulation && analysisRate.simulation.valoresMensais) {
+          drawIdealRateChart(analysisRate.simulation.valoresMensais);
+          fillDataTable("tableIdealRate", analysisRate.simulation.valoresMensais);
+          idealRateContainer.style.display = "block";
+          showChartSlide("IdealRate", "chart");
+      } else {
+          idealRateContainer.style.display = "none";
+      }
 
       // Gerar recomendação baseada na simulação principal
       generateRecommendation(recommendationDetails, currentContribution);
@@ -1292,7 +1477,7 @@
       drawProjectionChart(valoresMensais);
       fillDataTable("tableProjection", valoresMensais);
       document.getElementById("projectionChartContainer").style.display = "block";
-      showChartSlide('Projection', 'chart'); // Mostrar gráfico por padrão
+      showChartSlide("Projection", "chart"); // Mostrar gráfico por padrão
 
       // Armazenar dados do cálculo atual para salvar cenário
       currentCalculationData = {
@@ -1304,11 +1489,11 @@
         tax,
         inflation: annualInflation, // Salvar inflação anual
         calculationResult: projection, // Salvar os resultados da projeção principal
-        additionalAnalysis: { // Salvar resultados das análises adicionais
-            requiredInitial,
-            idealContribution,
-            requiredTime,
-            idealAnnualRate
+        additionalAnalysis: { // Salvar resultados das análises adicionais (incluindo simulações)
+            requiredInitial: analysisInitial,
+            idealContribution: analysisContribution,
+            requiredTime: analysisTime,
+            idealAnnualRate: analysisRate
         },
         maxPeriod // Salvar o período máximo usado
       };
@@ -1355,98 +1540,99 @@
     }
 
     // --- Funções de Gráficos e Tabelas ---
-    function drawProjectionChart(valoresMensais) {
-      const ctx = document.getElementById("chartProjection").getContext("2d");
-      const labels = valoresMensais.map(v => v.month);
-      const bruto = valoresMensais.map(v => v.totalAcumulado);
-      const liquido = valoresMensais.map(v => v.valorLiquido);
-      const investido = valoresMensais.map(v => v.totalInvestido);
+    function drawGenericChart(canvasId, chartInstanceRef, valoresMensais, chartTitle) {
+        const ctx = document.getElementById(canvasId).getContext("2d");
+        const labels = valoresMensais.map(v => v.month);
+        const bruto = valoresMensais.map(v => v.totalAcumulado);
+        const liquido = valoresMensais.map(v => v.valorLiquido);
+        const investido = valoresMensais.map(v => v.totalInvestido);
 
-      // Destruir gráfico existente se houver
-      if (projectionChart) {
-        projectionChart.destroy();
-      }
-
-      projectionChart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: "Valor Bruto",
-              data: bruto,
-              borderColor: "rgba(4, 108, 78, 0.8)", // Verde Esmeralda
-              backgroundColor: "transparent",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 5,
-              tension: 0.1
-            },
-            {
-              label: "Valor Líquido (após IR)",
-              data: liquido,
-              borderColor: "rgba(212, 175, 55, 0.8)", // Dourado
-              backgroundColor: "transparent",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 5,
-              tension: 0.1
-            },
-            {
-              label: "Total Investido",
-              data: investido,
-              borderColor: "rgba(111, 66, 193, 0.6)", // Roxo
-              backgroundColor: "transparent",
-              borderWidth: 2,
-              borderDash: [5, 5],
-              pointRadius: 0,
-              pointHoverRadius: 5,
-              tension: 0.1
-            }
-            // Adicionar linhas de objetivos aqui seria complexo visualmente
-            // Melhor mostrar status no texto
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function(value) {
-                  return formatMoney(value);
-                }
-              }
-            },
-            x: {
-              title: {
-                display: true,
-                text: 'Meses'
-              }
-            }
-          },
-          plugins: {
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  let label = context.dataset.label || '';
-                  if (label) {
-                    label += ': ';
-                  }
-                  if (context.parsed.y !== null) {
-                    label += formatMoney(context.parsed.y);
-                  }
-                  return label;
-                }
-              }
-            },
-            legend: {
-                position: 'top',
-            }
-          }
+        // Destruir gráfico existente se houver
+        if (chartInstanceRef && chartInstanceRef.chart) {
+            chartInstanceRef.chart.destroy();
         }
-      });
+
+        const newChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "Valor Bruto",
+                        data: bruto,
+                        borderColor: "rgba(4, 108, 78, 0.8)", // Verde Esmeralda
+                        backgroundColor: "transparent",
+                        borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, tension: 0.1
+                    },
+                    {
+                        label: "Valor Líquido (após IR)",
+                        data: liquido,
+                        borderColor: "rgba(212, 175, 55, 0.8)", // Dourado
+                        backgroundColor: "transparent",
+                        borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, tension: 0.1
+                    },
+                    {
+                        label: "Total Investido",
+                        data: investido,
+                        borderColor: "rgba(111, 66, 193, 0.6)", // Roxo
+                        backgroundColor: "transparent",
+                        borderWidth: 2, borderDash: [5, 5], pointRadius: 0, pointHoverRadius: 5, tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: function(value) { return formatMoney(value); } }
+                    },
+                    x: { title: { display: true, text: 'Meses' } }
+                },
+                plugins: {
+                    title: { display: false }, // Use o título do container HTML
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) { label += formatMoney(context.parsed.y); }
+                                return label;
+                            }
+                        }
+                    },
+                    legend: { position: 'top' }
+                }
+            }
+        });
+        // Armazena a referência ao novo gráfico
+        chartInstanceRef.chart = newChart;
+    }
+
+    // Wrapper para o gráfico de projeção principal
+    function drawProjectionChart(valoresMensais) {
+        drawGenericChart("chartProjection", { get chart() { return projectionChart; }, set chart(v) { projectionChart = v; } }, valoresMensais, "Evolução da Projeção Financeira");
+    }
+
+    // Wrapper para o gráfico de Valor Inicial Necessário
+    function drawInitialValueChart(valoresMensais) {
+        drawGenericChart("chartInitialValue", { get chart() { return initialValueChart; }, set chart(v) { initialValueChart = v; } }, valoresMensais, "Evolução - Valor Inicial Necessário");
+    }
+
+     // Wrapper para o gráfico de Aporte Mensal Ideal
+    function drawIdealContributionChart(valoresMensais) {
+        drawGenericChart("chartIdealContribution", { get chart() { return idealContributionChart; }, set chart(v) { idealContributionChart = v; } }, valoresMensais, "Evolução - Aporte Mensal Ideal");
+    }
+
+    // Wrapper para o gráfico de Tempo Necessário
+    function drawRequiredTimeChart(valoresMensais) {
+        drawGenericChart("chartRequiredTime", { get chart() { return requiredTimeChart; }, set chart(v) { requiredTimeChart = v; } }, valoresMensais, "Evolução - Tempo Necessário");
+    }
+
+    // Wrapper para o gráfico de Rentabilidade Anual Ideal
+    function drawIdealRateChart(valoresMensais) {
+        drawGenericChart("chartIdealRate", { get chart() { return idealRateChart; }, set chart(v) { idealRateChart = v; } }, valoresMensais, "Evolução - Rentabilidade Anual Ideal");
     }
 
     function fillDataTable(tableId, data) {
