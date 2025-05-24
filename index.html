@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Múltiplos Objetivos</title>
+  <title>Calculadora de Múltiplos Objetivos Avançada</title>
   <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -77,6 +77,12 @@
       background-color: var(--fundo-container);
       border-radius: var(--borda-arredondada);
       box-shadow: var(--sombra-padrao);
+    }
+    .result h4 {
+        color: var(--verde-esmeralda-escuro);
+        border-bottom: 1px solid var(--dourado-claro);
+        padding-bottom: 10px;
+        margin-bottom: 15px;
     }
     .recommendation {
       margin: var(--espacamento-padrao) 0;
@@ -526,7 +532,7 @@
   </style>
 </head>
 <body>
-  <h1>Calculadora de Múltiplos Objetivos</h1>
+  <h1>Calculadora de Múltiplos Objetivos Avançada</h1>
 
   <!-- Seção para Adicionar/Gerenciar Objetivos -->
   <div class="objectives-section">
@@ -661,7 +667,7 @@
               <th scope="col">Total Acumulado</th>
               <th scope="col">Imposto</th>
               <th scope="col">Valor Líquido</th>
-              <!-- <th scope="col">Objetivo Corrigido</th> Coluna removida/adaptada -->
+              <!-- Coluna de Objetivo Corrigido pode ser adicionada se necessário -->
             </tr>
           </thead>
           <tbody></tbody>
@@ -749,10 +755,37 @@
     }
 
     function formatMoney(value) {
-        if (typeof value !== 'number' || isNaN(value)) {
-            return "R$ 0,00";
+        if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
+            return "N/A"; // Retorna N/A para valores inválidos ou infinitos
         }
         return "R$ " + value.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function formatMonths(months) {
+        if (typeof months !== 'number' || isNaN(months) || !isFinite(months)) {
+            return "N/A";
+        }
+        if (months === Infinity) return "Inatingível";
+        const years = Math.floor(months / 12);
+        const remainingMonths = months % 12;
+        let result = "";
+        if (years > 0) {
+            result += `${years} ano${years > 1 ? 's' : ''}`;
+        }
+        if (remainingMonths > 0) {
+            if (years > 0) result += " e ";
+            result += `${remainingMonths} ${remainingMonths > 1 ? 'meses' : 'mês'}`;
+        }
+        if (result === "") result = "0 meses"; // Caso months seja 0
+        return result;
+    }
+
+    function formatRate(rate) {
+         if (typeof rate !== 'number' || isNaN(rate) || !isFinite(rate)) {
+            return "N/A";
+        }
+        if (rate === Infinity) return "Inatingível";
+        return (rate * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + "% a.a.";
     }
 
     function showChartSlide(containerId, slideType) {
@@ -825,7 +858,7 @@
       });
     }
 
-    // --- Funções de Cálculo ---
+    // --- Funções de Cálculo Principal e Auxiliares ---
     function calculateCompoundInterest(initialValue, monthlyContribution, monthlyRate, maxMonths, tax, annualInflation) {
       let totalValue = initialValue;
       let totalInvested = initialValue;
@@ -850,6 +883,7 @@
         totalValue += jurosDoMes + monthlyContribution;
         totalInvested += monthlyContribution;
 
+        // Imposto calculado sobre o ganho de capital (Juros Totais)
         const impostoTotal = totalJuros * tax;
         const valorLiquido = totalValue - impostoTotal;
 
@@ -873,6 +907,278 @@
       };
     }
 
+    // Função auxiliar para verificar se todos os objetivos são atingidos em uma simulação
+    function checkAllObjectivesMet(objectives, valoresMensais, annualInflation) {
+        if (!valoresMensais || valoresMensais.length === 0) return false;
+        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
+
+        for (const obj of objectives) {
+            const targetMonth = obj.period;
+            if (targetMonth >= valoresMensais.length) {
+                // Simulação não cobriu o prazo deste objetivo
+                // console.log(`Simulação curta para ${obj.description} (Prazo: ${targetMonth}, Simulado: ${valoresMensais.length -1})`);
+                return false;
+            }
+            const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, targetMonth);
+            const netValueAtTargetMonth = valoresMensais[targetMonth].valorLiquido;
+
+            // console.log(`Obj: ${obj.description}, Mês: ${targetMonth}, Líquido: ${netValueAtTargetMonth}, Obj Corrigido: ${inflatedObjectiveValue}`);
+            if (netValueAtTargetMonth < inflatedObjectiveValue) {
+                // Este objetivo não foi atingido
+                return false;
+            }
+        }
+        // Se chegou aqui, todos os objetivos foram atingidos
+        return true;
+    }
+
+    // --- Funções de Cálculo Adicionais --- //
+
+    // 1. Calcular Valor Inicial Necessário (sem aportes)
+    function calculateRequiredInitialValue(objectives, monthlyRate, tax, annualInflation) {
+        if (!objectives || objectives.length === 0) return 0;
+
+        let low = 0;
+        // Estimativa inicial alta: soma dos valores nominais dos objetivos trazidos a valor presente?
+        // Simplificação: Usar a soma dos valores corrigidos pela inflação máxima como teto.
+        const maxPeriod = Math.max(...objectives.map(o => o.period), 0);
+        if (maxPeriod <= 0) return 0;
+        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
+        let high = objectives.reduce((sum, obj) => sum + obj.value * Math.pow(1 + monthlyInflation, obj.period), 0) * 1.5; // Soma dos valores corrigidos + margem
+
+        let requiredInitialValue = Infinity; // Começa com infinito
+        const maxIterations = 100;
+        let iterations = 0;
+
+        // Caso especial: taxa zero ou negativa
+        if (monthlyRate <= 0) {
+            let maxRequired = 0;
+            for (const obj of objectives) {
+                 const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, obj.period);
+                 // Sem rendimento, o valor inicial precisa ser o maior valor corrigido
+                 // O imposto é zero se não há juros.
+                 maxRequired = Math.max(maxRequired, inflatedObjectiveValue);
+            }
+            // Simula com esse valor máximo para confirmar
+            const simulation = calculateCompoundInterest(maxRequired, 0, monthlyRate, maxPeriod, tax, annualInflation);
+             if (checkAllObjectivesMet(objectives, simulation.valoresMensais, annualInflation)) {
+                 return maxRequired;
+             } else {
+                 return Infinity; // Impossível se taxa <= 0 e o valor não for suficiente
+             }
+        }
+
+        while (iterations < maxIterations && (high - low) > 0.01) {
+            const mid = low + (high - low) / 2;
+            if (mid === low || mid === high) break; // Evita loop se não houver progresso
+
+            const simulation = calculateCompoundInterest(mid, 0, monthlyRate, maxPeriod, tax, annualInflation);
+
+            if (checkAllObjectivesMet(objectives, simulation.valoresMensais, annualInflation)) {
+                // Consegue atingir com 'mid', tentar um valor menor
+                requiredInitialValue = mid; // Armazena o valor que funcionou
+                high = mid;
+            } else {
+                // Não consegue atingir com 'mid', precisa de mais
+                low = mid;
+            }
+            iterations++;
+        }
+
+        // Retorna o menor valor inicial encontrado que satisfaz todos os objetivos
+        // Se nunca encontrou (permaneceu Infinity), retorna Infinity
+        return requiredInitialValue === Infinity ? Infinity : (requiredInitialValue < 0.01 ? 0 : requiredInitialValue);
+    }
+
+    // 2. Calcular Aporte Mensal Ideal Constante
+    function calculateIdealMonthlyContribution(objectives, initialSavings, monthlyRate, tax, annualInflation) {
+        if (!objectives || objectives.length === 0) return 0;
+
+        let low = 0;
+        const maxPeriod = Math.max(...objectives.map(o => o.period), 0);
+        if (maxPeriod <= 0) return 0;
+        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
+        // Estimativa alta: soma dos déficits corrigidos dividido pelo menor prazo?
+        let totalDeficit = 0;
+        objectives.forEach(obj => {
+            const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, obj.period);
+            // Valor futuro do saving inicial (simplificado, sem imposto aqui)
+            const fvInitialSavings = initialSavings * Math.pow(1 + monthlyRate, obj.period);
+            totalDeficit += Math.max(0, inflatedObjectiveValue - fvInitialSavings);
+        });
+        let high = (totalDeficit / maxPeriod) * 2 + 100; // Média do déficit + margem
+        if (high < 100) high = 100; // Garantir um mínimo para busca
+
+        let idealContribution = Infinity;
+        const maxIterations = 100;
+        let iterations = 0;
+
+        // Caso base: verificar se já atinge com 0 aporte
+        const initialSimulation = calculateCompoundInterest(initialSavings, 0, monthlyRate, maxPeriod, tax, annualInflation);
+        if (checkAllObjectivesMet(objectives, initialSimulation.valoresMensais, annualInflation)) {
+            return 0; // Nenhum aporte necessário
+        }
+
+        while (iterations < maxIterations && (high - low) > 0.01) {
+            const mid = low + (high - low) / 2;
+             if (mid === low || mid === high) break;
+
+            const simulation = calculateCompoundInterest(initialSavings, mid, monthlyRate, maxPeriod, tax, annualInflation);
+
+            if (checkAllObjectivesMet(objectives, simulation.valoresMensais, annualInflation)) {
+                idealContribution = mid;
+                high = mid;
+            } else {
+                low = mid;
+            }
+            iterations++;
+        }
+
+        // Se idealContribution permaneceu Infinity, verificar o limite superior 'high' inicial (ou o último 'low')
+        if (idealContribution === Infinity) {
+            const finalCheckSimulation = calculateCompoundInterest(initialSavings, high, monthlyRate, maxPeriod, tax, annualInflation);
+            if (!checkAllObjectivesMet(objectives, finalCheckSimulation.valoresMensais, annualInflation)) {
+                 console.warn("Não foi possível encontrar um aporte mensal suficiente dentro dos limites/iterações.");
+                 return Infinity;
+            } else {
+                // Se o high inicial funcionou, mas a busca não convergiu para ele, retornamos high.
+                idealContribution = high;
+            }
+        }
+
+        return idealContribution === Infinity ? Infinity : (idealContribution < 0.01 ? 0 : idealContribution);
+    }
+
+    // 3. Calcular Tempo Necessário para Atingir Objetivos
+    function calculateRequiredTime(objectives, initialSavings, monthlyContribution, monthlyRate, tax, annualInflation) {
+        if (!objectives || objectives.length === 0) return 0;
+
+        let totalValue = initialSavings;
+        let totalInvested = initialSavings;
+        let totalJuros = 0;
+        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
+        const maxSimulationMonths = 1200; // Limite máximo de simulação (100 anos)
+        let month = 0;
+
+        let objectivesMetStatus = objectives.map(obj => ({ ...obj, met: false, monthMet: -1 }));
+        let allObjectivesMet = false;
+        let requiredMonths = Infinity; // Começa com infinito
+
+        // Verificar se já foram atingidos no mês 0
+        let numMetAtStart = 0;
+        objectivesMetStatus.forEach(objStatus => {
+            const inflatedObjectiveValue = objStatus.value; // Mês 0
+            const netValueAtTargetMonth = initialSavings * (1 - tax * 0); // Valor líquido inicial (sem juros, sem imposto)
+            if (objStatus.period === 0 && netValueAtTargetMonth >= inflatedObjectiveValue) {
+                 objStatus.met = true;
+                 objStatus.monthMet = 0;
+                 numMetAtStart++;
+            }
+        });
+        if (numMetAtStart === objectives.length) return 0;
+
+        while (month < maxSimulationMonths) {
+            month++;
+
+            const jurosDoMes = totalValue * monthlyRate;
+            totalJuros += jurosDoMes;
+            totalValue += jurosDoMes + monthlyContribution;
+            totalInvested += monthlyContribution;
+
+            const impostoTotal = totalJuros * tax;
+            const valorLiquido = totalValue - impostoTotal;
+
+            let objectivesMetCount = 0;
+            objectivesMetStatus.forEach(objStatus => {
+                if (!objStatus.met) {
+                    // Atinge quando o valor líquido atual supera o valor do objetivo corrigido para o MÊS ATUAL
+                    // E o mês atual é maior ou igual ao prazo original do objetivo?
+                    // NÃO, a regra é atingir o valor corrigido DENTRO DO PRAZO ORIGINAL.
+                    // A função deve retornar o TEMPO necessário para que TODOS sejam atingidos.
+                    // Isso significa que o último a ser atingido define o tempo.
+
+                    const inflatedObjectiveValue = objStatus.value * Math.pow(1 + monthlyInflation, month);
+                    if (valorLiquido >= inflatedObjectiveValue) {
+                        // Objetivo atingido NESTE mês (valor líquido superou valor corrigido)
+                        // Mas só conta se o mês atual for <= prazo original? NÃO.
+                        // A pergunta é: QUANTO TEMPO LEVA para atingir TODOS, dadas as condições.
+                        // Marcamos como atingido quando o valor líquido supera o valor corrigido para aquele mês.
+                        objStatus.met = true;
+                        objStatus.monthMet = month;
+                    }
+                }
+                if (objStatus.met) {
+                    objectivesMetCount++;
+                }
+            });
+
+            if (objectivesMetCount === objectives.length) {
+                allObjectivesMet = true;
+                // O tempo necessário é o mês em que o ÚLTIMO objetivo foi marcado como atingido.
+                requiredMonths = Math.max(...objectivesMetStatus.map(o => o.monthMet));
+                break;
+            }
+        }
+
+        return requiredMonths; // Retorna o número de meses ou Infinity
+    }
+
+    // 4. Calcular Rentabilidade Anual Ideal Constante
+    function calculateIdealAnnualRate(objectives, initialSavings, monthlyContribution, tax, annualInflation) {
+        if (!objectives || objectives.length === 0) return 0;
+
+        let lowMonthlyRate = -0.05; // Permitir taxas negativas pequenas
+        let highMonthlyRate = 1.0; // 100% ao mês
+        let idealMonthlyRate = Infinity; // Começa com infinito
+        const maxIterations = 100;
+        let iterations = 0;
+
+        const maxPeriod = Math.max(...objectives.map(o => o.period), 0);
+        if (maxPeriod <= 0) return 0; // Sem prazo válido
+
+        // Caso base: verificar se já atinge com taxa mínima (lowMonthlyRate)
+        const lowRateSimulation = calculateCompoundInterest(initialSavings, monthlyContribution, lowMonthlyRate, maxPeriod, tax, annualInflation);
+        if (checkAllObjectivesMet(objectives, lowRateSimulation.valoresMensais, annualInflation)) {
+             // Se atinge com taxa mínima, a taxa ideal é essa mínima (ou 0 se for positiva)
+             const lowAnnualRate = Math.pow(1 + lowMonthlyRate, 12) - 1;
+             return Math.max(0, lowAnnualRate); // Retorna 0 se a taxa mínima for negativa mas funcionar
+        }
+
+        while (iterations < maxIterations && (highMonthlyRate - lowMonthlyRate) > 1e-7) { // Precisão maior para taxas
+            const midMonthlyRate = lowMonthlyRate + (highMonthlyRate - lowMonthlyRate) / 2;
+            if (midMonthlyRate === lowMonthlyRate || midMonthlyRate === highMonthlyRate) break;
+
+            const simulation = calculateCompoundInterest(initialSavings, monthlyContribution, midMonthlyRate, maxPeriod, tax, annualInflation);
+
+            if (checkAllObjectivesMet(objectives, simulation.valoresMensais, annualInflation)) {
+                idealMonthlyRate = midMonthlyRate;
+                highMonthlyRate = midMonthlyRate;
+            } else {
+                lowMonthlyRate = midMonthlyRate;
+            }
+            iterations++;
+        }
+
+        // Se encontrou uma taxa mensal ideal
+        if (idealMonthlyRate !== Infinity) {
+            const idealAnnualRate = Math.pow(1 + idealMonthlyRate, 12) - 1;
+            // Retorna a taxa anual, garantindo que não seja negativa se 0% for suficiente.
+            return idealAnnualRate < 1e-6 ? 0 : idealAnnualRate;
+        } else {
+             // Se idealMonthlyRate permaneceu Infinity, verificar o limite superior
+             const highRateSimulation = calculateCompoundInterest(initialSavings, monthlyContribution, highMonthlyRate, maxPeriod, tax, annualInflation);
+             if (!checkAllObjectivesMet(objectives, highRateSimulation.valoresMensais, annualInflation)) {
+                 console.warn("Não foi possível encontrar uma taxa de rentabilidade suficiente dentro dos limites/iterações.");
+                 return Infinity; // Indica impossibilidade
+             } else {
+                 // Se highMonthlyRate funciona, mas a busca não convergiu
+                 console.warn("Taxa ideal pode ser muito alta, retornando limite superior.");
+                 return Math.pow(1 + highMonthlyRate, 12) - 1;
+             }
+        }
+    }
+
+    // --- Função Principal de Cálculo (Modificada) ---
     function calculateSavings() {
       // Validar se há objetivos
       if (objectives.length === 0) {
@@ -883,13 +1189,13 @@
       // Obter parâmetros financeiros comuns
       const currentSavings = parseCurrency(document.getElementById("currentSavings").value);
       const currentContribution = parseCurrency(document.getElementById("currentContribution").value);
-      let rate = parsePercentage(document.getElementById("rate").value);
+      let rateInput = parsePercentage(document.getElementById("rate").value);
       const rateType = document.getElementById("rateType").value;
       const tax = parsePercentage(document.getElementById("tax").value);
-      const inflation = parsePercentage(document.getElementById("inflation").value);
+      const annualInflation = parsePercentage(document.getElementById("inflation").value);
 
       // Converter taxa para mensal se for anual
-      const monthlyRate = rateType === "annual" ? Math.pow(1 + rate, 1/12) - 1 : rate;
+      const monthlyRate = rateType === "annual" ? Math.pow(1 + rateInput, 1/12) - 1 : rateInput;
 
       // Determinar o período máximo de simulação baseado nos objetivos
       const maxPeriod = Math.max(...objectives.map(o => o.period), 0);
@@ -898,29 +1204,40 @@
           return;
       }
 
-      // Calcular a projeção financeira
-      const projection = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, maxPeriod, tax, inflation);
+      // --- Calcular Projeção Principal ---
+      const projection = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, maxPeriod, tax, annualInflation);
       const valoresMensais = projection.valoresMensais;
 
-      // Analisar atingimento de cada objetivo
-      let resultHTML = "<h4>Resultado da Projeção:</h4>";
+      // --- Calcular Análises Adicionais --- //
+      console.time("Additional Calculations");
+      const requiredInitial = calculateRequiredInitialValue(objectives, monthlyRate, tax, annualInflation);
+      const idealContribution = calculateIdealMonthlyContribution(objectives, currentSavings, monthlyRate, tax, annualInflation);
+      const requiredTime = calculateRequiredTime(objectives, currentSavings, currentContribution, monthlyRate, tax, annualInflation);
+      const idealAnnualRate = calculateIdealAnnualRate(objectives, currentSavings, currentContribution, tax, annualInflation);
+      console.timeEnd("Additional Calculations");
+
+      // --- Exibir Resultados --- //
+      const resultDiv = document.getElementById("result");
+      let resultHTML = "<h4>Resultados da Simulação Atual:</h4>";
       let allGoalsMet = true;
       let recommendationDetails = [];
 
+      // Status dos objetivos na simulação atual
       objectives.forEach(obj => {
         const targetMonth = obj.period;
         let objectiveMet = false;
         let monthMet = -1;
         let finalNetValueForObjective = 0;
+        let inflatedObjectiveValue = 0;
+        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
 
         if (targetMonth < valoresMensais.length) {
-          const monthlyInflation = Math.pow(1 + inflation, 1/12) - 1;
-          const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, targetMonth);
+          inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, targetMonth);
           finalNetValueForObjective = valoresMensais[targetMonth].valorLiquido;
 
           if (finalNetValueForObjective >= inflatedObjectiveValue) {
             objectiveMet = true;
-            // Encontrar o mês exato em que foi atingido (opcional, mas bom ter)
+            // Encontrar o mês exato em que foi atingido
             for(let m = 1; m <= targetMonth; m++) {
                 const currentInflatedValue = obj.value * Math.pow(1 + monthlyInflation, m);
                 if (valoresMensais[m].valorLiquido >= currentInflatedValue) {
@@ -928,6 +1245,7 @@
                     break;
                 }
             }
+            if (monthMet === -1) monthMet = targetMonth; // Se atingiu exatamente no final
           } else {
             allGoalsMet = false;
           }
@@ -948,13 +1266,29 @@
 
       resultHTML += `<p><strong>Projeção Final (${maxPeriod} meses):</strong> Valor Líquido ${formatMoney(valoresMensais[maxPeriod].valorLiquido)} (Total Investido: ${formatMoney(valoresMensais[maxPeriod].totalInvestido)}, Juros Brutos: ${formatMoney(valoresMensais[maxPeriod].totalJuros)}, Imposto Estimado: ${formatMoney(valoresMensais[maxPeriod].imposto)})</p>`;
 
-      document.getElementById("result").innerHTML = resultHTML;
-      document.getElementById("result").style.display = "block";
+      // Adicionar resultados das análises adicionais
+      resultHTML += "<hr><h4>Análises Adicionais:</h4>";
 
-      // Gerar recomendação
+      // 1. Valor Inicial Necessário
+      resultHTML += `<p><strong>1. Valor Inicial Necessário (sem aportes):</strong> Para atingir todos os objetivos nos prazos com a taxa informada (${formatRate(rateType === 'annual' ? rateInput : Math.pow(1+monthlyRate,12)-1)}), seria necessário iniciar com <strong>${formatMoney(requiredInitial)}</strong>.</p>`;
+
+      // 2. Aporte Mensal Ideal
+      resultHTML += `<p><strong>2. Aporte Mensal Ideal:</strong> Para atingir todos os objetivos nos prazos com o valor inicial informado (${formatMoney(currentSavings)}) e a taxa informada, o aporte mensal constante ideal seria de <strong>${formatMoney(idealContribution)}</strong>.</p>`;
+
+      // 3. Tempo Necessário
+      resultHTML += `<p><strong>3. Tempo Necessário:</strong> Com o valor inicial (${formatMoney(currentSavings)}), aporte mensal (${formatMoney(currentContribution)}) e taxa informados, o tempo estimado para atingir <strong>todos</strong> os objetivos é de <strong>${formatMonths(requiredTime)}</strong>.</p>`;
+
+      // 4. Rentabilidade Anual Ideal
+      resultHTML += `<p><strong>4. Rentabilidade Anual Ideal:</strong> Para atingir todos os objetivos nos prazos com o valor inicial (${formatMoney(currentSavings)}) e aporte mensal (${formatMoney(currentContribution)}) informados, a rentabilidade anual constante necessária seria de <strong>${formatRate(idealAnnualRate)}</strong>.</p>`;
+
+
+      resultDiv.innerHTML = resultHTML;
+      resultDiv.style.display = "block";
+
+      // Gerar recomendação baseada na simulação principal
       generateRecommendation(recommendationDetails, currentContribution);
 
-      // Desenhar gráfico e preencher tabela de projeção
+      // Desenhar gráfico e preencher tabela de projeção principal
       drawProjectionChart(valoresMensais);
       fillDataTable("tableProjection", valoresMensais);
       document.getElementById("projectionChartContainer").style.display = "block";
@@ -965,11 +1299,17 @@
         objectives: JSON.parse(JSON.stringify(objectives)), // Deep copy
         currentSavings,
         currentContribution,
-        rate: rateType === "annual" ? rate : monthlyRate, // Salvar a taxa original informada
+        rate: rateType === "annual" ? rateInput : monthlyRate, // Salvar a taxa original informada
         rateType,
         tax,
-        inflation,
-        calculationResult: projection, // Salvar os resultados calculados
+        inflation: annualInflation, // Salvar inflação anual
+        calculationResult: projection, // Salvar os resultados da projeção principal
+        additionalAnalysis: { // Salvar resultados das análises adicionais
+            requiredInitial,
+            idealContribution,
+            requiredTime,
+            idealAnnualRate
+        },
         maxPeriod // Salvar o período máximo usado
       };
 
@@ -992,21 +1332,21 @@
       objectiveResults.forEach(res => {
         if (!res.met) {
           needsImprovement = true;
-          analysis += `<p><strong>${res.description}:</strong> O objetivo não foi atingido no prazo de ${res.period} meses. O valor líquido projetado é de ${formatMoney(res.netValue)}, enquanto o objetivo corrigido pela inflação seria ${formatMoney(res.targetValue)}. Seria necessário um valor adicional de ${formatMoney(res.targetValue - res.netValue)}.</p>`;
+          analysis += `<p><strong>${res.description}:</strong> O objetivo não foi atingido no prazo de ${res.period} meses na simulação atual. O valor líquido projetado é de ${formatMoney(res.netValue)}, enquanto o objetivo corrigido pela inflação seria ${formatMoney(res.targetValue)}. Seria necessário um valor adicional de ${formatMoney(res.targetValue - res.netValue)}.</p>`;
         }
       });
 
       if (!needsImprovement) {
-        analysis += "<p><strong>Parabéns!</strong> Com os parâmetros atuais, todos os seus objetivos são atingidos dentro dos prazos definidos.</p>";
+        analysis += "<p><strong>Parabéns!</strong> Com os parâmetros atuais, todos os seus objetivos são atingidos dentro dos prazos definidos na simulação.</p>";
       } else {
-        analysis += "<p><strong>Pontos de Atenção:</strong></p><ul>";
+        analysis += "<p><strong>Pontos de Atenção (Simulação Atual):</strong></p><ul>";
         if (currentContribution <= 0) {
-            analysis += "<li>Iniciar aportes mensais é fundamental.</li>";
+            analysis += "<li>Iniciar aportes mensais é fundamental. Veja o 'Aporte Mensal Ideal' nos resultados acima.</li>";
         } else {
-            analysis += `<li>Avalie aumentar o aporte mensal atual de ${formatMoney(currentContribution)}.</li>`;
+            analysis += `<li>Avalie aumentar o aporte mensal atual de ${formatMoney(currentContribution)}. Veja o 'Aporte Mensal Ideal' calculado.</li>`;
         }
-        analysis += "<li>Considere buscar investimentos com maior rentabilidade (lembre-se que maior rentabilidade geralmente implica maior risco).</li>";
-        analysis += "<li>Reavalie os prazos ou valores dos objetivos não atingidos, se possível.</li>";
+        analysis += "<li>Considere buscar investimentos com maior rentabilidade (veja a 'Rentabilidade Anual Ideal' calculada, mas lembre-se que maior rentabilidade geralmente implica maior risco).</li>";
+        analysis += "<li>Reavalie os prazos ou valores dos objetivos não atingidos, se possível, ou verifique o 'Tempo Necessário' calculado.</li>";
         analysis += "</ul>";
       }
 
@@ -1063,6 +1403,8 @@
               pointHoverRadius: 5,
               tension: 0.1
             }
+            // Adicionar linhas de objetivos aqui seria complexo visualmente
+            // Melhor mostrar status no texto
           ]
         },
         options: {
@@ -1138,14 +1480,14 @@
 
       const scenarioData = {
         name: `Cenário ${scenarioCounter++}`,
-        ...currentCalculationData // Inclui objectives, parâmetros financeiros, resultados
+        ...currentCalculationData // Inclui objectives, parâmetros, resultados e análises adicionais
       };
 
       scenarios.push(scenarioData);
       displayScenarios();
 
       // Mostrar o botão de analisar cenários se houver mais de um cenário
-      if (scenarios.length >= 1) { // Mudado para >= 1 para mostrar sempre que houver cenário salvo
+      if (scenarios.length >= 1) {
         document.getElementById("analyzeScenarioButton").style.display = "block";
       }
 
@@ -1168,37 +1510,28 @@
         const card = document.createElement("div");
         card.className = "scenario-card";
 
-        let objectivesSummary = "Nenhum";
-        if (scenario.objectives && scenario.objectives.length > 0) {
-            objectivesSummary = scenario.objectives.map(o => o.description).join(', ');
-            if (objectivesSummary.length > 50) { // Limitar tamanho do resumo
-                objectivesSummary = objectivesSummary.substring(0, 47) + '...';
-            }
-        }
-
         // Calcular status geral dos objetivos para este cenário
-        let scenarioAllGoalsMet = true;
+        let scenarioAllGoalsMet = false; // Assume false até verificar
         let objectivesStatusHTML = "<ul>";
-        if (scenario.objectives && scenario.calculationResult) {
-            const valoresMensais = scenario.calculationResult.valoresMensais;
-            const annualInflation = scenario.inflation;
-            const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-
+        if (scenario.objectives && scenario.objectives.length > 0 && scenario.calculationResult) {
+            scenarioAllGoalsMet = checkAllObjectivesMet(scenario.objectives, scenario.calculationResult.valoresMensais, scenario.inflation);
+            const monthlyInflation = Math.pow(1 + scenario.inflation, 1/12) - 1;
             scenario.objectives.forEach(obj => {
                 const targetMonth = obj.period;
                 let objectiveMet = false;
-                if (targetMonth < valoresMensais.length) {
+                if (targetMonth < scenario.calculationResult.valoresMensais.length) {
                     const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, targetMonth);
-                    if (valoresMensais[targetMonth].valorLiquido >= inflatedObjectiveValue) {
+                    if (scenario.calculationResult.valoresMensais[targetMonth].valorLiquido >= inflatedObjectiveValue) {
                         objectiveMet = true;
                     }
                 }
-                if (!objectiveMet) scenarioAllGoalsMet = false;
                 objectivesStatusHTML += `<li>${obj.description}: <span style="color: ${objectiveMet ? 'var(--verde-esmeralda)' : '#dc3545'}">${objectiveMet ? 'Atingido' : 'Não Atingido'}</span></li>`;
             });
+        } else if (!scenario.objectives || scenario.objectives.length === 0) {
+             objectivesStatusHTML = "<li>Nenhum objetivo definido neste cenário.</li>";
+             scenarioAllGoalsMet = true; // Considera 'atingido' se não há objetivos
         } else {
-            scenarioAllGoalsMet = false; // Considerar não atingido se não houver dados
-            objectivesStatusHTML += "<li>Dados de objetivos ou cálculo indisponíveis.</li>";
+            objectivesStatusHTML = "<li>Dados de cálculo indisponíveis.</li>";
         }
         objectivesStatusHTML += "</ul>";
 
@@ -1218,7 +1551,12 @@
               <p><strong>Taxa:</strong> ${(scenario.rate * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}% ${scenario.rateType === 'annual' ? 'a.a.' : 'a.m.'}</p>
               <p><strong>Inflação:</strong> ${(scenario.inflation * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
               <p><strong>Imposto:</strong> ${(scenario.tax * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%</p>
-              <p><strong>Status Geral:</strong> <span style="font-weight: bold; color: ${scenarioAllGoalsMet ? 'var(--verde-esmeralda)' : '#dc3545'}">${scenarioAllGoalsMet ? 'Todos Objetivos Atingidos' : 'Objetivos Pendentes'}</span></p>
+              <p><strong>Status Geral:</strong> <span style="font-weight: bold; color: ${scenarioAllGoalsMet ? 'var(--verde-esmeralda)' : '#dc3545'}">${scenarioAllGoalsMet ? 'Objetivos Atingidos' : 'Objetivos Pendentes'}</span></p>
+              <!-- Adicionar resumo das análises adicionais -->
+              <p><strong>Tempo Nec.:</strong> ${formatMonths(scenario.additionalAnalysis?.requiredTime)}</p>
+              <p><strong>Aporte Ideal:</strong> ${formatMoney(scenario.additionalAnalysis?.idealContribution)}</p>
+              <p><strong>Taxa Ideal:</strong> ${formatRate(scenario.additionalAnalysis?.idealAnnualRate)}</p>
+              <p><strong>Inicial Nec.:</strong> ${formatMoney(scenario.additionalAnalysis?.requiredInitial)}</p>
             </div>
             <div class="scenario-details">
               <strong>Objetivos:</strong>
@@ -1252,7 +1590,7 @@
       formatPercentage(document.getElementById("inflation"));
 
       // Habilitar/desabilitar campos de taxa/inflação baseado no 'knows'
-      document.getElementById("knowsTax").value = scenario.tax > 0 ? "yes" : "no"; // Simplificação: assume 'yes' se taxa > 0
+      document.getElementById("knowsTax").value = scenario.tax > 0 ? "yes" : "no"; // Simplificação
       toggleTaxInput("tax", "15,00 %");
       document.getElementById("knowsInflation").value = scenario.inflation > 0 ? "yes" : "no"; // Simplificação
       toggleTaxInput("inflation", "5,00 %");
@@ -1273,15 +1611,14 @@
         scenarios.splice(index, 1);
         displayScenarios();
         // Esconder botão de análise se não houver mais cenários suficientes
-        if (scenarios.length < 1) {
+        if (scenarios.length < 1) { // Mudado para < 1, pois análise agora é útil com 1 cenário
           document.getElementById("analyzeScenarioButton").style.display = "none";
           document.getElementById("comparisonContainer").style.display = "none";
           document.getElementById("generalAnalysis").style.display = "none";
-        }
-         // Se houver apenas 1 cenário, esconder análise mas manter botão visível
-        if (scenarios.length === 1) {
-             document.getElementById("comparisonContainer").style.display = "none";
-             document.getElementById("generalAnalysis").style.display = "none";
+        } else {
+            // Se ainda há cenários, mas menos de 2, esconder comparação
+            document.getElementById("comparisonContainer").style.display = "none";
+            document.getElementById("generalAnalysis").style.display = "none";
         }
         alert(`"${scenarioName}" excluído.`);
       }
@@ -1292,8 +1629,7 @@
         objectives = [];
         displayObjectives();
 
-        // Limpar campos do formulário principal (opcional, pode manter para facilitar)
-        // document.getElementById("savingsForm").reset(); // Cuidado: reseta selects também
+        // Limpar campos do formulário principal
         document.getElementById("currentSavings").value = "";
         document.getElementById("currentContribution").value = "";
         document.getElementById("rate").value = "";
@@ -1326,26 +1662,47 @@
             projectionChart.destroy();
             projectionChart = null;
         }
+        // Limpar também comparação se estiver visível
+        if (comparisonChart) {
+            comparisonChart.destroy();
+            comparisonChart = null;
+        }
+        document.getElementById("comparisonContainer").style.display = "none";
+        document.getElementById("generalAnalysis").style.display = "none";
+
     }
 
     // --- Funções de Comparação de Cenários ---
     function analyzeScenarios() {
-      if (scenarios.length < 2) {
-        alert("É necessário ter pelo menos 2 cenários salvos para comparar.");
+      if (scenarios.length < 1) { // Permitir análise com 1 cenário (mostra só a tabela)
+        alert("É necessário ter pelo menos 1 cenário salvo para analisar.");
         return;
       }
 
-      updateComparisonChart();
-      updateComparisonTable();
-      generateGeneralAnalysis();
+      if (scenarios.length >= 2) {
+          updateComparisonChart();
+          document.getElementById("comparisonChartContainer").style.display = "block";
+          generateGeneralAnalysis();
+          document.getElementById("generalAnalysis").style.display = "block";
+      } else {
+          // Esconder gráfico e análise geral se só tem 1 cenário
+          if (comparisonChart) comparisonChart.destroy();
+          document.getElementById("comparisonChartContainer").style.display = "none";
+          document.getElementById("generalAnalysis").style.display = "none";
+      }
 
+      updateComparisonTable(); // Atualizar tabela sempre
       document.getElementById("comparisonContainer").style.display = "block";
-      document.getElementById("generalAnalysis").style.display = "block";
       document.getElementById("comparisonContainer").scrollIntoView({ behavior: 'smooth' });
     }
 
     function updateComparisonChart() {
         const ctx = document.getElementById('comparisonChart').getContext('2d');
+        if (scenarios.length < 2) {
+             if (comparisonChart) comparisonChart.destroy();
+             return; // Não desenha gráfico com menos de 2 cenários
+        }
+
         const maxPeriodOverall = Math.max(...scenarios.map(s => s.maxPeriod), 0);
         const labels = Array.from({ length: maxPeriodOverall + 1 }, (_, i) => i);
         const datasets = [];
@@ -1368,6 +1725,11 @@
                         data[month] = val.valorLiquido;
                     }
                 });
+                // Preencher valores futuros com o último valor calculado se a simulação for mais curta
+                const lastValue = data[scenario.maxPeriod];
+                for (let m = scenario.maxPeriod + 1; m <= maxPeriodOverall; m++) {
+                    data[m] = lastValue;
+                }
             }
 
             datasets.push({
@@ -1452,22 +1814,19 @@
             { key: 'rate', label: 'Taxa Juros', format: (v, s) => `${(v * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}% ${s.rateType === 'annual' ? 'a.a.' : 'a.m.'}` },
             { key: 'inflation', label: 'Inflação Anual', format: v => `${(v * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%` },
             { key: 'tax', label: 'Imposto (IR)', format: v => `${(v * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%` },
-            { key: 'finalNetValue', label: 'Valor Líquido Final', format: formatMoney, calc: s => s.calculationResult?.valoresMensais[s.maxPeriod]?.valorLiquido ?? 0 },
-            { key: 'totalInvested', label: 'Total Investido Final', format: formatMoney, calc: s => s.calculationResult?.valoresMensais[s.maxPeriod]?.totalInvestido ?? 0 },
-            { key: 'totalInterest', label: 'Juros Brutos Finais', format: formatMoney, calc: s => s.calculationResult?.valoresMensais[s.maxPeriod]?.totalJuros ?? 0 },
+            { key: 'finalNetValue', label: 'Valor Líquido Final', format: formatMoney, calc: s => s.calculationResult?.valoresMensais[s.maxPeriod]?.valorLiquido },
+            { key: 'totalInvested', label: 'Total Investido Final', format: formatMoney, calc: s => s.calculationResult?.valoresMensais[s.maxPeriod]?.totalInvestido },
+            { key: 'totalInterest', label: 'Juros Brutos Finais', format: formatMoney, calc: s => s.calculationResult?.valoresMensais[s.maxPeriod]?.totalJuros },
             { key: 'goalsMetStatus', label: 'Status Objetivos', format: (v, s) => {
-                let allMet = true;
                 if (!s.objectives || s.objectives.length === 0) return 'N/A';
-                const annualInflation = s.inflation;
-                const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-                s.objectives.forEach(obj => {
-                    const targetMonth = obj.period;
-                    if (targetMonth >= s.calculationResult.valoresMensais.length || s.calculationResult.valoresMensais[targetMonth].valorLiquido < (obj.value * Math.pow(1 + monthlyInflation, targetMonth))) {
-                        allMet = false;
-                    }
-                });
+                const allMet = checkAllObjectivesMet(s.objectives, s.calculationResult?.valoresMensais, s.inflation);
                 return allMet ? '<span style="color: var(--verde-esmeralda);">Todos Atingidos</span>' : '<span style="color: #dc3545;">Pendentes</span>';
-            } }
+            } },
+            // Métricas Adicionais
+            { key: 'requiredInitial', label: 'Inicial Necessário', format: formatMoney, calc: s => s.additionalAnalysis?.requiredInitial },
+            { key: 'idealContribution', label: 'Aporte Ideal', format: formatMoney, calc: s => s.additionalAnalysis?.idealContribution },
+            { key: 'requiredTime', label: 'Tempo Necessário', format: formatMonths, calc: s => s.additionalAnalysis?.requiredTime },
+            { key: 'idealAnnualRate', label: 'Taxa Ideal Anual', format: formatRate, calc: s => s.additionalAnalysis?.idealAnnualRate }
         ];
 
         metrics.forEach(metric => {
@@ -1475,23 +1834,35 @@
             const values = scenarios.map(s => metric.calc ? metric.calc(s) : s[metric.key]);
 
             // Para métricas numéricas, encontrar melhor/pior
-            let bestValue = -Infinity, worstValue = Infinity;
-            let isNumeric = values.every(v => typeof v === 'number');
-            if (isNumeric && metric.key !== 'tax' && metric.key !== 'inflation') { // Maximizar (exceto imposto/inflação)
-                bestValue = Math.max(...values);
-                worstValue = Math.min(...values);
-            } else if (isNumeric && (metric.key === 'tax' || metric.key === 'inflation')) { // Minimizar
-                bestValue = Math.min(...values);
-                worstValue = Math.max(...values);
+            let bestValue = null, worstValue = null;
+            let numericValues = values.map(v => typeof v === 'number' && isFinite(v) ? v : null).filter(v => v !== null);
+            let isNumeric = numericValues.length > 0;
+
+            if (isNumeric && numericValues.length > 1) {
+                 // Definir se maximiza ou minimiza
+                 const maximize = ['finalNetValue', 'totalInterest'].includes(metric.key);
+                 const minimize = ['tax', 'inflation', 'requiredInitial', 'idealContribution', 'requiredTime', 'idealAnnualRate'].includes(metric.key);
+
+                 if (maximize) {
+                    bestValue = Math.max(...numericValues);
+                    worstValue = Math.min(...numericValues);
+                 } else if (minimize) {
+                    bestValue = Math.min(...numericValues);
+                    worstValue = Math.max(...numericValues);
+                 }
             }
 
             scenarios.forEach((s, index) => {
                 const value = values[index];
                 let formattedValue = metric.format(value, s);
                 let className = '';
-                if (isNumeric && values.length > 1) {
+                if (isNumeric && bestValue !== null && typeof value === 'number' && isFinite(value)) {
                     if (value === bestValue) className = 'best-value';
                     else if (value === worstValue) className = 'worst-value';
+                }
+                // Adiciona classe para N/A ou Inatingível para estilização se necessário
+                if (formattedValue === 'N/A' || formattedValue === 'Inatingível') {
+                    className += ' value-na';
                 }
                 row += `<td class="${className}">${formattedValue}</td>`;
             });
@@ -1502,57 +1873,61 @@
 
     function generateGeneralAnalysis() {
         const analysisDiv = document.getElementById('generalAnalysisText');
-        let text = "<p>Comparando os cenários:</p><ul>";
+        analysisDiv.innerHTML = ""; // Limpar análise anterior
 
         if (scenarios.length < 2) {
-            analysisDiv.innerHTML = "<p>Adicione pelo menos dois cenários para gerar uma análise comparativa.</p>";
+            analysisDiv.innerHTML = "<p>Adicione pelo menos dois cenários para gerar uma análise comparativa detalhada.</p>";
             return;
         }
 
-        // Encontrar cenário com maior valor líquido final
-        let bestFinalValue = -Infinity;
-        let bestFinalValueScenario = null;
-        scenarios.forEach(s => {
-            const finalValue = s.calculationResult?.valoresMensais[s.maxPeriod]?.valorLiquido ?? 0;
-            if (finalValue > bestFinalValue) {
-                bestFinalValue = finalValue;
-                bestFinalValueScenario = s;
-            }
-        });
-        if (bestFinalValueScenario) {
-            text += `<li>O <strong>${bestFinalValueScenario.name}</strong> apresenta o maior valor líquido final projetado (${formatMoney(bestFinalValue)}).</li>`;
-        }
+        let text = "<p>Comparando os cenários:</p><ul>";
 
-        // Encontrar cenário que atinge todos os objetivos (se houver)
-        const allGoalsMetScenarios = scenarios.filter(s => {
-            if (!s.objectives || s.objectives.length === 0) return false;
-            let allMet = true;
-            const annualInflation = s.inflation;
-            const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-            s.objectives.forEach(obj => {
-                const targetMonth = obj.period;
-                 if (targetMonth >= s.calculationResult.valoresMensais.length || s.calculationResult.valoresMensais[targetMonth].valorLiquido < (obj.value * Math.pow(1 + monthlyInflation, targetMonth))) {
-                    allMet = false;
-                }
+        // Função auxiliar para encontrar melhor cenário para uma métrica
+        const findBestScenario = (metricKey, maximize = true) => {
+            let bestValue = maximize ? -Infinity : Infinity;
+            let bestScenario = null;
+            scenarios.forEach(s => {
+                const value = s.additionalAnalysis ? s.additionalAnalysis[metricKey] : (s.calculationResult ? s.calculationResult.valoresMensais[s.maxPeriod][metricKey === 'finalNetValue' ? 'valorLiquido' : metricKey] : null);
+                 if (typeof value === 'number' && isFinite(value)) {
+                    if ((maximize && value > bestValue) || (!maximize && value < bestValue)) {
+                        bestValue = value;
+                        bestScenario = s;
+                    }
+                 }
             });
-            return allMet;
-        });
+            return { scenario: bestScenario, value: bestValue };
+        };
 
-        if (allGoalsMetScenarios.length > 0) {
-            text += `<li>Os cenários: <strong>${allGoalsMetScenarios.map(s => s.name).join(', ')}</strong> atingem todos os objetivos definidos.</li>`;
-        } else {
-            text += `<li>Nenhum dos cenários atuais atinge todos os objetivos definidos nos prazos estipulados.</li>`;
+        // Comparar Valor Líquido Final
+        const bestFinal = findBestScenario('finalNetValue', true);
+        if (bestFinal.scenario) {
+            text += `<li>O <strong>${bestFinal.scenario.name}</strong> apresenta o maior valor líquido final projetado (${formatMoney(bestFinal.value)}).</li>`;
         }
 
-        // Comparar Aportes
-        let highestContribution = -Infinity, lowestContribution = Infinity;
-        let highestContributionScenario = null, lowestContributionScenario = null;
-        scenarios.forEach(s => {
-            if (s.currentContribution > highestContribution) { highestContribution = s.currentContribution; highestContributionScenario = s; }
-            if (s.currentContribution < lowestContribution) { lowestContribution = s.currentContribution; lowestContributionScenario = s; }
-        });
-        if (highestContributionScenario && lowestContributionScenario && highestContribution !== lowestContribution) {
-             text += `<li>O aporte mensal varia de ${formatMoney(lowestContribution)} (${lowestContributionScenario.name}) a ${formatMoney(highestContribution)} (${highestContributionScenario.name}).</li>`;
+        // Comparar Tempo Necessário
+        const bestTime = findBestScenario('requiredTime', false);
+        if (bestTime.scenario && isFinite(bestTime.value)) {
+             text += `<li>O <strong>${bestTime.scenario.name}</strong> atinge todos os objetivos no menor tempo (${formatMonths(bestTime.value)}).</li>`;
+        } else if (scenarios.some(s => s.additionalAnalysis?.requiredTime === Infinity)) {
+             text += `<li>Alguns cenários podem não atingir todos os objetivos (tempo infinito).</li>`;
+        }
+
+        // Comparar Aporte Ideal
+        const bestContribution = findBestScenario('idealContribution', false);
+        if (bestContribution.scenario && isFinite(bestContribution.value)) {
+            text += `<li>O <strong>${bestContribution.scenario.name}</strong> requer o menor aporte mensal ideal (${formatMoney(bestContribution.value)}) para atingir os objetivos com os parâmetros dados.</li>`;
+        }
+
+         // Comparar Taxa Ideal
+        const bestRate = findBestScenario('idealAnnualRate', false);
+        if (bestRate.scenario && isFinite(bestRate.value)) {
+            text += `<li>O <strong>${bestRate.scenario.name}</strong> requer a menor rentabilidade anual ideal (${formatRate(bestRate.value)}) para atingir os objetivos com os parâmetros dados.</li>`;
+        }
+
+        // Comparar Valor Inicial Necessário
+        const bestInitial = findBestScenario('requiredInitial', false);
+        if (bestInitial.scenario && isFinite(bestInitial.value)) {
+            text += `<li>O <strong>${bestInitial.scenario.name}</strong> requer o menor valor inicial (${formatMoney(bestInitial.value)}) para atingir os objetivos sem aportes, com a taxa dada.</li>`;
         }
 
         text += "</ul><p>Analise a tabela e o gráfico acima para mais detalhes sobre as diferenças entre os parâmetros e resultados de cada cenário.</p>";
@@ -1572,20 +1947,28 @@
       }
 
       let parametersText = "Parâmetros Financeiros:\n";
+      let analysisText = "Análises Adicionais:\n";
       if (currentCalculationData) {
          parametersText += `  - Valor Guardado: ${formatMoney(currentCalculationData.currentSavings)}\n`;
          parametersText += `  - Aporte Mensal: ${formatMoney(currentCalculationData.currentContribution)}\n`;
          parametersText += `  - Taxa Juros: ${(currentCalculationData.rate * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}% ${currentCalculationData.rateType === "annual" ? "a.a." : "a.m."}\n`;
          parametersText += `  - Inflação: ${(currentCalculationData.inflation * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%\n`;
          parametersText += `  - Imposto: ${(currentCalculationData.tax * 100).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}%\n`;
+
+         analysisText += `  - Inicial Necessário (s/ aporte): ${formatMoney(currentCalculationData.additionalAnalysis?.requiredInitial)}\n`;
+         analysisText += `  - Aporte Ideal: ${formatMoney(currentCalculationData.additionalAnalysis?.idealContribution)}\n`;
+         analysisText += `  - Tempo Necessário: ${formatMonths(currentCalculationData.additionalAnalysis?.requiredTime)}\n`;
+         analysisText += `  - Taxa Ideal Anual: ${formatRate(currentCalculationData.additionalAnalysis?.idealAnnualRate)}\n`;
+
       } else {
           parametersText = "Parâmetros financeiros não calculados.\n";
+          analysisText = "Análises adicionais não calculadas.\n";
       }
 
-      // Tenta pegar a descrição geral do primeiro objetivo como contexto, se existir
+      // Tenta pegar a descrição geral do primeiro objetivo como contexto
       const goalContext = objectives.length > 0 ? objectives[0].description : "(Objetivo não descrito)";
 
-      const message = `Oi Hugo, queria tua ajuda com meus objetivos:\n${goalContext}\n\n${objectivesText}\n${parametersText}\nEstou usando a calculadora que você criou.`;
+      const message = `Oi Hugo, queria tua ajuda com meus objetivos:\n${goalContext}\n\n${objectivesText}\n${parametersText}\n${analysisText}\nEstou usando a calculadora que você criou.`;
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://api.whatsapp.com/send?phone=5581994297920&text=${encodedMessage}`;
       window.open(whatsappUrl, "_blank");
@@ -1603,3 +1986,4 @@
   </script>
 </body>
 </html>
+
