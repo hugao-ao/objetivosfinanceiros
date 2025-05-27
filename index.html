@@ -3,16 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora Sequencial de Múltiplos Objetivos</title>
-  <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+  <title>Calculadora de Novos Objetivos</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script> <!-- Optional: for time scale if needed -->
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script> <!-- For deadline lines -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --verde-esmeralda: #046c4e;
-      --verde-esmeralda-escuro: #034e38;
       --verde-claro: #28a745;
       --verde-medio: #218838;
       --dourado: #d4af37;
@@ -22,232 +17,132 @@
       --roxo-claro: #9f75e5;
       --roxo-escuro: #4b2882;
       --fundo-claro: #f9f9f9;
-      --fundo-container: #ffffff;
       --vermelho-translucido: rgba(255, 0, 0, 0.1);
       --azul-translucido: rgba(0, 0, 255, 0.1);
       --roxo-translucido: rgba(111, 66, 193, 0.1);
-      --cinza-claro: #e9ecef;
-      --cinza-medio: #ced4da;
-      --cinza-escuro: #6c757d;
-      --verde-destaque: rgba(4, 108, 78, 0.1);
-      --vermelho-destaque: rgba(220, 53, 69, 0.1);
-      --sombra-padrao: 0 4px 12px rgba(0,0,0,0.1);
-      --borda-arredondada: 8px;
-      --espacamento-padrao: 20px;
-      --transicao-padrao: all 0.3s ease;
     }
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: Arial, sans-serif;
       background-color: var(--fundo-claro);
-      color: var(--verde-esmeralda-escuro);
-      margin: 0;
-      padding: var(--espacamento-padrao);
-      max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.6;
-    }
-    h1, h2, h3, h4, h5, h6 {
       color: var(--verde-esmeralda);
-      margin-top: 0;
-      margin-bottom: var(--espacamento-padrao);
-      font-weight: 600;
-      line-height: 1.3;
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 1200px;
     }
     h1 {
-      color: var(--verde-esmeralda-escuro);
+      color: var(--dourado);
       text-align: center;
-      font-size: 2.2rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 3px solid var(--dourado);
-      padding-bottom: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    form {
-      background-color: var(--fundo-container);
-      padding: var(--espacamento-padrao);
-      border-radius: var(--borda-arredondada);
-      box-shadow: var(--sombra-padrao);
-      margin-bottom: var(--espacamento-padrao);
-      border: 1px solid var(--cinza-claro);
     }
     .result {
-      margin-top: var(--espacamento-padrao);
-      padding: var(--espacamento-padrao);
+      margin-top: 20px;
+      padding: 15px;
       border: 2px solid var(--dourado);
-      background-color: var(--fundo-container);
-      border-radius: var(--borda-arredondada);
-      box-shadow: var(--sombra-padrao);
-    }
-    .result h4 {
-        color: var(--verde-esmeralda-escuro);
-        border-bottom: 1px solid var(--dourado-claro);
-        padding-bottom: 10px;
-        margin-bottom: 15px;
+      background-color: white;
+      border-radius: 8px;
     }
     .recommendation {
-      margin: var(--espacamento-padrao) 0;
-      padding: var(--espacamento-padrao);
+      margin: 30px 0;
+      padding: 20px;
       border: 2px solid var(--verde-esmeralda);
-      background-color: var(--fundo-container);
-      border-radius: var(--borda-arredondada);
-      box-shadow: var(--sombra-padrao);
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     .recommendation h3 {
-      color: var(--verde-esmeralda-escuro);
+      color: var(--verde-esmeralda);
       margin-top: 0;
-      border-bottom: 2px solid var(--dourado);
+      border-bottom: 1px solid var(--dourado-claro);
       padding-bottom: 10px;
-      font-size: 1.4rem;
     }
     .whatsapp-button {
       display: block;
       width: 100%;
-      padding: 15px;
-      margin: var(--espacamento-padrao) 0;
-      background-color: var(--verde-esmeralda);
+      padding: 20px;
+      margin: 20px 0;
+      background-color: #25D366; /* WhatsApp green */
       color: white;
       text-align: center;
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 18px;
       border: none;
-      border-radius: var(--borda-arredondada);
+      border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
-      box-shadow: var(--sombra-padrao);
-      transition: var(--transicao-padrao);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: background-color 0.3s ease;
     }
     .whatsapp-button:hover {
-      background-color: var(--verde-esmeralda-escuro);
-      transform: translateY(-2px);
+      background-color: #128C7E; /* Darker WhatsApp green */
     }
-    .save-scenario-button, .analyze-scenario-button, .new-scenario-button {
-      display: block;
-      width: 100%;
-      padding: 15px;
-      margin: var(--espacamento-padrao) 0;
-      color: white;
-      text-align: center;
-      font-weight: bold;
-      font-size: 1rem;
-      border: none;
-      border-radius: var(--borda-arredondada);
-      cursor: pointer;
-      text-decoration: none;
-      box-shadow: var(--sombra-padrao);
-      transition: var(--transicao-padrao);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .save-scenario-button { background-color: var(--dourado); }
-    .save-scenario-button:hover { background-color: var(--dourado-escuro); transform: translateY(-2px); }
-    .analyze-scenario-button { background-color: var(--verde-esmeralda); }
-    .analyze-scenario-button:hover { background-color: var(--verde-esmeralda-escuro); transform: translateY(-2px); }
-    .new-scenario-button { background-color: var(--dourado); }
-    .new-scenario-button:hover { background-color: var(--dourado-escuro); transform: translateY(-2px); }
-
     label {
       display: block;
-      margin-top: 15px;
-      margin-bottom: 5px;
-      font-weight: 500;
-      color: var(--verde-esmeralda-escuro);
+      margin-top: 10px;
     }
     .row {
       display: flex;
-      flex-wrap: wrap; /* Allow wrapping on smaller screens */
       justify-content: space-between;
-      gap: 15px;
-      margin-bottom: 15px;
+      gap: 10px;
     }
     .row > div {
       flex: 1;
-      min-width: 150px; /* Prevent fields from becoming too narrow */
     }
     input, select, textarea {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       margin-top: 5px;
       box-sizing: border-box;
-      border: 1px solid var(--cinza-medio);
-      border-radius: var(--borda-arredondada);
-      transition: var(--transicao-padrao);
-      font-size: 1rem;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--dourado);
-      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+      border: 1px solid var(--verde-esmeralda);
+      border-radius: 5px;
     }
     textarea {
-      min-height: 80px; /* Reduced height */
+      min-height: 100px;
       resize: vertical;
     }
     button {
-      margin-top: 20px;
-      padding: 14px;
+      margin-top: 15px;
+      padding: 12px;
       background-color: var(--verde-esmeralda);
       color: white;
       border: none;
-      border-radius: var(--borda-arredondada);
+      border-radius: 5px;
       cursor: pointer;
       width: 100%;
       font-weight: bold;
-      font-size: 1rem;
-      transition: var(--transicao-padrao);
-      letter-spacing: 0.5px;
+      font-size: 16px;
     }
     button:hover {
-      background-color: var(--verde-esmeralda-escuro);
-      transform: translateY(-2px);
+      background-color: #03563f;
     }
     .chart-container {
       margin-top: 30px;
       position: relative;
-      border: 2px solid var(--dourado-claro);
-      border-radius: var(--borda-arredondada);
-      padding: 20px;
-      background-color: var(--fundo-container);
-      box-shadow: var(--sombra-padrao);
+      border: 1px solid var(--dourado-claro);
+      border-radius: 8px;
+      padding: 15px;
+      background-color: white;
     }
     .chart-title {
       text-align: center;
       font-weight: bold;
-      margin-bottom: 20px;
-      color: var(--verde-esmeralda-escuro);
-      font-size: 1.2rem;
-      border-bottom: 1px solid var(--dourado);
-      padding-bottom: 10px;
+      margin-bottom: 15px;
+      color: var(--verde-esmeralda);
     }
     .chart-nav {
       display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 15px;
+      justify-content: space-between;
+      margin-bottom: 10px;
     }
     .chart-nav button {
-      padding: 10px 20px;
+      padding: 8px 15px;
       margin-top: 0;
       width: auto;
-      font-size: 0.9rem;
-      background-color: var(--dourado);
-      border-radius: var(--borda-arredondada);
-      transition: var(--transicao-padrao);
-    }
-    .chart-nav button:hover {
-      background-color: var(--dourado-escuro);
+      font-size: 14px;
     }
     .chart-content {
       display: flex;
       overflow: hidden;
       position: relative;
       height: 400px;
-      border: 1px solid var(--cinza-claro);
-      border-radius: var(--borda-arredondada);
-      background-color: var(--fundo-container);
     }
     .chart-slide {
       flex: 0 0 100%;
@@ -255,2108 +150,798 @@
     }
     .table-slide {
       flex: 0 0 100%;
-      overflow-x: auto;
       overflow-y: auto;
-      padding: 15px;
-      background-color: var(--fundo-container);
-      max-height: 400px; /* Limit table height */
+      padding: 10px;
     }
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
-      min-width: 800px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .data-table th, .data-table td {
-      border: 1px solid var(--cinza-claro);
-      padding: 10px;
-      text-align: right;
-      white-space: nowrap;
-    }
-    .data-table th {
-      background-color: var(--verde-esmeralda);
-      color: white;
-      font-weight: 600;
-      text-align: center;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 0.5px;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    .data-table tr:nth-child(even) {
-      background-color: var(--verde-destaque);
-    }
-    .data-table tr:hover {
-      background-color: var(--dourado-claro);
-    }
-    .data-table .objective-deadline-row td {
-        background-color: var(--dourado-claro) !important;
-        font-weight: bold;
-        border-top: 2px solid var(--dourado-escuro);
-        border-bottom: 2px solid var(--dourado-escuro);
-    }
-    .scenarios-container {
-      margin: 30px 0;
-      padding: 20px;
-      border: 2px solid var(--dourado);
-      background-color: var(--fundo-container);
-      border-radius: var(--borda-arredondada);
-      box-shadow: var(--sombra-padrao);
-    }
-    .scenarios-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      border-bottom: 2px solid var(--verde-esmeralda);
-      padding-bottom: 10px;
-    }
-    .scenarios-header h3 {
-      color: var(--verde-esmeralda-escuro);
-      margin: 0;
-      font-size: 1.4rem;
-    }
-    .scenario-card {
-      border: 1px solid var(--cinza-medio);
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 15px;
-      background-color: var(--cinza-claro);
-      position: relative;
-    }
-    .scenario-card.active {
-      border: 2px solid var(--verde-esmeralda);
-      background-color: white;
-    }
-    .scenario-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .scenario-title {
-      font-weight: bold;
-      color: var(--verde-esmeralda);
-      margin: 0;
-    }
-    .scenario-actions {
-      display: flex;
-      gap: 10px;
-    }
-    .scenario-actions button {
-      padding: 5px 10px;
-      margin: 0;
-      width: auto;
-      font-size: 12px;
-    }
-    .scenario-delete {
-      background-color: #dc3545;
-    }
-    .scenario-delete:hover {
-      background-color: #c82333;
-    }
-    .scenario-select {
-      background-color: var(--dourado);
-    }
-    .scenario-select:hover {
-      background-color: var(--dourado-escuro);
-    }
-    .scenario-content {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .scenario-info {
-      flex: 1;
-      min-width: 200px;
-    }
-    .scenario-info p {
-      margin: 5px 0;
-    }
-    .scenario-info strong {
-      color: var(--verde-esmeralda);
-    }
-    .scenario-details {
-      margin-top: 10px;
-      padding: 10px;
-      background-color: var(--fundo-claro);
-      border-radius: 5px;
       font-size: 14px;
     }
-    .scenario-details ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .scenario-details li {
-      margin-bottom: 5px;
-    }
-    /* Estilos para comparação de cenários */
-    .comparison-container {
-      margin-top: 30px;
-      border: 2px solid var(--roxo);
-      border-radius: 8px;
-      padding: 15px;
-      background-color: white;
-    }
-    .comparison-header {
-      color: var(--roxo);
-      margin-top: 0;
-      border-bottom: 1px solid var(--dourado-claro);
-      padding-bottom: 10px;
-      text-align: center;
-    }
-    .comparison-chart-container {
-      height: 400px;
-      margin: 20px 0;
-    }
-    #comparisonTableContainer {
-      overflow-x: auto; /* Habilitar rolagem horizontal */
-    }
-    .comparison-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      min-width: 900px; /* Garantir largura mínima para forçar rolagem se necessário */
-    }
-    .comparison-table th, .comparison-table td {
+    .data-table th, .data-table td {
       border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-      white-space: nowrap; /* Evitar quebra de linha nas células */
+      padding: 8px;
+      text-align: right;
     }
-    .comparison-table th {
-      background-color: var(--roxo-translucido);
-      color: var(--roxo-escuro);
+    .data-table th {
+      background-color: var(--fundo-claro);
+      color: var(--verde-esmeralda);
+      text-align: center;
       position: sticky;
       top: 0;
-      z-index: 1;
     }
-    .comparison-table tr:nth-child(even) {
-      background-color: var(--fundo-claro);
+    .data-table tr:nth-child(even) {
+      background-color: #f9f9f9;
     }
-    .comparison-table .best-value {
-      font-weight: bold;
-      color: var(--verde-esmeralda);
-      background-color: var(--verde-destaque);
+    .data-table tr:hover {
+      background-color: #f1f1f1;
     }
-    .comparison-table .worst-value {
-      font-weight: bold;
-      color: #dc3545;
-      background-color: var(--vermelho-destaque);
-    }
-    .general-analysis {
-      margin-top: 30px;
-      padding: 20px;
-      border: 2px solid var(--roxo);
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .general-analysis h3 {
-      color: var(--roxo);
-      margin-top: 0;
-      border-bottom: 1px solid var(--dourado-claro);
-      padding-bottom: 10px;
-      text-align: center;
-    }
-
-    /* Estilos para a seção de múltiplos objetivos */
-    .objectives-section {
-      background-color: var(--fundo-container);
-      padding: var(--espacamento-padrao);
-      border-radius: var(--borda-arredondada);
-      box-shadow: var(--sombra-padrao);
-      margin-bottom: var(--espacamento-padrao);
-      border: 1px solid var(--cinza-claro);
-    }
-    .objectives-section h3 {
-      color: var(--verde-esmeralda);
-      margin-top: 0;
-      margin-bottom: 15px;
-      border-bottom: 2px solid var(--dourado);
-      padding-bottom: 10px;
-    }
-    .objective-input-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      align-items: flex-end; /* Align items to bottom for button */
-      margin-bottom: 15px;
-    }
-    .objective-input-group > div {
-      flex: 1;
-      min-width: 120px;
-    }
-    .objective-input-group button {
-      flex-basis: 100px; /* Fixed width for button */
-      margin-top: 0; /* Remove default top margin */
-      padding: 12px; /* Match input padding */
-      height: 46px; /* Match input height */
-      font-size: 0.9rem;
-      width: auto;
-    }
-    #objectivesList {
-      margin-top: 15px;
-      max-height: 200px;
-      overflow-y: auto;
-      border: 1px solid var(--cinza-medio);
-      border-radius: var(--borda-arredondada);
-      padding: 10px;
-    }
-    .objective-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid var(--cinza-claro);
-      background-color: var(--fundo-claro);
-      border-radius: 4px;
-      margin-bottom: 5px;
-    }
-    .objective-item:last-child {
-      border-bottom: none;
-    }
-    .objective-item span {
-      flex-grow: 1;
-      margin-right: 10px;
-      font-size: 0.9rem;
-    }
-    .objective-item button {
-      padding: 4px 8px;
-      margin: 0;
-      width: auto;
-      font-size: 0.8rem;
-      background-color: #dc3545;
-      line-height: 1;
-    }
-    .objective-item button:hover {
-      background-color: #c82333;
-    }
-
-    /* Analysis sections */
-    .analysis-section {
-        margin-top: 20px;
-        padding: 15px;
-        border: 1px solid var(--cinza-medio);
-        border-radius: var(--borda-arredondada);
-        background-color: var(--fundo-claro);
-    }
-    .analysis-section h5 {
-        color: var(--verde-esmeralda-escuro);
-        margin-bottom: 10px;
-        font-size: 1.1rem;
-    }
-    .analysis-section .value {
-        font-weight: bold;
-        color: var(--verde-esmeralda);
-        font-size: 1.2rem;
-        margin-bottom: 15px;
-        display: block;
-    }
-    .analysis-chart-container {
-        height: 300px; /* Smaller charts for analysis */
-        margin-top: 15px;
-    }
-    .analysis-table-container {
-        max-height: 300px;
-        overflow-y: auto;
-        margin-top: 15px;
-    }
-
   </style>
 </head>
 <body>
-  <h1>Calculadora Sequencial de Múltiplos Objetivos</h1>
+  <h1>Calculadora de Objetivos</h1>
+  <form id="savingsForm">
+    <label for="goalDescription">Qual é o seu objetivo financeiro e por que ele é importante para você?</label>
+    <textarea id="goalDescription" placeholder="Ex: Comprar um imóvel para ter segurança e estabilidade para minha família, ou fazer uma viagem internacional para conhecer novas culturas..."></textarea>
 
-  <!-- Seção para Adicionar/Gerenciar Objetivos -->
-  <div class="objectives-section">
-    <h3>Seus Objetivos</h3>
-    <div class="objective-input-group">
-      <div>
-        <label for="newObjectiveDescription">Descrição</label>
-        <input type="text" id="newObjectiveDescription" placeholder="Ex: Viagem Europa">
-      </div>
-      <div>
-        <label for="newObjectiveValue">Valor (R$)</label>
-        <input type="text" id="newObjectiveValue" placeholder="R$ 15.000,00" oninput="formatCurrency(this)">
-      </div>
-      <div>
-        <label for="newObjectivePeriod">Prazo (meses)</label>
-        <input type="number" id="newObjectivePeriod" placeholder="24" min="1">
-      </div>
-      <button type="button" onclick="addObjective()">Adicionar</button>
-    </div>
-    <label>Objetivos Adicionados:</label>
-    <div id="objectivesListContainer">
-        <div id="objectivesList">
-            Nenhum objetivo adicionado ainda.
-        </div>
-    </div>
-  </div>
-
-  <!-- Formulário de Parâmetros Financeiros -->
-  <form id="calculatorForm">
-    <h3>Parâmetros Financeiros</h3>
     <div class="row">
       <div>
-        <label for="initialSavings">Valor já Guardado (R$):</label>
-        <input type="text" id="initialSavings" value="R$ 1.000,00" oninput="formatCurrency(this)">
+        <label for="goal">Valor do Objetivo (R$):</label>
+        <input type="text" id="goal" required oninput="formatCurrency(this)">
       </div>
       <div>
-        <label for="monthlyContribution">Quanto você poupa atualmente por mês (R$):</label>
-        <input type="text" id="monthlyContribution" value="R$ 500,00" oninput="formatCurrency(this)">
+        <label for="currentContribution">Quanto você poupa atualmente por mês (R$):</label>
+        <input type="text" id="currentContribution" required oninput="formatCurrency(this)">
       </div>
     </div>
+
     <div class="row">
       <div>
-        <label for="interestRate">Taxa de Juros (%):</label>
-        <input type="text" id="interestRate" value="1,0" oninput="formatPercentage(this)">
+        <label for="period">Prazo (em meses):</label>
+        <input type="number" id="period" required>
       </div>
       <div>
-        <label for="interestRateType">Tipo de Taxa:</label>
-        <select id="interestRateType">
-          <option value="mensal" selected>Mensal</option>
-          <option value="anual">Anual</option>
+        <label for="currentSavings">Valor já Guardado (R$):</label>
+        <input type="text" id="currentSavings" required oninput="formatCurrency(this)">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="rate">Taxa de Juros (%):</label>
+        <input type="text" id="rate" required oninput="formatPercentage(this)">
+      </div>
+      <div>
+        <label for="rateType">Tipo de Taxa:</label>
+        <select id="rateType">
+          <option value="annual">Anual</option>
+          <option value="monthly">Mensal</option>
         </select>
       </div>
     </div>
+
+    <label>Você sabe a alíquota de imposto sobre o rendimento?</label>
     <div class="row">
       <div>
-        <label for="taxRate">Alíquota de Imposto de Renda (% sobre o rendimento):</label>
-        <input type="text" id="taxRate" value="15,0" oninput="formatPercentage(this)">
+        <select id="knowsTax" onchange="toggleTaxInput('tax', '15,00 %')">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
       </div>
       <div>
-        <label for="annualInflation">Inflação Anual Média Esperada (%):</label>
-        <input type="text" id="annualInflation" value="5,0" oninput="formatPercentage(this)">
+        <input type="text" id="tax" placeholder="15,00 %" oninput="formatPercentage(this)">
       </div>
     </div>
-    <button type="button" onclick="calculateSavings()">Calcular Projeção Sequencial</button>
+
+    <label>Você sabe a taxa de inflação dos últimos 12 meses?</label>
+    <div class="row">
+      <div>
+        <select id="knowsInflation" onchange="toggleTaxInput('inflation', '5,00 %')">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" id="inflation" placeholder="5,00 %" oninput="formatPercentage(this)">
+      </div>
+    </div>
+
+    <button type="button" onclick="calculateSavings()">Calcular</button>
   </form>
 
-  <!-- Container para Resultados e Gráficos -->
-  <div id="resultsContainer" style="display: none;">
-    <div class="result">
-      <div id="resultSummary"></div>
-
-      <!-- Gráfico/Tabela da Projeção Principal -->
-      <div class="chart-container" id="projectionChartContainer">
-        <div class="chart-title">Projeção Principal Sequencial</div>
-        <div class="chart-nav">
-          <button onclick="showChart('chartProjection')">Gráfico</button>
-          <button onclick="showTable('tableProjection')">Memória de Cálculo</button>
-        </div>
-        <div class="chart-content">
-          <div class="chart-slide" id="chartProjectionSlide">
-            <canvas id="projectionChart"></canvas>
-          </div>
-          <div class="table-slide" id="tableProjectionSlide" style="display: none;">
-            <div class="table-wrapper">
-              <table class="data-table" id="tableProjection"></table>
-            </div>
-          </div>
-        </div>
+  <div id="result" class="result"></div>
+  
+  <div id="recommendation" class="recommendation" style="display: none;">
+    <h3>Análise Automatizada</h3>
+    <div id="recommendationText"></div>
+  </div>
+  
+  <!-- Botão WhatsApp fora da caixa de análise automatizada -->
+  <a id="whatsappButton" href="#" class="whatsapp-button" onclick="openWhatsAppChat()" style="display: none;">
+    Avançar para análise personalizada
+  </a>
+  
+  <div id="chartUnicoContainer" class="chart-container" style="display: none;">
+    <div class="chart-title">Evolução do Investimento Único</div>
+    <div class="chart-nav">
+      <button onclick="showChartSlide('Unico', 'chart')">Gráfico</button>
+      <button onclick="showChartSlide('Unico', 'table')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartUnicoSlide" class="chart-slide">
+        <canvas id="chartUnico"></canvas>
       </div>
-
-      <!-- Seções para Análises Adicionais -->
-      <div id="analysisResultsContainer">
-        <h4>Análises Adicionais (Cenários Ideais):</h4>
-        <!-- Valor Inicial Necessário -->
-        <div class="analysis-section" id="analysisInitialValueContainer">
-            <h5>1. Valor Inicial Necessário (sem aportes)</h5>
-            <span class="value" id="analysisInitialValue"></span>
-            <div class="chart-nav">
-              <button onclick="showChart('chartInitialValue')">Gráfico</button>
-              <button onclick="showTable('tableInitialValue')">Memória de Cálculo</button>
-            </div>
-            <div class="chart-content">
-              <div class="chart-slide" id="chartInitialValueSlide">
-                <canvas id="chartInitialValue" class="analysis-chart-container"></canvas>
-              </div>
-              <div class="table-slide" id="tableInitialValueSlide" style="display: none;">
-                <div class="analysis-table-container">
-                  <table class="data-table" id="tableInitialValue"></table>
-                </div>
-              </div>
-            </div>
-        </div>
-        <!-- Aporte Mensal Ideal -->
-        <div class="analysis-section" id="analysisContributionContainer">
-            <h5>2. Aporte Mensal Ideal</h5>
-            <span class="value" id="analysisContributionValue"></span>
-             <div class="chart-nav">
-              <button onclick="showChart('chartContribution')">Gráfico</button>
-              <button onclick="showTable('tableContribution')">Memória de Cálculo</button>
-            </div>
-            <div class="chart-content">
-              <div class="chart-slide" id="chartContributionSlide">
-                 <canvas id="chartContribution" class="analysis-chart-container"></canvas>
-              </div>
-              <div class="table-slide" id="tableContributionSlide" style="display: none;">
-                <div class="analysis-table-container">
-                  <table class="data-table" id="tableContribution"></table>
-                </div>
-              </div>
-            </div>
-        </div>
-        <!-- Tempo Necessário -->
-        <div class="analysis-section" id="analysisTimeContainer">
-            <h5>3. Tempo Necessário</h5>
-            <span class="value" id="analysisTimeValue"></span>
-             <div class="chart-nav">
-              <button onclick="showChart('chartTime')">Gráfico</button>
-              <button onclick="showTable('tableTime')">Memória de Cálculo</button>
-            </div>
-            <div class="chart-content">
-              <div class="chart-slide" id="chartTimeSlide">
-                 <canvas id="chartTime" class="analysis-chart-container"></canvas>
-              </div>
-              <div class="table-slide" id="tableTimeSlide" style="display: none;">
-                <div class="analysis-table-container">
-                  <table class="data-table" id="tableTime"></table>
-                </div>
-              </div>
-            </div>
-        </div>
-        <!-- Rentabilidade Anual Ideal -->
-        <div class="analysis-section" id="analysisRateContainer">
-            <h5>4. Rentabilidade Anual Ideal</h5>
-            <span class="value" id="analysisRateValue"></span>
-             <div class="chart-nav">
-              <button onclick="showChart('chartRate')">Gráfico</button>
-              <button onclick="showTable('tableRate')">Memória de Cálculo</button>
-            </div>
-            <div class="chart-content">
-              <div class="chart-slide" id="chartRateSlide">
-                 <canvas id="chartRate" class="analysis-chart-container"></canvas>
-              </div>
-              <div class="table-slide" id="tableRateSlide" style="display: none;">
-                <div class="analysis-table-container">
-                  <table class="data-table" id="tableRate"></table>
-                </div>
-              </div>
-            </div>
-        </div>
+      <div id="tableUnicoSlide" class="table-slide" style="display: none;">
+        <table id="tableUnico" class="data-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Total Investido</th>
+              <th>Juros</th>
+              <th>Total Juros</th>
+              <th>Total Acumulado</th>
+              <th>Imposto</th>
+              <th>Valor Líquido</th>
+              <th>Objetivo Corrigido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
-
     </div>
-
-    <!-- Recomendação -->
-    <div class="recommendation" id="recommendationDiv" style="display: none;">
-      <h3>Recomendação</h3>
-      <p id="recommendationText"></p>
+  </div>
+  
+  <div id="chartIdealContainer" class="chart-container" style="display: none;">
+    <div class="chart-title">Evolução do Plano Ideal</div>
+    <div class="chart-nav">
+      <button onclick="showChartSlide('Ideal', 'chart')">Gráfico</button>
+      <button onclick="showChartSlide('Ideal', 'table')">Memória de Cálculo</button>
     </div>
-
-    <!-- Botões de Ação -->
-    <button id="saveScenarioButton" class="save-scenario-button" onclick="addCurrentScenario()" disabled>Salvar Cenário Atual</button>
-    <a id="whatsappButton" class="whatsapp-button" href="#" target="_blank" style="display: none;">Compartilhar Resumo no WhatsApp</a>
-
+    <div class="chart-content">
+      <div id="chartIdealSlide" class="chart-slide">
+        <canvas id="chartIdeal"></canvas>
+      </div>
+      <div id="tableIdealSlide" class="table-slide" style="display: none;">
+        <table id="tableIdeal" class="data-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Total Investido</th>
+              <th>Juros</th>
+              <th>Total Juros</th>
+              <th>Total Acumulado</th>
+              <th>Imposto</th>
+              <th>Valor Líquido</th>
+              <th>Objetivo Corrigido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div id="chartAtualContainer" class="chart-container" style="display: none;">
+    <div class="chart-title">Evolução da Poupança Atual</div>
+    <div class="chart-nav">
+      <button onclick="showChartSlide('Atual', 'chart')">Gráfico</button>
+      <button onclick="showChartSlide('Atual', 'table')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartAtualSlide" class="chart-slide">
+        <canvas id="chartAtual"></canvas>
+      </div>
+      <div id="tableAtualSlide" class="table-slide" style="display: none;">
+        <table id="tableAtual" class="data-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Total Investido</th>
+              <th>Juros</th>
+              <th>Total Juros</th>
+              <th>Total Acumulado</th>
+              <th>Imposto</th>
+              <th>Valor Líquido</th>
+              <th>Objetivo Corrigido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div id="chartRentabilidadeContainer" class="chart-container" style="display: none;">
+    <div class="chart-title">Evolução da Rentabilidade Necessária</div>
+    <div class="chart-nav">
+      <button onclick="showChartSlide('Rentabilidade', 'chart')">Gráfico</button>
+      <button onclick="showChartSlide('Rentabilidade', 'table')">Memória de Cálculo</button>
+    </div>
+    <div class="chart-content">
+      <div id="chartRentabilidadeSlide" class="chart-slide">
+        <canvas id="chartRentabilidade"></canvas>
+      </div>
+      <div id="tableRentabilidadeSlide" class="table-slide" style="display: none;">
+        <table id="tableRentabilidade" class="data-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Total Investido</th>
+              <th>Juros</th>
+              <th>Total Juros</th>
+              <th>Total Acumulado</th>
+              <th>Imposto</th>
+              <th>Valor Líquido</th>
+              <th>Objetivo Corrigido</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
-  <!-- Container para Cenários Salvos -->
-  <div class="scenarios-container" id="scenariosContainer" style="display: none;">
-    <div class="scenarios-header">
-      <h3>Cenários Salvos</h3>
-      <button id="analyzeScenarioButton" class="analyze-scenario-button" onclick="analyzeScenarios()" disabled style="width: auto; margin: 0; font-size: 0.9rem;">Comparar Cenários Selecionados</button>
-    </div>
-    <div id="savedScenariosList">Nenhum cenário salvo ainda.</div>
-  </div>
-
-  <!-- Container para Comparação de Cenários -->
-  <div class="comparison-container" id="comparisonContainer" style="display: none;">
-    <h3 class="comparison-header">Comparação de Cenários</h3>
-    <div class="comparison-chart-container">
-      <canvas id="comparisonChart"></canvas>
-    </div>
-    <div id="comparisonTableContainer">
-        <table class="comparison-table" id="comparisonTable"></table>
-    </div>
-    <div class="general-analysis" id="generalAnalysisContainer">
-        <h3>Análise Geral da Comparação</h3>
-        <div id="generalAnalysisContent"></div>
-    </div>
-    <button class="new-scenario-button" onclick="startNewScenario()">Iniciar Novo Cenário</button>
-  </div>
-
-<script>
-    // --- Variáveis Globais --- //
-    let objectives = []; // Array para armazenar os objetos de objetivo { description, value, period }
-    let scenarios = []; // Array para armazenar cenários salvos
-    let currentCalculationData = null; // Armazena os dados do último cálculo
-    let chartInstances = {}; // Armazena instâncias dos gráficos Chart.js
-
-    // --- Funções Auxiliares de Formatação e Parsing --- //
+  <script>
+    // Variáveis globais para armazenar os resultados e textos
+    let goalDescriptionText = '';
+    let resultText = '';
+    
     function formatCurrency(input) {
       let value = input.value.replace(/\D/g, '');
-      if (!value) {
-        input.value = '';
-        return;
-      }
       value = (parseFloat(value) / 100).toFixed(2);
-      input.value = "R$ " + value.replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-    }
-
-    function parseCurrency(value) {
-      if (!value) return 0;
-      return parseFloat(value.replace(/R\$\s?/, '').replace(/\./g, '').replace(',', '.')) || 0;
+      input.value = 'R$ ' + value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.').replace(/\.(\d{2})$/, ',$1');
     }
 
     function formatPercentage(input) {
-        let value = input.value.replace(/[^\d,.]/g, '').replace(',', '.');
-        // Permitir apenas um ponto decimal
-        const parts = value.split('.');
-        if (parts.length > 2) {
-            value = parts[0] + '.' + parts.slice(1).join('');
-        }
-        // Limitar a duas casas decimais após o ponto
-        if (parts[1] && parts[1].length > 2) {
-            value = parts[0] + '.' + parts[1].substring(0, 2);
-        }
-        input.value = value.replace('.', ','); // Exibir com vírgula
+      let value = input.value.replace(/\D/g, '');
+      value = (parseFloat(value) / 100).toFixed(2);
+      input.value = value.replace('.', ',') + ' %';
+    }
+
+    function toggleTaxInput(id, defaultValue) {
+      const select = document.getElementById(id === 'tax' ? 'knowsTax' : 'knowsInflation');
+      const input = document.getElementById(id);
+      input.disabled = select.value !== 'yes';
+      input.value = select.value === 'yes' ? '' : defaultValue;
+    }
+
+    function parseCurrency(value) {
+      return parseFloat(value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
     }
 
     function parsePercentage(value) {
-        if (!value) return 0;
-        return parseFloat(value.replace(',', '.')) / 100 || 0;
+      return parseFloat(value.replace('%', '').replace(',', '.')) / 100 || 0;
     }
 
-    function formatCurrencyValue(value) {
-        if (value === null || value === undefined || isNaN(value)) return "N/A";
-        if (value === Infinity) return "Infinito";
-        return "R$ " + value.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    // Função para formatar valores monetários com sempre duas casas decimais
+    function formatMoney(value) {
+      return value.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
 
-    function formatPercentageValue(value) {
-        if (value === null || value === undefined || isNaN(value)) return "N/A";
-        if (value === Infinity) return "Infinito";
-        return (value * 100).toFixed(2).replace('.', ',') + "%";
-    }
-
-    // --- Funções de Gerenciamento de Objetivos --- //
-    function addObjective() {
-      const descriptionInput = document.getElementById('newObjectiveDescription');
-      const valueInput = document.getElementById('newObjectiveValue');
-      const periodInput = document.getElementById('newObjectivePeriod');
-
-      const description = descriptionInput.value.trim();
-      const value = parseCurrency(valueInput.value);
-      const period = parseInt(periodInput.value);
-
-      if (!description) {
-        alert("Por favor, insira uma descrição para o objetivo.");
-        return;
+    // Função para alternar entre visualização de gráfico e tabela
+    function showChartSlide(chartId, slideType) {
+      const chartSlide = document.getElementById(`chart${chartId}Slide`);
+      const tableSlide = document.getElementById(`table${chartId}Slide`);
+      
+      if (slideType === 'chart') {
+        chartSlide.style.display = 'block';
+        tableSlide.style.display = 'none';
+      } else {
+        chartSlide.style.display = 'none';
+        tableSlide.style.display = 'block';
       }
-      if (isNaN(value) || value <= 0) {
-        alert("Por favor, insira um valor válido (maior que zero) para o objetivo.");
-        return;
-      }
-      if (isNaN(period) || period <= 0) {
-        alert("Por favor, insira um prazo válido em meses (maior que zero) para o objetivo.");
-        return;
-      }
-
-      objectives.push({ description, value, period });
-      renderObjectivesList();
-
-      // Limpar campos
-      descriptionInput.value = '';
-      valueInput.value = '';
-      periodInput.value = '';
     }
 
-    function removeObjective(index) {
-      objectives.splice(index, 1);
-      renderObjectivesList();
+    // Função para abrir o WhatsApp com a mensagem personalizada
+    function openWhatsAppChat() {
+      // Obter o texto do objetivo e da caixa de resposta
+      const goalText = goalDescriptionText;
+      const resultBoxText = resultText;
+      
+     // Criar a mensagem para o WhatsApp
+const message = `Oi Hugo, queria tua ajuda com o meu objetivo:
+${goalText}
+
+Segue o resumo:
+${resultBoxText}`;
+      
+      // Codificar a mensagem para URL
+      const encodedMessage = encodeURIComponent(message);
+      
+      // Criar o link do WhatsApp usando a API correta
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=5581994297920&text=${encodedMessage}`;
+      
+      // Abrir o link em uma nova janela
+      window.open(whatsappUrl, '_blank');
     }
 
-    function renderObjectivesList() {
-      const listDiv = document.getElementById('objectivesList');
-      if (objectives.length === 0) {
-        listDiv.innerHTML = 'Nenhum objetivo adicionado ainda.';
-        return;
+    // Função para preencher a tabela de dados
+    function fillDataTable(tableId, data, goal, inflation) {
+      const table = document.getElementById(tableId);
+      const tbody = table.querySelector('tbody');
+      tbody.innerHTML = '';
+      
+      // Começar do mês 1 (não do mês 0)
+      for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        const tr = document.createElement('tr');
+        
+        // Mês
+        const tdMes = document.createElement('td');
+        tdMes.textContent = row.month;
+        tr.appendChild(tdMes);
+        
+        // Total Investido
+        const tdInvestido = document.createElement('td');
+        tdInvestido.textContent = `R$ ${formatMoney(row.totalInvestido)}`;
+        tr.appendChild(tdInvestido);
+        
+        // Juros
+        const tdJuros = document.createElement('td');
+        tdJuros.textContent = `R$ ${formatMoney(row.juros)}`;
+        tr.appendChild(tdJuros);
+        
+        // Total Juros
+        const tdTotalJuros = document.createElement('td');
+        tdTotalJuros.textContent = `R$ ${formatMoney(row.totalJuros)}`;
+        tr.appendChild(tdTotalJuros);
+        
+        // Total Acumulado
+        const tdAcumulado = document.createElement('td');
+        tdAcumulado.textContent = `R$ ${formatMoney(row.totalAcumulado)}`;
+        tr.appendChild(tdAcumulado);
+        
+        // Imposto
+        const tdImposto = document.createElement('td');
+        tdImposto.textContent = `R$ ${formatMoney(row.imposto)}`;
+        tr.appendChild(tdImposto);
+        
+        // Valor Líquido
+        const tdLiquido = document.createElement('td');
+        tdLiquido.textContent = `R$ ${formatMoney(row.valorLiquido)}`;
+        tr.appendChild(tdLiquido);
+        
+        // Objetivo Corrigido
+        const tdObjetivo = document.createElement('td');
+        tdObjetivo.textContent = `R$ ${formatMoney(row.objetivoCorrigido)}`;
+        tr.appendChild(tdObjetivo);
+        
+        tbody.appendChild(tr);
       }
+    }
 
-      listDiv.innerHTML = ''; // Limpar lista
-      // Ordenar para exibição (opcional, mas pode ser útil)
-      const sortedForDisplay = [...objectives].sort((a, b) => a.period - b.period);
-
-      sortedForDisplay.forEach((obj, index) => {
-        // Encontrar o índice original para a função de remoção
-        const originalIndex = objectives.findIndex(o => o === obj);
-        const item = document.createElement('div');
-        item.className = 'objective-item';
-        item.innerHTML = `
-          <span><strong>${obj.description}</strong> - ${formatCurrencyValue(obj.value)} em ${obj.period} meses</span>
-          <button type="button" onclick="removeObjective(${originalIndex})">Excluir</button>
-        `;
-        listDiv.appendChild(item);
+    function drawChart(ctx, bruto, liquido, investido, objetivoCorrigido, corBruto, corLiquido, corInvestido, corObjetivo) {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: bruto.map((_, i) => i + 1), // Começar do mês 1
+          datasets: [
+            {
+              label: 'Valor Investido',
+              data: investido,
+              borderColor: corInvestido,
+              pointRadius: 0,
+              fill: false,
+              tension: 0.4
+            },
+            {
+              label: 'Valor Líquido',
+              data: liquido,
+              borderColor: corLiquido,
+              pointRadius: 0,
+              fill: '-1',
+              backgroundColor: 'rgba(0, 0, 255, 0.1)',
+              tension: 0.4
+            },
+            {
+              label: 'Valor Bruto',
+              data: bruto,
+              borderColor: corBruto,
+              pointRadius: 0,
+              fill: '-1',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              tension: 0.4
+            },
+            {
+              label: 'Objetivo Corrigido',
+              data: objetivoCorrigido,
+              borderColor: corObjetivo, // Cor para a linha do objetivo
+              borderDash: [5, 5], // Linha tracejada
+              pointRadius: 0,
+              fill: false,
+              tension: 0.1 // Linha mais reta
+            }
+          ]
+        },
+        options: {
+          elements: { point: { radius: 0 } },
+          scales: {
+            x: { 
+              grid: { drawTicks: false, drawBorder: false },
+              title: {
+                display: true,
+                text: 'Meses'
+              }
+            },
+            y: { 
+              grid: { drawTicks: false, drawBorder: false },
+              title: {
+                display: true,
+                text: 'Valor (R$)'
+              }
+            }
+          }
+        }
       });
     }
 
-    // --- Funções de Cálculo Principal e Auxiliares (Refatoradas para Sequencial) ---
-
-    /**
-     * Calcula a projeção financeira para um único segmento de tempo.
-     * @param {number} initialGrossValue Valor bruto inicial para o segmento.
-     * @param {number} monthlyContribution Aporte mensal constante.
-     * @param {number} monthlyRate Taxa de juros mensal.
-     * @param {number} duration Meses de duração do segmento.
-     * @param {number} tax Alíquota de imposto sobre o rendimento total GLOBAL.
-     * @param {number} annualInflation Taxa de inflação anual (usada para corrigir objetivos, não impacta cálculo bruto/líquido aqui diretamente).
-     * @param {number} startMonthOffset Mês inicial global para este segmento (para numeração correta).
-     * @param {number} initialGlobalTotalInvested Valor total já investido no início do segmento (para cálculo correto do imposto).
-     * @param {number} initialGlobalTotalJuros Juros brutos acumulados até o início do segmento (para cálculo correto do imposto).
-     * @returns {object} Objeto com { finalGrossValue, finalNetValue, finalGlobalTotalInvested, finalGlobalTotalJuros, valoresMensaisSegment }
-     */
-    function calculateSegmentSimulation(initialGrossValue, monthlyContribution, monthlyRate, duration, tax, annualInflation, startMonthOffset, initialGlobalTotalInvested, initialGlobalTotalJuros) {
-      let currentGrossValue = initialGrossValue;
-      let segmentTotalInvested = 0; // Aportes apenas neste segmento
-      let valoresMensaisSegment = [];
-      // O total investido e juros GLOBAIS precisam ser rastreados para o imposto
-      let globalTotalInvested = initialGlobalTotalInvested;
-      let globalTotalJuros = initialGlobalTotalJuros;
-
-      // Não adiciona mês 0 aqui, pois ele vem do segmento anterior ou é o inicial global
-
-      for (let i = 1; i <= duration; i++) {
-        const currentGlobalMonth = startMonthOffset + i;
-
-        const jurosDoMes = currentGrossValue * monthlyRate;
-        globalTotalJuros += jurosDoMes;
-
-        currentGrossValue += jurosDoMes + monthlyContribution;
-        segmentTotalInvested += monthlyContribution;
-        globalTotalInvested += monthlyContribution;
-
-        // Imposto calculado sobre o ganho de capital GLOBAL (Juros Totais Globais)
-        const impostoTotalGlobal = globalTotalJuros * tax;
-        const valorLiquido = currentGrossValue - impostoTotalGlobal;
-
-        valoresMensaisSegment.push({
-          month: currentGlobalMonth,
+    // Função para calcular juros compostos com aportes mensais
+    function calculateCompoundInterest(initialValue, monthlyContribution, monthlyRate, periods, tax = 0, goal = 0, inflation = 0) {
+      let totalValue = initialValue;
+      let totalInvested = initialValue;
+      let totalJuros = 0;
+      let objetivoCorrigido = goal;
+      
+      const valoresMensais = [];
+      
+      // Mês 0 (inicial) - não será exibido na tabela, mas é usado para cálculos
+      valoresMensais.push({
+        month: 0,
+        juros: 0,
+        totalInvestido: totalInvested,
+        totalJuros: 0,
+        imposto: 0,
+        valorLiquido: totalValue,
+        totalAcumulado: totalValue,
+        objetivoCorrigido: objetivoCorrigido
+      });
+      
+      for (let i = 1; i <= periods; i++) {
+        // Calcular juros sobre o valor total
+        const jurosDoMes = totalValue * monthlyRate;
+        totalJuros += jurosDoMes;
+        
+        // Adicionar aporte mensal
+        totalInvested += monthlyContribution;
+        
+        // Atualizar valor total: valor anterior + juros + aporte
+        totalValue = totalValue + jurosDoMes + monthlyContribution;
+        
+        // Calcular imposto sobre o total de juros
+        const impostoTotal = totalJuros * tax;
+        
+        // Calcular valor líquido: total acumulado - imposto
+        const valorLiquido = totalValue - impostoTotal;
+        
+        // Atualizar objetivo corrigido pela inflação a cada 12 meses
+        if (i % 12 === 0) {
+          objetivoCorrigido = objetivoCorrigido * (1 + inflation);
+        }
+        
+        // Registrar valores mensais para gráfico e análise
+        valoresMensais.push({
+          month: i,
           juros: jurosDoMes,
-          totalInvestido: globalTotalInvested, // Mostrar o total global investido
-          totalJuros: globalTotalJuros, // Mostrar o total global de juros
-          imposto: impostoTotalGlobal, // Mostrar o imposto global
+          totalInvestido: totalInvested,
+          totalJuros: totalJuros,
+          imposto: impostoTotal,
           valorLiquido: valorLiquido,
-          totalAcumulado: currentGrossValue // Valor bruto acumulado
+          totalAcumulado: totalValue,
+          objetivoCorrigido: objetivoCorrigido
         });
       }
-
-      const finalNetValue = valoresMensaisSegment.length > 0 ? valoresMensaisSegment[valoresMensaisSegment.length - 1].valorLiquido : initialGrossValue;
-
+      
       return {
-        finalGrossValue: currentGrossValue, // Valor bruto ao final do segmento
-        finalNetValue: finalNetValue, // Valor líquido ao final do segmento
-        finalGlobalTotalInvested: globalTotalInvested,
-        finalGlobalTotalJuros: globalTotalJuros,
-        valoresMensaisSegment: valoresMensaisSegment
+        finalValue: totalValue,
+        totalInvested: totalInvested,
+        totalJuros: totalJuros,
+        totalImposto: totalJuros * tax,
+        valoresMensais: valoresMensais
       };
     }
 
-    // Função auxiliar para verificar se todos os objetivos são atingidos em uma simulação SEQUENCIAL
-    function checkAllObjectivesMetSequential(objectives, fullSimulationData, annualInflation) {
-        if (!objectives || objectives.length === 0 || !fullSimulationData || fullSimulationData.length === 0) return false;
-        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-
-        // Criar um mapa para acesso rápido aos dados por mês
-        const simulationMap = new Map();
-        fullSimulationData.forEach(data => simulationMap.set(data.month, data));
-
-        for (const obj of objectives) {
-            const targetMonth = obj.period;
-            const monthData = simulationMap.get(targetMonth);
-
-            if (!monthData) {
-                // Simulação não cobriu o prazo deste objetivo
-                // console.log(`Simulação sequencial curta para ${obj.description} (Prazo: ${targetMonth})`);
-                return false;
-            }
-
-            const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, targetMonth);
-            const netValueAtTargetMonth = monthData.valorLiquido;
-
-            // console.log(`SEQ Check - Obj: ${obj.description}, Mês: ${targetMonth}, Líquido: ${netValueAtTargetMonth}, Obj Corrigido: ${inflatedObjectiveValue}`);
-            if (netValueAtTargetMonth < inflatedObjectiveValue) {
-                // Este objetivo não foi atingido no seu prazo
-                return false;
-            }
+    // Função para calcular a taxa anual necessária para atingir o objetivo no prazo desejado
+    function calculateRequiredRate(goal, currentSavings, monthlyContribution, period, tax, inflation) {
+      // Ajustar o objetivo pela inflação
+      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
+      
+      // Busca binária para encontrar a taxa mensal necessária
+      let lowRate = 0;
+      let highRate = 1; // 100% ao mês como limite superior inicial
+      let requiredMonthlyRate = 0;
+      let iterations = 0;
+      let result;
+      
+      while (iterations < 100) { // Limite de iterações para evitar loop infinito
+        requiredMonthlyRate = (lowRate + highRate) / 2;
+        result = calculateCompoundInterest(currentSavings, monthlyContribution, requiredMonthlyRate, period, tax, goal, inflation);
+        
+        // Verificar se o valor líquido final está próximo o suficiente do objetivo
+        const valorLiquidoFinal = result.valoresMensais[period].valorLiquido;
+        const objetivoFinal = result.valoresMensais[period].objetivoCorrigido;
+        
+        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) {
+          break;
         }
-        // Se chegou aqui, todos os objetivos foram atingidos em seus respectivos prazos na sequência
-        return true;
-    }
-
-    // --- Funções de Cálculo Adicionais (Refatoradas para Sequencial) --- //
-
-    // 1. Calcular Valor Inicial Necessário (sem aportes) - Retorna { value: number | Infinity, simulation: object | null }
-    function calculateRequiredInitialValue(objectives, monthlyRate, tax, annualInflation) {
-        if (!objectives || objectives.length === 0) return { value: 0, simulation: null };
-
-        // Ordenar objetivos por prazo
-        const sortedObjectives = [...objectives].sort((a, b) => a.period - b.period);
-        const maxPeriod = sortedObjectives[sortedObjectives.length - 1].period;
-        if (maxPeriod <= 0) return { value: 0, simulation: null };
-
-        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-
-        // Função interna para rodar a simulação sequencial completa com um dado valor inicial
-        const runFullSequentialSimulation = (startValue) => {
-            let fullSimulationData = [];
-            let currentSegmentStartValue = startValue;
-            let lastMonth = 0;
-            let globalTotalInvested = startValue; // Começa com o valor inicial
-            let globalTotalJuros = 0;
-
-            // Adicionar estado inicial (mês 0)
-            fullSimulationData.push({
-                month: 0, juros: 0, totalInvestido: globalTotalInvested,
-                totalJuros: 0, imposto: 0, valorLiquido: startValue,
-                totalAcumulado: startValue
-            });
-
-            for (const obj of sortedObjectives) {
-                const segmentDuration = obj.period - lastMonth;
-                if (segmentDuration < 0) {
-                    console.error("Erro na lógica de segmentos: duração negativa.");
-                    return null; // Erro na lógica
-                }
-                if (segmentDuration === 0) continue; // Pula se o prazo for o mesmo do anterior
-
-                const segmentResult = calculateSegmentSimulation(
-                    currentSegmentStartValue,
-                    0, // Aporte zero nesta análise
-                    monthlyRate,
-                    segmentDuration,
-                    tax,
-                    annualInflation,
-                    lastMonth,
-                    globalTotalInvested,
-                    globalTotalJuros
-                );
-
-                fullSimulationData = fullSimulationData.concat(segmentResult.valoresMensaisSegment);
-                currentSegmentStartValue = segmentResult.finalNetValue; // Próximo segmento começa com o valor LÍQUIDO
-                lastMonth = obj.period;
-                globalTotalInvested = segmentResult.finalGlobalTotalInvested;
-                globalTotalJuros = segmentResult.finalGlobalTotalJuros;
-            }
-            return fullSimulationData;
-        };
-
-        // --- Lógica de Busca Binária --- //
-        let low = 0;
-        // Estimativa inicial alta: soma dos valores corrigidos dos objetivos
-        let high = sortedObjectives.reduce((sum, obj) => sum + obj.value * Math.pow(1 + monthlyInflation, obj.period), 0) * 1.5;
-        if (high < 100) high = 100; // Mínimo para evitar problemas
-
-        let requiredInitialValue = Infinity;
-        let finalSimulationData = null;
-        const maxIterations = 100;
-        let iterations = 0;
-
-        // Caso especial: taxa zero ou negativa (simplificado - pode precisar de ajuste fino)
-        if (monthlyRate <= 0) {
-            let maxRequired = 0;
-            for (const obj of sortedObjectives) {
-                 const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, obj.period);
-                 // Com taxa <= 0 e sem aportes, o valor só diminui ou fica igual
-                 // Precisa começar com o maior valor corrigido necessário
-                 maxRequired = Math.max(maxRequired, inflatedObjectiveValue);
-            }
-            const simulation = runFullSequentialSimulation(maxRequired);
-             if (simulation && checkAllObjectivesMetSequential(sortedObjectives, simulation, annualInflation)) {
-                 return { value: maxRequired, simulation: { valoresMensais: simulation } };
-             } else {
-                 return { value: Infinity, simulation: null };
-             }
-        }
-
-        while (iterations < maxIterations && (high - low) > 0.01) {
-            const mid = low + (high - low) / 2;
-            if (mid === low || mid === high) break;
-
-            const currentSimData = runFullSequentialSimulation(mid);
-
-            if (currentSimData && checkAllObjectivesMetSequential(sortedObjectives, currentSimData, annualInflation)) {
-                requiredInitialValue = mid;
-                finalSimulationData = currentSimData; // Guarda a simulação que funcionou
-                high = mid;
-            } else {
-                low = mid;
-            }
-            iterations++;
-        }
-
-        if (requiredInitialValue === Infinity) {
-            // Tenta com o limite superior inicial como último recurso
-            const highSimData = runFullSequentialSimulation(high);
-             if (highSimData && checkAllObjectivesMetSequential(sortedObjectives, highSimData, annualInflation)) {
-                 return { value: high, simulation: { valoresMensais: highSimData } };
-             }
-            return { value: Infinity, simulation: null };
+        
+        // Ajusta os limites da busca
+        if (valorLiquidoFinal > objetivoFinal) {
+          highRate = requiredMonthlyRate;
         } else {
-            const finalValue = requiredInitialValue < 0.01 ? 0 : requiredInitialValue;
-            // Se o valor final for 0, recalcular a simulação (ou usar a guardada se já for 0)
-            if (finalValue === 0 && requiredInitialValue >= 0.01) {
-                 finalSimulationData = runFullSequentialSimulation(0);
-            }
-            // Garante que a simulação retornada é a correta para o valor final
-            if (!finalSimulationData || Math.abs(finalSimulationData[0].totalAcumulado - finalValue) > 0.01) {
-                 finalSimulationData = runFullSequentialSimulation(finalValue);
-            }
-            return { value: finalValue, simulation: { valoresMensais: finalSimulationData } };
+          lowRate = requiredMonthlyRate;
         }
+        
+        iterations++;
+      }
+      
+      // Converter taxa mensal para anual: (1 + taxa_mensal)^12 - 1
+      const requiredAnnualRate = Math.pow(1 + requiredMonthlyRate, 12) - 1;
+      
+      return {
+        monthlyRate: requiredMonthlyRate,
+        annualRate: requiredAnnualRate,
+        finalValue: result.finalValue,
+        finalGoal: inflatedGoal,
+        valoresMensais: result.valoresMensais
+      };
     }
 
-    // 2. Calcular Aporte Mensal Ideal Constante - Retorna { value: number | Infinity, simulation: object | null }
-    function calculateIdealMonthlyContribution(objectives, initialSavings, monthlyRate, tax, annualInflation) {
-        if (!objectives || objectives.length === 0) return { value: 0, simulation: null };
-
-        // Ordenar objetivos por prazo
-        const sortedObjectives = [...objectives].sort((a, b) => a.period - b.period);
-        const maxPeriod = sortedObjectives[sortedObjectives.length - 1].period;
-        if (maxPeriod <= 0) return { value: 0, simulation: null };
-
-        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-
-        // Função interna para rodar a simulação sequencial completa com um dado aporte
-        const runFullSequentialSimulationWithContribution = (contribution) => {
-            let fullSimulationData = [];
-            let currentSegmentStartValue = initialSavings;
-            let lastMonth = 0;
-            let globalTotalInvested = initialSavings;
-            let globalTotalJuros = 0;
-
-            // Adicionar estado inicial (mês 0)
-            fullSimulationData.push({
-                month: 0, juros: 0, totalInvestido: globalTotalInvested,
-                totalJuros: 0, imposto: 0, valorLiquido: initialSavings,
-                totalAcumulado: initialSavings
-            });
-
-            for (const obj of sortedObjectives) {
-                const segmentDuration = obj.period - lastMonth;
-                if (segmentDuration < 0) return null; // Erro
-                if (segmentDuration === 0) continue;
-
-                const segmentResult = calculateSegmentSimulation(
-                    currentSegmentStartValue,
-                    contribution, // Usar o aporte testado
-                    monthlyRate,
-                    segmentDuration,
-                    tax,
-                    annualInflation,
-                    lastMonth,
-                    globalTotalInvested,
-                    globalTotalJuros
-                );
-
-                fullSimulationData = fullSimulationData.concat(segmentResult.valoresMensaisSegment);
-                currentSegmentStartValue = segmentResult.finalNetValue;
-                lastMonth = obj.period;
-                globalTotalInvested = segmentResult.finalGlobalTotalInvested;
-                globalTotalJuros = segmentResult.finalGlobalTotalJuros;
-            }
-            return fullSimulationData;
-        };
-
-        // --- Lógica de Busca Binária --- //
-        let low = 0;
-        // Estimativa inicial alta (pode ser ajustada)
-        let high = 100000; // Um valor alto inicial para o aporte
-        let initialHighEstimateSim = runFullSequentialSimulationWithContribution(high);
-        // Se a estimativa alta não for suficiente, já retorna impossível
-        if (!initialHighEstimateSim || !checkAllObjectivesMetSequential(sortedObjectives, initialHighEstimateSim, annualInflation)) {
-             // Tentar aumentar o high?
-             high *= 5;
-             initialHighEstimateSim = runFullSequentialSimulationWithContribution(high);
-             if (!initialHighEstimateSim || !checkAllObjectivesMetSequential(sortedObjectives, initialHighEstimateSim, annualInflation)) {
-                console.warn("Não foi possível encontrar um aporte mensal suficiente mesmo com valor alto inicial.");
-                return { value: Infinity, simulation: null };
-             }
-        }
-
-        let idealContribution = Infinity;
-        let finalSimulationData = null;
-        const maxIterations = 100;
-        let iterations = 0;
-
-        // Caso base: verificar se já atinge com 0 aporte
-        const zeroContributionSimData = runFullSequentialSimulationWithContribution(0);
-        if (zeroContributionSimData && checkAllObjectivesMetSequential(sortedObjectives, zeroContributionSimData, annualInflation)) {
-            return { value: 0, simulation: { valoresMensais: zeroContributionSimData } }; // Nenhum aporte necessário
-        }
-
-        while (iterations < maxIterations && (high - low) > 0.01) {
-            const mid = low + (high - low) / 2;
-            if (mid === low || mid === high) break;
-
-            const currentSimData = runFullSequentialSimulationWithContribution(mid);
-
-            if (currentSimData && checkAllObjectivesMetSequential(sortedObjectives, currentSimData, annualInflation)) {
-                idealContribution = mid;
-                finalSimulationData = currentSimData; // Guarda a simulação que funcionou
-                high = mid;
-            } else {
-                low = mid;
-            }
-            iterations++;
-        }
-
-        if (idealContribution === Infinity) {
-            // Se a busca não convergiu, mas o high inicial funcionou, retorna o high
-            if (initialHighEstimateSim && checkAllObjectivesMetSequential(sortedObjectives, initialHighEstimateSim, annualInflation)) {
-                 return { value: high, simulation: { valoresMensais: initialHighEstimateSim } };
-            }
-            console.warn("Não foi possível encontrar um aporte mensal suficiente dentro dos limites/iterações.");
-            return { value: Infinity, simulation: null };
-        } else {
-            const finalValue = idealContribution < 0.01 ? 0 : idealContribution;
-            // Se o valor final for 0, a simulação correta é a de aporte 0
-            if (finalValue === 0 && idealContribution >= 0.01) {
-                 finalSimulationData = zeroContributionSimData;
-            }
-             // Garante que a simulação retornada é a correta para o valor final
-            if (!finalSimulationData || (finalSimulationData.length > 1 && Math.abs(finalSimulationData[1]?.totalInvestido - (initialSavings + finalValue)) > 0.01)) { // Verifica o aporte no primeiro mês se houver mês 1
-                 finalSimulationData = runFullSequentialSimulationWithContribution(finalValue);
-            }
-            return { value: finalValue, simulation: { valoresMensais: finalSimulationData } };
-        }
-    }
-
-    // 3. Calcular Tempo Necessário para Atingir Objetivos - Retorna { value: number | Infinity, simulation: object | null }
-    function calculateRequiredTime(objectives, initialSavings, monthlyContribution, monthlyRate, tax, annualInflation) {
-        if (!objectives || objectives.length === 0) return { value: 0, simulation: null };
-
-        // Ordenar objetivos por prazo
-        const sortedObjectives = [...objectives].sort((a, b) => a.period - b.period);
-        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-        const maxSimulationMonths = 1200; // Limite de 100 anos
-
-        let fullSimulationData = [];
-        let currentSegmentStartValue = initialSavings;
-        let lastMonth = 0;
-        let globalTotalInvested = initialSavings;
-        let globalTotalJuros = 0;
-        let finalMonth = Infinity;
-
-        // Adicionar estado inicial (mês 0)
-        fullSimulationData.push({
-            month: 0, juros: 0, totalInvestido: globalTotalInvested,
-            totalJuros: 0, imposto: 0, valorLiquido: initialSavings,
-            totalAcumulado: initialSavings
-        });
-
-        // Simular segmento por segmento até o prazo do último objetivo ORIGINAL
-        const originalMaxPeriod = sortedObjectives[sortedObjectives.length - 1].period;
-        let simulationReachedOriginalMaxPeriod = false;
-
-        for (const obj of sortedObjectives) {
-            const segmentDuration = obj.period - lastMonth;
-            if (segmentDuration < 0) {
-                console.error("Erro na lógica de segmentos: duração negativa.");
-                return { value: Infinity, simulation: { valoresMensais: fullSimulationData } }; // Retorna o que simulou até agora
-            }
-            if (segmentDuration === 0) continue;
-
-            const segmentResult = calculateSegmentSimulation(
-                currentSegmentStartValue,
-                monthlyContribution,
-                monthlyRate,
-                segmentDuration,
-                tax,
-                annualInflation,
-                lastMonth,
-                globalTotalInvested,
-                globalTotalJuros
-            );
-
-            fullSimulationData = fullSimulationData.concat(segmentResult.valoresMensaisSegment);
-            currentSegmentStartValue = segmentResult.finalNetValue; // Próximo segmento começa com o valor LÍQUIDO
-            lastMonth = obj.period;
-            globalTotalInvested = segmentResult.finalGlobalTotalInvested;
-            globalTotalJuros = segmentResult.finalGlobalTotalJuros;
-        }
-        simulationReachedOriginalMaxPeriod = true;
-
-        // Verificar se todos os objetivos foram atingidos ATÉ o prazo do último
-        if (checkAllObjectivesMetSequential(sortedObjectives, fullSimulationData, annualInflation)) {
-            // Encontrar o mês exato em que o ÚLTIMO objetivo foi atingido
-            const lastObjective = sortedObjectives[sortedObjectives.length - 1];
-            let monthLastMet = Infinity;
-
-            // Procurar a partir do mês 1 até o prazo do último objetivo
-            for (let m = 1; m <= lastObjective.period; m++) {
-                 const monthData = fullSimulationData.find(d => d.month === m);
-                 if (monthData) {
-                     // Verificar se TODOS os objetivos com prazo <= m foram atingidos neste mês
-                     const objectivesDueByMonthM = sortedObjectives.filter(o => o.period <= m);
-                     if (checkAllObjectivesMetSequential(objectivesDueByMonthM, fullSimulationData.slice(0, m + 1), annualInflation)) {
-                         // Se este é o último objetivo, encontramos o mês
-                         if (objectivesDueByMonthM.length === sortedObjectives.length) {
-                            monthLastMet = m;
-                            break; // Encontrou o primeiro mês onde o último (e todos anteriores) foi atingido
-                         }
-                     }
-                 }
-            }
-
-             // Se encontrou o mês, retorna
-             if (monthLastMet !== Infinity) {
-                 return { value: monthLastMet, simulation: { valoresMensais: fullSimulationData.slice(0, monthLastMet + 1) } };
-             }
-             // Se checkAllObjectivesMetSequential deu true, mas não achou o mês exato (estranho), retorna o prazo do último
-             console.warn("Inconsistência ao encontrar mês exato de conclusão do último objetivo, retornando prazo final original.");
-             return { value: originalMaxPeriod, simulation: { valoresMensais: fullSimulationData } };
-        }
-
-        // Se não atingiu todos até o prazo final original, continuar simulando mês a mês
-        let currentMonth = lastMonth;
-        let currentGrossValue = fullSimulationData.length > 0 ? fullSimulationData[fullSimulationData.length - 1].totalAcumulado : initialSavings; // Continuar do último valor bruto
-
-        while (currentMonth < maxSimulationMonths) {
-            currentMonth++;
-
-            const jurosDoMes = currentGrossValue * monthlyRate;
-            globalTotalJuros += jurosDoMes;
-            currentGrossValue += jurosDoMes + monthlyContribution;
-            globalTotalInvested += monthlyContribution;
-
-            const impostoTotalGlobal = globalTotalJuros * tax;
-            const valorLiquido = currentGrossValue - impostoTotalGlobal;
-
-            fullSimulationData.push({
-                month: currentMonth,
-                juros: jurosDoMes,
-                totalInvestido: globalTotalInvested,
-                totalJuros: globalTotalJuros,
-                imposto: impostoTotalGlobal,
-                valorLiquido: valorLiquido,
-                totalAcumulado: currentGrossValue
-            });
-
-            // Verificar se TODOS os objetivos foram atingidos neste mês
-            if (checkAllObjectivesMetSequential(sortedObjectives, fullSimulationData, annualInflation)) {
-                finalMonth = currentMonth;
-                break; // Todos atingidos!
-            }
-        }
-
-        if (finalMonth === Infinity) {
-            // Não atingiu dentro do limite
-            return { value: Infinity, simulation: { valoresMensais: fullSimulationData } };
-        } else {
-            // Atingiu após o prazo original do último
-            return { value: finalMonth, simulation: { valoresMensais: fullSimulationData.slice(0, finalMonth + 1) } };
-        }
-    }
-
-    // 4. Calcular Rentabilidade Anual Ideal Constante - Retorna { value: number | Infinity, simulation: object | null }
-    function calculateIdealAnnualRate(objectives, initialSavings, monthlyContribution, tax, annualInflation) {
-        if (!objectives || objectives.length === 0) return { value: 0, simulation: null };
-
-        // Ordenar objetivos por prazo
-        const sortedObjectives = [...objectives].sort((a, b) => a.period - b.period);
-        const maxPeriod = sortedObjectives[sortedObjectives.length - 1].period;
-        if (maxPeriod <= 0) return { value: 0, simulation: null };
-
-        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-
-        // Função interna para rodar a simulação sequencial completa com uma dada taxa mensal
-        const runFullSequentialSimulationWithRate = (rate) => {
-            let fullSimulationData = [];
-            let currentSegmentStartValue = initialSavings;
-            let lastMonth = 0;
-            let globalTotalInvested = initialSavings;
-            let globalTotalJuros = 0;
-
-            // Adicionar estado inicial (mês 0)
-            fullSimulationData.push({
-                month: 0, juros: 0, totalInvestido: globalTotalInvested,
-                totalJuros: 0, imposto: 0, valorLiquido: initialSavings,
-                totalAcumulado: initialSavings
-            });
-
-            for (const obj of sortedObjectives) {
-                const segmentDuration = obj.period - lastMonth;
-                if (segmentDuration < 0) return null; // Erro
-                if (segmentDuration === 0) continue;
-
-                const segmentResult = calculateSegmentSimulation(
-                    currentSegmentStartValue,
-                    monthlyContribution,
-                    rate, // Usar a taxa testada
-                    segmentDuration,
-                    tax,
-                    annualInflation,
-                    lastMonth,
-                    globalTotalInvested,
-                    globalTotalJuros
-                );
-
-                fullSimulationData = fullSimulationData.concat(segmentResult.valoresMensaisSegment);
-                currentSegmentStartValue = segmentResult.finalNetValue;
-                lastMonth = obj.period;
-                globalTotalInvested = segmentResult.finalGlobalTotalInvested;
-                globalTotalJuros = segmentResult.finalGlobalTotalJuros;
-            }
-            return fullSimulationData;
-        };
-
-        // --- Lógica de Busca Binária --- //
-        let lowMonthlyRate = -0.05; // Permitir taxas negativas pequenas
-        let highMonthlyRate = 1.0; // 100% ao mês (limite alto)
-        let idealMonthlyRate = Infinity; // Começa com infinito
-        let finalSimulationData = null;
-        const maxIterations = 100;
-        let iterations = 0;
-
-        // Caso base: verificar se já atinge com taxa mínima
-        const lowRateSimData = runFullSequentialSimulationWithRate(lowMonthlyRate);
-        if (lowRateSimData && checkAllObjectivesMetSequential(sortedObjectives, lowRateSimData, annualInflation)) {
-             const lowAnnualRate = Math.pow(1 + lowMonthlyRate, 12) - 1;
-             return { value: Math.max(0, lowAnnualRate), simulation: { valoresMensais: lowRateSimData } };
-        }
-
-        // Verificar se a taxa máxima funciona (se não, é impossível)
-        const highRateSimData = runFullSequentialSimulationWithRate(highMonthlyRate);
-        if (!highRateSimData || !checkAllObjectivesMetSequential(sortedObjectives, highRateSimData, annualInflation)) {
-            console.warn("Não foi possível encontrar uma taxa de rentabilidade suficiente mesmo com o limite superior.");
-            return { value: Infinity, simulation: null };
-        }
-
-        while (iterations < maxIterations && (highMonthlyRate - lowMonthlyRate) > 1e-7) {
-            const midMonthlyRate = lowMonthlyRate + (highMonthlyRate - lowMonthlyRate) / 2;
-            if (midMonthlyRate === lowMonthlyRate || midMonthlyRate === highMonthlyRate) break;
-
-            const currentSimData = runFullSequentialSimulationWithRate(midMonthlyRate);
-
-            if (currentSimData && checkAllObjectivesMetSequential(sortedObjectives, currentSimData, annualInflation)) {
-                idealMonthlyRate = midMonthlyRate;
-                finalSimulationData = currentSimData; // Guarda a simulação que funcionou
-                highMonthlyRate = midMonthlyRate;
-            } else {
-                lowMonthlyRate = midMonthlyRate;
-            }
-            iterations++;
-        }
-
-        if (idealMonthlyRate !== Infinity) {
-            const idealAnnualRate = Math.pow(1 + idealMonthlyRate, 12) - 1;
-            const finalValue = idealAnnualRate < 1e-6 ? 0 : idealAnnualRate;
-            // Se a taxa final for 0, recalcular a simulação com taxa 0
-            if (finalValue === 0 && idealAnnualRate >= 1e-6) {
-                 finalSimulationData = runFullSequentialSimulationWithRate(0);
-            }
-            // Garante que a simulação retornada é a correta para o valor final
-             if (!finalSimulationData) { // Se não guardou nenhuma simulação válida
-                 finalSimulationData = runFullSequentialSimulationWithRate(idealMonthlyRate);
-             }
-            return { value: finalValue, simulation: { valoresMensais: finalSimulationData } };
-        } else {
-            // Se a busca não convergiu, mas a taxa alta funcionou, retorna a taxa alta
-            // (Já verificamos que highRateSimData funciona no início)
-            console.warn("Busca pela taxa ideal não convergiu, retornando limite superior funcional.");
-            return { value: Math.pow(1 + highMonthlyRate, 12) - 1, simulation: { valoresMensais: highRateSimData } };
-        }
-    }
-
-    // --- Função Principal de Cálculo (Refatorada para Sequencial) ---
-    function calculateSavings() {
-      // Validar se há objetivos
-      if (objectives.length === 0) {
-        alert("Por favor, adicione pelo menos um objetivo financeiro.");
-        return;
+    // Função para resumir o texto do objetivo
+    function summarizeGoalText(text) {
+      if (!text || text.trim() === '') {
+        return '';
       }
-
-      // --- Obter Entradas --- //
-      const initialSavings = parseCurrency(document.getElementById('initialSavings').value) || 0;
-      const monthlyContribution = parseCurrency(document.getElementById('monthlyContribution').value) || 0;
-      let interestRate = parseFloat(document.getElementById('interestRate').value.replace(',', '.')) || 0;
-      const interestRateType = document.getElementById('interestRateType').value;
-      let taxRate = parseFloat(document.getElementById('taxRate').value.replace(',', '.')) || 0;
-      let annualInflation = parseFloat(document.getElementById('annualInflation').value.replace(',', '.')) || 0;
-
-      // Validar entradas numéricas
-      if (isNaN(initialSavings) || isNaN(monthlyContribution) || isNaN(interestRate) || isNaN(taxRate) || isNaN(annualInflation)) {
-        alert("Por favor, verifique se todos os valores numéricos (valores, taxas) estão preenchidos corretamente.");
-        return;
+      
+      // Palavras-chave para identificar tipos de objetivos
+      const keywords = {
+        imovel: ['imóvel', 'casa', 'apartamento', 'moradia', 'residência', 'propriedade', 'terreno'],
+        viagem: ['viagem', 'viajar', 'turismo', 'férias', 'exterior', 'internacional', 'conhecer'],
+        educacao: ['educação', 'faculdade', 'universidade', 'curso', 'estudo', 'formação', 'pós-graduação', 'mestrado', 'doutorado'],
+        aposentadoria: ['aposentadoria', 'aposentar', 'independência financeira', 'liberdade financeira', 'renda passiva'],
+        veiculo: ['carro', 'veículo', 'automóvel', 'moto', 'motocicleta', 'caminhão'],
+        negocio: ['negócio', 'empresa', 'empreendimento', 'startup', 'investimento', 'sociedade'],
+        saude: ['saúde', 'tratamento', 'cirurgia', 'médico', 'hospital', 'plano de saúde'],
+        familia: ['família', 'filhos', 'casamento', 'herança', 'futuro dos filhos']
+      };
+      
+      // Converter texto para minúsculas para facilitar a comparação
+      const lowerText = text.toLowerCase();
+      
+      // Identificar o tipo de objetivo
+      let goalType = '';
+      let maxMatches = 0;
+      
+      for (const [type, words] of Object.entries(keywords)) {
+        const matches = words.filter(word => lowerText.includes(word)).length;
+        if (matches > maxMatches) {
+          maxMatches = matches;
+          goalType = type;
+        }
       }
-
-      // Converter taxas para decimal
-      taxRate = taxRate / 100;
-      annualInflation = annualInflation / 100;
-      let monthlyRate = 0;
-      if (interestRateType === 'anual') {
-        monthlyRate = Math.pow(1 + (interestRate / 100), 1/12) - 1;
-      } else { // Mensal
-        monthlyRate = interestRate / 100;
-      }
-
-      // Ordenar objetivos por prazo
-      const sortedObjectives = [...objectives].sort((a, b) => a.period - b.period);
-      const maxPeriod = sortedObjectives.length > 0 ? sortedObjectives[sortedObjectives.length - 1].period : 0;
-      if (maxPeriod <= 0 && sortedObjectives.length > 0) {
-          alert("Prazo inválido. Verifique os prazos dos objetivos (devem ser maiores que 0).");
-          return;
-      }
-
-      // --- Simulação Principal Sequencial ---
-      console.time("Main Sequential Simulation");
-      let fullSimulationData = [];
-      let currentSegmentStartValue = initialSavings;
-      let lastMonth = 0;
-      let globalTotalInvested = initialSavings;
-      let globalTotalJuros = 0;
-      let objectiveResults = []; // Para armazenar o status de cada objetivo
-      const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-
-      // Adicionar estado inicial (mês 0)
-      fullSimulationData.push({
-          month: 0, juros: 0, totalInvestido: globalTotalInvested,
-          totalJuros: 0, imposto: 0, valorLiquido: initialSavings,
-          totalAcumulado: initialSavings
-      });
-
-      for (const obj of sortedObjectives) {
-          const segmentDuration = obj.period - lastMonth;
-          if (segmentDuration < 0) {
-              console.error("Erro na lógica de segmentos: duração negativa.");
-              alert("Erro interno no cálculo sequencial. Verifique os prazos dos objetivos (não podem diminuir).");
-              return;
-          }
-
-          let segmentResult = null;
-          if (segmentDuration > 0) {
-              segmentResult = calculateSegmentSimulation(
-                  currentSegmentStartValue,
-                  monthlyContribution,
-                  monthlyRate,
-                  segmentDuration,
-                  taxRate,
-                  annualInflation,
-                  lastMonth,
-                  globalTotalInvested,
-                  globalTotalJuros
-              );
-              fullSimulationData = fullSimulationData.concat(segmentResult.valoresMensaisSegment);
-              currentSegmentStartValue = segmentResult.finalNetValue; // Próximo segmento começa com o valor LÍQUIDO
-              globalTotalInvested = segmentResult.finalGlobalTotalInvested;
-              globalTotalJuros = segmentResult.finalGlobalTotalJuros;
-          }
-          // Se duration for 0, não calcula, mas ainda verifica o objetivo no ponto atual
-
-          // Verificar status deste objetivo ao final do seu prazo (segmento)
-          const monthDataAtDeadline = fullSimulationData.find(d => d.month === obj.period);
-          if (monthDataAtDeadline) {
-              const inflatedObjectiveValue = obj.value * Math.pow(1 + monthlyInflation, obj.period);
-              const netValueAtDeadline = monthDataAtDeadline.valorLiquido;
-              objectiveResults.push({
-                  description: obj.description,
-                  period: obj.period,
-                  targetValue: inflatedObjectiveValue,
-                  achievedValue: netValueAtDeadline,
-                  met: netValueAtDeadline >= inflatedObjectiveValue
-              });
+      
+      // Criar resumo com base no tipo de objetivo identificado
+      let summary = '';
+      
+      switch (goalType) {
+        case 'imovel':
+          summary = 'aquisição de imóvel';
+          break;
+        case 'viagem':
+          summary = 'realização de viagem';
+          break;
+        case 'educacao':
+          summary = 'investimento em educação';
+          break;
+        case 'aposentadoria':
+          summary = 'planejamento para aposentadoria';
+          break;
+        case 'veiculo':
+          summary = 'compra de veículo';
+          break;
+        case 'negocio':
+          summary = 'investimento em negócio próprio';
+          break;
+        case 'saude':
+          summary = 'cuidados com saúde';
+          break;
+        case 'familia':
+          summary = 'planejamento familiar';
+          break;
+        default:
+          // Se não conseguir identificar um tipo específico, extrair as primeiras palavras
+          const words = lowerText.split(' ');
+          if (words.length > 3) {
+            summary = words.slice(0, 3).join(' ') + '...';
           } else {
-              // Isso não deveria acontecer se a simulação foi feita corretamente
-              console.error(`Dados não encontrados para o mês ${obj.period} do objetivo ${obj.description}`);
-              objectiveResults.push({
-                  description: obj.description,
-                  period: obj.period,
-                  targetValue: obj.value * Math.pow(1 + monthlyInflation, obj.period),
-                  achievedValue: null,
-                  met: false
-              });
+            summary = 'objetivo financeiro';
           }
-
-          lastMonth = obj.period;
       }
-      console.timeEnd("Main Sequential Simulation");
-
-      // --- Calcular Análises Adicionais (já refatoradas para sequencial) ---
-      console.time("Additional Calculations");
-      const requiredInitial = calculateRequiredInitialValue(sortedObjectives, monthlyRate, taxRate, annualInflation);
-      const idealContribution = calculateIdealMonthlyContribution(sortedObjectives, initialSavings, monthlyRate, taxRate, annualInflation);
-      const requiredTime = calculateRequiredTime(sortedObjectives, initialSavings, monthlyContribution, monthlyRate, taxRate, annualInflation);
-      const idealRate = calculateIdealAnnualRate(sortedObjectives, initialSavings, monthlyContribution, taxRate, annualInflation);
-      console.timeEnd("Additional Calculations");
-
-      // --- Guardar Dados do Cálculo Atual ---
-      currentCalculationData = {
-        params: { initialSavings, monthlyContribution, interestRate, interestRateType, taxRate, annualInflation, objectives: sortedObjectives },
-        results: {
-          mainSimulation: { valoresMensais: fullSimulationData },
-          objectiveResults: objectiveResults,
-          requiredInitialValue: requiredInitial,
-          idealContribution: idealContribution,
-          requiredTime: requiredTime,
-          idealRate: idealRate
-        }
-      };
-
-      // --- Exibir Resultados ---
-      displayResults(currentCalculationData);
-
-      // Habilitar botões de cenário e WhatsApp
-      document.getElementById('resultsContainer').style.display = 'block';
-      document.getElementById('saveScenarioButton').disabled = false;
-      document.getElementById('whatsappButton').style.display = 'block';
-      document.getElementById('analyzeScenarioButton').disabled = scenarios.length < 2;
+      
+      // Verificar se há menção à importância ou motivo
+      const importanceKeywords = ['importante', 'importância', 'significa', 'porque', 'pois', 'para', 'motivo'];
+      let hasImportance = importanceKeywords.some(word => lowerText.includes(word));
+      
+      if (hasImportance) {
+        summary += ' com significado pessoal';
+      }
+      
+      return summary;
     }
 
-    // --- Funções de Exibição de Resultados (Refatoradas para Sequencial) ---
-    function displayResults(data) {
-        const summaryDiv = document.getElementById('resultSummary');
-        let summaryHTML = '<h4>Resultados da Simulação Principal:</h4>';
-        let allMet = true;
-        let recommendationDetails = [];
-
-        data.results.objectiveResults.forEach(objResult => {
-            if (objResult.met) {
-                summaryHTML += `<p><strong>${objResult.description} (Prazo: ${objResult.period}m):</strong> <span style="color: green;">Atingido!</span> (Valor Líquido: ${formatCurrencyValue(objResult.achievedValue)} vs Meta Corrigida: ${formatCurrencyValue(objResult.targetValue)})</p>`;
-            } else {
-                allMet = false;
-                const shortfall = objResult.targetValue - (objResult.achievedValue || 0);
-                summaryHTML += `<p><strong>${objResult.description} (Prazo: ${objResult.period}m):</strong> <span style="color: red;">Não Atingido</span> (Valor Líquido: ${formatCurrencyValue(objResult.achievedValue)} vs Meta Corrigida: ${formatCurrencyValue(objResult.targetValue)}, Faltou: ${formatCurrencyValue(shortfall)})</p>`;
-                recommendationDetails.push(`- ${objResult.description}: Faltou ${formatCurrencyValue(shortfall)} no prazo de ${objResult.period} meses.`);
-            }
-        });
-        summaryDiv.innerHTML = summaryHTML;
-
-        // Exibir Gráfico/Tabela Principal
-        drawProjectionChart('projectionChart', data.results.mainSimulation.valoresMensais, data.params.objectives, data.params.annualInflation);
-        fillDataTable('tableProjection', data.results.mainSimulation.valoresMensais, data.params.objectives, data.params.annualInflation);
-        showChart('projectionChart'); // Mostrar gráfico por padrão
-
-        // Exibir Análises Adicionais
-        displayAnalysisResult('InitialValue', data.results.requiredInitialValue, data.params.objectives, data.params.annualInflation);
-        displayAnalysisResult('Contribution', data.results.idealContribution, data.params.objectives, data.params.annualInflation);
-        displayAnalysisResult('Time', data.results.requiredTime, data.params.objectives, data.params.annualInflation);
-        displayAnalysisResult('Rate', data.results.idealRate, data.params.objectives, data.params.annualInflation);
-
-        // Gerar Recomendação
-        generateRecommendation(allMet, recommendationDetails, data.results.idealContribution, data.results.idealRate, data.results.requiredTime);
-
-        // Preparar botão WhatsApp
-        setupWhatsAppButton(data);
-    }
-
-    function displayAnalysisResult(type, analysisData, objectives, annualInflation) {
-        const container = document.getElementById(`analysis${type}Container`);
-        const valueSpan = document.getElementById(`analysis${type}Value`);
-        const chartCanvasId = `chart${type}`;
-        const tableId = `table${type}`;
-
-        if (!container || !valueSpan) return;
-
-        let formattedValue = "N/A";
-        if (analysisData.value === Infinity) {
-            formattedValue = "Impossível atingir";
-        } else if (type === 'InitialValue' || type === 'Contribution') {
-            formattedValue = formatCurrencyValue(analysisData.value);
-        } else if (type === 'Time') {
-            formattedValue = `${analysisData.value} meses`;
-        } else if (type === 'Rate') {
-            formattedValue = formatPercentageValue(analysisData.value);
-        }
-        valueSpan.textContent = formattedValue;
-
-        if (analysisData.simulation && analysisData.simulation.valoresMensais) {
-            container.style.display = 'block';
-            drawProjectionChart(chartCanvasId, analysisData.simulation.valoresMensais, objectives, annualInflation);
-            fillDataTable(tableId, analysisData.simulation.valoresMensais, objectives, annualInflation);
-            showChart(chartCanvasId); // Mostrar gráfico por padrão
+    // Função para gerar análise automatizada
+    function generateRecommendation(goalDescription, goal, currentSavings, currentContribution, idealContribution, months, requiredRate, rate) {
+      const recommendationDiv = document.getElementById('recommendation');
+      const recommendationText = document.getElementById('recommendationText');
+      const whatsappButton = document.getElementById('whatsappButton');
+      
+      // Extrair informações relevantes
+      const goalGap = goal - currentSavings;
+      const contributionGap = idealContribution - currentContribution;
+      const contributionPercentage = (currentContribution / idealContribution) * 100;
+      const rateGap = requiredRate - rate;
+      
+      let analysis = '';
+      
+      // Análise da situação atual - começando diretamente aqui, sem introdução sobre o objetivo
+      if (currentSavings > 0) {
+        const savingsPercentage = (currentSavings / goal) * 100;
+        analysis += `<p>Valor já guardado: R$ ${formatMoney(currentSavings)}, o que representa ${savingsPercentage.toFixed(1).replace('.', ',')}% do objetivo. `;
+        
+        if (savingsPercentage < 10) {
+          analysis += `Este é um bom começo, mas ainda há um longo caminho pela frente.</p>`;
+        } else if (savingsPercentage < 30) {
+          analysis += `Já foram dados passos importantes em direção ao objetivo.</p>`;
+        } else if (savingsPercentage < 60) {
+          analysis += `Uma parte significativa do caminho já foi percorrida.</p>`;
         } else {
-            // Esconder gráfico/tabela se não houver simulação (ex: impossível)
-            container.style.display = 'block'; // Manter a seção visível para mostrar o valor "Impossível"
-            const chartSlide = document.getElementById(`${chartCanvasId}Slide`);
-            const tableSlide = document.getElementById(`${tableId}Slide`);
-            if(chartSlide) chartSlide.style.display = 'none';
-            if(tableSlide) tableSlide.style.display = 'none';
-            // Ocultar botões de navegação também
-            const navButtons = container.querySelectorAll('.chart-nav button');
-            navButtons.forEach(btn => btn.style.display = 'none');
+          analysis += `O objetivo está muito próximo de ser alcançado.</p>`;
         }
-    }
-
-    // --- Funções de Gráficos e Tabelas (Refatoradas para Sequencial) ---
-    function drawProjectionChart(canvasId, valoresMensais, objectives, annualInflation) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        if (chartInstances[canvasId]) {
-            chartInstances[canvasId].destroy();
-        }
-
-        if (!valoresMensais || valoresMensais.length === 0) return;
-
-        const labels = valoresMensais.map(v => v.month);
-        const totalAcumuladoData = valoresMensais.map(v => v.totalAcumulado);
-        const valorLiquidoData = valoresMensais.map(v => v.valorLiquido);
-        const totalInvestidoData = valoresMensais.map(v => v.totalInvestido);
-        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-
-        // Preparar dados dos objetivos corrigidos pela inflação
-        const objectiveDatasets = objectives.map((obj, index) => {
-            const color = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'][index % 6]; // Ciclo de cores
-            const data = valoresMensais.map(v => {
-                if (v.month >= obj.period) {
-                    // Mostrar o valor corrigido apenas até o prazo
-                    return obj.value * Math.pow(1 + monthlyInflation, obj.period);
-                } else {
-                    return obj.value * Math.pow(1 + monthlyInflation, v.month);
-                }
-            });
-            // Ajuste para mostrar linha completa até o prazo
-            const objectiveLineData = valoresMensais.map(v => v.month <= obj.period ? obj.value * Math.pow(1 + monthlyInflation, v.month) : null);
-
-            return {
-                label: `Meta: ${obj.description} (Corrigido)`, // Nome do objetivo
-                data: objectiveLineData,
-                borderColor: color,
-                borderDash: [5, 5], // Linha tracejada
-                fill: false,
-                pointRadius: 0, // Sem pontos
-                tension: 0.1
-            };
-        });
-
-        // Annotations para marcar prazos dos objetivos
-        const annotations = objectives.reduce((acc, obj) => {
-            acc[`line-${obj.period}`] = {
-                type: 'line',
-                xMin: obj.period,
-                xMax: obj.period,
-                borderColor: 'rgba(150, 150, 150, 0.5)', // Cinza translúcido
-                borderWidth: 1,
-                borderDash: [2, 2],
-                label: {
-                    content: `${obj.description} (${obj.period}m)`,
-                    enabled: true,
-                    position: 'start',
-                    backgroundColor: 'rgba(200, 200, 200, 0.7)',
-                    color: 'black',
-                    font: { size: 9 },
-                    yAdjust: -10
-                }
-            };
-            return acc;
-        }, {});
-
-        chartInstances[canvasId] = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Valor Líquido',
-                        data: valorLiquidoData,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        fill: false,
-                        tension: 0.1
-                    },
-                    {
-                        label: 'Valor Bruto Acumulado',
-                        data: totalAcumuladoData,
-                        borderColor: 'rgb(255, 159, 64)',
-                        fill: false,
-                        tension: 0.1
-                    },
-                    {
-                        label: 'Total Investido',
-                        data: totalInvestidoData,
-                        borderColor: 'rgb(54, 162, 235)',
-                        fill: false,
-                        tension: 0.1
-                    },
-                    ...objectiveDatasets // Adicionar datasets dos objetivos
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Meses'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Valor (R$)'
-                        },
-                        ticks: {
-                            callback: function(value, index, values) {
-                                return formatCurrencyValue(value);
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += formatCurrencyValue(context.parsed.y);
-                                }
-                                return label;
-                            }
-                        }
-                    },
-                    annotation: {
-                        annotations: annotations
-                    }
-                }
-            }
-        });
-    }
-
-    function fillDataTable(tableId, valoresMensais, objectives, annualInflation) {
-        const table = document.getElementById(tableId);
-        if (!table) return;
-        table.innerHTML = ''; // Limpar tabela
-
-        if (!valoresMensais || valoresMensais.length === 0) return;
-
-        const monthlyInflation = Math.pow(1 + annualInflation, 1/12) - 1;
-        const objectiveDeadlines = new Set(objectives.map(o => o.period));
-
-        // Cabeçalho
-        const thead = table.createTHead();
-        const headerRow = thead.insertRow();
-        const headers = ['Mês', 'Juros (Mês)', 'Total Investido', 'Total Juros (Acum.)', 'Imposto (Acum.)', 'Valor Líquido', 'Valor Bruto (Acum.)'];
-        // Adicionar colunas para objetivos corrigidos
-        objectives.forEach(obj => headers.push(`Meta: ${obj.description} (Corrigido)`));
-        headers.forEach(text => {
-            const th = document.createElement('th');
-            th.textContent = text;
-            headerRow.appendChild(th);
-        });
-
-        // Corpo
-        const tbody = table.createTBody();
-        valoresMensais.forEach(data => {
-            const row = tbody.insertRow();
-            if (objectiveDeadlines.has(data.month)) {
-                row.classList.add('objective-deadline-row'); // Destacar linha do prazo
-            }
-            const cells = [
-                data.month,
-                formatCurrencyValue(data.juros),
-                formatCurrencyValue(data.totalInvestido),
-                formatCurrencyValue(data.totalJuros),
-                formatCurrencyValue(data.imposto),
-                formatCurrencyValue(data.valorLiquido),
-                formatCurrencyValue(data.totalAcumulado)
-            ];
-            // Adicionar valores dos objetivos corrigidos
-            objectives.forEach(obj => {
-                const inflatedValue = obj.value * Math.pow(1 + monthlyInflation, data.month);
-                cells.push(formatCurrencyValue(inflatedValue));
-            });
-
-            cells.forEach(value => {
-                const cell = row.insertCell();
-                cell.textContent = value;
-            });
-        });
-    }
-
-    function showChart(chartIdBase) {
-        document.getElementById(`chart${chartIdBase}Slide`).style.display = 'block';
-        document.getElementById(`table${chartIdBase}Slide`).style.display = 'none';
-    }
-
-    function showTable(tableIdBase) {
-        document.getElementById(`chart${tableIdBase}Slide`).style.display = 'none';
-        document.getElementById(`table${tableIdBase}Slide`).style.display = 'block';
-    }
-
-    // --- Funções de Recomendação e WhatsApp (Ajustadas) ---
-    function generateRecommendation(allMet, details, idealContribution, idealRate, requiredTime) {
-        const recommendationDiv = document.getElementById('recommendationDiv');
-        const recommendationText = document.getElementById('recommendationText');
-        let text = '';
-
-        if (allMet) {
-            text = 'Parabéns! Com os parâmetros atuais, você está no caminho certo para atingir todos os seus objetivos sequencialmente nos prazos definidos.';
+      } else {
+        analysis += `<p>Ainda não foi iniciada a poupança para este objetivo específico.</p>`;
+      }
+      
+      // Análise do aporte mensal
+      if (currentContribution > 0) {
+        if (contributionPercentage >= 100) {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} é suficiente para atingir o objetivo no prazo desejado.</p>`;
+        } else if (contributionPercentage >= 80) {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} está próximo do ideal. Um pequeno ajuste de R$ ${formatMoney(contributionGap)} a mais por mês seria o suficiente para atingir o objetivo no prazo desejado.</p>`;
+        } else if (contributionPercentage >= 50) {
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} representa um bom esforço, mas para atingir o objetivo no prazo desejado, seria necessário aumentar para R$ ${formatMoney(idealContribution)} por mês (um acréscimo de R$ ${formatMoney(contributionGap)}).</p>`;
         } else {
-            text = 'Atenção! Com os parâmetros atuais, alguns objetivos não serão atingidos nos prazos definidos na sequência:';
-            details.forEach(detail => text += `<br>${detail}`);
-            text += '<br><br><strong>Sugestões:</strong>';
-
-            if (idealContribution.value !== Infinity && idealContribution.value > (currentCalculationData?.params?.monthlyContribution || 0)) {
-                text += `<br>- Considere aumentar seu aporte mensal para aproximadamente ${formatCurrencyValue(idealContribution.value)}.`;
-            }
-            if (idealRate.value !== Infinity && idealRate.value > (Math.pow(1 + (currentCalculationData?.params?.monthlyRate || 0), 12) - 1)) {
-                text += `<br>- Busque investimentos com rentabilidade anual próxima a ${formatPercentageValue(idealRate.value)}.`;
-            }
-            if (requiredTime.value !== Infinity && requiredTime.value > (currentCalculationData?.params?.objectives[currentCalculationData.params.objectives.length - 1]?.period || 0)) {
-                text += `<br>- Se mantiver os parâmetros, o tempo total necessário será de aproximadamente ${requiredTime.value} meses.`;
-            }
-             text += '<br>- Avalie ajustar os valores ou prazos dos seus objetivos.';
+          analysis += `<p>O aporte mensal atual de R$ ${formatMoney(currentContribution)} está significativamente abaixo do ideal. Para atingir o objetivo no prazo desejado, seria necessário aumentar para R$ ${formatMoney(idealContribution)} por mês.</p>`;
         }
+      } else {
+        analysis += `<p>Não estão sendo feitos aportes mensais. Para atingir o objetivo no prazo desejado, seria necessário poupar R$ ${formatMoney(idealContribution)} por mês.</p>`;
+      }
+      
+      // Análise da rentabilidade
+      if (rateGap > 0) {
+        const rateGapPercentage = rateGap * 100;
+        if (rateGapPercentage > 10) {
+          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace('.', ',')}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace('.', ',')} pontos percentuais acima da taxa informada. Esta diferença é significativa e pode representar um risco maior.</p>`;
+        } else {
+          analysis += `<p>A rentabilidade necessária para atingir o objetivo com o aporte atual é de ${(requiredRate * 100).toFixed(2).replace('.', ',')}% ao ano, o que está ${rateGapPercentage.toFixed(2).replace('.', ',')} pontos percentuais acima da taxa informada. Esta diferença é relativamente pequena e pode ser alcançável com ajustes na estratégia de investimento.</p>`;
+        }
+      } else {
+        analysis += `<p>A rentabilidade informada de ${(rate * 100).toFixed(2).replace('.', ',')}% ao ano é suficiente para atingir o objetivo no prazo desejado, desde que sejam mantidos os aportes mensais adequados.</p>`;
+      }
+      
+      recommendationText.innerHTML = analysis;
+      recommendationDiv.style.display = 'block';
 
-        recommendationText.innerHTML = text;
-        recommendationDiv.style.display = 'block';
+      // Mostrar o botão do WhatsApp
+      whatsappButton.style.display = 'block';
     }
 
-    function setupWhatsAppButton(data) {
-        const button = document.getElementById('whatsappButton');
-        if (!data || !data.params || !data.results) {
-            button.style.display = 'none';
-            return;
+    function calculateSavings() {
+      // Armazenar o texto do objetivo para uso posterior
+      goalDescriptionText = document.getElementById('goalDescription').value;
+      
+      // Resetar os gráficos antes de desenhar novos
+      const chartUnico = Chart.getChart("chartUnico");
+      if (chartUnico) chartUnico.destroy();
+      const chartIdeal = Chart.getChart("chartIdeal");
+      if (chartIdeal) chartIdeal.destroy();
+      const chartAtual = Chart.getChart("chartAtual");
+      if (chartAtual) chartAtual.destroy();
+      const chartRentabilidade = Chart.getChart("chartRentabilidade");
+      if (chartRentabilidade) chartRentabilidade.destroy();
+      
+      const goalDescription = document.getElementById("goalDescription").value;
+      const goal = parseCurrency(document.getElementById("goal").value);
+      const rate = parsePercentage(document.getElementById("rate").value);
+      const rateType = document.getElementById("rateType").value;
+      const knowsTax = document.getElementById("knowsTax").value;
+      const tax = knowsTax === 'yes' ? parsePercentage(document.getElementById("tax").value) : 0.15;
+      const knowsInflation = document.getElementById("knowsInflation").value;
+      const inflation = knowsInflation === 'yes' ? parsePercentage(document.getElementById("inflation").value) : 0.05;
+      const period = parseInt(document.getElementById("period").value);
+      const currentSavings = parseCurrency(document.getElementById("currentSavings").value);
+      const currentContribution = parseCurrency(document.getElementById("currentContribution").value);
+
+      const monthlyRate = rateType === 'annual' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
+      const inflatedGoal = goal * Math.pow(1 + inflation, period / 12);
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = `<p><strong>Reajuste pela Inflação:</strong><br>Valor atual do objetivo: R$ ${formatMoney(goal)}<br>Valor corrigido pela inflação (${(inflation * 100).toFixed(2).replace('.', ',')}%) em ${period} meses: R$ ${formatMoney(inflatedGoal)}</p>`;
+
+      // Cálculo do investimento único necessário
+      const taxFactor = (1 + monthlyRate) ** period - tax * ((1 + monthlyRate) ** period - 1);
+      const investmentNeeded = inflatedGoal / taxFactor;
+      const difference = investmentNeeded - currentSavings;
+      const comparisonText = difference > 0 
+        ? `Este valor é <strong>R$ ${formatMoney(difference)} maior</strong> do que o valor que você já tem guardado.`
+        : `Este valor é <strong>R$ ${formatMoney(Math.abs(difference))} menor</strong> do que o valor que você já tem guardado.`;
+      const resultUnico = calculateCompoundInterest(investmentNeeded, 0, monthlyRate, period, tax, goal, inflation);
+      const brutoUnico = resultUnico.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.totalInvestido);
+      const objetivoCorrigidoUnico = resultUnico.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
+      resultDiv.innerHTML += `<p><strong>Investimento Único Necessário:</strong><br>Para atingir seu objetivo no prazo desejado, sem poupar mensalmente, você precisaria investir <strong>R$ ${formatMoney(investmentNeeded)}</strong> hoje.<br>${comparisonText}</p>`;
+      document.getElementById("chartUnicoContainer").style.display = "block";
+      fillDataTable("tableUnico", resultUnico.valoresMensais, goal, inflation);
+      drawChart(document.getElementById("chartUnico").getContext("2d"), brutoUnico, liquidoUnico, investidoUnico, objetivoCorrigidoUnico, "#6f42c1", "#9f75e5", "#4b2882", "#333333");
+      // Cálculo do plano ideal (quanto poupar mensalmente)
+      let low = 0, high = inflatedGoal, Y = 0;
+      let resultIdeal;
+      for (let i = 0; i < 100; i++) {
+        Y = (low + high) / 2;
+        resultIdeal = calculateCompoundInterest(currentSavings, Y, monthlyRate, period, tax, goal, inflation);
+        const valorLiquidoFinal = resultIdeal.valoresMensais[period].valorLiquido;
+        const objetivoFinal = resultIdeal.valoresMensais[period].objetivoCorrigido;
+        if (Math.abs(valorLiquidoFinal - objetivoFinal) < 0.01) break;
+        if (valorLiquidoFinal > objetivoFinal) high = Y;
+        else low = Y;
+      }
+      const brutoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.totalInvestido);
+      const objetivoCorrigidoIdeal = resultIdeal.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
+      resultDiv.innerHTML += `<p><strong>Plano Ideal:</strong><br>Você precisará poupar R$ ${formatMoney(Y)} por mês para atingir seu objetivo corrigido.</p>`;
+      document.getElementById("chartIdealContainer").style.display = "block";
+      fillDataTable("tableIdeal", resultIdeal.valoresMensais, goal, inflation);
+      drawChart(document.getElementById("chartIdeal").getContext("2d"), brutoIdeal, liquidoIdeal, investidoIdeal, objetivoCorrigidoIdeal, "#28a745", "#218838", "#046c4e", "#333333"); // Cálculo com a poupança atual
+      const resultAtual = calculateCompoundInterest(currentSavings, currentContribution, monthlyRate, 1200, tax, goal, inflation);
+      const valoresMensais = resultAtual.valoresMensais;
+      let months = 0;
+      let objetivoAtingido = false;
+      for (let i = 1; i < valoresMensais.length; i++) {
+        if (valoresMensais[i].valorLiquido > valoresMensais[i].objetivoCorrigido) {
+          months = i;
+          objetivoAtingido = true;
+          break;
         }
-
-        let message = `*Resumo da Simulação Sequencial de Objetivos*
-
-`;
-        message += `*Parâmetros:*
-`;
-        message += `- Valor Inicial: ${formatCurrencyValue(data.params.initialSavings)}
-`;
-        message += `- Aporte Mensal: ${formatCurrencyValue(data.params.monthlyContribution)}
-`;
-        const rateDisplay = data.params.interestRateType === 'anual' ? `${(data.params.interestRate).toFixed(2).replace('.',',')}% a.a.` : `${(data.params.interestRate).toFixed(2).replace('.',',')}% a.m.`;
-        message += `- Taxa Juros: ${rateDisplay}
-`;
-        message += `- IR: ${formatPercentageValue(data.params.taxRate)}
-`;
-        message += `- Inflação: ${formatPercentageValue(data.params.annualInflation)}
-
-`;
-        message += `*Objetivos Adicionados (${data.params.objectives.length}):*
-`;
-        data.params.objectives.forEach(obj => {
-            message += `- ${obj.description}: ${formatCurrencyValue(obj.value)} em ${obj.period} meses
-`;
-        });
-        message += `
-*Resultados da Simulação Principal:*
-`;
-        let allMet = true;
-        data.results.objectiveResults.forEach(res => {
-            if (res.met) {
-                message += `- ${res.description}: Atingido! (Prazo ${res.period}m)
-`;
-            } else {
-                allMet = false;
-                message += `- ${res.description}: NÃO Atingido (Prazo ${res.period}m)
-`;
-            }
-        });
-        message += `
-*Análises Adicionais:*
-`;
-        message += `- Valor Inicial Ideal (s/ aporte): ${data.results.requiredInitialValue.value === Infinity ? 'Impossível' : formatCurrencyValue(data.results.requiredInitialValue.value)}
-`;
-        message += `- Aporte Mensal Ideal: ${data.results.idealContribution.value === Infinity ? 'Impossível' : formatCurrencyValue(data.results.idealContribution.value)}
-`;
-        message += `- Tempo Necessário: ${data.results.requiredTime.value === Infinity ? '> 100 anos' : `${data.results.requiredTime.value} meses`}
-`;
-        message += `- Rentabilidade Anual Ideal: ${data.results.idealRate.value === Infinity ? 'Impossível' : formatPercentageValue(data.results.idealRate.value)}
-`;
-
-        const encodedMessage = encodeURIComponent(message);
-        button.href = `https://wa.me/?text=${encodedMessage}`;
-        button.style.display = 'block';
+      }
+      if (!objetivoAtingido) {
+        months = valoresMensais.length - 1;
+      }
+      const maxMonths = Math.max(months + 1, period + 1);
+      const brutoAtual = valoresMensais.slice(1, maxMonths).map(m => m.totalAcumulado);
+      const liquidoAtual = valoresMensais.slice(1, maxMonths).map(m => m.valorLiquido);
+      const investidoAtual = valoresMensais.slice(1, maxMonths).map(m => m.totalInvestido);
+      const objetivoCorrigidoAtual = valoresMensais.slice(1, maxMonths).map(m => m.objetivoCorrigido);
+      resultDiv.innerHTML += `<p><strong>Com a Poupança Atual:</strong><br>Você atingirá o objetivo em aproximadamente ${months} meses, considerando a inflação progressiva a cada 12 meses.</p>`;
+      document.getElementById("chartAtualContainer").style.display = "block";
+      fillDataTable("tableAtual", valoresMensais.slice(0, maxMonths), goal, inflation);
+      drawChart(document.getElementById("chartAtual").getContext("2d"), brutoAtual, liquidoAtual, investidoAtual, objetivoCorrigidoAtual, "#d4af37", "#b38e2e", "#f5e2a9", "#333333");  // Calcular a rentabilidade anual necessária
+      const requiredRate = calculateRequiredRate(goal, currentSavings, currentContribution, period, tax, inflation);
+      const brutoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalAcumulado);
+      const liquidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.valorLiquido);
+      const investidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.totalInvestido);
+      const objetivoCorrigidoRentabilidade = requiredRate.valoresMensais.slice(1).map(m => m.objetivoCorrigido);
+      resultDiv.innerHTML += `<p><strong>Rentabilidade Necessária:</strong><br>Para atingir seu objetivo em ${period} meses, mantendo o aporte mensal de R$ ${formatMoney(currentContribution)}, você precisaria de uma rentabilidade anual de <strong>${(requiredRate.annualRate * 100).toFixed(2).replace('.', ',')}%</strong>.</p>`;
+      resultText = resultDiv.innerText;
+      document.getElementById("chartRentabilidadeContainer").style.display = "block";
+      fillDataTable("tableRentabilidade", requiredRate.valoresMensais, goal, inflation);
+      drawChart(document.getElementById("chartRentabilidade").getContext("2d"), brutoRentabilidade, liquidoRentabilidade, investidoRentabilidade, objetivoCorrigidoRentabilidade, "#6f42c1", "#9f75e5", "#4b2882", "#333333");
+      // Gerar análise automatizada
+      generateRecommendation(goalDescription, goal, currentSavings, currentContribution, Y, months, requiredRate.annualRate, rateType === 'annual' ? rate : Math.pow(1 + rate, 12) - 1);
     }
 
-    // --- Funções de Gerenciamento de Cenários (Adaptadas) ---
-    function addCurrentScenario() {
-        if (!currentCalculationData) {
-            alert("Calcule uma projeção antes de salvar o cenário.");
-            return;
-        }
-
-        const scenarioName = prompt("Digite um nome para este cenário:", `Cenário ${scenarios.length + 1}`);
-        if (!scenarioName) return; // Cancelado pelo usuário
-
-        // Criar uma cópia profunda dos dados para evitar alterações acidentais
-        const scenarioData = JSON.parse(JSON.stringify(currentCalculationData));
-
-        scenarios.push({ name: scenarioName, data: scenarioData });
-        renderSavedScenarios();
-        document.getElementById('analyzeScenarioButton').disabled = scenarios.length < 2;
-    }
-
-    function renderSavedScenarios() {
-        const listDiv = document.getElementById('savedScenariosList');
-        const container = document.getElementById('scenariosContainer');
-        if (scenarios.length === 0) {
-            listDiv.innerHTML = 'Nenhum cenário salvo ainda.';
-            container.style.display = 'none';
-            return;
-        }
-
-        container.style.display = 'block';
-        listDiv.innerHTML = '';
-        scenarios.forEach((scenario, index) => {
-            const card = document.createElement('div');
-            card.className = 'scenario-card';
-            card.id = `scenario-${index}`;
-            card.innerHTML = `
-                <div class="scenario-header">
-                    <h5 class="scenario-title">${scenario.name}</h5>
-                    <div class="scenario-actions">
-                        <input type="checkbox" id="compare-${index}" name="compareScenario" value="${index}" style="width: auto; margin-top: 0;">
-                        <label for="compare-${index}" style="margin: 0 5px 0 0; font-weight: normal;">Comparar</label>
-                        <button class="scenario-select" onclick="selectScenario(${index})">Ver</button>
-                        <button class="scenario-delete" onclick="deleteScenario(${index})">Excluir</button>
-                    </div>
-                </div>
-                <div class="scenario-content">
-                    <div class="scenario-info">
-                        <p><strong>Valor Inicial:</strong> ${formatCurrencyValue(scenario.data.params.initialSavings)}</p>
-                        <p><strong>Aporte Mensal:</strong> ${formatCurrencyValue(scenario.data.params.monthlyContribution)}</p>
-                        <p><strong>Taxa:</strong> ${scenario.data.params.interestRate.toFixed(2).replace('.',',')}% ${scenario.data.params.interestRateType === 'anual' ? 'a.a.' : 'a.m.'}</p>
-                    </div>
-                    <div class="scenario-info">
-                        <p><strong>IR:</strong> ${formatPercentageValue(scenario.data.params.taxRate)}</p>
-                        <p><strong>Inflação:</strong> ${formatPercentageValue(scenario.data.params.annualInflation)}</p>
-                    </div>
-                </div>
-                <div class="scenario-details">
-                    <strong>Objetivos (${scenario.data.params.objectives.length}):</strong>
-                    <ul>
-                        ${scenario.data.params.objectives.map(obj => `<li>- ${obj.description} (${formatCurrencyValue(obj.value)} em ${obj.period}m)</li>`).join('')}
-                    </ul>
-                </div>
-            `;
-            listDiv.appendChild(card);
-        });
-    }
-
-    function deleteScenario(index) {
-        if (confirm(`Tem certeza que deseja excluir o cenário "${scenarios[index].name}"?`)) {
-            scenarios.splice(index, 1);
-            renderSavedScenarios();
-            document.getElementById('analyzeScenarioButton').disabled = scenarios.length < 2;
-            // Se o cenário excluído estava sendo exibido, limpar a exibição
-            if (currentCalculationData && currentCalculationData.scenarioIndex === index) {
-                document.getElementById('resultsContainer').style.display = 'none';
-                currentCalculationData = null;
-            }
-        }
-    }
-
-    function selectScenario(index) {
-        if (index < 0 || index >= scenarios.length) return;
-        currentCalculationData = JSON.parse(JSON.stringify(scenarios[index].data)); // Carregar cópia
-        currentCalculationData.scenarioIndex = index; // Marcar qual cenário está ativo
-
-        // Marcar card como ativo
-        document.querySelectorAll('.scenario-card').forEach(card => card.classList.remove('active'));
-        document.getElementById(`scenario-${index}`).classList.add('active');
-
-        // Preencher formulário (opcional, mas útil para edição)
-        document.getElementById('initialSavings').value = formatCurrencyValue(currentCalculationData.params.initialSavings);
-        document.getElementById('monthlyContribution').value = formatCurrencyValue(currentCalculationData.params.monthlyContribution);
-        document.getElementById('interestRate').value = (currentCalculationData.params.interestRate).toFixed(2).replace('.',',');
-        document.getElementById('interestRateType').value = currentCalculationData.params.interestRateType;
-        document.getElementById('taxRate').value = (currentCalculationData.params.taxRate * 100).toFixed(2).replace('.',',');
-        document.getElementById('annualInflation').value = (currentCalculationData.params.annualInflation * 100).toFixed(2).replace('.',',');
-        objectives = [...currentCalculationData.params.objectives]; // Carregar objetivos
-        renderObjectivesList();
-
-        // Exibir resultados do cenário selecionado
-        displayResults(currentCalculationData);
-        document.getElementById('resultsContainer').style.display = 'block';
-        document.getElementById('whatsappButton').style.display = 'block'; // Habilitar WhatsApp para cenário carregado
-    }
-
-    function startNewScenario() {
-        // Limpar seleção de cenário
-        document.querySelectorAll('.scenario-card').forEach(card => card.classList.remove('active'));
-        currentCalculationData = null;
-
-        // Opcional: Resetar formulário para valores padrão ou vazios
-        // document.getElementById('calculatorForm').reset();
-        // objectives = [];
-        // renderObjectivesList();
-
-        // Esconder resultados e comparação
-        document.getElementById('resultsContainer').style.display = 'none';
-        document.getElementById('comparisonContainer').style.display = 'none';
-        document.getElementById('whatsappButton').style.display = 'none';
-        document.getElementById('saveScenarioButton').disabled = true;
-    }
-
-    // --- Funções de Comparação de Cenários (Adaptadas) ---
-    function analyzeScenarios() {
-        const checkboxes = document.querySelectorAll('input[name="compareScenario"]:checked');
-        const selectedIndices = Array.from(checkboxes).map(cb => parseInt(cb.value));
-
-        if (selectedIndices.length < 2) {
-            alert("Selecione pelo menos dois cenários para comparar.");
-            return;
-        }
-
-        const scenariosToCompare = selectedIndices.map(index => scenarios[index]);
-        document.getElementById('comparisonContainer').style.display = 'block';
-        drawComparisonChart(scenariosToCompare);
-        fillComparisonTable(scenariosToCompare);
-        generateGeneralAnalysis(scenariosToCompare);
-    }
-
-    function drawComparisonChart(scenariosToCompare) {
-        const canvasId = 'comparisonChart';
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        if (chartInstances[canvasId]) {
-            chartInstances[canvasId].destroy();
-        }
-
-        const datasets = [];
-        let maxMonths = 0;
-        const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
-
-        scenariosToCompare.forEach((scenario, index) => {
-            const simData = scenario.data.results.mainSimulation.valoresMensais;
-            if (simData && simData.length > 0) {
-                maxMonths = Math.max(maxMonths, simData[simData.length - 1].month);
-                datasets.push({
-                    label: `${scenario.name} (Líquido)`,
-                    data: simData.map(d => ({ x: d.month, y: d.valorLiquido })),
-                    borderColor: colors[index % colors.length],
-                    fill: false,
-                    tension: 0.1
-                });
-            }
-        });
-
-        const labels = Array.from({ length: maxMonths + 1 }, (_, i) => i);
-
-        chartInstances[canvasId] = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: datasets
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Meses'
-                        },
-                        type: 'linear', // Usar escala linear para meses
-                        ticks: {
-                            stepSize: Math.max(1, Math.floor(maxMonths / 10)) // Ajustar step size
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Valor Líquido (R$)'
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                return formatCurrencyValue(value);
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += formatCurrencyValue(context.parsed.y);
-                                }
-                                return label;
-                            }
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Comparação de Valor Líquido entre Cenários'
-                    }
-                }
-            }
-        });
-    }
-
-    function fillComparisonTable(scenariosToCompare) {
-        const table = document.getElementById('comparisonTable');
-        table.innerHTML = ''; // Limpar
-
-        const metrics = [
-            { key: 'initialSavings', label: 'Valor Inicial', format: formatCurrencyValue },
-            { key: 'monthlyContribution', label: 'Aporte Mensal', format: formatCurrencyValue },
-            { key: 'interestRate', label: 'Taxa Juros', format: (v, p) => `${v.toFixed(2).replace('.',',')}% ${p.interestRateType === 'anual' ? 'a.a.' : 'a.m.'}` },
-            { key: 'taxRate', label: 'IR', format: formatPercentageValue },
-            { key: 'annualInflation', label: 'Inflação', format: formatPercentageValue },
-            { key: 'finalNetValue', label: 'Valor Líquido Final', format: formatCurrencyValue, resultPath: 'mainSimulation.valoresMensais', isResult: true, agg: 'last' },
-            { key: 'finalGrossValue', label: 'Valor Bruto Final', format: formatCurrencyValue, resultPath: 'mainSimulation.valoresMensais', isResult: true, agg: 'last', dataKey: 'totalAcumulado' },
-            { key: 'totalInvested', label: 'Total Investido Final', format: formatCurrencyValue, resultPath: 'mainSimulation.valoresMensais', isResult: true, agg: 'last' },
-            { key: 'totalJuros', label: 'Total Juros Final', format: formatCurrencyValue, resultPath: 'mainSimulation.valoresMensais', isResult: true, agg: 'last' },
-            { key: 'totalImposto', label: 'Total Imposto Final', format: formatCurrencyValue, resultPath: 'mainSimulation.valoresMensais', isResult: true, agg: 'last', dataKey: 'imposto' },
-            { key: 'requiredInitialValue', label: 'Valor Inicial Ideal', format: formatCurrencyValue, resultPath: 'requiredInitialValue.value', isResult: true },
-            { key: 'idealContribution', label: 'Aporte Ideal', format: formatCurrencyValue, resultPath: 'idealContribution.value', isResult: true },
-            { key: 'requiredTime', label: 'Tempo Ideal (meses)', format: (v) => v === Infinity ? '> 100 anos' : v, resultPath: 'requiredTime.value', isResult: true },
-            { key: 'idealRate', label: 'Taxa Anual Ideal', format: formatPercentageValue, resultPath: 'idealRate.value', isResult: true },
-        ];
-
-        // Cabeçalho
-        const thead = table.createTHead();
-        const headerRow = thead.insertRow();
-        const thMetric = document.createElement('th');
-        thMetric.textContent = 'Métrica';
-        headerRow.appendChild(thMetric);
-        scenariosToCompare.forEach(scenario => {
-            const th = document.createElement('th');
-            th.textContent = scenario.name;
-            headerRow.appendChild(th);
-        });
-
-        // Corpo
-        const tbody = table.createTBody();
-        metrics.forEach(metric => {
-            const row = tbody.insertRow();
-            const cellMetric = row.insertCell();
-            cellMetric.textContent = metric.label;
-            cellMetric.style.fontWeight = 'bold';
-            cellMetric.style.textAlign = 'left';
-
-            const values = [];
-            scenariosToCompare.forEach(scenario => {
-                let value = null;
-                try {
-                    if (metric.isResult) {
-                        let path = metric.resultPath.split('.');
-                        let current = scenario.data.results;
-                        path.forEach(part => { current = current[part]; });
-                        if (metric.agg === 'last') {
-                            const dataKey = metric.dataKey || path[path.length - 1]; // Default to last part if no dataKey
-                            value = current && current.length > 0 ? current[current.length - 1][dataKey] : null;
-                        } else {
-                            value = current;
-                        }
-                    } else {
-                        value = scenario.data.params[metric.key];
-                    }
-                } catch (e) {
-                    console.error(`Error accessing metric ${metric.key} for scenario ${scenario.name}:`, e);
-                    value = null;
-                }
-                values.push(value);
-
-                const cell = row.insertCell();
-                const formattedValue = metric.format(value, scenario.data.params);
-                cell.textContent = formattedValue;
-            });
-
-            // Highlight best/worst for numeric results
-            if (metric.isResult && values.every(v => typeof v === 'number' && v !== Infinity && !isNaN(v))) {
-                const numericValues = values.filter(v => v !== null);
-                if (numericValues.length > 1) {
-                    const maxVal = Math.max(...numericValues);
-                    const minVal = Math.min(...numericValues);
-                    row.cells.forEach((cell, i) => {
-                        if (i > 0) { // Skip metric label cell
-                            const val = values[i-1];
-                            if (val === maxVal) cell.classList.add('best-value');
-                            if (val === minVal) cell.classList.add('worst-value');
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    function generateGeneralAnalysis(scenariosToCompare) {
-        const container = document.getElementById('generalAnalysisContent');
-        let analysisHTML = '';
-
-        // Exemplo: Comparar valor líquido final
-        let bestNetValue = -Infinity;
-        let bestNetScenario = '';
-        let worstNetValue = Infinity;
-        let worstNetScenario = '';
-
-        scenariosToCompare.forEach(scenario => {
-            try {
-                const simData = scenario.data.results.mainSimulation.valoresMensais;
-                if (simData && simData.length > 0) {
-                    const finalNet = simData[simData.length - 1].valorLiquido;
-                    if (finalNet > bestNetValue) {
-                        bestNetValue = finalNet;
-                        bestNetScenario = scenario.name;
-                    }
-                    if (finalNet < worstNetValue) {
-                        worstNetValue = finalNet;
-                        worstNetScenario = scenario.name;
-                    }
-                }
-            } catch (e) {}
-        });
-
-        if (bestNetScenario) {
-            analysisHTML += `<p><strong>Maior Valor Líquido Final:</strong> ${bestNetScenario} (${formatCurrencyValue(bestNetValue)})</p>`;
-        }
-        if (worstNetScenario && worstNetScenario !== bestNetScenario) {
-             analysisHTML += `<p><strong>Menor Valor Líquido Final:</strong> ${worstNetScenario} (${formatCurrencyValue(worstNetValue)})</p>`;
-        }
-
-        // Adicionar mais análises comparativas aqui (ex: qual atinge mais rápido, qual precisa de menor aporte ideal, etc.)
-        // Exemplo: Menor tempo ideal
-        let bestTime = Infinity;
-        let bestTimeScenario = '';
-        scenariosToCompare.forEach(scenario => {
-             try {
-                 const time = scenario.data.results.requiredTime.value;
-                 if (time < bestTime) {
-                     bestTime = time;
-                     bestTimeScenario = scenario.name;
-                 }
-             } catch(e) {}
-        });
-        if (bestTimeScenario) {
-             analysisHTML += `<p><strong>Menor Tempo Ideal para Atingir Objetivos:</strong> ${bestTimeScenario} (${bestTime === Infinity ? '> 100 anos' : `${bestTime} meses`})</p>`;
-        }
-
-        container.innerHTML = analysisHTML || '<p>Não foi possível gerar análise comparativa detalhada.</p>';
-        document.getElementById('generalAnalysisContainer').style.display = 'block';
-    }
-
-    // --- Inicialização --- //
-    document.addEventListener('DOMContentLoaded', () => {
-        // Carregar cenários salvos do localStorage (se houver)
-        const savedScenarios = localStorage.getItem('financialScenarios');
-        if (savedScenarios) {
-            scenarios = JSON.parse(savedScenarios);
-            renderSavedScenarios();
-            document.getElementById('analyzeScenarioButton').disabled = scenarios.length < 2;
-        }
-        // Adicionar listener para salvar no localStorage ao fechar
-        window.addEventListener('beforeunload', () => {
-            localStorage.setItem('financialScenarios', JSON.stringify(scenarios));
-        });
-
-        // Formatar campos iniciais
-        formatCurrency(document.getElementById('initialSavings'));
-        formatCurrency(document.getElementById('monthlyContribution'));
-        formatPercentage(document.getElementById('interestRate'));
-        formatPercentage(document.getElementById('taxRate'));
-        formatPercentage(document.getElementById('annualInflation'));
-    });
-
-</script>
+    window.onload = () => {
+      toggleTaxInput("tax", "15,00 %");
+      toggleTaxInput("inflation", "5,00 %");
+    };
+  </script>
 </body>
 </html>
-
