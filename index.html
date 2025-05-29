@@ -486,6 +486,7 @@
         <label for="mesSelecionado">Selecione o mês: </label>
         <select id="mesSelecionado" onchange="atualizarGraficos()">
           <option value="-1">Total Anual</option>
+          <option value="-2">Médias Mensais</option>
           <option value="0">Janeiro</option>
           <option value="1">Fevereiro</option>
           <option value="2">Março</option>
@@ -823,6 +824,10 @@
         totalVariaveis: totalVariaveis,
         totalDespesas: totalDespesas,
         saldo: saldo,
+        mediaReceitas: mediaReceitas, // Adicionado
+        mediaFixas: mediaFixas,       // Adicionado
+        mediaVariaveis: mediaVariaveis, // Adicionado
+        mediaSaldo: mediaSaldo,       // Adicionado
         lancamentos: lancamentos,
       };
 
@@ -833,18 +838,26 @@
       if (!dadosResumo) return;
       const mesSelecionado = parseInt(document.getElementById("mesSelecionado").value);
       let receitaPeriodo, fixasPeriodo, variaveisPeriodo, saldoPeriodo;
-      if (mesSelecionado === -1) {
+
+      if (mesSelecionado === -1) { // Total Anual
         receitaPeriodo = dadosResumo.totalReceitas;
         fixasPeriodo = dadosResumo.totalFixas;
         variaveisPeriodo = dadosResumo.totalVariaveis;
         saldoPeriodo = dadosResumo.saldo;
-      } else {
+      } else if (mesSelecionado === -2) { // Médias Mensais
+        receitaPeriodo = dadosResumo.mediaReceitas;
+        fixasPeriodo = dadosResumo.mediaFixas;
+        variaveisPeriodo = dadosResumo.mediaVariaveis;
+        saldoPeriodo = dadosResumo.mediaSaldo;
+      } else { // Mês específico
         receitaPeriodo = dadosResumo.receitas.meses[mesSelecionado] || 0;
         fixasPeriodo = dadosResumo.fixas.meses[mesSelecionado] || 0;
         variaveisPeriodo = dadosResumo.variaveis.meses[mesSelecionado] || 0;
         saldoPeriodo = receitaPeriodo - fixasPeriodo - variaveisPeriodo;
       }
+
       atualizarGraficoDespesasPoupanca(fixasPeriodo, variaveisPeriodo, saldoPeriodo);
+      // Passa o valor original de mesSelecionado para a função do segundo gráfico decidir como agregar
       atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado);
     }
 
