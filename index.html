@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro V3</title>
+  <title>Controle Financeiro V4</title> <!-- Versão atualizada -->
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -621,16 +621,10 @@
     // Funções de Navegação e Exibição
     function mostrarResumo() {
       containerPrincipal.classList.add("container-ativo");
-      // Oculta o botão via JS (alternativa ao CSS puro)
-      // botaoResumoFixo.style.opacity = '0';
-      // botaoResumoFixo.style.visibility = 'hidden';
     }
 
     function voltarParaLancamentos() {
       containerPrincipal.classList.remove("container-ativo");
-      // Mostra o botão via JS (alternativa ao CSS puro)
-      // botaoResumoFixo.style.opacity = '1';
-      // botaoResumoFixo.style.visibility = 'visible';
     }
 
     // Funções de Formatação e Cálculo
@@ -711,7 +705,7 @@
       return ocorrencias;
     }
     
-    // *** CORREÇÃO APLICADA AQUI ***
+    // *** CORREÇÃO APLICADA AQUI (v4) ***
     function calcularTotaisPorCategoria(lancamentosCategoria, ano) {
       const meses = Array(12).fill(0);
       
@@ -723,11 +717,11 @@
           if (l.valoresManuais && l.valoresManuais[index] !== null) {
             meses[index] += l.valoresManuais[index];
           } else {
-            // Senão, verifica se houve ocorrência calculada neste mês
+            // Senão, verifica quantas ocorrências calculadas existem neste mês
             const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
             if (ocorrenciasNoMes.length > 0) {
-              // Adiciona o valor base do lançamento (assumindo uma vez por mês, mesmo se houver múltiplas ocorrências)
-              meses[index] += l.valor;
+              // Adiciona o valor base multiplicado pelo número de ocorrências no mês
+              meses[index] += l.valor * ocorrenciasNoMes.length; 
             }
           }
         }
@@ -866,7 +860,7 @@
       if (variaveis > 0) { labels.push("Despesas Variáveis"); data.push(variaveis); backgroundColors.push("#ff9800"); }
       if (saldo > 0) { labels.push("Potencial de Investimento"); data.push(saldo); backgroundColors.push("#4caf50"); }
       if (data.length === 0) {
-        document.getElementById("legendaDespesasPoupanca").innerHTML = '<p style="text-align:center;">Sem dados para exibir.</p>';
+        document.getElementById("legendaDespesasPoupanca").innerHTML = "<p style=\"text-align:center;\">Sem dados para exibir.</p>";
         return;
       }
       const percentuais = total > 0 ? data.map((val) => ((val / total) * 100).toFixed(1) + "%") : data.map(() => "0%");
@@ -918,21 +912,31 @@
       despesasPeriodo.forEach((despesa) => {
         let valorDespesa = 0;
         if (mesSelecionado === -1) {
+          // Anual: Soma todas as ocorrências ou valores manuais do ano
           if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
-            valorDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
+             // Soma valores manuais se existirem
+             valorDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
+             // Se houver valor manual em algum mês, precisamos somar as ocorrências dos meses *sem* valor manual
+             const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
+             for(let i=0; i<12; i++){
+                 if(despesa.valoresManuais[i] === null){ // Se não há valor manual para o mês i
+                     const ocorrenciasMesSemManual = ocorrencias.filter(d => d.getMonth() === i);
+                     valorDespesa += despesa.valor * ocorrenciasMesSemManual.length;
+                 }
+             }
           } else {
+            // Sem valores manuais, soma todas as ocorrências do ano
             const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
             valorDespesa = despesa.valor * ocorrencias.length;
           }
         } else {
+          // Mensal: Prioriza valor manual, senão calcula ocorrências do mês
           if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
             valorDespesa = despesa.valoresManuais[mesSelecionado];
           } else {
             const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
             const ocorrenciasNoMes = ocorrencias.filter((d) => d.getMonth() === mesSelecionado);
-            if (ocorrenciasNoMes.length > 0) {
-              valorDespesa = despesa.valor * ocorrenciasNoMes.length; // Multiplica por ocorrências no mês
-            }
+            valorDespesa = despesa.valor * ocorrenciasNoMes.length; // Multiplica por ocorrências no mês
           }
         }
         if (valorDespesa > 0) {
@@ -967,7 +971,7 @@
       const totalDespesasPeriodo = data.reduce((sum, val) => sum + val, 0);
       const restante = Math.max(0, receitaPeriodo - totalDespesasPeriodo);
       if (data.length === 0 && restante <= 0) {
-        document.getElementById("legendaDespesasReceitas").innerHTML = '<p style="text-align:center;">Sem despesas para exibir neste período.</p>';
+        document.getElementById("legendaDespesasReceitas").innerHTML = "<p style=\"text-align:center;\">Sem despesas para exibir neste período.</p>";
         if (graficoDespesasReceitas) {
           graficoDespesasReceitas.destroy();
           graficoDespesasReceitas = null;
@@ -1042,7 +1046,7 @@
         return;
       }
       if (tipo === "receita" && formaPagamento !== "conta") {
-        alert('Receitas devem ser lançadas apenas como "Conta"');
+        alert("Receitas devem ser lançadas apenas como \"Conta\"");
         formaPagamentoSelect.value = "conta";
         return;
       }
@@ -1087,13 +1091,16 @@
         if (!l.valoresManuais) l.valoresManuais = Array(12).fill(null);
         const meses = Array(12).fill(0);
         const ocorrencias = calcularOcorrencias(l, currentYear);
-        ocorrencias.forEach((data) => {
-          const mes = data.getMonth();
-          const valorDoMes = l.valoresManuais[mes] !== null ? l.valoresManuais[mes] : l.valor;
-          if (l.valoresManuais[mes] !== 0) {
-            meses[mes] += valorDoMes;
-          }
-        });
+        // Calcula valor para cada mês (considerando manual ou ocorrências)
+        for (let index = 0; index < 12; index++) {
+            if (l.valoresManuais[index] !== null) {
+                meses[index] = l.valoresManuais[index];
+            } else {
+                const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
+                meses[index] = l.valor * ocorrenciasNoMes.length;
+            }
+        }
+        
         const total = meses.reduce((sum, val) => sum + val, 0);
         const media = total / 12;
         tr.innerHTML = `
@@ -1101,7 +1108,7 @@
           <td class="${l.tipo}">${l.descricao}</td>
           ${meses.map((m, index) => `
             <td class="editable" data-id="${l.id}" data-month="${index}">
-              ${formatarMoeda(l.valoresManuais[index] !== null ? l.valoresManuais[index] : m)} 
+              ${formatarMoeda(m)} 
             </td>
           `).join("")}
           <td>${formatarMoeda(total)}</td>
@@ -1212,13 +1219,12 @@
       document.getElementById("tipoLancamento").addEventListener("change", function () {
         const formaPagamentoSelect = document.getElementById("formaPagamento");
         if (this.value === "receita") {
-          formaPagamentoSelect.innerHTML = '<option value="conta">Conta</option>';
-          formaPagamentoSelect.value = "conta";
+          formaPagamentoSelect.innerHTML = "."Conta\";
         } else {
           const valorAtual = formaPagamentoSelect.value;
           formaPagamentoSelect.innerHTML = `
-            <option value="conta">Conta</option>
-            <option value="credito">Cartão de Crédito</option>
+            <option value=\"conta\">Conta</option>
+            <option value=\"credito\">Cartão de Crédito</option>
           `;
           if (valorAtual === "conta" || valorAtual === "credito") {
             formaPagamentoSelect.value = valorAtual;
