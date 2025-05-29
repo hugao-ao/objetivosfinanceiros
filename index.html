@@ -870,7 +870,7 @@
       const backgroundColors = [];
       if (fixas > 0) { labels.push("Despesas Fixas"); data.push(fixas); backgroundColors.push("#f44336"); }
       if (variaveis > 0) { labels.push("Despesas Variáveis"); data.push(variaveis); backgroundColors.push("#ff9800"); }
-      if (saldo > 0) { labels.push("Potencial de Investimento"); data.push(saldo); backgroundColors.push("#4caf50"); }
+      if (saldo > 0) { labels.push("Potencial de Investimento"); data.push(saldo); backgroundColors.push("#1976d2"); } // Cor alterada para azul
       if (data.length === 0) {
         document.getElementById("legendaDespesasPoupanca").innerHTML = "<p style=\"text-align:center;\">Sem dados para exibir.</p>";
         return;
@@ -912,45 +912,67 @@
     function atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado) {
       const ctx = document.getElementById("graficoDespesasReceitas").getContext("2d");
       if (graficoDespesasReceitas) graficoDespesasReceitas.destroy();
-      const lancamentosPeriodo = dadosResumo.lancamentos.filter((l) => {
-        if (mesSelecionado === -1) return true;
-        const ocorrencias = calcularOcorrencias(l, new Date().getFullYear());
-        const temOcorrenciaNoMes = ocorrencias.some((d) => d.getMonth() === mesSelecionado);
-        const temValorManualNoMes = l.valoresManuais && l.valoresManuais[mesSelecionado] !== null;
-        return temOcorrenciaNoMes || temValorManualNoMes;
-      });
-      const despesasPeriodo = lancamentosPeriodo.filter((l) => l.tipo !== "receita");
+
       const despesasAgrupadas = {};
-      despesasPeriodo.forEach((despesa) => {
+      const anoAtual = new Date().getFullYear();
+
+      // Filtra apenas as despesas
+      const todasDespesas = dadosResumo.lancamentos.filter((l) => l.tipo !== "receita");
+
+      todasDespesas.forEach((despesa) => {
         let valorDespesa = 0;
-        if (mesSelecionado === -1) {
-          // Anual: Soma todas as ocorrências ou valores manuais do ano
+
+        if (mesSelecionado === -2) { // Médias Mensais
+          // Calcula o total anual da despesa
+          let totalAnualDespesa = 0;
           if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
-             // Soma valores manuais se existirem
+            totalAnualDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
+            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
+            for (let i = 0; i < 12; i++) {
+              if (despesa.valoresManuais[i] === null) {
+                const ocorrenciasMesSemManual = ocorrencias.filter(d => d.getMonth() === i);
+                totalAnualDespesa += despesa.valor * ocorrenciasMesSemManual.length;
+              }
+            }
+          } else {
+            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
+            totalAnualDespesa = despesa.valor * ocorrencias.length;
+          }
+          valorDespesa = totalAnualDespesa / 12; // Calcula a média mensal
+
+        } else if (mesSelecionado === -1) { // Total Anual
+          // Lógica existente para Total Anual
+          if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
              valorDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
-             // Se houver valor manual em algum mês, precisamos somar as ocorrências dos meses *sem* valor manual
-             const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
+             const ocorrencias = calcularOcorrencias(despesa, anoAtual);
              for(let i=0; i<12; i++){
-                 if(despesa.valoresManuais[i] === null){ // Se não há valor manual para o mês i
+                 if(despesa.valoresManuais[i] === null){ 
                      const ocorrenciasMesSemManual = ocorrencias.filter(d => d.getMonth() === i);
                      valorDespesa += despesa.valor * ocorrenciasMesSemManual.length;
                  }
              }
           } else {
-            // Sem valores manuais, soma todas as ocorrências do ano
-            const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
+            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
             valorDespesa = despesa.valor * ocorrencias.length;
           }
-        } else {
-          // Mensal: Prioriza valor manual, senão calcula ocorrências do mês
-          if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
-            valorDespesa = despesa.valoresManuais[mesSelecionado];
-          } else {
-            const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
-            const ocorrenciasNoMes = ocorrencias.filter((d) => d.getMonth() === mesSelecionado);
-            valorDespesa = despesa.valor * ocorrenciasNoMes.length; // Multiplica por ocorrências no mês
-          }
+        } else { // Mês Específico
+           // Lógica existente para Mês Específico
+           const ocorrencias = calcularOcorrencias(despesa, anoAtual);
+           const temOcorrenciaNoMes = ocorrencias.some((d) => d.getMonth() === mesSelecionado);
+           const temValorManualNoMes = despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null;
+           
+           // Só processa se houver ocorrência ou valor manual no mês selecionado
+           if(temOcorrenciaNoMes || temValorManualNoMes){
+                if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
+                    valorDespesa = despesa.valoresManuais[mesSelecionado];
+                } else {
+                    const ocorrenciasNoMes = ocorrencias.filter((d) => d.getMonth() === mesSelecionado);
+                    valorDespesa = despesa.valor * ocorrenciasNoMes.length;
+                }
+           }
         }
+
+        // Agrupa por descrição se o valor for maior que zero
         if (valorDespesa > 0) {
           const key = despesa.descricao;
           if (!despesasAgrupadas[key]) {
@@ -959,6 +981,8 @@
           despesasAgrupadas[key].valor += valorDespesa;
         }
       });
+
+      // Continua com a lógica de plotagem do gráfico (labels, data, backgroundColors...)
       const labels = [];
       const data = [];
       const backgroundColors = [];
@@ -967,21 +991,26 @@
       const limiteGrafico = 10;
       const despesasParaGrafico = despesasOrdenadas.slice(0, limiteGrafico);
       let outrasDespesas = despesasOrdenadas.slice(limiteGrafico).reduce((sum, d) => sum + d.valor, 0);
+
       despesasParaGrafico.forEach((d) => {
         labels.push(d.descricao);
         data.push(d.valor);
+        // Mantém a lógica de cores original
         if (d.tipo === "fixa") backgroundColors.push(d.formaPagamento === "credito" ? "#c62828" : "#f44336");
         else backgroundColors.push(d.formaPagamento === "credito" ? "#f57c00" : "#ff9800");
         tipos.push(d.tipo);
       });
+
       if (outrasDespesas > 0) {
         labels.push("Outras Despesas");
         data.push(outrasDespesas);
         backgroundColors.push("#757575");
         tipos.push("variavel");
       }
+
       const totalDespesasPeriodo = data.reduce((sum, val) => sum + val, 0);
       const restante = Math.max(0, receitaPeriodo - totalDespesasPeriodo);
+
       if (data.length === 0 && restante <= 0) {
         document.getElementById("legendaDespesasReceitas").innerHTML = "<p style=\"text-align:center;\">Sem despesas para exibir neste período.</p>";
         if (graficoDespesasReceitas) {
@@ -990,16 +1019,22 @@
         }
         return;
       }
+
+      // Adiciona o 'Restante' apenas se houver despesas ou se o restante for positivo
       if (restante > 0 || data.length > 0) {
-        labels.push("Restante (Receita - Despesas)");
-        data.push(restante);
-        backgroundColors.push("#1976d2");
-        tipos.push("receita");
+         labels.push("Restante (Receita - Despesas)");
+         data.push(restante);
+         backgroundColors.push("#1976d2"); // Cor azul para o restante
+         tipos.push("receita"); // Usa 'receita' como tipo para a legenda
       }
+
+      // Recalcula percentuais com base na receita do período (total anual, média ou mensal)
       const percentuais = receitaPeriodo > 0 ? data.map((val) => ((val / receitaPeriodo) * 100).toFixed(1) + "%") : data.map(() => "0%");
+
       const legendaHTML = labels.map((label, i) => {
         const tipo = tipos[i];
-        const classeCor = tipo === "fixa" ? "fixa" : tipo === "variavel" ? "variavel" : "receita";
+        // Define a classe de cor baseada no tipo (fixa, variavel, receita para o restante)
+        const classeCor = tipo === "fixa" ? "fixa" : tipo === "variavel" ? "variavel" : "receita"; 
         const percentualExibido = receitaPeriodo > 0 ? `(${percentuais[i]})` : "";
         return `
           <div class="item-legenda">
@@ -1011,8 +1046,10 @@
         `;
       }).join("");
       document.getElementById("legendaDespesasReceitas").innerHTML = legendaHTML;
+
+      // Cria ou atualiza o gráfico
       graficoDespesasReceitas = new Chart(ctx, {
-        type: "pie",
+        type: "pie", // Mantido como pie
         data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1, borderColor: "#014034" }] },
         options: {
           responsive: true,
@@ -1024,7 +1061,8 @@
                 label: function (context) {
                   const label = context.label || "";
                   const value = context.raw || 0;
-                  const percentage = percentuais[context.dataIndex] || "0%";
+                  // Usa o array de percentuais calculado anteriormente
+                  const percentage = percentuais[context.dataIndex] || "0%"; 
                   const percentualExibido = receitaPeriodo > 0 ? `(${percentage})` : "";
                   return `${label}: ${formatarMoeda(value)} ${percentualExibido}`;
                 },
