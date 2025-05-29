@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro</title>
+  <title>Controle Financeiro V3</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -95,10 +95,8 @@
 
     /* Formulário dentro do Modal */
     .form-section-modal {
-      /* background-color: #014034; (já no modal-content) */
-      padding: 0; /* Removido padding extra */
+      padding: 0; 
       border-radius: 10px;
-      /* margin-bottom: 30px; (não necessário no modal) */
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 30px;
@@ -122,7 +120,7 @@
     }
 
     .botoes-formulario {
-      grid-column: 1 / -1; /* Ocupa as duas colunas */
+      grid-column: 1 / -1; 
       display: flex;
       gap: 10px;
       justify-content: flex-end;
@@ -154,15 +152,14 @@
       color: #ffd700;
       position: sticky;
       top: 0;
-      z-index: 5; /* Abaixo do botão fixo */
+      z-index: 5; 
     }
     
-    /* Estilo para o cabeçalho da Descrição com o botão + */
     th.descricao-header {
         display: flex;
         align-items: center;
-        justify-content: space-between; /* Alinha texto à esquerda, botão à direita */
-        padding-right: 5px; /* Espaço para o botão */
+        justify-content: space-between; 
+        padding-right: 5px; 
     }
 
     .botao-abrir-modal {
@@ -174,7 +171,7 @@
         height: 24px;
         font-size: 18px;
         font-weight: bold;
-        line-height: 24px; /* Centraliza o + verticalmente */
+        line-height: 24px; 
         text-align: center;
         cursor: pointer;
         margin-left: 10px;
@@ -218,6 +215,15 @@
       border-radius: 5px;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: opacity 0.3s ease, visibility 0.3s ease; /* Adiciona transição */
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    /* Esconde o botão quando o resumo está ativo */
+    .container-ativo ~ .botao-resumo-fixo {
+        opacity: 0;
+        visibility: hidden;
     }
 
     .botao-resumo-fixo:hover {
@@ -389,9 +395,14 @@
     .descricao-legenda {
       min-width: 120px;
     }
-
-    /* Remover CSS não utilizado do formulário original */
-    /* .form-section { ... } */ 
+    
+    /* Linha de espaçamento na tabela de resumo */
+    .spacer-row td {
+        height: 10px; /* Altura do espaço */
+        padding: 0;
+        border: none; /* Remove bordas */
+        background-color: #002d26; /* Cor de fundo do corpo */
+    }
 
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -400,7 +411,117 @@
 
   <h1>Controle Financeiro</h1>
   
-  <!-- Botão Resumo Fixo -->
+  <!-- Container Principal (Lançamentos e Resumo) -->
+  <div class="container-principal" id="containerPrincipal">
+    <!-- Seção da Tabela de Lançamentos -->
+    <div class="secao-lancamentos">
+      <div class="table-container">
+        <table id="tabelaLancamentos">
+          <thead>
+            <tr>
+              <th class="hidden-id">ID</th>
+              <th class="descricao-header">
+                <span>Descrição</span>
+                <button id="botaoAbrirModal" class="botao-abrir-modal" onclick="abrirModal()">+</button>
+              </th>
+              <th>Jan</th>
+              <th>Fev</th>
+              <th>Mar</th>
+              <th>Abr</th>
+              <th>Mai</th>
+              <th>Jun</th>
+              <th>Jul</th>
+              <th>Ago</th>
+              <th>Set</th>
+              <th>Out</th>
+              <th>Nov</th>
+              <th>Dez</th>
+              <th>Total</th>
+              <th>Média</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaBody">
+            <!-- Lançamentos serão inseridos aqui -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Seção do Resumo -->
+    <div class="secao-resumo">
+      <button class="botao-voltar" onclick="voltarParaLancamentos()">← Voltar para Lançamentos</button>
+      
+      <div class="resumo-titulo">Resumo Financeiro</div>
+      
+      <div class="table-container">
+        <table id="tabelaResumo">
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th>Jan</th>
+              <th>Fev</th>
+              <th>Mar</th>
+              <th>Abr</th>
+              <th>Mai</th>
+              <th>Jun</th>
+              <th>Jul</th>
+              <th>Ago</th>
+              <th>Set</th>
+              <th>Out</th>
+              <th>Nov</th>
+              <th>Dez</th>
+              <th>Total</th>
+              <th>Média</th> <!-- Nova coluna Média -->
+            </tr>
+          </thead>
+          <tbody id="resumoBody">
+            <!-- Resumo será inserido aqui -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Seção dos Gráficos -->
+      <div class="seletor-mes">
+        <label for="mesSelecionado">Selecione o mês: </label>
+        <select id="mesSelecionado" onchange="atualizarGraficos()">
+          <option value="-1">Total Anual</option>
+          <option value="0">Janeiro</option>
+          <option value="1">Fevereiro</option>
+          <option value="2">Março</option>
+          <option value="3">Abril</option>
+          <option value="4">Maio</option>
+          <option value="5">Junho</option>
+          <option value="6">Julho</option>
+          <option value="7">Agosto</option>
+          <option value="8">Setembro</option>
+          <option value="9">Outubro</option>
+          <option value="10">Novembro</option>
+          <option value="11">Dezembro</option>
+        </select>
+      </div>
+
+      <div class="graficos-container">
+        <div class="grafico-card">
+          <div class="grafico-titulo">Distribuição de Despesas e Poupança</div>
+          <div class="grafico">
+            <canvas id="graficoDespesasPoupanca"></canvas>
+          </div>
+          <div class="legenda-grafico" id="legendaDespesasPoupanca"></div>
+        </div>
+        
+        <div class="grafico-card">
+          <div class="grafico-titulo">Despesas em Relação às Receitas</div>
+          <div class="grafico">
+            <canvas id="graficoDespesasReceitas"></canvas>
+          </div>
+          <div class="legenda-grafico" id="legendaDespesasReceitas"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Botão Resumo Fixo (movido para fora do container principal para CSS funcionar) -->
   <button class="botao-resumo-fixo" onclick="mostrarResumo()">Ver Resumo e Análises</button>
 
   <!-- Modal do Formulário -->
@@ -464,136 +585,25 @@
     </div>
   </div>
 
-  <!-- Container Principal (Lançamentos e Resumo) -->
-  <div class="container-principal" id="containerPrincipal">
-    <!-- Seção da Tabela de Lançamentos -->
-    <div class="secao-lancamentos">
-      <div class="table-container">
-        <table id="tabelaLancamentos">
-          <thead>
-            <tr>
-              <th class="hidden-id">ID</th>
-              <th class="descricao-header">
-                <span>Descrição</span>
-                <button id="botaoAbrirModal" class="botao-abrir-modal" onclick="abrirModal()">+</button>
-              </th>
-              <th>Jan</th>
-              <th>Fev</th>
-              <th>Mar</th>
-              <th>Abr</th>
-              <th>Mai</th>
-              <th>Jun</th>
-              <th>Jul</th>
-              <th>Ago</th>
-              <th>Set</th>
-              <th>Out</th>
-              <th>Nov</th>
-              <th>Dez</th>
-              <th>Total</th>
-              <th>Média</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaBody">
-            <!-- Lançamentos serão inseridos aqui -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Seção do Resumo -->
-    <div class="secao-resumo">
-      <button class="botao-voltar" onclick="voltarParaLancamentos()">← Voltar para Lançamentos</button>
-      
-      <div class="resumo-titulo">Resumo Financeiro</div>
-      
-      <div class="table-container">
-        <table id="tabelaResumo">
-          <thead>
-            <tr>
-              <th>Categoria</th>
-              <th>Jan</th>
-              <th>Fev</th>
-              <th>Mar</th>
-              <th>Abr</th>
-              <th>Mai</th>
-              <th>Jun</th>
-              <th>Jul</th>
-              <th>Ago</th>
-              <th>Set</th>
-              <th>Out</th>
-              <th>Nov</th>
-              <th>Dez</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody id="resumoBody">
-            <!-- Resumo será inserido aqui -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Seção dos Gráficos -->
-      <div class="seletor-mes">
-        <label for="mesSelecionado">Selecione o mês: </label>
-        <select id="mesSelecionado" onchange="atualizarGraficos()">
-          <option value="-1">Total Anual</option>
-          <option value="0">Janeiro</option>
-          <option value="1">Fevereiro</option>
-          <option value="2">Março</option>
-          <option value="3">Abril</option>
-          <option value="4">Maio</option>
-          <option value="5">Junho</option>
-          <option value="6">Julho</option>
-          <option value="7">Agosto</option>
-          <option value="8">Setembro</option>
-          <option value="9">Outubro</option>
-          <option value="10">Novembro</option>
-          <option value="11">Dezembro</option>
-        </select>
-      </div>
-
-      <div class="graficos-container">
-        <div class="grafico-card">
-          <div class="grafico-titulo">Distribuição de Despesas e Poupança</div>
-          <div class="grafico">
-            <canvas id="graficoDespesasPoupanca"></canvas>
-          </div>
-          <div class="legenda-grafico" id="legendaDespesasPoupanca"></div>
-        </div>
-        
-        <div class="grafico-card">
-          <div class="grafico-titulo">Despesas em Relação às Receitas</div>
-          <div class="grafico">
-            <canvas id="graficoDespesasReceitas"></canvas>
-          </div>
-          <div class="legenda-grafico" id="legendaDespesasReceitas"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // Variáveis globais para os gráficos e modal
+    // Variáveis globais
     let graficoDespesasPoupanca = null;
     let graficoDespesasReceitas = null;
     let dadosResumo = null;
     let lancamentos = [];
     const modal = document.getElementById("modalFormulario");
+    const containerPrincipal = document.getElementById("containerPrincipal");
+    const botaoResumoFixo = document.querySelector(".botao-resumo-fixo"); // Seleciona o botão
 
     // Funções do Modal
     function abrirModal() {
-      // Limpar campos antes de abrir (opcional)
-      // document.getElementById('descricao').value = '';
-      // document.getElementById('valor').value = '';
-      // Definir datas padrão ao abrir
       const today = new Date();
       const currentYear = today.getFullYear();
-      if (!document.getElementById('dataInicial').value) {
-          document.getElementById('dataInicial').value = `${currentYear}-01-01`;
+      if (!document.getElementById("dataInicial").value) {
+        document.getElementById("dataInicial").value = `${currentYear}-01-01`;
       }
-      if (!document.getElementById('dataFinal').value) {
-          document.getElementById('dataFinal').value = `${currentYear}-12-31`;
+      if (!document.getElementById("dataFinal").value) {
+        document.getElementById("dataFinal").value = `${currentYear}-12-31`;
       }
       modal.style.display = "block";
     }
@@ -602,501 +612,212 @@
       modal.style.display = "none";
     }
 
-    // Fechar modal se clicar fora do conteúdo
-    window.onclick = function(event) {
+    window.onclick = function (event) {
       if (event.target == modal) {
         fecharModal();
       }
-    }
+    };
 
-    // Função para formatar valores monetários corretamente
-    function formatarMoeda(valor) {
-      const numero = typeof valor === 'number' ? valor : parseFloat(String(valor).replace(/[^\d,-]/g, '').replace(',', '.'));
-      if (isNaN(numero)) return 'R$ 0,00'; // Retorna zero se não for número
-      
-      return numero.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
-
+    // Funções de Navegação e Exibição
     function mostrarResumo() {
-      document.getElementById('containerPrincipal').classList.add('container-ativo');
+      containerPrincipal.classList.add("container-ativo");
+      // Oculta o botão via JS (alternativa ao CSS puro)
+      // botaoResumoFixo.style.opacity = '0';
+      // botaoResumoFixo.style.visibility = 'hidden';
     }
 
-    // Renomeada para clareza
     function voltarParaLancamentos() {
-      document.getElementById('containerPrincipal').classList.remove('container-ativo');
+      containerPrincipal.classList.remove("container-ativo");
+      // Mostra o botão via JS (alternativa ao CSS puro)
+      // botaoResumoFixo.style.opacity = '1';
+      // botaoResumoFixo.style.visibility = 'visible';
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      // Datas padrão agora são definidas ao abrir o modal
-      // const today = new Date();
-      // const currentYear = today.getFullYear();
-      // document.getElementById('dataInicial').value = `${currentYear}-01-01`;
-      // document.getElementById('dataFinal').value = `${currentYear}-12-31`;
-      
-      carregarLancamentos();
-
-      // Formatar valor monetário durante a digitação no modal
-      document.getElementById('valor').addEventListener('input', function() {
-        let v = this.value.replace(/[^\d]/g, '');
-        // Previne valor vazio ou só com zeros de causar NaN
-        if (!v) {
-            this.value = '';
-            return;
-        }
-        // Adiciona zeros à esquerda se necessário (para centavos)
-        if (v.length < 3) v = v.padStart(3, '0');
-        
-        let inteiro = v.slice(0, -2);
-        const decimal = v.slice(-2);
-        
-        // Remove zeros à esquerda do inteiro
-        inteiro = inteiro.replace(/^0+/, '') || '0'; 
-
-        // Adiciona separador de milhar
-        const inteiroFormatado = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-        this.value = inteiroFormatado + ',' + decimal;
+    // Funções de Formatação e Cálculo
+    function formatarMoeda(valor) {
+      const numero = typeof valor === "number" ? valor : parseFloat(String(valor).replace(/[^\d,-]/g, "").replace(",", "."));
+      if (isNaN(numero)) return "R$ 0,00";
+      return numero.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       });
-      
-      // Controlar as opções de forma de pagamento no modal
-      document.getElementById('tipoLancamento').addEventListener('change', function() {
-        const formaPagamentoSelect = document.getElementById('formaPagamento');
-        
-        if (this.value === 'receita') {
-          formaPagamentoSelect.innerHTML = '<option value="conta">Conta</option>';
-          formaPagamentoSelect.value = 'conta'; // Garante que 'conta' esteja selecionado
-        } else {
-          // Guarda o valor selecionado antes de mudar as opções
-          const valorAtual = formaPagamentoSelect.value;
-          formaPagamentoSelect.innerHTML = `
-            <option value="conta">Conta</option>
-            <option value="credito">Cartão de Crédito</option>
-          `;
-          // Restaura a seleção se ainda for válida
-          if (valorAtual === 'conta' || valorAtual === 'credito') {
-              formaPagamentoSelect.value = valorAtual;
-          } else {
-              formaPagamentoSelect.value = 'conta'; // Default para conta se inválido
-          }
-        }
-      });
-      
-      // Inicializar o estado do formulário no modal
-      document.getElementById('tipoLancamento').dispatchEvent(new Event('change'));
-    });
-
-    function adicionarLancamento() {
-      // Busca os valores dos campos DENTRO do modal
-      const descricaoInput = document.getElementById('descricao');
-      const valorInput = document.getElementById('valor');
-      const formaPagamentoSelect = document.getElementById('formaPagamento');
-      const tipoSelect = document.getElementById('tipoLancamento');
-      const frequenciaValorInput = document.getElementById('frequenciaValor');
-      const frequenciaTipoSelect = document.getElementById('frequenciaTipo');
-      const dataInicialInput = document.getElementById('dataInicial');
-      const dataFinalInput = document.getElementById('dataFinal');
-
-      const descricao = descricaoInput.value.trim();
-      const valorStr = valorInput.value.trim();
-      const formaPagamento = formaPagamentoSelect.value;
-      const tipo = tipoSelect.value;
-      const frequenciaValor = parseInt(frequenciaValorInput.value) || 1;
-      const frequenciaTipo = frequenciaTipoSelect.value;
-      let dataInicial = dataInicialInput.value;
-      let dataFinal = dataFinalInput.value;
-
-      // Validações
-      if (!descricao || !valorStr) {
-        alert('Preencha a descrição e o valor.');
-        return;
-      }
-      
-      if (tipo === 'receita' && formaPagamento !== 'conta') {
-        alert('Receitas devem ser lançadas apenas como "Conta"');
-        // Reverter a seleção para 'conta' se o usuário tentou lançar receita como crédito
-        formaPagamentoSelect.value = 'conta'; 
-        return;
-      }
-
-      // Converter valor para número
-      const valorNumerico = parseFloat(valorStr.replace(/\./g, '').replace(',', '.'));
-      if (isNaN(valorNumerico)) {
-          alert('Valor inválido.');
-          return;
-      }
-
-      // Valores padrão para datas se não preenchidas
-      const currentYear = new Date().getFullYear();
-      if (!dataInicial) dataInicial = `${currentYear}-01-01`;
-      if (!dataFinal) dataFinal = `${currentYear}-12-31`;
-
-      // Salvar no localStorage
-      let lancamentos = JSON.parse(localStorage.getItem('lancamentos') || '[]');
-      const novoId = lancamentos.length > 0 ? Math.max(...lancamentos.map(l => l.id)) + 1 : 1;
-
-      lancamentos.push({
-        id: novoId,
-        descricao,
-        valor: valorNumerico,
-        formaPagamento,
-        tipo,
-        frequenciaValor,
-        frequenciaTipo,
-        dataInicial,
-        dataFinal,
-        valoresManuais: Array(12).fill(null) // Inicializa valores manuais
-      });
-
-      localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
-      
-      // Limpar campos do modal após adicionar
-      descricaoInput.value = '';
-      valorInput.value = '';
-      // Resetar selects para padrão?
-      // tipoSelect.value = 'receita'; 
-      // formaPagamentoSelect.value = 'conta';
-      // frequenciaTipoSelect.value = 'meses';
-      // frequenciaValorInput.value = 1;
-      // dataInicialInput.value = ''; // Limpa datas ou redefine para padrão?
-      // dataFinalInput.value = '';
-      // document.getElementById('tipoLancamento').dispatchEvent(new Event('change')); // Atualiza formaPagamento
-
-      // Fechar o modal
-      fecharModal();
-      
-      // Recarregar a tabela e o resumo
-      carregarLancamentos(); 
-    }
-
-    function carregarLancamentos() {
-      const tabelaBody = document.getElementById('tabelaBody');
-      tabelaBody.innerHTML = ''; // Limpa a tabela antes de recarregar
-
-      lancamentos = JSON.parse(localStorage.getItem('lancamentos') || '[]');
-      const currentYear = new Date().getFullYear();
-
-      const lancamentosOrdenados = ordenarLancamentos(lancamentos);
-
-      lancamentosOrdenados.forEach(l => {
-        const tr = document.createElement('tr');
-        if (l.formaPagamento === 'credito' && l.tipo !== 'receita') tr.classList.add('cartao-credito');
-
-        if (!l.valoresManuais) {
-          l.valoresManuais = Array(12).fill(null);
-        }
-
-        const meses = Array(12).fill(0);
-        const ocorrencias = calcularOcorrencias(l, currentYear);
-        
-        ocorrencias.forEach(data => {
-          const mes = data.getMonth();
-          // Prioriza valor manual, senão usa o calculado
-          const valorDoMes = l.valoresManuais[mes] !== null ? l.valoresManuais[mes] : l.valor;
-          // Só adiciona se a ocorrência existir E o valor manual não for explicitamente zero (null significa usar calculado)
-          if (l.valoresManuais[mes] !== 0) {
-              meses[mes] += valorDoMes;
-          }
-        });
-
-        const total = meses.reduce((sum, val) => sum + val, 0);
-        const media = total / 12; // Ou total / meses.filter(m => m > 0).length para média dos meses com valor?
-
-        tr.innerHTML = `
-          <td class="hidden-id">${l.id}</td>
-          <td class="${l.tipo}">${l.descricao}</td>
-          ${meses.map((m, index) => `
-            <td class="editable" data-id="${l.id}" data-month="${index}">
-              ${formatarMoeda(l.valoresManuais[index] !== null ? l.valoresManuais[index] : m)} 
-            </td>
-          `).join('')}
-          <td>${formatarMoeda(total)}</td>
-          <td>${formatarMoeda(media)}</td>
-          <td><button class="delete-btn" onclick="excluirLancamento(${l.id})">Excluir</button></td>
-        `;
-        tabelaBody.appendChild(tr);
-      });
-
-      // Reanexar eventos de clique para edição
-      document.querySelectorAll('.editable').forEach(cell => {
-        cell.addEventListener('click', function() {
-          // Evitar abrir edição se já houver um input
-          if (!this.querySelector('.edit-input')) {
-              iniciarEdicao(this);
-          }
-        });
-      });
-
-      // Atualizar o resumo financeiro sempre que carregar lançamentos
-      atualizarResumoFinanceiro(lancamentos, currentYear);
-    }
-    
-    function excluirLancamento(id) {
-      if (confirm('Tem certeza que deseja excluir este lançamento?')) {
-        let lancamentos = JSON.parse(localStorage.getItem('lancamentos') || '[]');
-        lancamentos = lancamentos.filter(l => l.id !== id);
-        localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
-        carregarLancamentos(); // Recarrega a tabela e o resumo
-      }
-    }
-
-    function iniciarEdicao(cell) {
-      const id = parseInt(cell.getAttribute('data-id'));
-      const month = parseInt(cell.getAttribute('data-month'));
-      const currentValueText = cell.textContent.trim();
-      
-      // Extrai o valor numérico do texto formatado (R$ 1.234,56 -> 1234.56)
-      const valorNumericoAtual = parseFloat(currentValueText.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
-      
-      // Formata para exibição no input (1234,56)
-      const valorParaInput = valorNumericoAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}).replace('.', '');
-
-      cell.innerHTML = ''; // Limpa a célula
-
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'edit-input';
-      input.value = valorParaInput; // Usa o valor formatado sem R$
-      
-      // Adiciona máscara de moeda ao input de edição
-      input.addEventListener('input', function() {
-        let v = this.value.replace(/[^\d]/g, '');
-        if (!v) { this.value = ''; return; }
-        if (v.length < 3) v = v.padStart(3, '0');
-        let inteiro = v.slice(0, -2).replace(/^0+/, '') || '0';
-        const decimal = v.slice(-2);
-        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ',' + decimal;
-      });
-
-      cell.appendChild(input);
-      input.focus();
-      input.select(); // Seleciona o texto para fácil substituição
-      
-      // Handler para salvar quando perder o foco
-      const blurHandler = () => {
-          finalizarEdicao(input, id, month, cell);
-          input.removeEventListener('blur', blurHandler); // Remove o listener para evitar chamadas múltiplas
-      };
-      input.addEventListener('blur', blurHandler);
-      
-      // Handler para salvar com Enter ou cancelar com Esc
-      input.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          input.removeEventListener('blur', blurHandler); // Remove o listener de blur para evitar salvar duas vezes
-          finalizarEdicao(input, id, month, cell);
-        }
-      });
-      input.addEventListener('keydown', function(e) {
-          if (e.key === 'Escape') {
-              input.removeEventListener('blur', blurHandler);
-              // Restaura o valor original sem salvar
-              cell.innerHTML = currentValueText; 
-          }
-      });
-    }
-    
-    function finalizarEdicao(input, id, month, cell) {
-      const novoValorStr = input.value.trim();
-      
-      let lancamentos = JSON.parse(localStorage.getItem('lancamentos') || '[]');
-      const lancamento = lancamentos.find(l => l.id === id);
-      
-      if (lancamento) {
-        let valorNumerico = 0;
-        if (novoValorStr && novoValorStr !== '-') {
-          valorNumerico = parseFloat(novoValorStr.replace(/\./g, '').replace(',', '.'));
-          if (isNaN(valorNumerico)) valorNumerico = 0; // Trata caso de input inválido
-        }
-        
-        if (!lancamento.valoresManuais) {
-          lancamento.valoresManuais = Array(12).fill(null);
-        }
-        
-        // Salva o valor numérico. Se for zero, salva 0, não null.
-        lancamento.valoresManuais[month] = valorNumerico; 
-        
-        localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
-        
-        // Recarregar a linha ou a tabela inteira? Recarregar tudo é mais simples.
-        carregarLancamentos(); 
-      } else {
-        // Se não encontrou o lançamento, restaura a célula (improvável)
-        cell.innerHTML = formatarMoeda(0); // Ou o valor original se puder recuperar
-      }
-    }
-
-    function ordenarLancamentos(lancamentos) {
-      const entradas = lancamentos.filter(l => l.tipo === 'receita').sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const fixasNaoCredito = lancamentos.filter(l => l.tipo === 'fixa' && l.formaPagamento !== 'credito').sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const fixasCredito = lancamentos.filter(l => l.tipo === 'fixa' && l.formaPagamento === 'credito').sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const variaveisNaoCredito = lancamentos.filter(l => l.tipo === 'variavel' && l.formaPagamento !== 'credito').sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const variaveisCredito = lancamentos.filter(l => l.tipo === 'variavel' && l.formaPagamento === 'credito').sort((a, b) => a.descricao.localeCompare(b.descricao));
-      return [...entradas, ...fixasNaoCredito, ...fixasCredito, ...variaveisNaoCredito, ...variaveisCredito];
     }
 
     function calcularOcorrencias(lancamento, ano) {
-      // Garante que as datas sejam objetos Date válidos
-      const startDate = new Date(lancamento.dataInicial + 'T00:00:00'); // Adiciona T00:00:00 para evitar problemas de fuso horário
-      const endDate = new Date(lancamento.dataFinal + 'T00:00:00');
-      
-      // Verifica se as datas são válidas
+      const startDate = new Date(lancamento.dataInicial + "T00:00:00");
+      const endDate = new Date(lancamento.dataFinal + "T00:00:00");
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-          console.error('Datas inválidas para o lançamento:', lancamento);
-          return [];
+        console.error("Datas inválidas para o lançamento:", lancamento);
+        return [];
       }
-
       const ocorrencias = [];
-      
-      if (lancamento.frequenciaTipo === 'unico') {
+      if (lancamento.frequenciaTipo === "unico") {
         if (startDate.getFullYear() === ano) {
           ocorrencias.push(new Date(startDate));
         }
         return ocorrencias;
       }
-      
       const inicioAno = new Date(`${ano}-01-01T00:00:00`);
       const fimAno = new Date(`${ano}-12-31T00:00:00`);
-      
       const dataInicioCalculo = startDate > inicioAno ? startDate : inicioAno;
       const dataFimCalculo = endDate < fimAno ? endDate : fimAno;
-      
       if (dataInicioCalculo > dataFimCalculo) return ocorrencias;
-      
       let currentDate = new Date(dataInicioCalculo);
-      
-      while (currentDate <= dataFimCalculo) {
-        // Adiciona apenas se estiver dentro do intervalo original do lançamento E do ano atual
+      let safetyBreak = 0; // Safety break
+      while (currentDate <= dataFimCalculo && safetyBreak < 500) {
         if (currentDate >= startDate && currentDate <= endDate && currentDate.getFullYear() === ano) {
-            ocorrencias.push(new Date(currentDate));
+          ocorrencias.push(new Date(currentDate));
         }
-        
-        // Avançar data
         const currentDayOfMonth = currentDate.getDate();
-        let dataAnterior = new Date(currentDate); // Guarda data atual para detectar loop
-
-        switch(lancamento.frequenciaTipo) {
-          case 'dias':
-            currentDate.setDate(currentDate.getDate() + lancamento.frequenciaValor);
-            break;
-          case 'dias_uteis':
+        let dataAnterior = new Date(currentDate);
+        switch (lancamento.frequenciaTipo) {
+          case "dias": currentDate.setDate(currentDate.getDate() + lancamento.frequenciaValor); break;
+          case "dias_uteis":
             let diasAdicionados = 0;
             while (diasAdicionados < lancamento.frequenciaValor) {
-                currentDate.setDate(currentDate.getDate() + 1);
-                if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) { // Não é Sábado nem Domingo
-                    diasAdicionados++;
-                }
+              currentDate.setDate(currentDate.getDate() + 1);
+              if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) diasAdicionados++;
             }
             break;
-          case 'meses':
+          case "meses":
             currentDate.setMonth(currentDate.getMonth() + lancamento.frequenciaValor);
-            // Ajuste para meses com menos dias (ex: de 31/Jan para Fev -> 28/Fev)
-            if (currentDate.getDate() !== currentDayOfMonth) {
-                currentDate.setDate(0); // Vai para o último dia do mês anterior correto
-            }
+            if (currentDate.getDate() !== currentDayOfMonth) currentDate.setDate(0);
             break;
-          case 'anos':
+          case "anos":
             currentDate.setFullYear(currentDate.getFullYear() + lancamento.frequenciaValor);
-             // Ajuste para ano bissexto (de 29/Fev para ano não bissexto)
-             if (currentDate.getDate() !== currentDayOfMonth) {
-                currentDate.setDate(0); 
-            }
+            if (currentDate.getDate() !== currentDayOfMonth) currentDate.setDate(0);
             break;
-          case 'semanas':
-            currentDate.setDate(currentDate.getDate() + (7 * lancamento.frequenciaValor));
-            break;
-          case 'quinzenas': // Aproximação: adiciona 15 dias
-            currentDate.setDate(currentDate.getDate() + (15 * lancamento.frequenciaValor)); 
-            break;
-          // Casos para dias específicos da semana (segunda, terça, etc.)
-          case 'segunda': case 'terca': case 'quarta': case 'quinta': case 'sexta':
-             const diaSemana = {'segunda': 1, 'terca': 2, 'quarta': 3, 'quinta': 4, 'sexta': 5};
-             const diaAlvo = diaSemana[lancamento.frequenciaTipo];
-             // Avança para o próximo dia alvo
-             do {
-                 currentDate.setDate(currentDate.getDate() + 1);
-             } while(currentDate.getDay() !== diaAlvo);
-             // Se a frequência for > 1, avança semanas adicionais
-             if (lancamento.frequenciaValor > 1) {
-                 currentDate.setDate(currentDate.getDate() + 7 * (lancamento.frequenciaValor - 1));
-             }
+          case "semanas": currentDate.setDate(currentDate.getDate() + 7 * lancamento.frequenciaValor); break;
+          case "quinzenas": currentDate.setDate(currentDate.getDate() + 15 * lancamento.frequenciaValor); break;
+          case "segunda": case "terca": case "quarta": case "quinta": case "sexta":
+            const diaSemana = { segunda: 1, terca: 2, quarta: 3, quinta: 4, sexta: 5 };
+            const diaAlvo = diaSemana[lancamento.frequenciaTipo];
+            do { currentDate.setDate(currentDate.getDate() + 1); } while (currentDate.getDay() !== diaAlvo);
+            if (lancamento.frequenciaValor > 1) currentDate.setDate(currentDate.getDate() + 7 * (lancamento.frequenciaValor - 1));
             break;
           default:
-             // Se tipo desconhecido, para evitar loop infinito, avança um mês
-             console.warn('Tipo de frequência desconhecido:', lancamento.frequenciaTipo);
-             currentDate.setMonth(currentDate.getMonth() + 1);
+            console.warn("Tipo de frequência desconhecido:", lancamento.frequenciaTipo);
+            currentDate.setMonth(currentDate.getMonth() + 1);
         }
-        // Segurança contra loops infinitos (caso a data não avance)
         if (currentDate.getTime() === dataAnterior.getTime()) {
-            console.error("Loop infinito detectado em calcularOcorrencias - data não avançou", lancamento);
-            break; 
+          console.error("Loop infinito detectado em calcularOcorrencias", lancamento);
+          break;
         }
+        safetyBreak++;
+        if (safetyBreak >= 500) console.error("Safety break atingido em calcularOcorrencias", lancamento);
       }
-      
       return ocorrencias;
     }
-
-    function atualizarResumoFinanceiro(lancamentos, ano) {
-      const resumoBody = document.getElementById('resumoBody');
-      resumoBody.innerHTML = '';
-
-      const receitas = calcularTotaisPorCategoria(lancamentos.filter(l => l.tipo === 'receita'), ano);
-      const fixas = calcularTotaisPorCategoria(lancamentos.filter(l => l.tipo === 'fixa'), ano);
-      const variaveis = calcularTotaisPorCategoria(lancamentos.filter(l => l.tipo === 'variavel'), ano);
-      const cartao = calcularTotaisPorCategoria(lancamentos.filter(l => l.formaPagamento === 'credito' && l.tipo !== 'receita'), ano);
-      const conta = calcularTotaisPorCategoria(lancamentos.filter(l => l.formaPagamento === 'conta' && l.tipo !== 'receita'), ano);
+    
+    // *** CORREÇÃO APLICADA AQUI ***
+    function calcularTotaisPorCategoria(lancamentosCategoria, ano) {
+      const meses = Array(12).fill(0);
       
+      lancamentosCategoria.forEach(l => {
+        const ocorrencias = calcularOcorrencias(l, ano);
+        // Para cada mês do ano
+        for (let index = 0; index < 12; index++) {
+          // Verifica se há valor manual para este mês específico
+          if (l.valoresManuais && l.valoresManuais[index] !== null) {
+            meses[index] += l.valoresManuais[index];
+          } else {
+            // Senão, verifica se houve ocorrência calculada neste mês
+            const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
+            if (ocorrenciasNoMes.length > 0) {
+              // Adiciona o valor base do lançamento (assumindo uma vez por mês, mesmo se houver múltiplas ocorrências)
+              meses[index] += l.valor;
+            }
+          }
+        }
+      });
+      
+      const total = meses.reduce((sum, val) => sum + val, 0);
+      return { meses, total };
+    }
+
+    // Funções de Atualização da Interface
+    function atualizarResumoFinanceiro(lancamentos, ano) {
+      const resumoBody = document.getElementById("resumoBody");
+      resumoBody.innerHTML = "";
+
+      const receitas = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "receita"), ano);
+      const fixas = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "fixa"), ano);
+      const variaveis = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "variavel"), ano);
+      const cartao = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "credito" && l.tipo !== "receita"), ano);
+      const conta = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "conta" && l.tipo !== "receita"), ano);
+
       const totalReceitas = receitas.total;
       const totalFixas = fixas.total;
       const totalVariaveis = variaveis.total;
       const totalDespesas = totalFixas + totalVariaveis;
       const saldo = totalReceitas - totalDespesas;
+      
+      // Calcula médias
+      const mediaReceitas = totalReceitas / 12;
+      const mediaFixas = totalFixas / 12;
+      const mediaVariaveis = totalVariaveis / 12;
+      const mediaTotalDespesas = totalDespesas / 12;
+      const mediaSaldo = saldo / 12;
+      const mediaCartao = cartao.total / 12;
+      const mediaConta = conta.total / 12;
+      
+      // Linha de espaçamento (HTML string)
+      const spacerRowHTML = `<tr class="spacer-row"><td colspan="15"></td></tr>`; // Colspan = 1 (Cat) + 12 (Meses) + 1 (Total) + 1 (Média)
 
       resumoBody.innerHTML = `
         <tr class="receita">
           <td>Receitas</td>
-          ${receitas.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
+          ${receitas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(totalReceitas)}</td>
+          <td>${formatarMoeda(mediaReceitas)}</td>
         </tr>
+        ${spacerRowHTML} 
         <tr class="fixa">
           <td>Despesas Fixas</td>
-          ${fixas.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
+          ${fixas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(totalFixas)}</td>
+          <td>${formatarMoeda(mediaFixas)}</td>
         </tr>
         <tr class="variavel">
           <td>Despesas Variáveis</td>
-          ${variaveis.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
+          ${variaveis.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(totalVariaveis)}</td>
+          <td>${formatarMoeda(mediaVariaveis)}</td>
         </tr>
         <tr>
           <td>Total Despesas</td>
           ${Array(12).fill(0).map((_, i) => {
             const mesTotal = (fixas.meses[i] || 0) + (variaveis.meses[i] || 0);
             return `<td>${formatarMoeda(mesTotal)}</td>`;
-          }).join('')}
+          }).join("")}
           <td>${formatarMoeda(totalDespesas)}</td>
+          <td>${formatarMoeda(mediaTotalDespesas)}</td>
         </tr>
+        ${spacerRowHTML}
         <tr> 
-          <td class="${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}">Potencial de Investimento</td>
+          <td class="saldo-positivo">Potencial de Investimento</td> <!-- Sempre azul -->
           ${Array(12).fill(0).map((_, i) => {
             const mesSaldo = (receitas.meses[i] || 0) - (fixas.meses[i] || 0) - (variaveis.meses[i] || 0);
-            const classeCor = mesSaldo >= 0 ? 'saldo-positivo' : 'saldo-negativo';
+            const classeCor = mesSaldo >= 0 ? "saldo-positivo" : "saldo-negativo";
             return `<td class="${classeCor}">${formatarMoeda(mesSaldo)}</td>`;
-          }).join('')}
-          <td class="${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}">${formatarMoeda(saldo)}</td>
+          }).join("")}
+          <td class="${saldo >= 0 ? "saldo-positivo" : "saldo-negativo"}">${formatarMoeda(saldo)}</td>
+          <td class="${mediaSaldo >= 0 ? "saldo-positivo" : "saldo-negativo"}">${formatarMoeda(mediaSaldo)}</td>
         </tr>
+        ${spacerRowHTML}
         <tr class="cartao-laranja">
           <td>Cartão de Crédito</td>
-          ${cartao.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
+          ${cartao.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(cartao.total)}</td>
+          <td>${formatarMoeda(mediaCartao)}</td>
         </tr>
         <tr class="conta-amarela">
           <td>Conta</td>
-          ${conta.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
+          ${conta.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(conta.total)}</td>
+          <td>${formatarMoeda(mediaConta)}</td>
         </tr>
       `;
 
@@ -1109,97 +830,46 @@
         totalVariaveis: totalVariaveis,
         totalDespesas: totalDespesas,
         saldo: saldo,
-        lancamentos: lancamentos // Passa os lançamentos para os gráficos
+        lancamentos: lancamentos,
       };
 
       atualizarGraficos();
     }
 
-    function calcularTotaisPorCategoria(lancamentosCategoria, ano) {
-      const meses = Array(12).fill(0);
-      
-      lancamentosCategoria.forEach(l => {
-        // Usa valores manuais se existirem para algum mês
-        if (l.valoresManuais && l.valoresManuais.some(v => v !== null)) {
-            l.valoresManuais.forEach((valorManual, index) => {
-                if (valorManual !== null) {
-                    meses[index] += valorManual;
-                }
-            });
-        } else {
-            // Senão, calcula ocorrências e distribui valor padrão
-            const ocorrencias = calcularOcorrencias(l, ano);
-            ocorrencias.forEach(data => {
-              const mes = data.getMonth();
-              meses[mes] += l.valor;
-            });
-        }
-      });
-      
-      const total = meses.reduce((sum, val) => sum + val, 0);
-      return { meses, total };
-    }
-
     function atualizarGraficos() {
-      if (!dadosResumo) return; // Não faz nada se não houver dados
-
-      const mesSelecionado = parseInt(document.getElementById('mesSelecionado').value);
-      
-      // Dados para o período selecionado
+      if (!dadosResumo) return;
+      const mesSelecionado = parseInt(document.getElementById("mesSelecionado").value);
       let receitaPeriodo, fixasPeriodo, variaveisPeriodo, saldoPeriodo;
-
-      if (mesSelecionado === -1) { // Total Anual
+      if (mesSelecionado === -1) {
         receitaPeriodo = dadosResumo.totalReceitas;
         fixasPeriodo = dadosResumo.totalFixas;
         variaveisPeriodo = dadosResumo.totalVariaveis;
         saldoPeriodo = dadosResumo.saldo;
-      } else { // Mês Específico
+      } else {
         receitaPeriodo = dadosResumo.receitas.meses[mesSelecionado] || 0;
         fixasPeriodo = dadosResumo.fixas.meses[mesSelecionado] || 0;
         variaveisPeriodo = dadosResumo.variaveis.meses[mesSelecionado] || 0;
         saldoPeriodo = receitaPeriodo - fixasPeriodo - variaveisPeriodo;
       }
-
       atualizarGraficoDespesasPoupanca(fixasPeriodo, variaveisPeriodo, saldoPeriodo);
       atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado);
     }
 
     function atualizarGraficoDespesasPoupanca(fixas, variaveis, saldo) {
-      const ctx = document.getElementById('graficoDespesasPoupanca').getContext('2d');
-      if (graficoDespesasPoupanca) {
-        graficoDespesasPoupanca.destroy();
-      }
-
-      const total = fixas + variaveis + Math.max(0, saldo); // Soma apenas saldo positivo
+      const ctx = document.getElementById("graficoDespesasPoupanca").getContext("2d");
+      if (graficoDespesasPoupanca) graficoDespesasPoupanca.destroy();
+      const total = fixas + variaveis + Math.max(0, saldo);
       const labels = [];
       const data = [];
       const backgroundColors = [];
-
-      if (fixas > 0) {
-          labels.push('Despesas Fixas');
-          data.push(fixas);
-          backgroundColors.push('#f44336');
-      }
-      if (variaveis > 0) {
-          labels.push('Despesas Variáveis');
-          data.push(variaveis);
-          backgroundColors.push('#ff9800');
-      }
-      if (saldo > 0) {
-          labels.push('Potencial de Investimento');
-          data.push(saldo);
-          backgroundColors.push('#4caf50');
-      }
-      
-      // Caso não haja dados, mostra mensagem ou gráfico vazio
+      if (fixas > 0) { labels.push("Despesas Fixas"); data.push(fixas); backgroundColors.push("#f44336"); }
+      if (variaveis > 0) { labels.push("Despesas Variáveis"); data.push(variaveis); backgroundColors.push("#ff9800"); }
+      if (saldo > 0) { labels.push("Potencial de Investimento"); data.push(saldo); backgroundColors.push("#4caf50"); }
       if (data.length === 0) {
-          document.getElementById('legendaDespesasPoupanca').innerHTML = '<p style="text-align:center;">Sem dados para exibir.</p>';
-          // Poderia desenhar um gráfico vazio ou uma mensagem no canvas
-          return;
+        document.getElementById("legendaDespesasPoupanca").innerHTML = '<p style="text-align:center;">Sem dados para exibir.</p>';
+        return;
       }
-
-      const percentuais = total > 0 ? data.map(val => ((val / total) * 100).toFixed(1) + '%') : data.map(() => '0%');
-      
+      const percentuais = total > 0 ? data.map((val) => ((val / total) * 100).toFixed(1) + "%") : data.map(() => "0%");
       const legendaHTML = labels.map((label, i) => `
         <div class="item-legenda">
           <div class="cor-legenda" style="background-color: ${backgroundColors[i]}"></div>
@@ -1207,20 +877,11 @@
           <span class="valor-legenda">${formatarMoeda(data[i])}</span>
           <span>(${percentuais[i]})</span>
         </div>
-      `).join('');
-      document.getElementById('legendaDespesasPoupanca').innerHTML = legendaHTML;
-      
+      `).join("");
+      document.getElementById("legendaDespesasPoupanca").innerHTML = legendaHTML;
       graficoDespesasPoupanca = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: backgroundColors,
-            borderWidth: 1,
-            borderColor: '#014034' // Cor de fundo para borda
-          }]
-        },
+        type: "pie",
+        data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1, borderColor: "#014034" }] },
         options: {
           responsive: true,
           maintainAspectRatio: false,
@@ -1228,129 +889,102 @@
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: function(context) {
-                  const label = context.label || '';
+                label: function (context) {
+                  const label = context.label || "";
                   const value = context.raw || 0;
                   const currentTotal = context.dataset.data.reduce((a, b) => a + b, 0);
                   const percentage = currentTotal > 0 ? Math.round((value / currentTotal) * 100) : 0;
                   return `${label}: ${formatarMoeda(value)} (${percentage}%)`;
-                }
-              }
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    function atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado) {
+      const ctx = document.getElementById("graficoDespesasReceitas").getContext("2d");
+      if (graficoDespesasReceitas) graficoDespesasReceitas.destroy();
+      const lancamentosPeriodo = dadosResumo.lancamentos.filter((l) => {
+        if (mesSelecionado === -1) return true;
+        const ocorrencias = calcularOcorrencias(l, new Date().getFullYear());
+        const temOcorrenciaNoMes = ocorrencias.some((d) => d.getMonth() === mesSelecionado);
+        const temValorManualNoMes = l.valoresManuais && l.valoresManuais[mesSelecionado] !== null;
+        return temOcorrenciaNoMes || temValorManualNoMes;
+      });
+      const despesasPeriodo = lancamentosPeriodo.filter((l) => l.tipo !== "receita");
+      const despesasAgrupadas = {};
+      despesasPeriodo.forEach((despesa) => {
+        let valorDespesa = 0;
+        if (mesSelecionado === -1) {
+          if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
+            valorDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
+          } else {
+            const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
+            valorDespesa = despesa.valor * ocorrencias.length;
+          }
+        } else {
+          if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
+            valorDespesa = despesa.valoresManuais[mesSelecionado];
+          } else {
+            const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
+            const ocorrenciasNoMes = ocorrencias.filter((d) => d.getMonth() === mesSelecionado);
+            if (ocorrenciasNoMes.length > 0) {
+              valorDespesa = despesa.valor * ocorrenciasNoMes.length; // Multiplica por ocorrências no mês
             }
           }
         }
-      });
-    }
-    
-    function atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado) {
-      const ctx = document.getElementById('graficoDespesasReceitas').getContext('2d');
-      if (graficoDespesasReceitas) {
-        graficoDespesasReceitas.destroy();
-      }
-      
-      // Filtra lançamentos do período
-      const lancamentosPeriodo = dadosResumo.lancamentos.filter(l => {
-          if (mesSelecionado === -1) return true; // Ano todo
-          // Verifica se há ocorrência no mês OU se há valor manual para o mês
-          const ocorrencias = calcularOcorrencias(l, new Date().getFullYear());
-          const temOcorrenciaNoMes = ocorrencias.some(d => d.getMonth() === mesSelecionado);
-          const temValorManualNoMes = l.valoresManuais && l.valoresManuais[mesSelecionado] !== null;
-          return temOcorrenciaNoMes || temValorManualNoMes;
-      });
-
-      const despesasPeriodo = lancamentosPeriodo.filter(l => l.tipo !== 'receita');
-      const despesasAgrupadas = {};
-      
-      despesasPeriodo.forEach(despesa => {
-        let valorDespesa = 0;
-        if (mesSelecionado === -1) { // Anual
-            if (despesa.valoresManuais && despesa.valoresManuais.some(v => v !== null)) {
-                valorDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
-            } else {
-                const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
-                valorDespesa = despesa.valor * ocorrencias.length;
-            }
-        } else { // Mensal
-            if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
-                valorDespesa = despesa.valoresManuais[mesSelecionado];
-            } else {
-                const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
-                const ocorrenciasNoMes = ocorrencias.filter(d => d.getMonth() === mesSelecionado);
-                // Só soma o valor base se houver ocorrência E não houver valor manual
-                if (ocorrenciasNoMes.length > 0) {
-                   valorDespesa = despesa.valor * ocorrenciasNoMes.length;
-                }
-            }
-        }
-
         if (valorDespesa > 0) {
-            const key = despesa.descricao; // Agrupa por descrição
-            if (!despesasAgrupadas[key]) {
-                despesasAgrupadas[key] = { valor: 0, tipo: despesa.tipo, formaPagamento: despesa.formaPagamento };
-            }
-            despesasAgrupadas[key].valor += valorDespesa;
+          const key = despesa.descricao;
+          if (!despesasAgrupadas[key]) {
+            despesasAgrupadas[key] = { valor: 0, tipo: despesa.tipo, formaPagamento: despesa.formaPagamento };
+          }
+          despesasAgrupadas[key].valor += valorDespesa;
         }
       });
-      
       const labels = [];
       const data = [];
       const backgroundColors = [];
-      const tipos = []; // Para a legenda
-      
-      const despesasOrdenadas = Object.entries(despesasAgrupadas)
-        .map(([descricao, info]) => ({ descricao, ...info }))
-        .sort((a, b) => b.valor - a.valor);
-      
+      const tipos = [];
+      const despesasOrdenadas = Object.entries(despesasAgrupadas).map(([descricao, info]) => ({ descricao, ...info })).sort((a, b) => b.valor - a.valor);
       const limiteGrafico = 10;
       const despesasParaGrafico = despesasOrdenadas.slice(0, limiteGrafico);
       let outrasDespesas = despesasOrdenadas.slice(limiteGrafico).reduce((sum, d) => sum + d.valor, 0);
-      
-      despesasParaGrafico.forEach(d => {
+      despesasParaGrafico.forEach((d) => {
         labels.push(d.descricao);
         data.push(d.valor);
-        // Cor baseada no tipo e forma de pagamento (exemplo)
-        if (d.tipo === 'fixa') backgroundColors.push(d.formaPagamento === 'credito' ? '#c62828' : '#f44336');
-        else backgroundColors.push(d.formaPagamento === 'credito' ? '#f57c00' : '#ff9800');
+        if (d.tipo === "fixa") backgroundColors.push(d.formaPagamento === "credito" ? "#c62828" : "#f44336");
+        else backgroundColors.push(d.formaPagamento === "credito" ? "#f57c00" : "#ff9800");
         tipos.push(d.tipo);
       });
-      
       if (outrasDespesas > 0) {
-        labels.push('Outras Despesas');
+        labels.push("Outras Despesas");
         data.push(outrasDespesas);
-        backgroundColors.push('#757575'); 
-        tipos.push('variavel'); // Assume variável para 'outras'
+        backgroundColors.push("#757575");
+        tipos.push("variavel");
       }
-      
       const totalDespesasPeriodo = data.reduce((sum, val) => sum + val, 0);
       const restante = Math.max(0, receitaPeriodo - totalDespesasPeriodo);
-      
-       // Caso não haja dados, mostra mensagem ou gráfico vazio
       if (data.length === 0 && restante <= 0) {
-          document.getElementById('legendaDespesasReceitas').innerHTML = '<p style="text-align:center;">Sem despesas para exibir neste período.</p>';
-           // Destruir gráfico anterior se existir e não houver dados novos
-          if (graficoDespesasReceitas) {
-            graficoDespesasReceitas.destroy();
-            graficoDespesasReceitas = null;
-          }
-          return;
+        document.getElementById("legendaDespesasReceitas").innerHTML = '<p style="text-align:center;">Sem despesas para exibir neste período.</p>';
+        if (graficoDespesasReceitas) {
+          graficoDespesasReceitas.destroy();
+          graficoDespesasReceitas = null;
+        }
+        return;
       }
-      
-      if (restante > 0 || data.length > 0) { // Adiciona restante mesmo se não houver despesas
-        labels.push('Restante (Receita - Despesas)');
+      if (restante > 0 || data.length > 0) {
+        labels.push("Restante (Receita - Despesas)");
         data.push(restante);
-        backgroundColors.push('#1976d2'); // Azul para restante
-        tipos.push('receita');
+        backgroundColors.push("#1976d2");
+        tipos.push("receita");
       }
-      
-      const percentuais = receitaPeriodo > 0 ? 
-        data.map(val => ((val / receitaPeriodo) * 100).toFixed(1) + '%') : 
-        data.map(() => '0%');
-      
+      const percentuais = receitaPeriodo > 0 ? data.map((val) => ((val / receitaPeriodo) * 100).toFixed(1) + "%") : data.map(() => "0%");
       const legendaHTML = labels.map((label, i) => {
         const tipo = tipos[i];
-        const classeCor = tipo === 'fixa' ? 'fixa' : tipo === 'variavel' ? 'variavel' : 'receita';
-        // Evita exibir percentual NaN ou Infinity se receitaPeriodo for 0
-        const percentualExibido = receitaPeriodo > 0 ? `(${percentuais[i]})` : ''; 
+        const classeCor = tipo === "fixa" ? "fixa" : tipo === "variavel" ? "variavel" : "receita";
+        const percentualExibido = receitaPeriodo > 0 ? `(${percentuais[i]})` : "";
         return `
           <div class="item-legenda">
             <div class="cor-legenda" style="background-color: ${backgroundColors[i]}"></div>
@@ -1359,20 +993,11 @@
             <span>${percentualExibido}</span>
           </div>
         `;
-      }).join('');
-      document.getElementById('legendaDespesasReceitas').innerHTML = legendaHTML;
-      
+      }).join("");
+      document.getElementById("legendaDespesasReceitas").innerHTML = legendaHTML;
       graficoDespesasReceitas = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: backgroundColors,
-            borderWidth: 1,
-            borderColor: '#014034'
-          }]
-        },
+        type: "pie",
+        data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1, borderColor: "#014034" }] },
         options: {
           responsive: true,
           maintainAspectRatio: false,
@@ -1380,21 +1005,230 @@
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: function(context) {
-                  const label = context.label || '';
+                label: function (context) {
+                  const label = context.label || "";
                   const value = context.raw || 0;
-                  const percentage = percentuais[context.dataIndex] || '0%';
-                  const percentualExibido = receitaPeriodo > 0 ? `(${percentage})` : '';
+                  const percentage = percentuais[context.dataIndex] || "0%";
+                  const percentualExibido = receitaPeriodo > 0 ? `(${percentage})` : "";
                   return `${label}: ${formatarMoeda(value)} ${percentualExibido}`;
-                }
-              }
-            }
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // Funções de Manipulação de Dados (LocalStorage)
+    function adicionarLancamento() {
+      const descricaoInput = document.getElementById("descricao");
+      const valorInput = document.getElementById("valor");
+      const formaPagamentoSelect = document.getElementById("formaPagamento");
+      const tipoSelect = document.getElementById("tipoLancamento");
+      const frequenciaValorInput = document.getElementById("frequenciaValor");
+      const frequenciaTipoSelect = document.getElementById("frequenciaTipo");
+      const dataInicialInput = document.getElementById("dataInicial");
+      const dataFinalInput = document.getElementById("dataFinal");
+      const descricao = descricaoInput.value.trim();
+      const valorStr = valorInput.value.trim();
+      const formaPagamento = formaPagamentoSelect.value;
+      const tipo = tipoSelect.value;
+      const frequenciaValor = parseInt(frequenciaValorInput.value) || 1;
+      const frequenciaTipo = frequenciaTipoSelect.value;
+      let dataInicial = dataInicialInput.value;
+      let dataFinal = dataFinalInput.value;
+      if (!descricao || !valorStr) {
+        alert("Preencha a descrição e o valor.");
+        return;
+      }
+      if (tipo === "receita" && formaPagamento !== "conta") {
+        alert('Receitas devem ser lançadas apenas como "Conta"');
+        formaPagamentoSelect.value = "conta";
+        return;
+      }
+      const valorNumerico = parseFloat(valorStr.replace(/\./g, "").replace(",", "."));
+      if (isNaN(valorNumerico)) {
+        alert("Valor inválido.");
+        return;
+      }
+      const currentYear = new Date().getFullYear();
+      if (!dataInicial) dataInicial = `${currentYear}-01-01`;
+      if (!dataFinal) dataFinal = `${currentYear}-12-31`;
+      let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
+      const novoId = lancamentos.length > 0 ? Math.max(...lancamentos.map((l) => l.id)) + 1 : 1;
+      lancamentos.push({
+        id: novoId,
+        descricao,
+        valor: valorNumerico,
+        formaPagamento,
+        tipo,
+        frequenciaValor,
+        frequenciaTipo,
+        dataInicial,
+        dataFinal,
+        valoresManuais: Array(12).fill(null),
+      });
+      localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+      descricaoInput.value = "";
+      valorInput.value = "";
+      fecharModal();
+      carregarLancamentos();
+    }
+
+    function carregarLancamentos() {
+      const tabelaBody = document.getElementById("tabelaBody");
+      tabelaBody.innerHTML = "";
+      lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
+      const currentYear = new Date().getFullYear();
+      const lancamentosOrdenados = ordenarLancamentos(lancamentos);
+      lancamentosOrdenados.forEach((l) => {
+        const tr = document.createElement("tr");
+        if (l.formaPagamento === "credito" && l.tipo !== "receita") tr.classList.add("cartao-credito");
+        if (!l.valoresManuais) l.valoresManuais = Array(12).fill(null);
+        const meses = Array(12).fill(0);
+        const ocorrencias = calcularOcorrencias(l, currentYear);
+        ocorrencias.forEach((data) => {
+          const mes = data.getMonth();
+          const valorDoMes = l.valoresManuais[mes] !== null ? l.valoresManuais[mes] : l.valor;
+          if (l.valoresManuais[mes] !== 0) {
+            meses[mes] += valorDoMes;
           }
+        });
+        const total = meses.reduce((sum, val) => sum + val, 0);
+        const media = total / 12;
+        tr.innerHTML = `
+          <td class="hidden-id">${l.id}</td>
+          <td class="${l.tipo}">${l.descricao}</td>
+          ${meses.map((m, index) => `
+            <td class="editable" data-id="${l.id}" data-month="${index}">
+              ${formatarMoeda(l.valoresManuais[index] !== null ? l.valoresManuais[index] : m)} 
+            </td>
+          `).join("")}
+          <td>${formatarMoeda(total)}</td>
+          <td>${formatarMoeda(media)}</td>
+          <td><button class="delete-btn" onclick="excluirLancamento(${l.id})">Excluir</button></td>
+        `;
+        tabelaBody.appendChild(tr);
+      });
+      document.querySelectorAll(".editable").forEach((cell) => {
+        cell.addEventListener("click", function () {
+          if (!this.querySelector(".edit-input")) {
+            iniciarEdicao(this);
+          }
+        });
+      });
+      atualizarResumoFinanceiro(lancamentos, currentYear);
+    }
+
+    function excluirLancamento(id) {
+      if (confirm("Tem certeza que deseja excluir este lançamento?")) {
+        let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
+        lancamentos = lancamentos.filter((l) => l.id !== id);
+        localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+        carregarLancamentos();
+      }
+    }
+
+    function iniciarEdicao(cell) {
+      const id = parseInt(cell.getAttribute("data-id"));
+      const month = parseInt(cell.getAttribute("data-month"));
+      const currentValueText = cell.textContent.trim();
+      const valorNumericoAtual = parseFloat(currentValueText.replace(/[^\d,]/g, "").replace(",", ".")) || 0;
+      const valorParaInput = valorNumericoAtual.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(".", "");
+      cell.innerHTML = "";
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "edit-input";
+      input.value = valorParaInput;
+      input.addEventListener("input", function () {
+        let v = this.value.replace(/[^\d]/g, "");
+        if (!v) { this.value = ""; return; }
+        if (v.length < 3) v = v.padStart(3, "0");
+        let inteiro = v.slice(0, -2).replace(/^0+/, "") || "0";
+        const decimal = v.slice(-2);
+        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
+      });
+      cell.appendChild(input);
+      input.focus();
+      input.select();
+      const blurHandler = () => {
+        finalizarEdicao(input, id, month, cell);
+        input.removeEventListener("blur", blurHandler);
+      };
+      input.addEventListener("blur", blurHandler);
+      input.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          input.removeEventListener("blur", blurHandler);
+          finalizarEdicao(input, id, month, cell);
+        }
+      });
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          input.removeEventListener("blur", blurHandler);
+          cell.innerHTML = currentValueText;
         }
       });
     }
 
-    // Script do formulário de atendimento removido.
+    function finalizarEdicao(input, id, month, cell) {
+      const novoValorStr = input.value.trim();
+      let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
+      const lancamento = lancamentos.find((l) => l.id === id);
+      if (lancamento) {
+        let valorNumerico = 0;
+        if (novoValorStr && novoValorStr !== "-") {
+          valorNumerico = parseFloat(novoValorStr.replace(/\./g, "").replace(",", "."));
+          if (isNaN(valorNumerico)) valorNumerico = 0;
+        }
+        if (!lancamento.valoresManuais) lancamento.valoresManuais = Array(12).fill(null);
+        lancamento.valoresManuais[month] = valorNumerico;
+        localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+        carregarLancamentos();
+      } else {
+        cell.innerHTML = formatarMoeda(0);
+      }
+    }
+
+    function ordenarLancamentos(lancamentos) {
+      const entradas = lancamentos.filter((l) => l.tipo === "receita").sort((a, b) => a.descricao.localeCompare(b.descricao));
+      const fixasNaoCredito = lancamentos.filter((l) => l.tipo === "fixa" && l.formaPagamento !== "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
+      const fixasCredito = lancamentos.filter((l) => l.tipo === "fixa" && l.formaPagamento === "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
+      const variaveisNaoCredito = lancamentos.filter((l) => l.tipo === "variavel" && l.formaPagamento !== "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
+      const variaveisCredito = lancamentos.filter((l) => l.tipo === "variavel" && l.formaPagamento === "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
+      return [...entradas, ...fixasNaoCredito, ...fixasCredito, ...variaveisNaoCredito, ...variaveisCredito];
+    }
+
+    // Inicialização
+    document.addEventListener("DOMContentLoaded", function () {
+      carregarLancamentos();
+      document.getElementById("valor").addEventListener("input", function () {
+        let v = this.value.replace(/[^\d]/g, "");
+        if (!v) { this.value = ""; return; }
+        if (v.length < 3) v = v.padStart(3, "0");
+        let inteiro = v.slice(0, -2).replace(/^0+/, "") || "0";
+        const decimal = v.slice(-2);
+        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
+      });
+      document.getElementById("tipoLancamento").addEventListener("change", function () {
+        const formaPagamentoSelect = document.getElementById("formaPagamento");
+        if (this.value === "receita") {
+          formaPagamentoSelect.innerHTML = '<option value="conta">Conta</option>';
+          formaPagamentoSelect.value = "conta";
+        } else {
+          const valorAtual = formaPagamentoSelect.value;
+          formaPagamentoSelect.innerHTML = `
+            <option value="conta">Conta</option>
+            <option value="credito">Cartão de Crédito</option>
+          `;
+          if (valorAtual === "conta" || valorAtual === "credito") {
+            formaPagamentoSelect.value = valorAtual;
+          } else {
+            formaPagamentoSelect.value = "conta";
+          }
+        }
+      });
+      document.getElementById("tipoLancamento").dispatchEvent(new Event("change"));
+    });
 
   </script>
 </body>
