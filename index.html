@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro V4</title> <!-- Versão atualizada -->
+  <title>Controle Financeiro V5</title> <!-- Versão atualizada -->
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -705,7 +705,6 @@
       return ocorrencias;
     }
     
-    // *** CORREÇÃO APLICADA AQUI (v4) ***
     function calcularTotaisPorCategoria(lancamentosCategoria, ano) {
       const meses = Array(12).fill(0);
       
@@ -1216,15 +1215,17 @@
         const decimal = v.slice(-2);
         this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
       });
+      // *** CORREÇÃO APLICADA AQUI (v5) ***
       document.getElementById("tipoLancamento").addEventListener("change", function () {
         const formaPagamentoSelect = document.getElementById("formaPagamento");
         if (this.value === "receita") {
-          formaPagamentoSelect.innerHTML = "."Conta\";
+          formaPagamentoSelect.innerHTML = `<option value="conta">Conta</option>`; // Corrigido
+          formaPagamentoSelect.value = "conta"; // Garantir seleção
         } else {
           const valorAtual = formaPagamentoSelect.value;
           formaPagamentoSelect.innerHTML = `
-            <option value=\"conta\">Conta</option>
-            <option value=\"credito\">Cartão de Crédito</option>
+            <option value="conta">Conta</option>
+            <option value="credito">Cartão de Crédito</option>
           `;
           if (valorAtual === "conta" || valorAtual === "credito") {
             formaPagamentoSelect.value = valorAtual;
