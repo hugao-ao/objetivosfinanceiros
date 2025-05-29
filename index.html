@@ -976,6 +976,8 @@
         
         // Avançar data
         const currentDayOfMonth = currentDate.getDate();
+        let dataAnterior = new Date(currentDate); // Guarda data atual para detectar loop
+
         switch(lancamento.frequenciaTipo) {
           case 'dias':
             currentDate.setDate(currentDate.getDate() + lancamento.frequenciaValor);
@@ -1009,17 +1011,14 @@
           case 'quinzenas': // Aproximação: adiciona 15 dias
             currentDate.setDate(currentDate.getDate() + (15 * lancamento.frequenciaValor)); 
             break;
-          // Casos para dias específicos da semana (segunda, terça, etc.) - Lógica complexa, simplificando:
-          // Se a frequência é semanal (ex: toda segunda), a lógica de 'semanas' com valor 1 já cobre.
-          // Se for algo como 'a cada 2 segundas', a lógica atual não cobre perfeitamente.
-          // Mantendo a lógica original que avançava 7 dias nesses casos:
+          // Casos para dias específicos da semana (segunda, terça, etc.)
           case 'segunda': case 'terca': case 'quarta': case 'quinta': case 'sexta':
-             // Encontra o próximo dia da semana especificado
-             const diaAlvo = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'].indexOf(lancamento.frequenciaTipo);
-             currentDate.setDate(currentDate.getDate() + 1); // Avança pelo menos um dia
-             while(currentDate.getDay() !== diaAlvo) {
+             const diaSemana = {'segunda': 1, 'terca': 2, 'quarta': 3, 'quinta': 4, 'sexta': 5};
+             const diaAlvo = diaSemana[lancamento.frequenciaTipo];
+             // Avança para o próximo dia alvo
+             do {
                  currentDate.setDate(currentDate.getDate() + 1);
-             }
+             } while(currentDate.getDay() !== diaAlvo);
              // Se a frequência for > 1, avança semanas adicionais
              if (lancamento.frequenciaValor > 1) {
                  currentDate.setDate(currentDate.getDate() + 7 * (lancamento.frequenciaValor - 1));
@@ -1031,8 +1030,8 @@
              currentDate.setMonth(currentDate.getMonth() + 1);
         }
         // Segurança contra loops infinitos (caso a data não avance)
-        if (currentDate <= ocorrencias[ocorrencias.length - 1]) {
-            console.error("Loop infinito detectado em calcularOcorrencias", lancamento);
+        if (currentDate.getTime() === dataAnterior.getTime()) {
+            console.error("Loop infinito detectado em calcularOcorrencias - data não avançou", lancamento);
             break; 
         }
       }
@@ -1252,8 +1251,11 @@
       // Filtra lançamentos do período
       const lancamentosPeriodo = dadosResumo.lancamentos.filter(l => {
           if (mesSelecionado === -1) return true; // Ano todo
+          // Verifica se há ocorrência no mês OU se há valor manual para o mês
           const ocorrencias = calcularOcorrencias(l, new Date().getFullYear());
-          return ocorrencias.some(d => d.getMonth() === mesSelecionado);
+          const temOcorrenciaNoMes = ocorrencias.some(d => d.getMonth() === mesSelecionado);
+          const temValorManualNoMes = l.valoresManuais && l.valoresManuais[mesSelecionado] !== null;
+          return temOcorrenciaNoMes || temValorManualNoMes;
       });
 
       const despesasPeriodo = lancamentosPeriodo.filter(l => l.tipo !== 'receita');
@@ -1274,7 +1276,10 @@
             } else {
                 const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
                 const ocorrenciasNoMes = ocorrencias.filter(d => d.getMonth() === mesSelecionado);
-                valorDespesa = despesa.valor * ocorrenciasNoMes.length;
+                // Só soma o valor base se houver ocorrência E não houver valor manual
+                if (ocorrenciasNoMes.length > 0) {
+                   valorDespesa = despesa.valor * ocorrenciasNoMes.length;
+                }
             }
         }
 
@@ -1322,10 +1327,15 @@
        // Caso não haja dados, mostra mensagem ou gráfico vazio
       if (data.length === 0 && restante <= 0) {
           document.getElementById('legendaDespesasReceitas').innerHTML = '<p style="text-align:center;">Sem despesas para exibir neste período.</p>';
+           // Destruir gráfico anterior se existir e não houver dados novos
+          if (graficoDespesasReceitas) {
+            graficoDespesasReceitas.destroy();
+            graficoDespesasReceitas = null;
+          }
           return;
       }
       
-      if (restante > 0) {
+      if (restante > 0 || data.length > 0) { // Adiciona restante mesmo se não houver despesas
         labels.push('Restante (Receita - Despesas)');
         data.push(restante);
         backgroundColors.push('#1976d2'); // Azul para restante
@@ -1339,12 +1349,14 @@
       const legendaHTML = labels.map((label, i) => {
         const tipo = tipos[i];
         const classeCor = tipo === 'fixa' ? 'fixa' : tipo === 'variavel' ? 'variavel' : 'receita';
+        // Evita exibir percentual NaN ou Infinity se receitaPeriodo for 0
+        const percentualExibido = receitaPeriodo > 0 ? `(${percentuais[i]})` : ''; 
         return `
           <div class="item-legenda">
             <div class="cor-legenda" style="background-color: ${backgroundColors[i]}"></div>
             <span class="descricao-legenda ${classeCor}">${label}</span>
             <span class="valor-legenda">${formatarMoeda(data[i])}</span>
-            <span>(${percentuais[i]})</span>
+            <span>${percentualExibido}</span>
           </div>
         `;
       }).join('');
@@ -1372,7 +1384,8 @@
                   const label = context.label || '';
                   const value = context.raw || 0;
                   const percentage = percentuais[context.dataIndex] || '0%';
-                  return `${label}: ${formatarMoeda(value)} (${percentage})`;
+                  const percentualExibido = receitaPeriodo > 0 ? `(${percentage})` : '';
+                  return `${label}: ${formatarMoeda(value)} ${percentualExibido}`;
                 }
               }
             }
