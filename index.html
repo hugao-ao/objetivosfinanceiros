@@ -30,29 +30,75 @@
     }
     .container-principal {
       display: flex;
-      width: 200%;
+      width: 200%; /* Mantido para o slide do resumo */
       transition: transform 0.5s ease;
     }
 
     .container-ativo {
-      transform: translateX(-50%);
+      transform: translateX(-50%); /* Mantido para mostrar o resumo */
     }
 
-    .secao-formulario {
-      width: 50%;
+    /* Nova seção para conter apenas a tabela de lançamentos */
+    .secao-lancamentos {
+      width: 50%; /* Ocupa metade do container principal */
       padding-right: 20px;
+      box-sizing: border-box;
     }
 
     .secao-resumo {
-      width: 50%;
+      width: 50%; /* Ocupa a outra metade */
       padding-left: 20px;
+      box-sizing: border-box;
     }
 
-    .form-section {
+    /* Estilos para o Modal */
+    .modal {
+      display: none; /* Escondido por padrão */
+      position: fixed; 
+      z-index: 100; 
+      left: 0;
+      top: 0;
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; 
+      background-color: rgba(0,0,0,0.6); 
+      padding-top: 60px;
+    }
+
+    .modal-content {
       background-color: #014034;
-      padding: 20px;
+      margin: 5% auto;
+      padding: 30px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 700px;
       border-radius: 10px;
-      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .close-button {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-button:hover,
+    .close-button:focus {
+      color: #ffd700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Formulário dentro do Modal */
+    .form-section-modal {
+      /* background-color: #014034; (já no modal-content) */
+      padding: 0; /* Removido padding extra */
+      border-radius: 10px;
+      /* margin-bottom: 30px; (não necessário no modal) */
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 30px;
@@ -72,12 +118,15 @@
       border-radius: 5px;
       border: none;
       margin-bottom: 15px;
+      box-sizing: border-box;
     }
 
     .botoes-formulario {
+      grid-column: 1 / -1; /* Ocupa as duas colunas */
       display: flex;
       gap: 10px;
       justify-content: flex-end;
+      margin-top: 10px;
     }
 
     .table-container {
@@ -105,6 +154,35 @@
       color: #ffd700;
       position: sticky;
       top: 0;
+      z-index: 5; /* Abaixo do botão fixo */
+    }
+    
+    /* Estilo para o cabeçalho da Descrição com o botão + */
+    th.descricao-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* Alinha texto à esquerda, botão à direita */
+        padding-right: 5px; /* Espaço para o botão */
+    }
+
+    .botao-abrir-modal {
+        background-color: #ffd700;
+        color: #002d26;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 24px; /* Centraliza o + verticalmente */
+        text-align: center;
+        cursor: pointer;
+        margin-left: 10px;
+        padding: 0;
+    }
+
+    .botao-abrir-modal:hover {
+        background-color: #ffc400;
     }
 
     .receita { color: #4caf50; }
@@ -126,7 +204,12 @@
       background-color: #ffc400;
     }
 
-    .botao-resumo {
+    /* Botão Resumo Fixo */
+    .botao-resumo-fixo {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 50;
       background-color: #2196F3;
       color: white;
       font-weight: bold;
@@ -134,9 +217,10 @@
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
-    .botao-resumo:hover {
+    .botao-resumo-fixo:hover {
       background-color: #0b7dda;
     }
 
@@ -179,59 +263,47 @@
       text-align: center;
     }
     
-    /* Congelar a primeira coluna (Categoria) */
+    /* Congelar a primeira coluna (Categoria) - Tabela Resumo */
     #tabelaResumo thead tr th:first-child,
     #tabelaResumo tbody tr td:first-child {
       position: sticky;
       left: 0;
       z-index: 10;
-      background-color: #014034; /* Cor de fundo igual ao cabeçalho */
+      background-color: #014034; 
     }
-
-    /* Ajuste para o cabeçalho */
     #tabelaResumo thead tr th:first-child {
-      background-color: #006a56; /* Cor do cabeçalho */
-      z-index: 20; /* Garante que fique acima das células */
+      background-color: #006a56; 
+      z-index: 20; 
     }
     #tabelaResumo tbody tr td:first-child {
-      font-weight: bold; /* Opcional: destaque */
+      font-weight: bold; 
     }
-    /* Congelar a coluna Descrição */
+
+    /* Congelar a coluna Descrição - Tabela Lançamentos */
     #tabelaLancamentos thead tr th:nth-child(2),
     #tabelaLancamentos tbody tr td:nth-child(2) {
       position: sticky;
       left: 0;
       z-index: 10;
-      background-color: #014034; /* Cor de fundo */
+      background-color: #014034; 
     }
-    
-    /* Ajuste para o cabeçalho */
     #tabelaLancamentos thead tr th:nth-child(2) {
-      background-color: #006a56; /* Cor do cabeçalho */
+      background-color: #006a56; 
       z-index: 20;
     }
-    
-    /* Garantir que a Descrição não quebre linha */
     #tabelaLancamentos tbody tr td:nth-child(2) {
       white-space: nowrap;
-      min-width: 150px; /* Largura mínima para evitar esmagamento */
+      min-width: 150px; 
     }
-    .table-container {
-      overflow-x: auto;
-      max-width: 100%;
-      margin-bottom: 20px;
-    }
-    
+
     /* Estilo para células editáveis */
     td.editable {
       cursor: pointer;
       position: relative;
     }
-    
     td.editable:hover {
       background-color: rgba(255, 255, 255, 0.1);
     }
-    
     .edit-input {
       position: absolute;
       top: 0;
@@ -245,8 +317,8 @@
       padding: 0;
       margin: 0;
       font-size: 14px;
+      box-sizing: border-box;
     }
-    
     .edit-input:focus {
       outline: 2px solid #ffd700;
     }
@@ -259,7 +331,6 @@
       justify-content: center;
       margin-top: 30px;
     }
-    
     .grafico-card {
       background-color: #014034;
       border-radius: 10px;
@@ -268,25 +339,21 @@
       min-width: 400px;
       box-sizing: border-box;
     }
-    
     .grafico-titulo {
       text-align: center;
       margin-bottom: 15px;
       color: #ffd700;
       font-size: 16px;
     }
-    
     .grafico {
       width: 100%;
       height: 300px;
       position: relative;
     }
-    
     .seletor-mes {
       text-align: center;
       margin-bottom: 20px;
     }
-    
     .seletor-mes select {
       padding: 8px 15px;
       border-radius: 5px;
@@ -295,7 +362,6 @@
       color: white;
       font-weight: bold;
     }
-    
     .legenda-grafico {
       display: flex;
       flex-direction: column;
@@ -303,14 +369,12 @@
       margin-top: 15px;
       width: 100%;
     }
-    
     .item-legenda {
       display: flex;
       align-items: center;
       font-size: 14px;
       width: 100%;
     }
-    
     .cor-legenda {
       width: 15px;
       height: 15px;
@@ -318,26 +382,33 @@
       border-radius: 3px;
       flex-shrink: 0;
     }
-    
     .valor-legenda {
       margin-left: 5px;
       font-weight: bold;
     }
-    
     .descricao-legenda {
       min-width: 120px;
     }
+
+    /* Remover CSS não utilizado do formulário original */
+    /* .form-section { ... } */ 
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
   <h1>Controle Financeiro</h1>
+  
+  <!-- Botão Resumo Fixo -->
+  <button class="botao-resumo-fixo" onclick="mostrarResumo()">Ver Resumo e Análises</button>
 
-  <div class="container-principal" id="containerPrincipal">
-    <!-- Seção do Formulário -->
-    <div class="secao-formulario">
-      <div class="form-section">
+  <!-- Modal do Formulário -->
+  <div id="modalFormulario" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="fecharModal()">&times;</span>
+      <h2>Novo Lançamento</h2>
+      <div class="form-section-modal">
         <div class="form-group">
           <label for="descricao">Descrição:</label>
           <input type="text" id="descricao" placeholder="Ex: Salário, Luz" />
@@ -385,20 +456,27 @@
 
           <label for="dataFinal">Data Final:</label>
           <input type="date" id="dataFinal" />
-
-          <div class="botoes-formulario">
+        </div>
+        <div class="botoes-formulario">
             <button class="botao-lancar" onclick="adicionarLancamento()">Lançar Item</button>
-            <button class="botao-resumo" onclick="mostrarResumo()">Ver Resumo e Análises</button>
-          </div>
         </div>
       </div>
+    </div>
+  </div>
 
+  <!-- Container Principal (Lançamentos e Resumo) -->
+  <div class="container-principal" id="containerPrincipal">
+    <!-- Seção da Tabela de Lançamentos -->
+    <div class="secao-lancamentos">
       <div class="table-container">
         <table id="tabelaLancamentos">
           <thead>
             <tr>
               <th class="hidden-id">ID</th>
-              <th>Descrição</th>
+              <th class="descricao-header">
+                <span>Descrição</span>
+                <button id="botaoAbrirModal" class="botao-abrir-modal" onclick="abrirModal()">+</button>
+              </th>
               <th>Jan</th>
               <th>Fev</th>
               <th>Mar</th>
@@ -425,7 +503,7 @@
 
     <!-- Seção do Resumo -->
     <div class="secao-resumo">
-      <button class="botao-voltar" onclick="voltarParaFormulario()">← Voltar para Lançamentos</button>
+      <button class="botao-voltar" onclick="voltarParaLancamentos()">← Voltar para Lançamentos</button>
       
       <div class="resumo-titulo">Resumo Financeiro</div>
       
@@ -496,18 +574,46 @@
   </div>
 
   <script>
-    // Variáveis globais para os gráficos
+    // Variáveis globais para os gráficos e modal
     let graficoDespesasPoupanca = null;
     let graficoDespesasReceitas = null;
     let dadosResumo = null;
     let lancamentos = [];
+    const modal = document.getElementById("modalFormulario");
+
+    // Funções do Modal
+    function abrirModal() {
+      // Limpar campos antes de abrir (opcional)
+      // document.getElementById('descricao').value = '';
+      // document.getElementById('valor').value = '';
+      // Definir datas padrão ao abrir
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      if (!document.getElementById('dataInicial').value) {
+          document.getElementById('dataInicial').value = `${currentYear}-01-01`;
+      }
+      if (!document.getElementById('dataFinal').value) {
+          document.getElementById('dataFinal').value = `${currentYear}-12-31`;
+      }
+      modal.style.display = "block";
+    }
+
+    function fecharModal() {
+      modal.style.display = "none";
+    }
+
+    // Fechar modal se clicar fora do conteúdo
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        fecharModal();
+      }
+    }
 
     // Função para formatar valores monetários corretamente
     function formatarMoeda(valor) {
-      // Converter para número
-      const numero = typeof valor === 'number' ? valor : parseFloat(valor);
+      const numero = typeof valor === 'number' ? valor : parseFloat(String(valor).replace(/[^\d,-]/g, '').replace(',', '.'));
+      if (isNaN(numero)) return 'R$ 0,00'; // Retorna zero se não for número
       
-      // Formatar com separadores de milhar e decimal
       return numero.toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL',
@@ -520,74 +626,114 @@
       document.getElementById('containerPrincipal').classList.add('container-ativo');
     }
 
-    function voltarParaFormulario() {
+    // Renomeada para clareza
+    function voltarParaLancamentos() {
       document.getElementById('containerPrincipal').classList.remove('container-ativo');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      // Definir datas padrão
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      document.getElementById('dataInicial').value = `${currentYear}-01-01`;
-      document.getElementById('dataFinal').value = `${currentYear}-12-31`;
+      // Datas padrão agora são definidas ao abrir o modal
+      // const today = new Date();
+      // const currentYear = today.getFullYear();
+      // document.getElementById('dataInicial').value = `${currentYear}-01-01`;
+      // document.getElementById('dataFinal').value = `${currentYear}-12-31`;
       
       carregarLancamentos();
 
-      // Formatar valor monetário durante a digitação
+      // Formatar valor monetário durante a digitação no modal
       document.getElementById('valor').addEventListener('input', function() {
         let v = this.value.replace(/[^\d]/g, '');
+        // Previne valor vazio ou só com zeros de causar NaN
+        if (!v) {
+            this.value = '';
+            return;
+        }
+        // Adiciona zeros à esquerda se necessário (para centavos)
         if (v.length < 3) v = v.padStart(3, '0');
-        const inteiro = v.slice(0, v.length - 2);
-        const decimal = v.slice(v.length - 2);
-        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ',' + decimal;
+        
+        let inteiro = v.slice(0, -2);
+        const decimal = v.slice(-2);
+        
+        // Remove zeros à esquerda do inteiro
+        inteiro = inteiro.replace(/^0+/, '') || '0'; 
+
+        // Adiciona separador de milhar
+        const inteiroFormatado = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+        this.value = inteiroFormatado + ',' + decimal;
       });
       
-      // Controlar as opções de forma de pagamento
+      // Controlar as opções de forma de pagamento no modal
       document.getElementById('tipoLancamento').addEventListener('change', function() {
         const formaPagamentoSelect = document.getElementById('formaPagamento');
         
         if (this.value === 'receita') {
           formaPagamentoSelect.innerHTML = '<option value="conta">Conta</option>';
+          formaPagamentoSelect.value = 'conta'; // Garante que 'conta' esteja selecionado
         } else {
+          // Guarda o valor selecionado antes de mudar as opções
+          const valorAtual = formaPagamentoSelect.value;
           formaPagamentoSelect.innerHTML = `
             <option value="conta">Conta</option>
             <option value="credito">Cartão de Crédito</option>
           `;
+          // Restaura a seleção se ainda for válida
+          if (valorAtual === 'conta' || valorAtual === 'credito') {
+              formaPagamentoSelect.value = valorAtual;
+          } else {
+              formaPagamentoSelect.value = 'conta'; // Default para conta se inválido
+          }
         }
       });
       
-      // Inicializar o estado do formulário
+      // Inicializar o estado do formulário no modal
       document.getElementById('tipoLancamento').dispatchEvent(new Event('change'));
     });
 
     function adicionarLancamento() {
-      const descricao = document.getElementById('descricao').value.trim();
-      const valor = document.getElementById('valor').value.trim();
-      const formaPagamento = document.getElementById('formaPagamento').value;
-      const tipo = document.getElementById('tipoLancamento').value;
-      const frequenciaValor = parseInt(document.getElementById('frequenciaValor').value) || 1;
-      const frequenciaTipo = document.getElementById('frequenciaTipo').value;
-      let dataInicial = document.getElementById('dataInicial').value;
-      let dataFinal = document.getElementById('dataFinal').value;
+      // Busca os valores dos campos DENTRO do modal
+      const descricaoInput = document.getElementById('descricao');
+      const valorInput = document.getElementById('valor');
+      const formaPagamentoSelect = document.getElementById('formaPagamento');
+      const tipoSelect = document.getElementById('tipoLancamento');
+      const frequenciaValorInput = document.getElementById('frequenciaValor');
+      const frequenciaTipoSelect = document.getElementById('frequenciaTipo');
+      const dataInicialInput = document.getElementById('dataInicial');
+      const dataFinalInput = document.getElementById('dataFinal');
+
+      const descricao = descricaoInput.value.trim();
+      const valorStr = valorInput.value.trim();
+      const formaPagamento = formaPagamentoSelect.value;
+      const tipo = tipoSelect.value;
+      const frequenciaValor = parseInt(frequenciaValorInput.value) || 1;
+      const frequenciaTipo = frequenciaTipoSelect.value;
+      let dataInicial = dataInicialInput.value;
+      let dataFinal = dataFinalInput.value;
 
       // Validações
-      if (!descricao || !valor) {
+      if (!descricao || !valorStr) {
         alert('Preencha a descrição e o valor.');
         return;
       }
       
       if (tipo === 'receita' && formaPagamento !== 'conta') {
         alert('Receitas devem ser lançadas apenas como "Conta"');
+        // Reverter a seleção para 'conta' se o usuário tentou lançar receita como crédito
+        formaPagamentoSelect.value = 'conta'; 
         return;
       }
 
-      // Valores padrão para datas
+      // Converter valor para número
+      const valorNumerico = parseFloat(valorStr.replace(/\./g, '').replace(',', '.'));
+      if (isNaN(valorNumerico)) {
+          alert('Valor inválido.');
+          return;
+      }
+
+      // Valores padrão para datas se não preenchidas
       const currentYear = new Date().getFullYear();
       if (!dataInicial) dataInicial = `${currentYear}-01-01`;
       if (!dataFinal) dataFinal = `${currentYear}-12-31`;
-
-      // Converter valor para número (remover pontos e trocar vírgula por ponto)
-      const valorNumerico = parseFloat(valor.replace(/\./g, '').replace(',', '.'));
 
       // Salvar no localStorage
       let lancamentos = JSON.parse(localStorage.getItem('lancamentos') || '[]');
@@ -603,58 +749,69 @@
         frequenciaTipo,
         dataInicial,
         dataFinal,
-        // Adicionamos um campo para armazenar edições manuais
-        valoresManuais: Array(12).fill(null)
+        valoresManuais: Array(12).fill(null) // Inicializa valores manuais
       });
 
       localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
-      carregarLancamentos();
+      
+      // Limpar campos do modal após adicionar
+      descricaoInput.value = '';
+      valorInput.value = '';
+      // Resetar selects para padrão?
+      // tipoSelect.value = 'receita'; 
+      // formaPagamentoSelect.value = 'conta';
+      // frequenciaTipoSelect.value = 'meses';
+      // frequenciaValorInput.value = 1;
+      // dataInicialInput.value = ''; // Limpa datas ou redefine para padrão?
+      // dataFinalInput.value = '';
+      // document.getElementById('tipoLancamento').dispatchEvent(new Event('change')); // Atualiza formaPagamento
 
-      // Limpar campos
-      document.getElementById('descricao').value = '';
-      document.getElementById('valor').value = '';
+      // Fechar o modal
+      fecharModal();
+      
+      // Recarregar a tabela e o resumo
+      carregarLancamentos(); 
     }
 
     function carregarLancamentos() {
       const tabelaBody = document.getElementById('tabelaBody');
-      tabelaBody.innerHTML = '';
+      tabelaBody.innerHTML = ''; // Limpa a tabela antes de recarregar
 
       lancamentos = JSON.parse(localStorage.getItem('lancamentos') || '[]');
       const currentYear = new Date().getFullYear();
 
-      // Ordenar os lançamentos conforme especificado
       const lancamentosOrdenados = ordenarLancamentos(lancamentos);
 
       lancamentosOrdenados.forEach(l => {
         const tr = document.createElement('tr');
-        if (l.formaPagamento === 'credito') tr.classList.add('cartao-credito');
+        if (l.formaPagamento === 'credito' && l.tipo !== 'receita') tr.classList.add('cartao-credito');
 
-        // Inicializar valoresManuais se não existir
         if (!l.valoresManuais) {
           l.valoresManuais = Array(12).fill(null);
         }
 
-        // Calcular distribuição mensal
         const meses = Array(12).fill(0);
         const ocorrencias = calcularOcorrencias(l, currentYear);
         
-        // Distribuir o valor completo para cada ocorrência
         ocorrencias.forEach(data => {
           const mes = data.getMonth();
-          // Usar valor manual se existir, senão usar o valor padrão
-          meses[mes] = l.valoresManuais[mes] !== null ? l.valoresManuais[mes] : (meses[mes] + l.valor);
+          // Prioriza valor manual, senão usa o calculado
+          const valorDoMes = l.valoresManuais[mes] !== null ? l.valoresManuais[mes] : l.valor;
+          // Só adiciona se a ocorrência existir E o valor manual não for explicitamente zero (null significa usar calculado)
+          if (l.valoresManuais[mes] !== 0) {
+              meses[mes] += valorDoMes;
+          }
         });
 
-        // Calcular total e média
         const total = meses.reduce((sum, val) => sum + val, 0);
-        const media = total / 12;
+        const media = total / 12; // Ou total / meses.filter(m => m > 0).length para média dos meses com valor?
 
         tr.innerHTML = `
           <td class="hidden-id">${l.id}</td>
           <td class="${l.tipo}">${l.descricao}</td>
           ${meses.map((m, index) => `
             <td class="editable" data-id="${l.id}" data-month="${index}">
-              ${m ? formatarMoeda(m) : '-'}
+              ${formatarMoeda(l.valoresManuais[index] !== null ? l.valoresManuais[index] : m)} 
             </td>
           `).join('')}
           <td>${formatarMoeda(total)}</td>
@@ -664,102 +821,136 @@
         tabelaBody.appendChild(tr);
       });
 
-      // Adicionar eventos de clique para edição
+      // Reanexar eventos de clique para edição
       document.querySelectorAll('.editable').forEach(cell => {
         cell.addEventListener('click', function() {
-          iniciarEdicao(this);
+          // Evitar abrir edição se já houver um input
+          if (!this.querySelector('.edit-input')) {
+              iniciarEdicao(this);
+          }
         });
       });
 
-      // Atualizar o resumo financeiro
+      // Atualizar o resumo financeiro sempre que carregar lançamentos
       atualizarResumoFinanceiro(lancamentos, currentYear);
+    }
+    
+    function excluirLancamento(id) {
+      if (confirm('Tem certeza que deseja excluir este lançamento?')) {
+        let lancamentos = JSON.parse(localStorage.getItem('lancamentos') || '[]');
+        lancamentos = lancamentos.filter(l => l.id !== id);
+        localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+        carregarLancamentos(); // Recarrega a tabela e o resumo
+      }
     }
 
     function iniciarEdicao(cell) {
       const id = parseInt(cell.getAttribute('data-id'));
       const month = parseInt(cell.getAttribute('data-month'));
-      const currentValue = cell.textContent.trim();
+      const currentValueText = cell.textContent.trim();
       
-      // Criar input para edição
+      // Extrai o valor numérico do texto formatado (R$ 1.234,56 -> 1234.56)
+      const valorNumericoAtual = parseFloat(currentValueText.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      
+      // Formata para exibição no input (1234,56)
+      const valorParaInput = valorNumericoAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}).replace('.', '');
+
+      cell.innerHTML = ''; // Limpa a célula
+
       const input = document.createElement('input');
       input.type = 'text';
       input.className = 'edit-input';
-      input.value = currentValue === '-' ? '' : currentValue.replace('R$', '').trim();
+      input.value = valorParaInput; // Usa o valor formatado sem R$
       
-      // Posicionar o input sobre a célula
-      cell.innerHTML = '';
+      // Adiciona máscara de moeda ao input de edição
+      input.addEventListener('input', function() {
+        let v = this.value.replace(/[^\d]/g, '');
+        if (!v) { this.value = ''; return; }
+        if (v.length < 3) v = v.padStart(3, '0');
+        let inteiro = v.slice(0, -2).replace(/^0+/, '') || '0';
+        const decimal = v.slice(-2);
+        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ',' + decimal;
+      });
+
       cell.appendChild(input);
       input.focus();
+      input.select(); // Seleciona o texto para fácil substituição
       
-      // Finalizar edição quando perder o foco
-      input.addEventListener('blur', function() {
-        finalizarEdicao(input, id, month, cell);
-      });
+      // Handler para salvar quando perder o foco
+      const blurHandler = () => {
+          finalizarEdicao(input, id, month, cell);
+          input.removeEventListener('blur', blurHandler); // Remove o listener para evitar chamadas múltiplas
+      };
+      input.addEventListener('blur', blurHandler);
       
-      // Finalizar edição ao pressionar Enter
+      // Handler para salvar com Enter ou cancelar com Esc
       input.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
+          input.removeEventListener('blur', blurHandler); // Remove o listener de blur para evitar salvar duas vezes
           finalizarEdicao(input, id, month, cell);
         }
+      });
+      input.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+              input.removeEventListener('blur', blurHandler);
+              // Restaura o valor original sem salvar
+              cell.innerHTML = currentValueText; 
+          }
       });
     }
     
     function finalizarEdicao(input, id, month, cell) {
-      const novoValor = input.value.trim();
+      const novoValorStr = input.value.trim();
       
-      // Carregar lançamentos
       let lancamentos = JSON.parse(localStorage.getItem('lancamentos') || '[]');
       const lancamento = lancamentos.find(l => l.id === id);
       
       if (lancamento) {
-        // Converter valor para número
         let valorNumerico = 0;
-        if (novoValor && novoValor !== '-') {
-          valorNumerico = parseFloat(novoValor.replace(/\./g, '').replace(',', '.'));
+        if (novoValorStr && novoValorStr !== '-') {
+          valorNumerico = parseFloat(novoValorStr.replace(/\./g, '').replace(',', '.'));
+          if (isNaN(valorNumerico)) valorNumerico = 0; // Trata caso de input inválido
         }
         
-        // Atualizar valor manual
         if (!lancamento.valoresManuais) {
           lancamento.valoresManuais = Array(12).fill(null);
         }
         
-        lancamento.valoresManuais[month] = valorNumerico || null;
+        // Salva o valor numérico. Se for zero, salva 0, não null.
+        lancamento.valoresManuais[month] = valorNumerico; 
         
-        // Salvar no localStorage
         localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
         
-        // Recarregar a tabela
-        carregarLancamentos();
+        // Recarregar a linha ou a tabela inteira? Recarregar tudo é mais simples.
+        carregarLancamentos(); 
+      } else {
+        // Se não encontrou o lançamento, restaura a célula (improvável)
+        cell.innerHTML = formatarMoeda(0); // Ou o valor original se puder recuperar
       }
     }
 
     function ordenarLancamentos(lancamentos) {
-      // Separar em categorias conforme especificado
-      const entradas = lancamentos.filter(l => l.tipo === 'receita')
-                                 .sort((a, b) => a.descricao.localeCompare(b.descricao));
-      
-      const fixasNaoCredito = lancamentos.filter(l => l.tipo === 'fixa' && l.formaPagamento !== 'credito')
-                                       .sort((a, b) => a.descricao.localeCompare(b.descricao));
-      
-      const fixasCredito = lancamentos.filter(l => l.tipo === 'fixa' && l.formaPagamento === 'credito')
-                                    .sort((a, b) => a.descricao.localeCompare(b.descricao));
-      
-      const variaveisNaoCredito = lancamentos.filter(l => l.tipo === 'variavel' && l.formaPagamento !== 'credito')
-                                           .sort((a, b) => a.descricao.localeCompare(b.descricao));
-      
-      const variaveisCredito = lancamentos.filter(l => l.tipo === 'variavel' && l.formaPagamento === 'credito')
-                                        .sort((a, b) => a.descricao.localeCompare(b.descricao));
-      
-      // Concatenar na ordem especificada
+      const entradas = lancamentos.filter(l => l.tipo === 'receita').sort((a, b) => a.descricao.localeCompare(b.descricao));
+      const fixasNaoCredito = lancamentos.filter(l => l.tipo === 'fixa' && l.formaPagamento !== 'credito').sort((a, b) => a.descricao.localeCompare(b.descricao));
+      const fixasCredito = lancamentos.filter(l => l.tipo === 'fixa' && l.formaPagamento === 'credito').sort((a, b) => a.descricao.localeCompare(b.descricao));
+      const variaveisNaoCredito = lancamentos.filter(l => l.tipo === 'variavel' && l.formaPagamento !== 'credito').sort((a, b) => a.descricao.localeCompare(b.descricao));
+      const variaveisCredito = lancamentos.filter(l => l.tipo === 'variavel' && l.formaPagamento === 'credito').sort((a, b) => a.descricao.localeCompare(b.descricao));
       return [...entradas, ...fixasNaoCredito, ...fixasCredito, ...variaveisNaoCredito, ...variaveisCredito];
     }
 
     function calcularOcorrencias(lancamento, ano) {
-      const startDate = new Date(lancamento.dataInicial);
-      const endDate = new Date(lancamento.dataFinal);
+      // Garante que as datas sejam objetos Date válidos
+      const startDate = new Date(lancamento.dataInicial + 'T00:00:00'); // Adiciona T00:00:00 para evitar problemas de fuso horário
+      const endDate = new Date(lancamento.dataFinal + 'T00:00:00');
+      
+      // Verifica se as datas são válidas
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+          console.error('Datas inválidas para o lançamento:', lancamento);
+          return [];
+      }
+
       const ocorrencias = [];
       
-      // Se for único, verifica se está dentro do ano
       if (lancamento.frequenciaTipo === 'unico') {
         if (startDate.getFullYear() === ano) {
           ocorrencias.push(new Date(startDate));
@@ -767,53 +958,82 @@
         return ocorrencias;
       }
       
-      // Ajustar para o ano atual
-      const dataInicio = startDate < new Date(`${ano}-01-01`) ? 
-        new Date(`${ano}-01-01`) : new Date(startDate);
-      const dataFim = endDate > new Date(`${ano}-12-31`) ? 
-        new Date(`${ano}-12-31`) : new Date(endDate);
+      const inicioAno = new Date(`${ano}-01-01T00:00:00`);
+      const fimAno = new Date(`${ano}-12-31T00:00:00`);
       
-      if (dataInicio > dataFim) return ocorrencias;
+      const dataInicioCalculo = startDate > inicioAno ? startDate : inicioAno;
+      const dataFimCalculo = endDate < fimAno ? endDate : fimAno;
       
-      // Calcular ocorrências
-      let currentDate = new Date(dataInicio);
+      if (dataInicioCalculo > dataFimCalculo) return ocorrencias;
       
-      while (currentDate <= dataFim) {
-        if (currentDate.getFullYear() === ano) {
-          ocorrencias.push(new Date(currentDate));
+      let currentDate = new Date(dataInicioCalculo);
+      
+      while (currentDate <= dataFimCalculo) {
+        // Adiciona apenas se estiver dentro do intervalo original do lançamento E do ano atual
+        if (currentDate >= startDate && currentDate <= endDate && currentDate.getFullYear() === ano) {
+            ocorrencias.push(new Date(currentDate));
         }
         
-        // Avançar conforme a frequência
+        // Avançar data
+        const currentDayOfMonth = currentDate.getDate();
         switch(lancamento.frequenciaTipo) {
           case 'dias':
             currentDate.setDate(currentDate.getDate() + lancamento.frequenciaValor);
             break;
           case 'dias_uteis':
-            currentDate.setDate(currentDate.getDate() + lancamento.frequenciaValor);
-            while ([0, 6].includes(currentDate.getDay())) {
-              currentDate.setDate(currentDate.getDate() + 1);
+            let diasAdicionados = 0;
+            while (diasAdicionados < lancamento.frequenciaValor) {
+                currentDate.setDate(currentDate.getDate() + 1);
+                if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) { // Não é Sábado nem Domingo
+                    diasAdicionados++;
+                }
             }
             break;
           case 'meses':
-            const nextMonth = currentDate.getMonth() + lancamento.frequenciaValor;
-            currentDate.setMonth(nextMonth);
-            
-            // Ajuste para não pular fevereiro quando dia > 28
-            if (currentDate.getMonth() !== (nextMonth % 12)) {
-              currentDate.setDate(0); // Vai para o último dia do mês anterior
+            currentDate.setMonth(currentDate.getMonth() + lancamento.frequenciaValor);
+            // Ajuste para meses com menos dias (ex: de 31/Jan para Fev -> 28/Fev)
+            if (currentDate.getDate() !== currentDayOfMonth) {
+                currentDate.setDate(0); // Vai para o último dia do mês anterior correto
             }
             break;
           case 'anos':
             currentDate.setFullYear(currentDate.getFullYear() + lancamento.frequenciaValor);
+             // Ajuste para ano bissexto (de 29/Fev para ano não bissexto)
+             if (currentDate.getDate() !== currentDayOfMonth) {
+                currentDate.setDate(0); 
+            }
             break;
           case 'semanas':
             currentDate.setDate(currentDate.getDate() + (7 * lancamento.frequenciaValor));
             break;
-          case 'quinzenas':
-            currentDate.setDate(currentDate.getDate() + (15 * lancamento.frequenciaValor));
+          case 'quinzenas': // Aproximação: adiciona 15 dias
+            currentDate.setDate(currentDate.getDate() + (15 * lancamento.frequenciaValor)); 
             break;
-          default: // Dias específicos da semana
-            currentDate.setDate(currentDate.getDate() + 7);
+          // Casos para dias específicos da semana (segunda, terça, etc.) - Lógica complexa, simplificando:
+          // Se a frequência é semanal (ex: toda segunda), a lógica de 'semanas' com valor 1 já cobre.
+          // Se for algo como 'a cada 2 segundas', a lógica atual não cobre perfeitamente.
+          // Mantendo a lógica original que avançava 7 dias nesses casos:
+          case 'segunda': case 'terca': case 'quarta': case 'quinta': case 'sexta':
+             // Encontra o próximo dia da semana especificado
+             const diaAlvo = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'].indexOf(lancamento.frequenciaTipo);
+             currentDate.setDate(currentDate.getDate() + 1); // Avança pelo menos um dia
+             while(currentDate.getDay() !== diaAlvo) {
+                 currentDate.setDate(currentDate.getDate() + 1);
+             }
+             // Se a frequência for > 1, avança semanas adicionais
+             if (lancamento.frequenciaValor > 1) {
+                 currentDate.setDate(currentDate.getDate() + 7 * (lancamento.frequenciaValor - 1));
+             }
+            break;
+          default:
+             // Se tipo desconhecido, para evitar loop infinito, avança um mês
+             console.warn('Tipo de frequência desconhecido:', lancamento.frequenciaTipo);
+             currentDate.setMonth(currentDate.getMonth() + 1);
+        }
+        // Segurança contra loops infinitos (caso a data não avance)
+        if (currentDate <= ocorrencias[ocorrencias.length - 1]) {
+            console.error("Loop infinito detectado em calcularOcorrencias", lancamento);
+            break; 
         }
       }
       
@@ -824,67 +1044,63 @@
       const resumoBody = document.getElementById('resumoBody');
       resumoBody.innerHTML = '';
 
-      // Calcular totais por categoria
       const receitas = calcularTotaisPorCategoria(lancamentos.filter(l => l.tipo === 'receita'), ano);
       const fixas = calcularTotaisPorCategoria(lancamentos.filter(l => l.tipo === 'fixa'), ano);
       const variaveis = calcularTotaisPorCategoria(lancamentos.filter(l => l.tipo === 'variavel'), ano);
       const cartao = calcularTotaisPorCategoria(lancamentos.filter(l => l.formaPagamento === 'credito' && l.tipo !== 'receita'), ano);
       const conta = calcularTotaisPorCategoria(lancamentos.filter(l => l.formaPagamento === 'conta' && l.tipo !== 'receita'), ano);
       
-      // Calcular totais gerais
       const totalReceitas = receitas.total;
       const totalFixas = fixas.total;
       const totalVariaveis = variaveis.total;
       const totalDespesas = totalFixas + totalVariaveis;
       const saldo = totalReceitas - totalDespesas;
 
-      // Adicionar linhas ao resumo
       resumoBody.innerHTML = `
         <tr class="receita">
           <td>Receitas</td>
-          ${receitas.meses.map(m => `<td>${m ? formatarMoeda(m) : '-'}</td>`).join('')}
+          ${receitas.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
           <td>${formatarMoeda(totalReceitas)}</td>
         </tr>
         <tr class="fixa">
           <td>Despesas Fixas</td>
-          ${fixas.meses.map(m => `<td>${m ? formatarMoeda(m) : '-'}</td>`).join('')}
+          ${fixas.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
           <td>${formatarMoeda(totalFixas)}</td>
         </tr>
         <tr class="variavel">
           <td>Despesas Variáveis</td>
-          ${variaveis.meses.map(m => `<td>${m ? formatarMoeda(m) : '-'}</td>`).join('')}
+          ${variaveis.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
           <td>${formatarMoeda(totalVariaveis)}</td>
         </tr>
         <tr>
           <td>Total Despesas</td>
           ${Array(12).fill(0).map((_, i) => {
-            const mes = (fixas.meses[i] || 0) + (variaveis.meses[i] || 0);
-            return `<td>${mes ? formatarMoeda(mes) : '-'}</td>`;
+            const mesTotal = (fixas.meses[i] || 0) + (variaveis.meses[i] || 0);
+            return `<td>${formatarMoeda(mesTotal)}</td>`;
           }).join('')}
           <td>${formatarMoeda(totalDespesas)}</td>
         </tr>
         <tr> 
-          <td class="saldo-positivo">Potencial de Investimento</td>
+          <td class="${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}">Potencial de Investimento</td>
           ${Array(12).fill(0).map((_, i) => {
-            const mes = (receitas.meses[i] || 0) - (fixas.meses[i] || 0) - (variaveis.meses[i] || 0);
-            const classeCor = mes >= 0 ? 'saldo-positivo' : 'saldo-negativo';
-            return `<td class="${classeCor}">${mes ? formatarMoeda(mes) : '-'}</td>`;
+            const mesSaldo = (receitas.meses[i] || 0) - (fixas.meses[i] || 0) - (variaveis.meses[i] || 0);
+            const classeCor = mesSaldo >= 0 ? 'saldo-positivo' : 'saldo-negativo';
+            return `<td class="${classeCor}">${formatarMoeda(mesSaldo)}</td>`;
           }).join('')}
           <td class="${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}">${formatarMoeda(saldo)}</td>
         </tr>
         <tr class="cartao-laranja">
           <td>Cartão de Crédito</td>
-          ${cartao.meses.map(m => `<td>${m ? formatarMoeda(m) : '-'}</td>`).join('')}
+          ${cartao.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
           <td>${formatarMoeda(cartao.total)}</td>
         </tr>
         <tr class="conta-amarela">
           <td>Conta</td>
-          ${conta.meses.map(m => `<td>${m ? formatarMoeda(m) : '-'}</td>`).join('')}
+          ${conta.meses.map(m => `<td>${formatarMoeda(m)}</td>`).join('')}
           <td>${formatarMoeda(conta.total)}</td>
         </tr>
       `;
 
-      // Armazenar dados para os gráficos
       dadosResumo = {
         receitas: receitas,
         fixas: fixas,
@@ -894,112 +1110,97 @@
         totalVariaveis: totalVariaveis,
         totalDespesas: totalDespesas,
         saldo: saldo,
-        lancamentos: lancamentos
+        lancamentos: lancamentos // Passa os lançamentos para os gráficos
       };
 
-      // Atualizar gráficos
       atualizarGraficos();
     }
 
-    function calcularTotaisPorCategoria(lancamentos, ano) {
+    function calcularTotaisPorCategoria(lancamentosCategoria, ano) {
       const meses = Array(12).fill(0);
       
-      lancamentos.forEach(l => {
-        // Se houver valores manuais, usá-los
+      lancamentosCategoria.forEach(l => {
+        // Usa valores manuais se existirem para algum mês
         if (l.valoresManuais && l.valoresManuais.some(v => v !== null)) {
-          l.valoresManuais.forEach((valor, index) => {
-            if (valor !== null) {
-              meses[index] += valor;
-            } else {
-              // Se não houver valor manual, calcular normalmente
-              const ocorrencias = calcularOcorrencias(l, ano);
-              const ocorrenciasMes = ocorrencias.filter(d => d.getMonth() === index);
-              if (ocorrenciasMes.length > 0) {
-                meses[index] += l.valor;
-              }
-            }
-          });
+            l.valoresManuais.forEach((valorManual, index) => {
+                if (valorManual !== null) {
+                    meses[index] += valorManual;
+                }
+            });
         } else {
-          // Se não houver valores manuais, calcular normalmente
-          const ocorrencias = calcularOcorrencias(l, ano);
-          
-          // Distribuir o valor completo para cada ocorrência
-          ocorrencias.forEach(data => {
-            const mes = data.getMonth();
-            meses[mes] += l.valor;
-          });
+            // Senão, calcula ocorrências e distribui valor padrão
+            const ocorrencias = calcularOcorrencias(l, ano);
+            ocorrencias.forEach(data => {
+              const mes = data.getMonth();
+              meses[mes] += l.valor;
+            });
         }
       });
-
+      
       const total = meses.reduce((sum, val) => sum + val, 0);
-      
-      return {
-        meses,
-        total
-      };
+      return { meses, total };
     }
 
-    function excluirLancamento(id) {
-      if (!confirm('Deseja excluir este lançamento?')) return;
-
-      let lancamentos = JSON.parse(localStorage.getItem('lancamentos') || '[]');
-      lancamentos = lancamentos.filter(l => l.id !== id);
-      localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
-      carregarLancamentos();
-    }
-    
     function atualizarGraficos() {
-      if (!dadosResumo) return;
-      
+      if (!dadosResumo) return; // Não faz nada se não houver dados
+
       const mesSelecionado = parseInt(document.getElementById('mesSelecionado').value);
       
-      // Calcular valores para o mês selecionado ou total anual
-      let receita, fixa, variavel, poupanca;
-      
-      if (mesSelecionado === -1) { // Total anual
-        receita = dadosResumo.totalReceitas;
-        fixa = dadosResumo.totalFixas;
-        variavel = dadosResumo.totalVariaveis;
-        poupanca = dadosResumo.saldo > 0 ? dadosResumo.saldo : 0;
-      } else { // Mês específico
-        receita = dadosResumo.receitas.meses[mesSelecionado] || 0;
-        fixa = dadosResumo.fixas.meses[mesSelecionado] || 0;
-        variavel = dadosResumo.variaveis.meses[mesSelecionado] || 0;
-        const saldoMes = receita - fixa - variavel;
-        poupanca = saldoMes > 0 ? saldoMes : 0;
+      // Dados para o período selecionado
+      let receitaPeriodo, fixasPeriodo, variaveisPeriodo, saldoPeriodo;
+
+      if (mesSelecionado === -1) { // Total Anual
+        receitaPeriodo = dadosResumo.totalReceitas;
+        fixasPeriodo = dadosResumo.totalFixas;
+        variaveisPeriodo = dadosResumo.totalVariaveis;
+        saldoPeriodo = dadosResumo.saldo;
+      } else { // Mês Específico
+        receitaPeriodo = dadosResumo.receitas.meses[mesSelecionado] || 0;
+        fixasPeriodo = dadosResumo.fixas.meses[mesSelecionado] || 0;
+        variaveisPeriodo = dadosResumo.variaveis.meses[mesSelecionado] || 0;
+        saldoPeriodo = receitaPeriodo - fixasPeriodo - variaveisPeriodo;
       }
-      
-      // Atualizar gráfico de Despesas e Poupança
-      atualizarGraficoDespesasPoupanca(fixa, variavel, poupanca);
-      
-      // Atualizar gráfico de Despesas em Relação às Receitas
-      atualizarGraficoDespesasReceitas(receita, mesSelecionado);
+
+      atualizarGraficoDespesasPoupanca(fixasPeriodo, variaveisPeriodo, saldoPeriodo);
+      atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado);
     }
-    
-    function atualizarGraficoDespesasPoupanca(fixa, variavel, poupanca) {
+
+    function atualizarGraficoDespesasPoupanca(fixas, variaveis, saldo) {
       const ctx = document.getElementById('graficoDespesasPoupanca').getContext('2d');
-      
-      // Destruir gráfico anterior se existir
       if (graficoDespesasPoupanca) {
         graficoDespesasPoupanca.destroy();
       }
-      
-      const labels = ['Despesas Fixas', 'Despesas Variáveis'];
-      const data = [fixa, variavel];
-      const backgroundColors = ['#f44336', '#ff9800'];
-      
-      // Adicionar poupança apenas se for positiva
-      if (poupanca > 0) {
-        labels.push('Potencial de Poupança');
-        data.push(poupanca);
-        backgroundColors.push('#1976d2');
+
+      const total = fixas + variaveis + Math.max(0, saldo); // Soma apenas saldo positivo
+      const labels = [];
+      const data = [];
+      const backgroundColors = [];
+
+      if (fixas > 0) {
+          labels.push('Despesas Fixas');
+          data.push(fixas);
+          backgroundColors.push('#f44336');
+      }
+      if (variaveis > 0) {
+          labels.push('Despesas Variáveis');
+          data.push(variaveis);
+          backgroundColors.push('#ff9800');
+      }
+      if (saldo > 0) {
+          labels.push('Potencial de Investimento');
+          data.push(saldo);
+          backgroundColors.push('#4caf50');
       }
       
-      // Calcular totais e percentuais para a legenda
-      const total = data.reduce((sum, val) => sum + val, 0);
-      const percentuais = data.map(val => total > 0 ? (val / total * 100).toFixed(1) + '%' : '0%');
+      // Caso não haja dados, mostra mensagem ou gráfico vazio
+      if (data.length === 0) {
+          document.getElementById('legendaDespesasPoupanca').innerHTML = '<p style="text-align:center;">Sem dados para exibir.</p>';
+          // Poderia desenhar um gráfico vazio ou uma mensagem no canvas
+          return;
+      }
+
+      const percentuais = total > 0 ? data.map(val => ((val / total) * 100).toFixed(1) + '%') : data.map(() => '0%');
       
-      // Atualizar legenda
       const legendaHTML = labels.map((label, i) => `
         <div class="item-legenda">
           <div class="cor-legenda" style="background-color: ${backgroundColors[i]}"></div>
@@ -1008,10 +1209,8 @@
           <span>(${percentuais[i]})</span>
         </div>
       `).join('');
-      
       document.getElementById('legendaDespesasPoupanca').innerHTML = legendaHTML;
       
-      // Criar novo gráfico
       graficoDespesasPoupanca = new Chart(ctx, {
         type: 'pie',
         data: {
@@ -1019,23 +1218,22 @@
           datasets: [{
             data: data,
             backgroundColor: backgroundColors,
-            borderWidth: 1
+            borderWidth: 1,
+            borderColor: '#014034' // Cor de fundo para borda
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: false
-            },
+            legend: { display: false },
             tooltip: {
               callbacks: {
                 label: function(context) {
                   const label = context.label || '';
                   const value = context.raw || 0;
-                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                  const percentage = Math.round((value / total) * 100);
+                  const currentTotal = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = currentTotal > 0 ? Math.round((value / currentTotal) * 100) : 0;
                   return `${label}: ${formatarMoeda(value)} (${percentage}%)`;
                 }
               }
@@ -1045,113 +1243,99 @@
       });
     }
     
-    function atualizarGraficoDespesasReceitas(receita, mesSelecionado) {
+    function atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado) {
       const ctx = document.getElementById('graficoDespesasReceitas').getContext('2d');
-      
-      // Destruir gráfico anterior se existir
       if (graficoDespesasReceitas) {
         graficoDespesasReceitas.destroy();
       }
       
-      // Obter todas as despesas (fixas e variáveis)
-      const despesas = dadosResumo.lancamentos.filter(l => l.tipo !== 'receita');
-      
-      // Agrupar despesas por descrição e calcular valores
+      // Filtra lançamentos do período
+      const lancamentosPeriodo = dadosResumo.lancamentos.filter(l => {
+          if (mesSelecionado === -1) return true; // Ano todo
+          const ocorrencias = calcularOcorrencias(l, new Date().getFullYear());
+          return ocorrencias.some(d => d.getMonth() === mesSelecionado);
+      });
+
+      const despesasPeriodo = lancamentosPeriodo.filter(l => l.tipo !== 'receita');
       const despesasAgrupadas = {};
       
-      despesas.forEach(despesa => {
-        // Calcular valor para o mês selecionado ou total anual
-        let valor = 0;
-        
-        if (mesSelecionado === -1) { // Total anual
-          const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
-          valor = despesa.valor * ocorrencias.length;
-          
-          // Considerar valores manuais se existirem
-          if (despesa.valoresManuais && despesa.valoresManuais.some(v => v !== null)) {
-            valor = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
-          }
-        } else { // Mês específico
-          if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
-            valor = despesa.valoresManuais[mesSelecionado];
-          } else {
-            const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
-            const ocorrenciasNoMes = ocorrencias.filter(d => d.getMonth() === mesSelecionado);
-            valor = despesa.valor * ocorrenciasNoMes.length;
-          }
+      despesasPeriodo.forEach(despesa => {
+        let valorDespesa = 0;
+        if (mesSelecionado === -1) { // Anual
+            if (despesa.valoresManuais && despesa.valoresManuais.some(v => v !== null)) {
+                valorDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
+            } else {
+                const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
+                valorDespesa = despesa.valor * ocorrencias.length;
+            }
+        } else { // Mensal
+            if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
+                valorDespesa = despesa.valoresManuais[mesSelecionado];
+            } else {
+                const ocorrencias = calcularOcorrencias(despesa, new Date().getFullYear());
+                const ocorrenciasNoMes = ocorrencias.filter(d => d.getMonth() === mesSelecionado);
+                valorDespesa = despesa.valor * ocorrenciasNoMes.length;
+            }
         }
-        
-        if (valor > 0) {
-          if (!despesasAgrupadas[despesa.descricao]) {
-            despesasAgrupadas[despesa.descricao] = {
-              valor: 0,
-              tipo: despesa.tipo,
-              formaPagamento: despesa.formaPagamento
-            };
-          }
-          despesasAgrupadas[despesa.descricao].valor += valor;
+
+        if (valorDespesa > 0) {
+            const key = despesa.descricao; // Agrupa por descrição
+            if (!despesasAgrupadas[key]) {
+                despesasAgrupadas[key] = { valor: 0, tipo: despesa.tipo, formaPagamento: despesa.formaPagamento };
+            }
+            despesasAgrupadas[key].valor += valorDespesa;
         }
       });
       
-      // Converter para arrays para o gráfico
       const labels = [];
       const data = [];
       const backgroundColors = [];
-      const tipos = [];
+      const tipos = []; // Para a legenda
       
-      // Ordenar despesas por valor (maiores primeiro)
       const despesasOrdenadas = Object.entries(despesasAgrupadas)
         .map(([descricao, info]) => ({ descricao, ...info }))
         .sort((a, b) => b.valor - a.valor);
       
-      // Limitar a 10 despesas principais para evitar gráfico muito poluído
-      const despesasParaGrafico = despesasOrdenadas.slice(0, 10);
+      const limiteGrafico = 10;
+      const despesasParaGrafico = despesasOrdenadas.slice(0, limiteGrafico);
+      let outrasDespesas = despesasOrdenadas.slice(limiteGrafico).reduce((sum, d) => sum + d.valor, 0);
       
-      // Adicionar "Outras despesas" se houver mais de 10
-      let outrasDespesas = 0;
-      if (despesasOrdenadas.length > 10) {
-        outrasDespesas = despesasOrdenadas.slice(10).reduce((sum, d) => sum + d.valor, 0);
-      }
-      
-      // Preparar dados para o gráfico
-      despesasParaGrafico.forEach(despesa => {
-        labels.push(despesa.descricao);
-        data.push(despesa.valor);
-        
-        // Definir cores baseadas no tipo de despesa
-        if (despesa.tipo === 'fixa') {
-          backgroundColors.push(despesa.formaPagamento === 'credito' ? '#e53935' : '#f44336');
-        } else {
-          backgroundColors.push(despesa.formaPagamento === 'credito' ? '#fb8c00' : '#ff9800');
-        }
-        tipos.push(despesa.tipo);
+      despesasParaGrafico.forEach(d => {
+        labels.push(d.descricao);
+        data.push(d.valor);
+        // Cor baseada no tipo e forma de pagamento (exemplo)
+        if (d.tipo === 'fixa') backgroundColors.push(d.formaPagamento === 'credito' ? '#c62828' : '#f44336');
+        else backgroundColors.push(d.formaPagamento === 'credito' ? '#f57c00' : '#ff9800');
+        tipos.push(d.tipo);
       });
       
-      // Adicionar "Outras despesas" se necessário
       if (outrasDespesas > 0) {
-        labels.push('Outras despesas');
+        labels.push('Outras Despesas');
         data.push(outrasDespesas);
-        backgroundColors.push('#757575');
-        tipos.push('variavel');
+        backgroundColors.push('#757575'); 
+        tipos.push('variavel'); // Assume variável para 'outras'
       }
       
-      // Calcular o restante (receitas - total despesas)
-      const totalDespesas = data.reduce((sum, val) => sum + val, 0);
-      const restante = Math.max(0, receita - totalDespesas);
+      const totalDespesasPeriodo = data.reduce((sum, val) => sum + val, 0);
+      const restante = Math.max(0, receitaPeriodo - totalDespesasPeriodo);
+      
+       // Caso não haja dados, mostra mensagem ou gráfico vazio
+      if (data.length === 0 && restante <= 0) {
+          document.getElementById('legendaDespesasReceitas').innerHTML = '<p style="text-align:center;">Sem despesas para exibir neste período.</p>';
+          return;
+      }
       
       if (restante > 0) {
-        labels.push('Restante');
+        labels.push('Restante (Receita - Despesas)');
         data.push(restante);
-        backgroundColors.push('#4caf50');
+        backgroundColors.push('#1976d2'); // Azul para restante
         tipos.push('receita');
       }
       
-      // Calcular percentuais em relação à receita
-      const percentuais = receita > 0 ? 
-        data.map(val => (val / receita * 100).toFixed(1) + '%') : 
+      const percentuais = receitaPeriodo > 0 ? 
+        data.map(val => ((val / receitaPeriodo) * 100).toFixed(1) + '%') : 
         data.map(() => '0%');
       
-      // Atualizar legenda
       const legendaHTML = labels.map((label, i) => {
         const tipo = tipos[i];
         const classeCor = tipo === 'fixa' ? 'fixa' : tipo === 'variavel' ? 'variavel' : 'receita';
@@ -1164,10 +1348,8 @@
           </div>
         `;
       }).join('');
-      
       document.getElementById('legendaDespesasReceitas').innerHTML = legendaHTML;
       
-      // Criar novo gráfico
       graficoDespesasReceitas = new Chart(ctx, {
         type: 'pie',
         data: {
@@ -1175,22 +1357,22 @@
           datasets: [{
             data: data,
             backgroundColor: backgroundColors,
-            borderWidth: 1
+            borderWidth: 1,
+            borderColor: '#014034'
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: false
-            },
+            legend: { display: false },
             tooltip: {
               callbacks: {
                 label: function(context) {
                   const label = context.label || '';
                   const value = context.raw || 0;
-                  return `${label}: ${formatarMoeda(value)} (${percentuais[context.dataIndex]})`;
+                  const percentage = percentuais[context.dataIndex] || '0%';
+                  return `${label}: ${formatarMoeda(value)} (${percentage})`;
                 }
               }
             }
@@ -1198,281 +1380,16 @@
         }
       });
     }
+
+    // --- Script do Formulário de Atendimento (mantido separado, caso necessário) ---
+    // Se este script não for mais necessário, pode ser removido.
+    /* 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+      // ... (código do formulário de atendimento e PDF) ...
+    </script>
+    */
+
   </script>
 </body>
-</html>        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    // Função para validar campos obrigatórios
-    function validarCampos() {
-      const nome = document.getElementById('nome').value.trim();
-      const telefone = document.getElementById('telefone').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const btnEnviar = document.getElementById('btnEnviar');
-      
-      // Validação básica
-      const camposValidos = nome !== '' && telefone !== '' && email !== '';
-      
-      // Habilitar/desabilitar botão
-      btnEnviar.disabled = !camposValidos;
-      
-      // Mostrar/ocultar mensagens de erro
-      document.getElementById('nome-error').style.display = nome === '' ? 'block' : 'none';
-      document.getElementById('telefone-error').style.display = telefone === '' ? 'block' : 'none';
-      document.getElementById('email-error').style.display = email === '' ? 'block' : 'none';
-    }
-
-    // Adicionar máscara de telefone
-    document.getElementById('telefone').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      
-      if (value.length > 11) {
-        value = value.substring(0, 11);
-      }
-      
-      if (value.length > 0) {
-        value = value.replace(/^(\d{0,2})(\d{0,5})(\d{0,4})/, function(match, g1, g2, g3) {
-          let result = '';
-          if (g1) result += `(${g1}`;
-          if (g2) result += `) ${g2}`;
-          if (g3) result += `-${g3}`;
-          return result;
-        });
-      }
-      
-      e.target.value = value;
-      validarCampos();
-    });
-
-    // Validar campos em tempo real
-    document.getElementById('nome').addEventListener('input', validarCampos);
-    document.getElementById('telefone').addEventListener('input', validarCampos);
-    document.getElementById('email').addEventListener('input', validarCampos);
-
-    // Função para adicionar patrimônio (mantida igual)
-    function adicionarPatrimonio() {
-      const container = document.createElement('div');
-      container.className = 'patrimonio-item';
-      container.innerHTML = `
-        <div class="patrimonio-row">
-          <label>Tipo do patrimônio</label>
-          <input type="text" name="tipoBem" placeholder="Ex: Imóvel, Carro">
-        </div>
-        
-        <div class="patrimonio-row">
-          <div class="radio-group">
-            <label>Possui seguro?</label>
-            <div class="radio-options">
-              <div class="radio-option">
-                <input type="radio" name="temSeguro" value="Sim">
-                <label>Sim</label>
-              </div>
-              <div class="radio-option">
-                <input type="radio" name="temSeguro" value="Não">
-                <label>Não</label>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="patrimonio-row">
-          <label>Qual o patrimônio</label>
-          <input type="text" name="descricaoBem" placeholder="Ex: Corolla 2020, Casa em SP">
-        </div>
-        
-        <button type="button" class="delete-btn" onclick="this.parentElement.remove()">Excluir</button>
-      `;
-      document.getElementById('listaPatrimonios').appendChild(container);
-    }
-
-    // Função para formatar moeda (mantida igual)
-    document.querySelectorAll('input.moeda').forEach(input => {
-      input.addEventListener('input', function () {
-        let valor = this.value.replace(/\D/g, '');
-        valor = (valor / 100).toFixed(2) + '';
-        valor = valor.replace('.', ',');
-        valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-        this.value = "R$ " + valor;
-      });
-    });
-
-    // Função para gerar PDF (atualizada para incluir telefone e email)
-    async function gerarPDF() {
-      const nome = document.getElementById('nome').value.trim();
-      const telefone = document.getElementById('telefone').value.trim();
-      const email = document.getElementById('email').value.trim();
-      
-      if (nome === '' || telefone === '' || email === '') {
-        alert("Por favor, preencha todos os campos obrigatórios antes de enviar.");
-        validarCampos();
-        return;
-      }
-
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const data = new Date().toLocaleDateString();
-      let y = 20;
-      
-      doc.setFontSize(16);
-      doc.text('Formulário de Atendimento', 20, y);
-      doc.setFontSize(12);
-      y += 10;
-      
-      // Informações básicas
-      doc.text(`Nome: ${nome}`, 20, y);
-      y += 10;
-      doc.text(`Telefone: ${telefone}`, 20, y);
-      y += 10;
-      doc.text(`E-mail: ${email}`, 20, y);
-      y += 15;
-      
-      // Restante do conteúdo do PDF (mantido igual)
-      // ... (código existente para gerar o PDF) ...
-      
-      doc.save(`Formulario-${nome}-${data}.pdf`);
-      alert("PDF gerado com sucesso! Em breve implementaremos o envio automático por email.");
-    }
-
-    // Associar função gerarPDF ao botão de enviar
-    document.getElementById('btnEnviar').addEventListener('click', gerarPDF);
-
-    // Validar campos ao carregar a página
-    document.addEventListener('DOMContentLoaded', validarCampos);
-  </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    // Função para validar campos obrigatórios
-    function validarCampos() {
-      const nome = document.getElementById('nome').value.trim();
-      const telefone = document.getElementById('telefone').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const btnEnviar = document.getElementById('btnEnviar');
-      
-      // Validação básica
-      const camposValidos = nome !== '' && telefone !== '' && email !== '';
-      
-      // Habilitar/desabilitar botão
-      btnEnviar.disabled = !camposValidos;
-      
-      // Mostrar/ocultar mensagens de erro
-      document.getElementById('nome-error').style.display = nome === '' ? 'block' : 'none';
-      document.getElementById('telefone-error').style.display = telefone === '' ? 'block' : 'none';
-      document.getElementById('email-error').style.display = email === '' ? 'block' : 'none';
-    }
-
-    // Adicionar máscara de telefone
-    document.getElementById('telefone').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      
-      if (value.length > 11) {
-        value = value.substring(0, 11);
-      }
-      
-      if (value.length > 0) {
-        value = value.replace(/^(\d{0,2})(\d{0,5})(\d{0,4})/, function(match, g1, g2, g3) {
-          let result = '';
-          if (g1) result += `(${g1}`;
-          if (g2) result += `) ${g2}`;
-          if (g3) result += `-${g3}`;
-          return result;
-        });
-      }
-      
-      e.target.value = value;
-      validarCampos();
-    });
-
-    // Validar campos em tempo real
-    document.getElementById('nome').addEventListener('input', validarCampos);
-    document.getElementById('telefone').addEventListener('input', validarCampos);
-    document.getElementById('email').addEventListener('input', validarCampos);
-
-    // Função para adicionar patrimônio (mantida igual)
-    function adicionarPatrimonio() {
-      const container = document.createElement('div');
-      container.className = 'patrimonio-item';
-      container.innerHTML = `
-        <div class="patrimonio-row">
-          <label>Tipo do patrimônio</label>
-          <input type="text" name="tipoBem" placeholder="Ex: Imóvel, Carro">
-        </div>
-        
-        <div class="patrimonio-row">
-          <div class="radio-group">
-            <label>Possui seguro?</label>
-            <div class="radio-options">
-              <div class="radio-option">
-                <input type="radio" name="temSeguro" value="Sim">
-                <label>Sim</label>
-              </div>
-              <div class="radio-option">
-                <input type="radio" name="temSeguro" value="Não">
-                <label>Não</label>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="patrimonio-row">
-          <label>Qual o patrimônio</label>
-          <input type="text" name="descricaoBem" placeholder="Ex: Corolla 2020, Casa em SP">
-        </div>
-        
-        <button type="button" class="delete-btn" onclick="this.parentElement.remove()">Excluir</button>
-      `;
-      document.getElementById('listaPatrimonios').appendChild(container);
-    }
-
-    // Função para formatar moeda (mantida igual)
-    document.querySelectorAll('input.moeda').forEach(input => {
-      input.addEventListener('input', function () {
-        let valor = this.value.replace(/\D/g, '');
-        valor = (valor / 100).toFixed(2) + '';
-        valor = valor.replace('.', ',');
-        valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-        this.value = "R$ " + valor;
-      });
-    });
-
-    // Função para gerar PDF (atualizada para incluir telefone e email)
-    async function gerarPDF() {
-      const nome = document.getElementById('nome').value.trim();
-      const telefone = document.getElementById('telefone').value.trim();
-      const email = document.getElementById('email').value.trim();
-      
-      if (nome === '' || telefone === '' || email === '') {
-        alert("Por favor, preencha todos os campos obrigatórios antes de enviar.");
-        validarCampos();
-        return;
-      }
-
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const data = new Date().toLocaleDateString();
-      let y = 20;
-      
-      doc.setFontSize(16);
-      doc.text('Formulário de Atendimento', 20, y);
-      doc.setFontSize(12);
-      y += 10;
-      
-      // Informações básicas
-      doc.text(`Nome: ${nome}`, 20, y);
-      y += 10;
-      doc.text(`Telefone: ${telefone}`, 20, y);
-      y += 10;
-      doc.text(`E-mail: ${email}`, 20, y);
-      y += 15;
-      
-      // Restante do conteúdo do PDF (mantido igual)
-      // ... (código existente para gerar o PDF) ...
-      
-      doc.save(`Formulario-${nome}-${data}.pdf`);
-      alert("PDF gerado com sucesso! Em breve implementaremos o envio automático por email.");
-    }
-
-    // Associar função gerarPDF ao botão de enviar
-    document.getElementById('btnEnviar').addEventListener('click', gerarPDF);
-
-    // Validar campos ao carregar a página
-    document.addEventListener('DOMContentLoaded', validarCampos);
-  </script>
+</html>
