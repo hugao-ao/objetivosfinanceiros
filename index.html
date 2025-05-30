@@ -1,1410 +1,1410 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro V6 - Edição</title> <!-- Versão atualizada -->
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #002d26;
-      color: white;
-      margin: 0;
-      padding: 20px;
-      overflow-x: hidden;
-    }
-    .saldo-positivo {
-         color: #1976d2; /* Azul não brilhante */
-    }
-    .saldo-negativo {
-        color: #c62828; /* Vermelho não brilhante */
-    }
-    h1 {
-      margin: 0 0 20px;
-    }
-    .cartao-laranja {
-        color: #f57c00; /* Laranja não brilhante */
-    }
-    .conta-amarela {
-        color: #fbc02d; /* Amarelo não brilhante */
-    }
-    .container-principal {
-      display: flex;
-      width: 200%; /* Mantido para o slide do resumo */
-      transition: transform 0.5s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Financeiro Online</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            color: #1a5276;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            font-size: 1.6em;
+        }
+        h3 {
+            color: #2980b9;
+            font-size: 1.3em;
+            margin-top: 25px;
+        }
+        fieldset {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 25px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        legend {
+            font-weight: bold;
+            color: #2980b9;
+            padding: 0 10px;
+            font-size: 1.2em;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        .radio-group label,
+        .checkbox-group label {
+            font-weight: normal;
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
 
-    .container-ativo {
-      transform: translateX(-50%); /* Mantido para mostrar o resumo */
-    }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-    /* Nova seção para conter apenas a tabela de lançamentos */
-    .secao-lancamentos {
-      width: 50%; /* Ocupa metade do container principal */
-      padding-right: 20px;
-      box-sizing: border-box;
-    }
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
 
-    .secao-resumo {
-      width: 50%; /* Ocupa a outra metade */
-      padding-left: 20px;
-      box-sizing: border-box;
-    }
+        button {
+            background-color: #2980b9;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+        button:hover {
+            background-color: #1a5276;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        button.secondary {
+            background-color: #f39c12;
+        }
+        button.secondary:hover {
+            background-color: #d68910;
+        }
 
-    /* Estilos para o Modal */
-    .modal {
-      display: none; /* Escondido por padrão */
-      position: fixed; 
-      z-index: 100; 
-      left: 0;
-      top: 0;
-      width: 100%; 
-      height: 100%; 
-      overflow: auto; 
-      background-color: rgba(0,0,0,0.6); 
-      padding-top: 60px;
-    }
-
-    .modal-content {
-      background-color: #014034;
-      margin: 5% auto;
-      padding: 30px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 700px;
-      border-radius: 10px;
-      position: relative;
-    }
-
-    .close-button {
-      color: #aaa;
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .close-button:hover,
-    .close-button:focus {
-      color: #ffd700;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    /* Formulário dentro do Modal */
-    .form-section-modal {
-      padding: 0; 
-      border-radius: 10px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 6px;
-      font-size: 14px;
-      border-radius: 5px;
-      border: none;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-    }
-
-    .botoes-formulario {
-      grid-column: 1 / -1; 
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 10px;
-    }
-
-    .table-container {
-      background-color: #014034;
-      border-radius: 10px;
-      overflow-x: auto;
-      margin-bottom: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      color: white;
-    }
-
-    th, td {
-      padding: 10px;
-      border: 1px solid #006a56;
-      text-align: center;
-    }
-
-    th {
-      background-color: #006a56;
-      color: #ffd700;
-      position: sticky;
-      top: 0;
-      z-index: 5; 
-    }
-    
-    th.descricao-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between; 
-        padding-right: 5px; 
-    }
-
-    .botao-abrir-modal {
-        background-color: #ffd700;
-        color: #002d26;
-        border: none;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        font-size: 18px;
-        font-weight: bold;
-        line-height: 24px; 
-        text-align: center;
-        cursor: pointer;
-        margin-left: 10px;
-        padding: 0;
-    }
-
-    .botao-abrir-modal:hover {
-        background-color: #ffc400;
-    }
-
-    .receita { color: #4caf50; }
-    .fixa { color: #f44336; }
-    .variavel { color: #ff9800; }
-    .cartao-credito { background-color: rgba(0, 106, 86, 0.3); }
-
-    .botao-acao-modal {
-      background-color: #ffd700;
-      color: #002d26;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .botao-acao-modal:hover {
-      background-color: #ffc400;
-    }
-
-    /* Botão Resumo Fixo */
-    .botao-resumo-fixo {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 50;
-      background-color: #2196F3;
-      color: white;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: opacity 0.3s ease, visibility 0.3s ease; /* Adiciona transição */
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    /* Esconde o botão quando o resumo está ativo */
-    .container-ativo ~ .botao-resumo-fixo {
-        opacity: 0;
-        visibility: hidden;
-    }
-
-    .botao-resumo-fixo:hover {
-      background-color: #0b7dda;
-    }
-
-    .botao-voltar {
-      background-color: #ff9800;
-      color: white;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-
-    .botao-voltar:hover {
-      background-color: #e68a00;
-    }
-
-    .delete-btn {
-      background-color: #c62828;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .delete-btn:hover {
-      background-color: #b71c1c;
-    }
-    
-    .hidden-id {
-      display: none;
-    }
-
-    .resumo-titulo {
-      font-size: 18px;
-      margin-bottom: 15px;
-      color: #ffd700;
-      text-align: center;
-    }
-    
-    /* Congelar a primeira coluna (Categoria) - Tabela Resumo */
-    #tabelaResumo thead tr th:first-child,
-    #tabelaResumo tbody tr td:first-child {
-      position: sticky;
-      left: 0;
-      z-index: 10;
-      background-color: #014034; 
-    }
-    #tabelaResumo thead tr th:first-child {
-      background-color: #006a56; 
-      z-index: 20; 
-    }
-    #tabelaResumo tbody tr td:first-child {
-      font-weight: bold; 
-    }
-
-    /* Congelar a coluna Descrição - Tabela Lançamentos */
-    #tabelaLancamentos thead tr th:nth-child(2),
-    #tabelaLancamentos tbody tr td:nth-child(2) {
-      position: sticky;
-      left: 0;
-      z-index: 10;
-      background-color: #014034; 
-    }
-    #tabelaLancamentos thead tr th:nth-child(2) {
-      background-color: #006a56; 
-      z-index: 20;
-    }
-    #tabelaLancamentos tbody tr td:nth-child(2) {
-      white-space: nowrap;
-      min-width: 150px; 
-      cursor: pointer; /* Adicionado para indicar clicável */
-      text-decoration: underline;
-      text-decoration-color: rgba(255, 255, 255, 0.3);
-    }
-    #tabelaLancamentos tbody tr td:nth-child(2):hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        text-decoration-color: white;
-    }
-
-    /* Estilo para células editáveis (valores mensais) */
-    td.editable {
-      cursor: pointer;
-      position: relative;
-    }
-    td.editable:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    .edit-input {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: #014034;
-      color: white;
-      text-align: center;
-      padding: 0;
-      margin: 0;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-    .edit-input:focus {
-      outline: 2px solid #ffd700;
-    }
-    
-    /* Estilos para os gráficos */
-    .graficos-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 30px;
-    }
-    .grafico-card {
-      background-color: #014034;
-      border-radius: 10px;
-      padding: 20px;
-      width: calc(50% - 40px);
-      min-width: 400px;
-      box-sizing: border-box;
-    }
-    .grafico-titulo {
-      text-align: center;
-      margin-bottom: 15px;
-      color: #ffd700;
-      font-size: 16px;
-    }
-    .grafico {
-      width: 100%;
-      height: 300px;
-      position: relative;
-    }
-    .seletor-mes {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .seletor-mes select {
-      padding: 8px 15px;
-      border-radius: 5px;
-      border: none;
-      background-color: #006a56;
-      color: white;
-      font-weight: bold;
-    }
-    .legenda-grafico {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 15px;
-      width: 100%;
-    }
-    .item-legenda {
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      width: 100%;
-    }
-    .cor-legenda {
-      width: 15px;
-      height: 15px;
-      margin-right: 10px;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-    .valor-legenda {
-      margin-left: 5px;
-      font-weight: bold;
-    }
-    .descricao-legenda {
-      min-width: 120px;
-    }
-    
-    /* Linha de espaçamento na tabela de resumo */
-    .spacer-row td {
-        height: 10px; /* Altura do espaço */
-        padding: 0;
-        border: none; /* Remove bordas */
-        background-color: #002d26; /* Cor de fundo do corpo */
-    }
-
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        .analysis-section {
+            margin-top: 30px;
+            padding: 25px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #e9f7fe;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .analysis-section h3 {
+            margin-top: 0;
+            color: #1a5276;
+        }
+        .editable-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 10px;
+            font-family: inherit;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 10px;
+            background-color: #2980b9;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .tab {
+            display: none;
+        }
+        
+        .tab.active {
+            display: block;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .positive {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .negative {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        
+        .neutral {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .result-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .result-card h4 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            margin-left: 5px;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-weight: normal;
+            font-size: 0.9em;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            button {
+                width: 100%;
+                margin: 10px 0;
+            }
+            .tab-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-
-  <h1>Controle Financeiro</h1>
-  
-  <!-- Container Principal (Lançamentos e Resumo) -->
-  <div class="container-principal" id="containerPrincipal">
-    <!-- Seção da Tabela de Lançamentos -->
-    <div class="secao-lancamentos">
-      <div class="table-container">
-        <table id="tabelaLancamentos">
-          <thead>
-            <tr>
-              <th class="hidden-id">ID</th>
-              <th class="descricao-header">
-                <span>Descrição</span>
-                <button id="botaoAbrirModalNovo" class="botao-abrir-modal" onclick="abrirModalParaNovo()">+</button>
-              </th>
-              <th>Jan</th>
-              <th>Fev</th>
-              <th>Mar</th>
-              <th>Abr</th>
-              <th>Mai</th>
-              <th>Jun</th>
-              <th>Jul</th>
-              <th>Ago</th>
-              <th>Set</th>
-              <th>Out</th>
-              <th>Nov</th>
-              <th>Dez</th>
-              <th>Total</th>
-              <th>Média</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaBody">
-            <!-- Lançamentos serão inseridos aqui -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Seção do Resumo -->
-    <div class="secao-resumo">
-      <button class="botao-voltar" onclick="voltarParaLancamentos()">← Voltar para Lançamentos</button>
-      
-      <div class="resumo-titulo">Resumo Financeiro</div>
-      
-      <div class="table-container">
-        <table id="tabelaResumo">
-          <thead>
-            <tr>
-              <th>Categoria</th>
-              <th>Jan</th>
-              <th>Fev</th>
-              <th>Mar</th>
-              <th>Abr</th>
-              <th>Mai</th>
-              <th>Jun</th>
-              <th>Jul</th>
-              <th>Ago</th>
-              <th>Set</th>
-              <th>Out</th>
-              <th>Nov</th>
-              <th>Dez</th>
-              <th>Total</th>
-              <th>Média</th> <!-- Nova coluna Média -->
-            </tr>
-          </thead>
-          <tbody id="resumoBody">
-            <!-- Resumo será inserido aqui -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Seção dos Gráficos -->
-      <div class="seletor-mes">
-        <label for="mesSelecionado">Selecione o mês: </label>
-        <select id="mesSelecionado" onchange="atualizarGraficos()">
-          <option value="-1">Total Anual</option>
-          <option value="-2">Médias Mensais</option>
-          <option value="0">Janeiro</option>
-          <option value="1">Fevereiro</option>
-          <option value="2">Março</option>
-          <option value="3">Abril</option>
-          <option value="4">Maio</option>
-          <option value="5">Junho</option>
-          <option value="6">Julho</option>
-          <option value="7">Agosto</option>
-          <option value="8">Setembro</option>
-          <option value="9">Outubro</option>
-          <option value="10">Novembro</option>
-          <option value="11">Dezembro</option>
-        </select>
-      </div>
-
-      <div class="graficos-container">
-        <div class="grafico-card">
-          <div class="grafico-titulo">Distribuição de Despesas e Poupança</div>
-          <div class="grafico">
-            <canvas id="graficoDespesasPoupanca"></canvas>
-          </div>
-          <div class="legenda-grafico" id="legendaDespesasPoupanca"></div>
-        </div>
+    <div class="container">
+        <h1>Diagnóstico Financeiro Online</h1>
         
-        <div class="grafico-card">
-          <div class="grafico-titulo">Despesas em Relação às Receitas</div>
-          <div class="grafico">
-            <canvas id="graficoDespesasReceitas"></canvas>
-          </div>
-          <div class="legenda-grafico" id="legendaDespesasReceitas"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Botão Resumo Fixo (movido para fora do container principal para CSS funcionar) -->
-  <button class="botao-resumo-fixo" onclick="mostrarResumo()">Ver Resumo e Análises</button>
-
-  <!-- Modal do Formulário -->
-  <div id="modalFormulario" class="modal">
-    <div class="modal-content">
-      <span class="close-button" onclick="fecharModal()">&times;</span>
-      <h2 id="modalTitulo">Novo Lançamento</h2> <!-- ID adicionado -->
-      <input type="hidden" id="lancamentoId" /> <!-- Campo oculto para ID -->
-      <div class="form-section-modal">
-        <div class="form-group">
-          <label for="descricao">Descrição:</label>
-          <input type="text" id="descricao" placeholder="Ex: Salário, Luz" />
-
-          <label for="valor">Valor (R$):</label>
-          <input type="text" id="valor" placeholder="Ex: 1.500,00" />
-          
-          <label for="tipoLancamento">Tipo de Lançamento:</label>
-          <select id="tipoLancamento">
-            <option value="receita">Receita</option>
-            <option value="fixa">Despesa Fixa</option>
-            <option value="variavel">Despesa Variável</option>
-          </select>
-
-          <label for="formaPagamento">Forma de Pagamento:</label>
-          <select id="formaPagamento">
-            <option value="conta">Conta</option>
-            <option value="credito">Cartão de Crédito</option>
-          </select>
-
+        <div class="progress-bar">
+            <div id="progress" class="progress"></div>
         </div>
 
-        <div class="form-group">
-          <label for="frequenciaValor">A cada:</label>
-          <input type="number" id="frequenciaValor" min="1" value="1" />
+        <form id="diagnosticoForm">
+            <!-- Tabs para organizar o formulário -->
+            <div id="tab1" class="tab active">
+                <!-- 1. Introdução e Boas-vindas -->
+                <fieldset>
+                    <legend>Bem-vindo(a)!</legend>
+                    <p>Este diagnóstico tem como objetivo ajudar você a entender melhor sua situação financeira atual e identificar pontos de melhoria. Ao preencher as informações a seguir, você terá uma visão clara do seu patrimônio, fluxo de caixa, riscos e planejamento para o futuro.</p>
+                    <p>O preenchimento leva aproximadamente <strong>15-20 minutos</strong>.</p>
+                    <p><strong>Privacidade:</strong> Suas informações são confidenciais e serão usadas apenas para gerar seu diagnóstico pessoal neste navegador. Nenhum dado será salvo externamente sem sua permissão.</p>
+                </fieldset>
 
-          <label for="frequenciaTipo">Unidade de Frequência:</label>
-          <select id="frequenciaTipo">
-            <option value="unico">não se repete</option>
-            <option value="dias">dias</option>
-            <option value="dias_uteis">dias úteis</option>
-            <option value="segunda">segunda</option>
-            <option value="terca">terça</option>
-            <option value="quarta">quarta</option>
-            <option value="quinta">quinta</option>
-            <option value="sexta">sexta</option>
-            <option value="semanas">semanas</option>
-            <option value="quinzenas">quinzenas</option>
-            <option value="meses" selected>meses</option>
-            <option value="anos">anos</option>
-          </select>
-
-          <label for="dataInicial">Data Inicial:</label>
-          <input type="date" id="dataInicial" />
-
-          <label for="dataFinal">Data Final:</label>
-          <input type="date" id="dataFinal" />
-        </div>
-        <div class="botoes-formulario">
-            <button id="botaoAcaoModal" class="botao-acao-modal" onclick="adicionarLancamento()">Lançar Item</button> <!-- ID e classe alterados -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Variáveis globais
-    let graficoDespesasPoupanca = null;
-    let graficoDespesasReceitas = null;
-    let dadosResumo = null;
-    let lancamentos = [];
-    const modal = document.getElementById("modalFormulario");
-    const modalTitulo = document.getElementById("modalTitulo");
-    const botaoAcaoModal = document.getElementById("botaoAcaoModal");
-    const lancamentoIdInput = document.getElementById("lancamentoId");
-    const containerPrincipal = document.getElementById("containerPrincipal");
-    const botaoResumoFixo = document.querySelector(".botao-resumo-fixo"); 
-
-    // Funções do Modal
-    function limparFormularioModal() {
-        document.getElementById("descricao").value = "";
-        document.getElementById("valor").value = "";
-        document.getElementById("tipoLancamento").value = "receita";
-        document.getElementById("formaPagamento").value = "conta";
-        document.getElementById("frequenciaValor").value = "1";
-        document.getElementById("frequenciaTipo").value = "meses";
-        document.getElementById("dataInicial").value = "";
-        document.getElementById("dataFinal").value = "";
-        lancamentoIdInput.value = ""; // Limpa o ID oculto
-    }
-
-    function abrirModalParaNovo() {
-      limparFormularioModal();
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      document.getElementById("dataInicial").value = `${currentYear}-01-01`;
-      document.getElementById("dataFinal").value = `${currentYear}-12-31`;
-      modalTitulo.textContent = "Novo Lançamento";
-      botaoAcaoModal.textContent = "Lançar Item";
-      botaoAcaoModal.onclick = adicionarLancamento; // Define a função de adicionar
-      modal.style.display = "block";
-    }
-
-    function abrirModalParaEditar(id) {
-      const lancamento = lancamentos.find(l => l.id === id);
-      if (!lancamento) {
-          console.error("Lançamento não encontrado para edição: ID", id);
-          return;
-      }
-      
-      limparFormularioModal(); // Limpa antes de preencher
-
-      document.getElementById("descricao").value = lancamento.descricao;
-      // Formata o valor para exibição no input (sem R$, com vírgula)
-      document.getElementById("valor").value = lancamento.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('.', ',');
-      document.getElementById("tipoLancamento").value = lancamento.tipo;
-      document.getElementById("formaPagamento").value = lancamento.formaPagamento;
-      document.getElementById("frequenciaValor").value = lancamento.frequenciaValor;
-      document.getElementById("frequenciaTipo").value = lancamento.frequenciaTipo;
-      document.getElementById("dataInicial").value = lancamento.dataInicial;
-      document.getElementById("dataFinal").value = lancamento.dataFinal;
-      lancamentoIdInput.value = lancamento.id; // Define o ID oculto
-
-      modalTitulo.textContent = "Editar Lançamento";
-      botaoAcaoModal.textContent = "Salvar Alterações";
-      botaoAcaoModal.onclick = salvarEdicao; // Define a função de salvar edição
-      modal.style.display = "block";
-    }
-
-    function fecharModal() {
-      limparFormularioModal(); // Limpa o formulário ao fechar
-      modal.style.display = "none";
-    }
-
-    window.onclick = function (event) {
-      if (event.target == modal) {
-        fecharModal();
-      }
-    };
-
-    // Funções de Navegação e Exibição
-    function mostrarResumo() {
-      containerPrincipal.classList.add("container-ativo");
-    }
-
-    function voltarParaLancamentos() {
-      containerPrincipal.classList.remove("container-ativo");
-    }
-
-    // Funções de Formatação e Cálculo
-    function formatarMoeda(valor) {
-      const numero = typeof valor === "number" ? valor : parseFloat(String(valor).replace(/[^\d,-]/g, "").replace(",", "."));
-      if (isNaN(numero)) return "R$ 0,00";
-      return numero.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-    
-    function parseValor(valorString) {
-        // Remove pontos e substitui vírgula por ponto
-        return parseFloat(String(valorString).replace(/\./g, '').replace(',', '.'));
-    }
-
-    function calcularOcorrencias(lancamento, ano) {
-      // --- Função calcularOcorrencias (sem alterações) --- 
-      const startDate = new Date(lancamento.dataInicial + "T00:00:00");
-      const endDate = new Date(lancamento.dataFinal + "T00:00:00");
-      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        console.error("Datas inválidas para o lançamento:", lancamento);
-        return [];
-      }
-      const ocorrencias = [];
-      if (lancamento.frequenciaTipo === "unico") {
-        if (startDate.getFullYear() === ano) {
-          ocorrencias.push(new Date(startDate));
-        }
-        return ocorrencias;
-      }
-      const inicioAno = new Date(`${ano}-01-01T00:00:00`);
-      const fimAno = new Date(`${ano}-12-31T00:00:00`);
-      const dataInicioCalculo = startDate > inicioAno ? startDate : inicioAno;
-      const dataFimCalculo = endDate < fimAno ? endDate : fimAno;
-      if (dataInicioCalculo > dataFimCalculo) return ocorrencias;
-      let currentDate = new Date(dataInicioCalculo);
-      let safetyBreak = 0; // Safety break
-      while (currentDate <= dataFimCalculo && safetyBreak < 500) {
-        if (currentDate >= startDate && currentDate <= endDate && currentDate.getFullYear() === ano) {
-          ocorrencias.push(new Date(currentDate));
-        }
-        const currentDayOfMonth = currentDate.getDate();
-        let dataAnterior = new Date(currentDate);
-        switch (lancamento.frequenciaTipo) {
-          case "dias": currentDate.setDate(currentDate.getDate() + lancamento.frequenciaValor); break;
-          case "dias_uteis":
-            let diasAdicionados = 0;
-            while (diasAdicionados < lancamento.frequenciaValor) {
-              currentDate.setDate(currentDate.getDate() + 1);
-              if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) diasAdicionados++;
-            }
-            break;
-          case "meses":
-            currentDate.setMonth(currentDate.getMonth() + lancamento.frequenciaValor);
-            if (currentDate.getDate() !== currentDayOfMonth) currentDate.setDate(0);
-            break;
-          case "anos":
-            currentDate.setFullYear(currentDate.getFullYear() + lancamento.frequenciaValor);
-            if (currentDate.getDate() !== currentDayOfMonth) currentDate.setDate(0);
-            break;
-          case "semanas": currentDate.setDate(currentDate.getDate() + 7 * lancamento.frequenciaValor); break;
-          case "quinzenas": currentDate.setDate(currentDate.getDate() + 15 * lancamento.frequenciaValor); break;
-          case "segunda": case "terca": case "quarta": case "quinta": case "sexta":
-            const diaSemana = { segunda: 1, terca: 2, quarta: 3, quinta: 4, sexta: 5 };
-            const diaAlvo = diaSemana[lancamento.frequenciaTipo];
-            do { currentDate.setDate(currentDate.getDate() + 1); } while (currentDate.getDay() !== diaAlvo);
-            if (lancamento.frequenciaValor > 1) currentDate.setDate(currentDate.getDate() + 7 * (lancamento.frequenciaValor - 1));
-            break;
-          default:
-            console.warn("Tipo de frequência desconhecido:", lancamento.frequenciaTipo);
-            currentDate.setMonth(currentDate.getMonth() + 1);
-        }
-        if (currentDate.getTime() === dataAnterior.getTime()) {
-          console.error("Loop infinito detectado em calcularOcorrencias", lancamento);
-          break;
-        }
-        safetyBreak++;
-        if (safetyBreak >= 500) console.error("Safety break atingido em calcularOcorrencias", lancamento);
-      }
-      return ocorrencias;
-    }
-    
-    function calcularTotaisPorCategoria(lancamentosCategoria, ano) {
-      // --- Função calcularTotaisPorCategoria (sem alterações) --- 
-      const meses = Array(12).fill(0);
-      
-      lancamentosCategoria.forEach(l => {
-        const ocorrencias = calcularOcorrencias(l, ano);
-        // Para cada mês do ano
-        for (let index = 0; index < 12; index++) {
-          // Verifica se há valor manual para este mês específico
-          if (l.valoresManuais && l.valoresManuais[index] !== null && l.valoresManuais[index] !== undefined) {
-            meses[index] += l.valoresManuais[index];
-          } else {
-            // Senão, verifica quantas ocorrências calculadas existem neste mês
-            const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
-            if (ocorrenciasNoMes.length > 0) {
-              // Adiciona o valor base multiplicado pelo número de ocorrências no mês
-              meses[index] += l.valor * ocorrenciasNoMes.length; 
-            }
-          }
-        }
-      });
-      
-      const total = meses.reduce((sum, val) => sum + val, 0);
-      return { meses, total };
-    }
-
-    // Funções CRUD (Create, Read, Update, Delete) e Persistência
-    function adicionarLancamento() {
-      const descricao = document.getElementById("descricao").value.trim();
-      const valorString = document.getElementById("valor").value;
-      const tipo = document.getElementById("tipoLancamento").value;
-      const formaPagamento = document.getElementById("formaPagamento").value;
-      const frequenciaValor = parseInt(document.getElementById("frequenciaValor").value) || 1;
-      const frequenciaTipo = document.getElementById("frequenciaTipo").value;
-      const dataInicial = document.getElementById("dataInicial").value;
-      const dataFinal = document.getElementById("dataFinal").value;
-
-      if (!descricao || !valorString || !dataInicial || !dataFinal) {
-        alert("Por favor, preencha todos os campos obrigatórios (Descrição, Valor, Data Inicial, Data Final).");
-        return;
-      }
-      
-      const valor = parseValor(valorString);
-      if (isNaN(valor)) {
-        alert("Valor inválido. Use o formato 1.234,56.");
-        return;
-      }
-
-      const novoLancamento = {
-        id: Date.now(), // ID único baseado no timestamp
-        descricao,
-        valor,
-        tipo,
-        formaPagamento,
-        frequenciaValor,
-        frequenciaTipo,
-        dataInicial,
-        dataFinal,
-        valoresManuais: Array(12).fill(null), // Inicializa valores manuais
-      };
-
-      lancamentos.push(novoLancamento);
-      salvarLancamentos();
-      atualizarInterface();
-      fecharModal();
-    }
-
-    function salvarEdicao() {
-      const id = parseInt(lancamentoIdInput.value);
-      if (!id) {
-          console.error("ID do lançamento não encontrado para salvar edição.");
-          alert("Erro ao salvar alterações. ID não encontrado.");
-          return;
-      }
-
-      const index = lancamentos.findIndex(l => l.id === id);
-      if (index === -1) {
-          console.error("Lançamento não encontrado no array para edição: ID", id);
-          alert("Erro ao salvar alterações. Lançamento original não encontrado.");
-          return;
-      }
-
-      const descricao = document.getElementById("descricao").value.trim();
-      const valorString = document.getElementById("valor").value;
-      const tipo = document.getElementById("tipoLancamento").value;
-      const formaPagamento = document.getElementById("formaPagamento").value;
-      const frequenciaValor = parseInt(document.getElementById("frequenciaValor").value) || 1;
-      const frequenciaTipo = document.getElementById("frequenciaTipo").value;
-      const dataInicial = document.getElementById("dataInicial").value;
-      const dataFinal = document.getElementById("dataFinal").value;
-
-      if (!descricao || !valorString || !dataInicial || !dataFinal) {
-        alert("Por favor, preencha todos os campos obrigatórios (Descrição, Valor, Data Inicial, Data Final).");
-        return;
-      }
-      
-      const valor = parseValor(valorString);
-      if (isNaN(valor)) {
-        alert("Valor inválido. Use o formato 1.234,56.");
-        return;
-      }
-      
-      // Mantém os valoresManuais existentes
-      const valoresManuaisExistentes = lancamentos[index].valoresManuais || Array(12).fill(null);
-
-      // Atualiza o lançamento existente no array
-      lancamentos[index] = {
-        ...lancamentos[index], // Mantém propriedades não editáveis (como ID e valoresManuais)
-        id: id, // Garante que o ID seja mantido
-        descricao,
-        valor,
-        tipo,
-        formaPagamento,
-        frequenciaValor,
-        frequenciaTipo,
-        dataInicial,
-        dataFinal,
-        valoresManuais: valoresManuaisExistentes // Preserva edições manuais anteriores
-      };
-
-      salvarLancamentos();
-      atualizarInterface();
-      fecharModal();
-    }
-
-    function excluirLancamento(id) {
-      if (confirm("Tem certeza que deseja excluir este lançamento?")) {
-        lancamentos = lancamentos.filter(l => l.id !== id);
-        salvarLancamentos();
-        atualizarInterface();
-      }
-    }
-    
-    function editarValorManual(id, mesIndex, novoValorString) {
-        const index = lancamentos.findIndex(l => l.id === id);
-        if (index === -1) return;
-
-        let novoValor = null;
-        if (novoValorString.trim() !== "") {
-            novoValor = parseValor(novoValorString);
-            if (isNaN(novoValor)) {
-                alert("Valor inválido. Use o formato 1.234,56 ou deixe em branco para usar o cálculo automático.");
-                return; // Não atualiza se o valor for inválido
-            }
-        }
-        
-        // Inicializa valoresManuais se não existir
-        if (!lancamentos[index].valoresManuais) {
-            lancamentos[index].valoresManuais = Array(12).fill(null);
-        }
-
-        lancamentos[index].valoresManuais[mesIndex] = novoValor;
-        salvarLancamentos();
-        atualizarInterface(); // Atualiza tudo para refletir a mudança
-    }
-
-    function salvarLancamentos() {
-      localStorage.setItem("controleFinanceiroLancamentos_v6", JSON.stringify(lancamentos));
-    }
-
-    function carregarLancamentos() {
-      const dadosSalvos = localStorage.getItem("controleFinanceiroLancamentos_v6");
-      if (dadosSalvos) {
-        lancamentos = JSON.parse(dadosSalvos);
-        // Garante que IDs e valoresManuais existam (migração de versões antigas)
-        lancamentos.forEach(l => {
-            if (!l.id) l.id = Date.now() + Math.random(); // Adiciona ID se não existir
-            if (!l.valoresManuais) l.valoresManuais = Array(12).fill(null);
-        });
-      } else {
-        lancamentos = [];
-      }
-    }
-
-    // Funções de Atualização da Interface
-    function atualizarTabelaLancamentos(lancamentos, ano) {
-      const tabelaBody = document.getElementById("tabelaBody");
-      tabelaBody.innerHTML = "";
-
-      lancamentos.sort((a, b) => a.descricao.localeCompare(b.descricao)); // Ordena por descrição
-
-      lancamentos.forEach((l) => {
-        const row = tabelaBody.insertRow();
-        row.className = l.tipo === "receita" ? "receita" : (l.tipo === "fixa" ? "fixa" : "variavel");
-        if (l.formaPagamento === "credito" && l.tipo !== "receita") {
-          row.classList.add("cartao-credito");
-        }
-
-        const cellId = row.insertCell();
-        cellId.className = "hidden-id";
-        cellId.textContent = l.id;
-
-        const cellDescricao = row.insertCell();
-        cellDescricao.textContent = l.descricao;
-        cellDescricao.onclick = () => abrirModalParaEditar(l.id); // Adiciona evento de clique para editar
-        cellDescricao.style.textAlign = "left";
-
-        const totais = calcularTotaisPorCategoria([l], ano); // Calcula totais para este lançamento
-        let totalLancamento = 0;
-        let mesesComValor = 0;
-
-        for (let i = 0; i < 12; i++) {
-          const cellMes = row.insertCell();
-          cellMes.classList.add("editable");
-          const valorMes = (l.valoresManuais && l.valoresManuais[i] !== null && l.valoresManuais[i] !== undefined) 
-                             ? l.valoresManuais[i] 
-                             : totais.meses[i]; // Usa valor manual ou calculado
-          cellMes.textContent = formatarMoeda(valorMes);
-          totalLancamento += valorMes;
-          if (valorMes !== 0) {
-              mesesComValor++;
-          }
-          
-          // Lógica de Edição Inline (mantida)
-          cellMes.addEventListener('click', (e) => {
-              if (e.target.tagName === 'INPUT') return; // Não faz nada se já estiver editando
-
-              const currentValue = (l.valoresManuais && l.valoresManuais[i] !== null && l.valoresManuais[i] !== undefined) 
-                                    ? l.valoresManuais[i].toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('.', ',')
-                                    : ''; // Mostra vazio se for valor calculado
-              cellMes.innerHTML = `<input type="text" class="edit-input" value="${currentValue}" data-month-index="${i}" data-lancamento-id="${l.id}">`;
-              const input = cellMes.querySelector('input');
-              input.focus();
-
-              input.addEventListener('blur', () => {
-                  editarValorManual(l.id, i, input.value);
-                  // A atualização da interface já é chamada dentro de editarValorManual
-              });
-
-              input.addEventListener('keydown', (event) => {
-                  if (event.key === 'Enter') {
-                      input.blur();
-                  } else if (event.key === 'Escape') {
-                      // Reverte para o valor original (formatado)
-                      cellMes.textContent = formatarMoeda(valorMes);
-                  }
-              });
-          });
-        }
-
-        const cellTotal = row.insertCell();
-        cellTotal.textContent = formatarMoeda(totalLancamento);
-
-        const cellMedia = row.insertCell();
-        const media = mesesComValor > 0 ? totalLancamento / mesesComValor : 0;
-        cellMedia.textContent = formatarMoeda(media);
-
-        const cellAcoes = row.insertCell();
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Excluir";
-        deleteBtn.className = "delete-btn";
-        deleteBtn.onclick = () => excluirLancamento(l.id);
-        cellAcoes.appendChild(deleteBtn);
-      });
-    }
-
-    function atualizarResumoFinanceiro(lancamentos, ano) {
-      // --- Função atualizarResumoFinanceiro (sem alterações na lógica principal, mas usa calcularTotaisPorCategoria atualizado) ---
-      const resumoBody = document.getElementById("resumoBody");
-      resumoBody.innerHTML = "";
-
-      const receitas = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "receita"), ano);
-      const fixas = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "fixa"), ano);
-      const variaveis = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "variavel"), ano);
-      const cartao = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "credito" && l.tipo !== "receita"), ano);
-      const conta = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "conta" && l.tipo !== "receita"), ano);
-
-      const totalReceitas = receitas.total;
-      const totalFixas = fixas.total;
-      const totalVariaveis = variaveis.total;
-      const totalDespesas = totalFixas + totalVariaveis;
-      const saldo = totalReceitas - totalDespesas;
-      
-      // Calcula médias
-      const mediaReceitas = totalReceitas / 12;
-      const mediaFixas = totalFixas / 12;
-      const mediaVariaveis = totalVariaveis / 12;
-      const mediaTotalDespesas = totalDespesas / 12;
-      const mediaSaldo = saldo / 12;
-      const mediaCartao = cartao.total / 12;
-      const mediaConta = conta.total / 12;
-      
-      // Linha de espaçamento (HTML string)
-      const spacerRowHTML = `<tr class="spacer-row"><td colspan="15"></td></tr>`; // Colspan = 1 (Cat) + 12 (Meses) + 1 (Total) + 1 (Média)
-
-      resumoBody.innerHTML = `
-        <tr class="receita">
-          <td>Receitas</td>
-          ${receitas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(totalReceitas)}</td>
-          <td>${formatarMoeda(mediaReceitas)}</td>
-        </tr>
-        ${spacerRowHTML} 
-        <tr class="fixa">
-          <td>Despesas Fixas</td>
-          ${fixas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(totalFixas)}</td>
-          <td>${formatarMoeda(mediaFixas)}</td>
-        </tr>
-        <tr class="variavel">
-          <td>Despesas Variáveis</td>
-          ${variaveis.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(totalVariaveis)}</td>
-          <td>${formatarMoeda(mediaVariaveis)}</td>
-        </tr>
-        <tr>
-          <td>Total Despesas</td>
-          ${Array(12).fill(0).map((_, i) => {
-            const mesTotal = (fixas.meses[i] || 0) + (variaveis.meses[i] || 0);
-            return `<td>${formatarMoeda(mesTotal)}</td>`;
-          }).join("")}
-          <td>${formatarMoeda(totalDespesas)}</td>
-          <td>${formatarMoeda(mediaTotalDespesas)}</td>
-        </tr>
-        ${spacerRowHTML}
-        <tr> 
-          <td class="saldo-positivo">Potencial de Investimento</td> <!-- Sempre azul -->
-          ${Array(12).fill(0).map((_, i) => {
-            const mesSaldo = (receitas.meses[i] || 0) - (fixas.meses[i] || 0) - (variaveis.meses[i] || 0);
-            const classeCor = mesSaldo >= 0 ? "saldo-positivo" : "saldo-negativo";
-            return `<td class="${classeCor}">${formatarMoeda(mesSaldo)}</td>`;
-          }).join("")}
-          <td class="${saldo >= 0 ? "saldo-positivo" : "saldo-negativo"}">${formatarMoeda(saldo)}</td>
-          <td class="${mediaSaldo >= 0 ? "saldo-positivo" : "saldo-negativo"}">${formatarMoeda(mediaSaldo)}</td>
-        </tr>
-        ${spacerRowHTML}
-        <tr class="cartao-laranja">
-          <td>Cartão de Crédito</td>
-          ${cartao.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(cartao.total)}</td>
-          <td>${formatarMoeda(mediaCartao)}</td>
-        </tr>
-        <tr class="conta-amarela">
-          <td>Conta</td>
-          ${conta.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(conta.total)}</td>
-          <td>${formatarMoeda(mediaConta)}</td>
-        </tr>
-      `;
-
-      dadosResumo = {
-        receitas: receitas,
-        fixas: fixas,
-        variaveis: variaveis,
-        totalReceitas: totalReceitas,
-        totalFixas: totalFixas,
-        totalVariaveis: totalVariaveis,
-        totalDespesas: totalDespesas,
-        saldo: saldo,
-        mediaReceitas: mediaReceitas, 
-        mediaFixas: mediaFixas,       
-        mediaVariaveis: mediaVariaveis, 
-        mediaSaldo: mediaSaldo,       
-        lancamentos: lancamentos, // Passa os lançamentos originais para o gráfico
-      };
-
-      atualizarGraficos();
-    }
-
-    function atualizarGraficos() {
-      // --- Função atualizarGraficos (sem alterações) --- 
-      if (!dadosResumo) return;
-      const mesSelecionado = parseInt(document.getElementById("mesSelecionado").value);
-      let receitaPeriodo, fixasPeriodo, variaveisPeriodo, saldoPeriodo;
-      let tituloExtra = ""; // Para adicionar ao título do gráfico
-
-      if (mesSelecionado === -1) { // Total Anual
-        receitaPeriodo = dadosResumo.totalReceitas;
-        fixasPeriodo = dadosResumo.totalFixas;
-        variaveisPeriodo = dadosResumo.totalVariaveis;
-        saldoPeriodo = dadosResumo.saldo;
-        tituloExtra = " (Total Anual)";
-      } else if (mesSelecionado === -2) { // Médias Mensais
-        receitaPeriodo = dadosResumo.mediaReceitas;
-        fixasPeriodo = dadosResumo.mediaFixas;
-        variaveisPeriodo = dadosResumo.mediaVariaveis;
-        saldoPeriodo = dadosResumo.mediaSaldo;
-        tituloExtra = " (Médias Mensais)";
-      } else { // Mês específico
-        receitaPeriodo = dadosResumo.receitas.meses[mesSelecionado] || 0;
-        fixasPeriodo = dadosResumo.fixas.meses[mesSelecionado] || 0;
-        variaveisPeriodo = dadosResumo.variaveis.meses[mesSelecionado] || 0;
-        saldoPeriodo = receitaPeriodo - fixasPeriodo - variaveisPeriodo;
-        const nomeMes = document.getElementById("mesSelecionado").options[document.getElementById("mesSelecionado").selectedIndex].text;
-        tituloExtra = ` (${nomeMes})`;
-      }
-
-      atualizarGraficoDespesasPoupanca(fixasPeriodo, variaveisPeriodo, saldoPeriodo, tituloExtra);
-      atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado, tituloExtra);
-    }
-
-    function atualizarGraficoDespesasPoupanca(fixas, variaveis, saldo, tituloExtra) {
-      // --- Função atualizarGraficoDespesasPoupanca (sem alterações na lógica, apenas título) --- 
-      const ctx = document.getElementById("graficoDespesasPoupanca").getContext("2d");
-      const legendaDiv = document.getElementById("legendaDespesasPoupanca");
-      legendaDiv.innerHTML = ''; // Limpa legenda anterior
-      if (graficoDespesasPoupanca) graficoDespesasPoupanca.destroy();
-      
-      const poupanca = Math.max(0, saldo);
-      const totalGrafico = fixas + variaveis + poupanca;
-      const labels = [];
-      const data = [];
-      const backgroundColors = [];
-      const cores = {
-          fixas: '#f44336', // Vermelho
-          variaveis: '#ff9800', // Laranja
-          poupanca: '#4caf50' // Verde
-      };
-
-      if (fixas > 0) { labels.push("Despesas Fixas"); data.push(fixas); backgroundColors.push(cores.fixas); }
-      if (variaveis > 0) { labels.push("Despesas Variáveis"); data.push(variaveis); backgroundColors.push(cores.variaveis); }
-      if (poupanca > 0) { labels.push("Potencial Poupança"); data.push(poupanca); backgroundColors.push(cores.poupanca); }
-      
-      // Adiciona legenda HTML
-      labels.forEach((label, index) => {
-          const percentual = totalGrafico > 0 ? ((data[index] / totalGrafico) * 100).toFixed(1) : 0;
-          legendaDiv.innerHTML += `
-            <div class="item-legenda">
-              <span class="cor-legenda" style="background-color: ${backgroundColors[index]};"></span>
-              <span class="descricao-legenda">${label}:</span>
-              <span class="valor-legenda">${formatarMoeda(data[index])} (${percentual}%)</span>
-            </div>
-          `;
-      });
-
-      if (data.length === 0) {
-        legendaDiv.innerHTML = '<div style="text-align: center; padding: 20px;">Sem dados para exibir neste período.</div>';
-        return; // Não cria gráfico se não houver dados
-      }
-
-      graficoDespesasPoupanca = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: backgroundColors,
-            borderColor: '#014034', // Cor de fundo do card para borda
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            title: {
-                display: true,
-                text: `Distribuição de Despesas e Poupança${tituloExtra}`,
-                color: '#ffd700',
-                font: { size: 16 }
-            },
-            legend: { display: false }, // Oculta legenda padrão do Chart.js
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  let label = context.label || '';
-                  if (label) label += ': ';
-                  let value = context.parsed || 0;
-                  const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                  const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0.0%';
-                  return `${label}${formatarMoeda(value)} (${percentage})`;
-                }
-              }
-            }
-          }
-        }
-      });
-    }
-
-    function atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado, tituloExtra) {
-        // --- Função atualizarGraficoDespesasReceitas (sem alterações na lógica, apenas título) --- 
-        const ctx = document.getElementById("graficoDespesasReceitas").getContext("2d");
-        const legendaDiv = document.getElementById("legendaDespesasReceitas");
-        legendaDiv.innerHTML = ''; // Limpa legenda anterior
-        if (graficoDespesasReceitas) graficoDespesasReceitas.destroy();
-
-        let despesasDetalhadas = {};
-        const anoAtual = new Date().getFullYear(); // Assume ano atual para cálculo
-
-        // Filtra e calcula despesas para o período selecionado
-        dadosResumo.lancamentos
-            .filter(l => l.tipo === 'fixa' || l.tipo === 'variavel')
-            .forEach(l => {
-                let valorPeriodo = 0;
-                const ocorrencias = calcularOcorrencias(l, anoAtual);
+                <!-- 2. Dados Pessoais -->
+                <fieldset>
+                    <legend>Dados Pessoais</legend>
+                    <div class="form-group">
+                        <label for="nome">Nome Completo:</label>
+                        <input type="text" id="nome" name="nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="nascimento">Data de Nascimento:</label>
+                        <input type="date" id="nascimento" name="nascimento">
+                    </div>
+                    <div class="form-group">
+                        <label for="estadoCivil">Estado Civil:</label>
+                        <select id="estadoCivil" name="estadoCivil">
+                            <option value="">Selecione...</option>
+                            <option value="solteiro">Solteiro(a)</option>
+                            <option value="casado">Casado(a)</option>
+                            <option value="uniao_estavel">União Estável</option>
+                            <option value="divorciado">Divorciado(a)</option>
+                            <option value="viuvo">Viúvo(a)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dependentes">Número de Dependentes:</label>
+                        <input type="number" id="dependentes" name="dependentes" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="profissao">Profissão/Ocupação Principal:</label>
+                        <input type="text" id="profissao" name="profissao">
+                    </div>
+                </fieldset>
                 
-                if (mesSelecionado === -1) { // Total Anual
-                    valorPeriodo = calcularTotaisPorCategoria([l], anoAtual).total;
-                } else if (mesSelecionado === -2) { // Médias Mensais
-                     valorPeriodo = calcularTotaisPorCategoria([l], anoAtual).total / 12;
-                } else { // Mês específico
-                    if (l.valoresManuais && l.valoresManuais[mesSelecionado] !== null && l.valoresManuais[mesSelecionado] !== undefined) {
-                        valorPeriodo = l.valoresManuais[mesSelecionado];
-                    } else {
-                        const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === mesSelecionado);
-                        if (ocorrenciasNoMes.length > 0) {
-                            valorPeriodo = l.valor * ocorrenciasNoMes.length;
-                        }
-                    }
-                }
-                
-                if (valorPeriodo > 0) {
-                    if (!despesasDetalhadas[l.descricao]) {
-                        despesasDetalhadas[l.descricao] = 0;
-                    }
-                    despesasDetalhadas[l.descricao] += valorPeriodo;
-                }
-            });
-
-        const labels = Object.keys(despesasDetalhadas);
-        const data = Object.values(despesasDetalhadas);
-        const totalDespesasPeriodo = data.reduce((sum, val) => sum + val, 0);
-        const percentualReceita = receitaPeriodo > 0 ? ((totalDespesasPeriodo / receitaPeriodo) * 100) : 0;
-
-        // Adiciona legenda HTML
-        legendaDiv.innerHTML += `
-            <div class="item-legenda">
-              <span class="cor-legenda" style="background-color: #1976d2;"></span>
-              <span class="descricao-legenda">Receita Total:</span>
-              <span class="valor-legenda">${formatarMoeda(receitaPeriodo)}</span>
-            </div>
-            <div class="item-legenda">
-              <span class="cor-legenda" style="background-color: #c62828;"></span>
-              <span class="descricao-legenda">Despesa Total:</span>
-              <span class="valor-legenda">${formatarMoeda(totalDespesasPeriodo)} (${percentualReceita.toFixed(1)}% da Receita)</span>
-            </div>
-            <hr style="border-color: rgba(255,255,255,0.2); margin: 10px 0;">
-        `;
-        labels.forEach((label, index) => {
-             const percentualDespesa = totalDespesasPeriodo > 0 ? ((data[index] / totalDespesasPeriodo) * 100).toFixed(1) : 0;
-             legendaDiv.innerHTML += `
-                <div class="item-legenda">
-                  <span class="cor-legenda" style="background-color: #aaa;"></span> <!-- Cor genérica para itens -->
-                  <span class="descricao-legenda">${label}:</span>
-                  <span class="valor-legenda">${formatarMoeda(data[index])} (${percentualDespesa}%)</span>
+                <div class="tab-buttons">
+                    <div></div>
+                    <button type="button" onclick="nextTab(1, 2)">Próximo</button>
                 </div>
-             `;
+            </div>
+
+            <div id="tab2" class="tab">
+                <!-- 3. Objetivos Financeiros -->
+                <fieldset>
+                    <legend>Objetivos Financeiros</legend>
+                    <div class="form-group">
+                        <label for="objetivoPrincipal">Qual seu principal objetivo financeiro hoje?</label>
+                        <textarea id="objetivoPrincipal" name="objetivoPrincipal" placeholder="Ex: Comprar uma casa, Aposentadoria tranquila, Viajar o mundo, Pagar dívidas..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="objetivoImportancia">Por que este objetivo é importante para você?</label>
+                        <textarea id="objetivoImportancia" name="objetivoImportancia"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="objetivoPrazo">Em quanto tempo você gostaria de atingir este objetivo (em anos)?</label>
+                        <input type="number" id="objetivoPrazo" name="objetivoPrazo" min="0" step="0.5">
+                    </div>
+                     <div class="form-group">
+                        <label for="objetivoCusto">Quanto você estima que este objetivo custa (R$)?</label>
+                        <input type="number" id="objetivoCusto" name="objetivoCusto" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="objetivoEstrategia">Qual sua estratégia atual para atingir este objetivo?</label>
+                        <textarea id="objetivoEstrategia" name="objetivoEstrategia" placeholder="Ex: Poupança mensal, Investimentos específicos, Renda extra..."></textarea>
+                    </div>
+                     <div class="form-group">
+                        <label for="objetivoProgresso">Quanto você já acumulou para este objetivo (em %)?</label>
+                        <input type="number" id="objetivoProgresso" name="objetivoProgresso" min="0" max="100" step="1" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="objetivosSecundarios">Você tem outros objetivos financeiros importantes?</label>
+                        <textarea id="objetivosSecundarios" name="objetivosSecundarios" placeholder="Liste outros objetivos, se houver."></textarea>
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(2, 1)">Anterior</button>
+                    <button type="button" onclick="nextTab(2, 3)">Próximo</button>
+                </div>
+            </div>
+
+            <div id="tab3" class="tab">
+                <!-- 4. Fluxo de Caixa -->
+                <fieldset>
+                    <legend>Fluxo de Caixa Mensal</legend>
+                    <p>Informe os valores médios mensais.</p>
+                    <h3>Receitas</h3>
+                    <div class="form-group">
+                        <label for="receitaSalario">Salário Líquido / Pró-labore (R$):</label>
+                        <input type="number" id="receitaSalario" name="receitaSalario" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                    <div class="form-group">
+                        <label for="receitaAlugueis">Receita de Aluguéis (R$):</label>
+                        <input type="number" id="receitaAlugueis" name="receitaAlugueis" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                    <div class="form-group">
+                        <label for="receitaDividendos">Dividendos / Juros sobre Capital Próprio (R$):</label>
+                        <input type="number" id="receitaDividendos" name="receitaDividendos" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                     <div class="form-group">
+                        <label for="receitaOutras">Outras Receitas Recorrentes (R$):</label>
+                        <input type="number" id="receitaOutras" name="receitaOutras" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+
+                    <h3>Despesas Fixas</h3>
+                     <div class="form-group">
+                        <label for="despesaMoradia">Moradia (Aluguel/Financiamento, Condomínio, IPTU) (R$):</label>
+                        <input type="number" id="despesaMoradia" name="despesaMoradia" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                    <div class="form-group">
+                        <label for="despesaEducacao">Educação (Mensalidades, Cursos) (R$):</label>
+                        <input type="number" id="despesaEducacao" name="despesaEducacao" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                    <div class="form-group">
+                        <label for="despesaSaude">Saúde (Plano, Medicamentos recorrentes) (R$):</label>
+                        <input type="number" id="despesaSaude" name="despesaSaude" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                    <div class="form-group">
+                        <label for="despesaTransporte">Transporte (Combustível, Passagens, Financiamento/Seguro Auto) (R$):</label>
+                        <input type="number" id="despesaTransporte" name="despesaTransporte" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                     <div class="form-group">
+                        <label for="despesaAlimentacaoFixa">Alimentação (Supermercado, Feira) (R$):</label>
+                        <input type="number" id="despesaAlimentacaoFixa" name="despesaAlimentacaoFixa" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                     <div class="form-group">
+                        <label for="despesaServicosBasicos">Serviços Básicos (Água, Luz, Gás, Internet, Telefone) (R$):</label>
+                        <input type="number" id="despesaServicosBasicos" name="despesaServicosBasicos" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                     <div class="form-group">
+                        <label for="despesaOutrasFixas">Outras Despesas Fixas (Assinaturas, Academia, etc.) (R$):</label>
+                        <input type="number" id="despesaOutrasFixas" name="despesaOutrasFixas" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+
+                    <h3>Despesas Variáveis</h3>
+                     <div class="form-group">
+                        <label for="despesaLazer">Lazer (Restaurantes, Cinema, Shows, etc.) (R$):</label>
+                        <input type="number" id="despesaLazer" name="despesaLazer" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                     <div class="form-group">
+                        <label for="despesaVestuario">Vestuário e Cuidados Pessoais (R$):</label>
+                        <input type="number" id="despesaVestuario" name="despesaVestuario" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                     <div class="form-group">
+                        <label for="despesaPresentes">Presentes e Doações (R$):</label>
+                        <input type="number" id="despesaPresentes" name="despesaPresentes" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                     <div class="form-group">
+                        <label for="despesaViagens">Viagens (R$):</label>
+                        <input type="number" id="despesaViagens" name="despesaViagens" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+                     <div class="form-group">
+                        <label for="despesaOutrasVariaveis">Outras Despesas Variáveis (R$):</label>
+                        <input type="number" id="despesaOutrasVariaveis" name="despesaOutrasVariaveis" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    </div>
+
+                    <h3>Saldo Mensal</h3>
+                    <div class="form-group">
+                        <label>Saldo Mensal Estimado (Receitas - Despesas) (R$):</label>
+                        <input type="text" id="saldoMensal" name="saldoMensal" readonly style="background-color: #eee; font-weight: bold;">
+                    </div>
+                     <div class="form-group">
+                        <label for="periodoAnalise">Período de Análise Preferencial:</label>
+                        <select id="periodoAnalise" name="periodoAnalise">
+                            <option value="mensal" selected>Mensal</option>
+                            <option value="anual">Anual</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                        <input type="text" id="periodoPersonalizado" name="periodoPersonalizado" placeholder="Descreva o período personalizado" style="display: none; margin-top: 10px;">
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(3, 2)">Anterior</button>
+                    <button type="button" onclick="nextTab(3, 4)">Próximo</button>
+                </div>
+            </div>
+
+            <div id="tab4" class="tab">
+                <!-- 5. Contas Correntes e Cartões de Crédito -->
+                <fieldset>
+                    <legend>Contas Correntes e Cartões</legend>
+                    <h3>Contas Correntes</h3>
+                    <div class="form-group">
+                        <label for="contasQuantidade">Quantas contas correntes ativas você possui?</label>
+                        <input type="number" id="contasQuantidade" name="contasQuantidade" min="0" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="contasBancos">Principais bancos onde possui conta:</label>
+                        <input type="text" id="contasBancos" name="contasBancos" placeholder="Ex: Banco A, Banco B">
+                    </div>
+                    <div class="form-group">
+                        <label for="contasTarifas">Gasto mensal estimado com tarifas bancárias (R$):</label>
+                        <input type="number" id="contasTarifas" name="contasTarifas" min="0" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <h3>Cartões de Crédito</h3>
+                    <div class="form-group">
+                        <label for="cartoesQuantidade">Quantos cartões de crédito ativos você utiliza?</label>
+                        <input type="number" id="cartoesQuantidade" name="cartoesQuantidade" min="0" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="cartoesBandeiras">Principais bandeiras dos cartões:</label>
+                        <input type="text" id="cartoesBandeiras" name="cartoesBandeiras" placeholder="Ex: Visa, Mastercard">
+                    </div>
+                    <div class="form-group">
+                        <label for="cartoesAnuidades">Gasto anual estimado com anuidades de cartão (R$):</label>
+                        <input type="number" id="cartoesAnuidades" name="cartoesAnuidades" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Você utiliza programas de recompensa (milhas, cashback)?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="cartoesRecompensaUso" value="sim"> Sim</label>
+                            <label><input type="radio" name="cartoesRecompensaUso" value="nao" checked> Não</label>
+                            <label><input type="radio" name="cartoesRecompensaUso" value="parcialmente"> Parcialmente</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cartoesBeneficios">Quais benefícios você mais valoriza/utiliza?</label>
+                        <textarea id="cartoesBeneficios" name="cartoesBeneficios" placeholder="Ex: Milhas aéreas, Cashback, Descontos, Acesso a salas VIP..."></textarea>
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(4, 3)">Anterior</button>
+                    <button type="button" onclick="nextTab(4, 5)">Próximo</button>
+                </div>
+            </div>
+
+            <div id="tab5" class="tab">
+                <!-- 6. Patrimônio Físico -->
+                <fieldset>
+                    <legend>Patrimônio Físico</legend>
+                    <h3>Imóveis</h3>
+                    <div class="form-group">
+                        <label for="imoveisValor">Valor estimado total dos seus imóveis (R$):</label>
+                        <input type="number" id="imoveisValor" name="imoveisValor" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+                     <div class="form-group">
+                        <label>Situação dos imóveis:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="imoveisSituacao" value="quitado"> Quitado(s)</label>
+                            <label><input type="checkbox" name="imoveisSituacao" value="financiado"> Financiado(s)</label>
+                            <label><input type="checkbox" name="imoveisSituacao" value="heranca"> Herança</label>
+                        </div>
+                    </div>
+
+                    <h3>Veículos</h3>
+                    <div class="form-group">
+                        <label for="veiculosValor">Valor estimado total dos seus veículos (carros, motos, etc.) (R$):</label>
+                        <input type="number" id="veiculosValor" name="veiculosValor" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+                     <div class="form-group">
+                        <label>Situação dos veículos:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="veiculosSituacao" value="quitado"> Quitado(s)</label>
+                            <label><input type="checkbox" name="veiculosSituacao" value="financiado"> Financiado(s)</label>
+                            <label><input type="checkbox" name="veiculosSituacao" value="consorcio"> Consórcio</label>
+                        </div>
+                    </div>
+
+                    <h3>Outros Bens</h3>
+                     <div class="form-group">
+                        <label for="outrosBensValor">Valor estimado de outros bens de valor (joias, arte, coleções) (R$):</label>
+                        <input type="number" id="outrosBensValor" name="outrosBensValor" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(5, 4)">Anterior</button>
+                    <button type="button" onclick="nextTab(5, 6)">Próximo</button>
+                </div>
+            </div>
+
+            <div id="tab6" class="tab">
+                <!-- 7. Dívidas e Obrigações -->
+                <fieldset>
+                    <legend>Dívidas e Obrigações</legend>
+                    <h3>Financiamentos (Imobiliário, Veículo, etc.)</h3>
+                    <div class="form-group">
+                        <label for="financiamentoSaldo">Saldo devedor total de financiamentos (R$):</label>
+                        <input type="number" id="financiamentoSaldo" name="financiamentoSaldo" min="0" step="0.01" placeholder="0.00" onchange="calcularDividaTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label for="financiamentoParcela">Valor total das parcelas mensais de financiamentos (R$):</label>
+                        <input type="number" id="financiamentoParcela" name="financiamentoParcela" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="financiamentoTaxaMedia">Taxa de juros média anual dos financiamentos (%):</label>
+                        <input type="number" id="financiamentoTaxaMedia" name="financiamentoTaxaMedia" min="0" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <h3>Empréstimos (Pessoal, Consignado, etc.)</h3>
+                     <div class="form-group">
+                        <label for="emprestimoSaldo">Saldo devedor total de empréstimos (R$):</label>
+                        <input type="number" id="emprestimoSaldo" name="emprestimoSaldo" min="0" step="0.01" placeholder="0.00" onchange="calcularDividaTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label for="emprestimoParcela">Valor total das parcelas mensais de empréstimos (R$):</label>
+                        <input type="number" id="emprestimoParcela" name="emprestimoParcela" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                     <div class="form-group">
+                        <label for="emprestimoTaxaMedia">Taxa de juros média anual dos empréstimos (%):</label>
+                        <input type="number" id="emprestimoTaxaMedia" name="emprestimoTaxaMedia" min="0" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <h3>Cartão de Crédito</h3>
+                    <div class="form-group">
+                        <label>Você costuma pagar o valor total da fatura do cartão de crédito?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="cartaoPagamentoTotal" value="sim" checked> Sim, sempre</label>
+                            <label><input type="radio" name="cartaoPagamentoTotal" value="parcial"> Não, às vezes pago o mínimo ou parcelo</label>
+                            <label><input type="radio" name="cartaoPagamentoTotal" value="nao_usa"> Não utilizo cartão de crédito</label>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="cartaoSaldoRotativo">Você possui saldo devedor no rotativo do cartão (R$)?</label>
+                        <input type="number" id="cartaoSaldoRotativo" name="cartaoSaldoRotativo" min="0" step="0.01" placeholder="0.00" onchange="calcularDividaTotal()">
+                    </div>
+
+                    <h3>Cheque Especial</h3>
+                     <div class="form-group">
+                        <label>Com que frequência você utiliza o limite do cheque especial?</label>
+                        <select id="chequeEspecialFrequencia" name="chequeEspecialFrequencia">
+                            <option value="nunca" selected>Nunca</option>
+                            <option value="raramente">Raramente (emergências)</option>
+                            <option value="as_vezes">Às vezes</option>
+                            <option value="frequentemente">Frequentemente</option>
+                        </select>
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(6, 5)">Anterior</button>
+                    <button type="button" onclick="nextTab(6, 7)">Próximo</button>
+                </div>
+            </div>
+
+            <div id="tab7" class="tab">
+                <!-- 8. Patrimônio Líquido -->
+                <fieldset>
+                    <legend>Patrimônio Líquido (Investimentos e Aplicações)</legend>
+                    <h3>Investimentos</h3>
+                    <div class="form-group">
+                        <label for="invRendaFixa">Valor total em Renda Fixa (CDB, LCI/LCA, Tesouro Direto, etc.) (R$):</label>
+                        <input type="number" id="invRendaFixa" name="invRendaFixa" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label for="invRendaVariavel">Valor total em Renda Variável (Ações, FIIs, ETFs, etc.) (R$):</label>
+                        <input type="number" id="invRendaVariavel" name="invRendaVariavel" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label for="invFundos">Valor total em Fundos de Investimento (Multimercado, Ações, Renda Fixa) (R$):</label>
+                        <input type="number" id="invFundos" name="invFundos" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+
+                    <h3>Aplicações Financeiras</h3>
+                    <div class="form-group">
+                        <label for="appPoupanca">Valor total em Caderneta de Poupança (R$):</label>
+                        <input type="number" id="appPoupanca" name="appPoupanca" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label for="appPrevidencia">Valor total acumulado em Previdência Privada (PGBL/VGBL) (R$):</label>
+                        <input type="number" id="appPrevidencia" name="appPrevidencia" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+
+                    <h3>Outros Ativos Líquidos</h3>
+                     <div class="form-group">
+                        <label for="partNegocios">Valor estimado de participações em negócios (R$):</label>
+                        <input type="number" id="partNegocios" name="partNegocios" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label for="outrosLiquidos">Outros ativos com liquidez (Ex: Criptomoedas, saldo em conta) (R$):</label>
+                        <input type="number" id="outrosLiquidos" name="outrosLiquidos" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    </div>
+
+                    <h3>Capacidade de Poupança</h3>
+                    <div class="form-group">
+                        <label for="poupancaMensal">Quanto você consegue poupar/investir em média por mês (R$)?</label>
+                        <input type="number" id="poupancaMensal" name="poupancaMensal" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                     <div class="form-group">
+                        <label>Com que regularidade você consegue poupar/investir?</label>
+                        <select id="poupancaRegularidade" name="poupancaRegularidade">
+                            <option value="regularmente" selected>Regularmente (todo mês)</option>
+                            <option value="as_vezes">Às vezes (quando sobra)</option>
+                            <option value="raramente">Raramente</option>
+                            <option value="nunca">Nunca</option>
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="reservaEmergencia">Você possui uma reserva de emergência (equivalente a quantos meses de custo de vida)?</label>
+                        <input type="number" id="reservaEmergencia" name="reservaEmergencia" min="0" step="0.5" placeholder="Ex: 6">
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(7, 6)">Anterior</button>
+                    <button type="button" onclick="nextTab(7, 8)">Próximo</button>
+                </div>
+            </div>
+
+            <div id="tab8" class="tab">
+                <!-- 9. Gestão de Risco -->
+                <fieldset>
+                    <legend>Gestão de Risco (Seguros e Proteção)</legend>
+                    <div class="form-group">
+                        <label>Possui Seguro de Vida? <span class="tooltip">?<span class="tooltiptext">O seguro de vida garante proteção financeira para seus dependentes em caso de falecimento ou invalidez.</span></span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="seguroVida" value="sim" onclick="toggleCobertura('seguroVidaCobertura', true)"> Sim</label>
+                            <label><input type="radio" name="seguroVida" value="nao" checked onclick="toggleCobertura('seguroVidaCobertura', false)"> Não</label>
+                        </div>
+                        <input type="number" id="seguroVidaCobertura" name="seguroVidaCobertura" placeholder="Valor da Cobertura (R$)" style="display: none; margin-top: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Possui Plano de Saúde? <span class="tooltip">?<span class="tooltiptext">O plano de saúde oferece cobertura para despesas médicas e hospitalares, reduzindo impactos financeiros em caso de problemas de saúde.</span></span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="planoSaude" value="sim" onclick="toggleCobertura('planoSaudeTipo', true)"> Sim</label>
+                            <label><input type="radio" name="planoSaude" value="nao" checked onclick="toggleCobertura('planoSaudeTipo', false)"> Não</label>
+                        </div>
+                        <input type="text" id="planoSaudeTipo" name="planoSaudeTipo" placeholder="Tipo (Ex: Empresarial, Individual, Cobertura)" style="display: none; margin-top: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Possui Plano Odontológico?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="planoOdonto" value="sim"> Sim</label>
+                            <label><input type="radio" name="planoOdonto" value="nao" checked> Não</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Possui Plano Pet?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="planoPet" value="sim"> Sim</label>
+                            <label><input type="radio" name="planoPet" value="nao" checked> Não</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Possui Seguro de Responsabilidade Civil Profissional? <span class="tooltip">?<span class="tooltiptext">Protege contra danos causados a terceiros no exercício da sua profissão.</span></span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="seguroRC" value="sim"> Sim</label>
+                            <label><input type="radio" name="seguroRC" value="nao" checked> Não</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Possui Seguro de Automóvel?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="seguroAuto" value="sim"> Sim</label>
+                            <label><input type="radio" name="seguroAuto" value="nao" checked> Não</label>
+                            <label><input type="radio" name="seguroAuto" value="nao_aplica"> Não se aplica</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Possui Seguro Residencial/Imóvel? <span class="tooltip">?<span class="tooltiptext">Protege seu imóvel contra incêndio, roubo, danos elétricos e outros riscos.</span></span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="seguroImovel" value="sim"> Sim</label>
+                            <label><input type="radio" name="seguroImovel" value="nao" checked> Não</label>
+                             <label><input type="radio" name="seguroImovel" value="nao_aplica"> Não se aplica</label>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="outrosSeguros">Possui outros seguros relevantes?</label>
+                        <textarea id="outrosSeguros" name="outrosSeguros" placeholder="Ex: Seguro viagem, Seguro para equipamentos..."></textarea>
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(8, 7)">Anterior</button>
+                    <button type="button" onclick="nextTab(8, 9)">Próximo</button>
+                </div>
+            </div>
+
+            <div id="tab9" class="tab">
+                <!-- 10. Aposentadoria -->
+                <fieldset>
+                    <legend>Planejamento de Aposentadoria</legend>
+                    <div class="form-group">
+                        <label for="aposentadoriaRegime">Qual seu regime de previdência principal?</label>
+                        <select id="aposentadoriaRegime" name="aposentadoriaRegime">
+                            <option value="inss">INSS (Regime Geral)</option>
+                            <option value="rpps">RPPS (Regime Próprio - Servidor Público)</option>
+                            <option value="nenhum">Nenhum / Autônomo sem contribuição</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="aposentadoriaContribuicaoTempo">Tempo total de contribuição estimado (em anos):</label>
+                        <input type="number" id="aposentadoriaContribuicaoTempo" name="aposentadoriaContribuicaoTempo" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="aposentadoriaExpectativaINSS">Qual sua expectativa de valor do benefício do INSS/RPPS (R$ mensais)?</label>
+                        <input type="number" id="aposentadoriaExpectativaINSS" name="aposentadoriaExpectativaINSS" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Você contribui para Previdência Complementar?</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="prevComp" value="pgbl"> PGBL</label>
+                            <label><input type="checkbox" name="prevComp" value="vgbl"> VGBL</label>
+                            <label><input type="checkbox" name="prevComp" value="fundo_pensao"> Fundo de Pensão (Previdência Fechada)</label>
+                            <label><input type="checkbox" name="prevComp" value="nenhum"> Nenhum</label>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="aposentadoriaInvestimentos">Você possui outros investimentos específicos para aposentadoria?</label>
+                        <textarea id="aposentadoriaInvestimentos" name="aposentadoriaInvestimentos" placeholder="Ex: Ações focadas em dividendos, Fundos de longo prazo..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="aposentadoriaIdadeDesejada">Com que idade você planeja se aposentar?</label>
+                        <input type="number" id="aposentadoriaIdadeDesejada" name="aposentadoriaIdadeDesejada" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="aposentadoriaRendaDesejada">Qual a renda mensal que você deseja ter na aposentadoria (em valores de hoje, R$)?</label>
+                        <input type="number" id="aposentadoriaRendaDesejada" name="aposentadoriaRendaDesejada" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(9, 8)">Anterior</button>
+                    <button type="button" onclick="nextTab(9, 10)">Próximo</button>
+                </div>
+            </div>
+
+            <div id="tab10" class="tab">
+                <!-- 11. Planejamento Tributário -->
+                <fieldset>
+                    <legend>Planejamento Tributário (IRPF)</legend>
+                    <div class="form-group">
+                        <label>Qual modelo de declaração do Imposto de Renda Pessoa Física você costuma utilizar?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="irpfModelo" value="simplificada"> Simplificada</label>
+                            <label><input type="radio" name="irpfModelo" value="completa"> Completa (por deduções legais)</label>
+                            <label><input type="radio" name="irpfModelo" value="isento"> Isento / Não declaro</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Quais deduções você costuma utilizar na declaração completa?</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="irpfDeducoes" value="medicas"> Despesas Médicas</label><br>
+                            <label><input type="checkbox" name="irpfDeducoes" value="educacao"> Despesas com Educação</label><br>
+                            <label><input type="checkbox" name="irpfDeducoes" value="dependentes"> Dependentes</label><br>
+                            <label><input type="checkbox" name="irpfDeducoes" value="previdencia_privada"> Previdência Privada (PGBL)</label><br>
+                            <label><input type="checkbox" name="irpfDeducoes" value="pensao_alimenticia"> Pensão Alimentícia</label><br>
+                            <label><input type="checkbox" name="irpfDeducoes" value="doacoes"> Doações Incentivadas</label><br>
+                            <label><input type="checkbox" name="irpfDeducoes" value="livro_caixa"> Livro Caixa (autônomos)</label>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="irpfObservacoes">Observações sobre seu planejamento tributário ou dúvidas:</label>
+                        <textarea id="irpfObservacoes" name="irpfObservacoes"></textarea>
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(10, 9)">Anterior</button>
+                    <button type="button" onclick="nextTab(10, 11)">Próximo</button>
+                </div>
+            </div>
+
+            <div id="tab11" class="tab">
+                <!-- 12. Planejamento Sucessório -->
+                <fieldset>
+                    <legend>Planejamento Sucessório</legend>
+                     <div class="form-group">
+                        <label>Você possui testamento? <span class="tooltip">?<span class="tooltiptext">O testamento permite definir como seus bens serão distribuídos após seu falecimento, respeitando a parte legítima dos herdeiros necessários.</span></span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="sucessaoTestamento" value="sim"> Sim</label>
+                            <label><input type="radio" name="sucessaoTestamento" value="nao" checked> Não</label>
+                            <label><input type="radio" name="sucessaoTestamento" value="pensando"> Estou pensando em fazer</label>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label>Você já realizou ou planeja realizar doações em vida como parte do planejamento?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="sucessaoDoacoes" value="sim"> Sim</label>
+                            <label><input type="radio" name="sucessaoDoacoes" value="nao" checked> Não</label>
+                            <label><input type="radio" name="sucessaoDoacoes" value="planeja"> Planejo fazer</label>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label>Você tem conhecimento sobre o processo de inventário?</label>
+                         <div class="radio-group">
+                            <label><input type="radio" name="sucessaoInventario" value="sim"> Sim</label>
+                            <label><input type="radio" name="sucessaoInventario" value="nao" checked> Não</label>
+                            <label><input type="radio" name="sucessaoInventario" value="pouco"> Pouco</label>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label>Você utiliza ou considera utilizar algum destes instrumentos para sucessão?</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="sucessaoInstrumentos" value="seguro_vida"> Seguro de Vida</label><br>
+                            <label><input type="checkbox" name="sucessaoInstrumentos" value="previdencia_privada"> Previdência Privada</label><br>
+                            <label><input type="checkbox" name="sucessaoInstrumentos" value="holding"> Holding Familiar</label><br>
+                            <label><input type="checkbox" name="sucessaoInstrumentos" value="doacao_usufruto"> Doação com reserva de usufruto</label>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="sucessaoObservacoes">Observações ou preocupações sobre planejamento sucessório:</label>
+                        <textarea id="sucessaoObservacoes" name="sucessaoObservacoes"></textarea>
+                    </div>
+                </fieldset>
+                
+                <div class="tab-buttons">
+                    <button type="button" onclick="prevTab(11, 10)">Anterior</button>
+                    <button type="button" onclick="gerarAnalise()">Gerar Análise</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Seção de Análise (será preenchida via JS) -->
+        <div id="secaoAnalise" class="analysis-section" style="display: none;">
+            <h2>Análise do Diagnóstico</h2>
+            
+            <div class="result-card">
+                <h3>Resumo Financeiro</h3>
+                <div id="resumoFinanceiro">
+                    <p><strong>Patrimônio Total:</strong> <span id="patrimonioTotal">R$ 0,00</span></p>
+                    <p><strong>Dívidas Totais:</strong> <span id="dividaTotal">R$ 0,00</span></p>
+                    <p><strong>Patrimônio Líquido:</strong> <span id="patrimonioLiquido">R$ 0,00</span></p>
+                    <p><strong>Saldo Mensal:</strong> <span id="saldoMensalResumo">R$ 0,00</span></p>
+                    <p><strong>Índice de Endividamento:</strong> <span id="indiceEndividamento">0%</span></p>
+                    <p><strong>Índice de Poupança:</strong> <span id="indicePoupanca">0%</span></p>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3>Seu Perfil Financeiro</h3>
+                <p id="perfilCalculado">Preencha o formulário para ver seu perfil.</p>
+                <div class="form-group">
+                    <label for="perfilEditavel">Edite seu perfil se necessário:</label>
+                    <select id="perfilEditavel" name="perfilEditavel">
+                        <option value="">Selecione...</option>
+                        <option value="DIVIDAS IMPAGAVEIS">DÍVIDAS IMPAGÁVEIS</option>
+                        <option value="DIVIDAS PAGAVEIS">DÍVIDAS PAGÁVEIS</option>
+                        <option value="ZERO A ZERO OBRIGATORIO">ZERO A ZERO OBRIGATÓRIO</option>
+                        <option value="ZERO A ZERO OPCIONAL">ZERO A ZERO OPCIONAL</option>
+                        <option value="FLUXO POSITIVO">FLUXO POSITIVO</option>
+                        <option value="POUPADOR">POUPADOR</option>
+                        <option value="INVESTIDOR AMADOR">INVESTIDOR AMADOR</option>
+                        <option value="INVESTIDOR PLANEJADOR">INVESTIDOR PLANEJADOR</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3>Principais Pontos de Atenção (Negativos)</h3>
+                <p id="pontosNegativosCalculados">Preencha o formulário para ver os pontos de atenção.</p>
+                <div class="form-group">
+                    <label for="pontosNegativosEditavel">Edite a análise de pontos negativos se necessário:</label>
+                    <textarea id="pontosNegativosEditavel" class="editable-textarea"></textarea>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <h3>Recomendações</h3>
+                <p id="recomendacoesCalculadas">Preencha o formulário para ver as recomendações.</p>
+            </div>
+            
+            <div class="button-container">
+                <button type="button" onclick="voltarAoFormulario()">Voltar ao Formulário</button>
+                <button type="button" class="secondary" onclick="gerarPDF()">Gerar PDF</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Variáveis globais para armazenar os cálculos
+        let patrimonioTotal = 0;
+        let dividaTotal = 0;
+        let patrimonioLiquido = 0;
+        let saldoMensal = 0;
+        let indiceEndividamento = 0;
+        let indicePoupanca = 0;
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar a primeira aba
+            document.getElementById('tab1').classList.add('active');
+            atualizarProgressBar(1);
+            
+            // Configurar eventos para campos específicos
+            document.getElementById('periodoAnalise').addEventListener('change', function() {
+                const periodoPersonalizado = document.getElementById('periodoPersonalizado');
+                periodoPersonalizado.style.display = this.value === 'personalizado' ? 'block' : 'none';
+            });
         });
-
-        if (receitaPeriodo <= 0 && totalDespesasPeriodo <= 0) {
-             legendaDiv.innerHTML = '<div style="text-align: center; padding: 20px;">Sem dados de receita ou despesa para exibir neste período.</div>';
-             return; // Não cria gráfico se não houver dados
+        
+        // Navegação entre abas
+        function nextTab(currentTab, nextTab) {
+            document.getElementById('tab' + currentTab).classList.remove('active');
+            document.getElementById('tab' + nextTab).classList.add('active');
+            atualizarProgressBar(nextTab);
+            window.scrollTo(0, 0);
         }
-
-        graficoDespesasReceitas = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Comparativo'], // Apenas uma barra agrupada
-                datasets: [
-                    {
-                        label: 'Receitas',
-                        data: [receitaPeriodo],
-                        backgroundColor: '#1976d2', // Azul
-                        borderColor: '#1976d2',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Despesas',
-                        data: [totalDespesasPeriodo],
-                        backgroundColor: '#c62828', // Vermelho
-                        borderColor: '#c62828',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y', // Barras horizontais para melhor visualização
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: 'white', // Cor dos ticks do eixo X
-                            callback: function(value) {
-                                return formatarMoeda(value);
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)' // Cor das linhas de grade
-                        }
-                    },
-                    y: {
-                        ticks: {
-                            color: 'white' // Cor dos ticks do eixo Y
-                        },
-                         grid: {
-                            color: 'rgba(255, 255, 255, 0.1)' // Cor das linhas de grade
-                        }
-                    }
-                },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: `Despesas em Relação às Receitas${tituloExtra}`,
-                        color: '#ffd700',
-                        font: { size: 16 }
-                    },
-                    legend: {
-                        display: true,
-                        position: 'top',
-                        labels: {
-                           color: 'white' // Cor da legenda
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) label += ': ';
-                                let value = context.parsed.x || 0;
-                                return `${label}${formatarMoeda(value)}`;
-                            }
-                        }
-                    }
+        
+        function prevTab(currentTab, prevTab) {
+            document.getElementById('tab' + currentTab).classList.remove('active');
+            document.getElementById('tab' + prevTab).classList.add('active');
+            atualizarProgressBar(prevTab);
+            window.scrollTo(0, 0);
+        }
+        
+        function atualizarProgressBar(tabAtual) {
+            const totalTabs = 11; // Total de abas no formulário
+            const progresso = (tabAtual / totalTabs) * 100;
+            document.getElementById('progress').style.width = progresso + '%';
+        }
+        
+        // Mostrar/esconder campos de cobertura
+        function toggleCobertura(id, mostrar) {
+            document.getElementById(id).style.display = mostrar ? 'block' : 'none';
+        }
+        
+        // Cálculos financeiros
+        function calcularSaldo() {
+            // Receitas
+            const salario = parseFloat(document.getElementById('receitaSalario').value) || 0;
+            const alugueis = parseFloat(document.getElementById('receitaAlugueis').value) || 0;
+            const dividendos = parseFloat(document.getElementById('receitaDividendos').value) || 0;
+            const outrasReceitas = parseFloat(document.getElementById('receitaOutras').value) || 0;
+            
+            // Despesas Fixas
+            const moradia = parseFloat(document.getElementById('despesaMoradia').value) || 0;
+            const educacao = parseFloat(document.getElementById('despesaEducacao').value) || 0;
+            const saude = parseFloat(document.getElementById('despesaSaude').value) || 0;
+            const transporte = parseFloat(document.getElementById('despesaTransporte').value) || 0;
+            const alimentacao = parseFloat(document.getElementById('despesaAlimentacaoFixa').value) || 0;
+            const servicosBasicos = parseFloat(document.getElementById('despesaServicosBasicos').value) || 0;
+            const outrasFixas = parseFloat(document.getElementById('despesaOutrasFixas').value) || 0;
+            
+            // Despesas Variáveis
+            const lazer = parseFloat(document.getElementById('despesaLazer').value) || 0;
+            const vestuario = parseFloat(document.getElementById('despesaVestuario').value) || 0;
+            const presentes = parseFloat(document.getElementById('despesaPresentes').value) || 0;
+            const viagens = parseFloat(document.getElementById('despesaViagens').value) || 0;
+            const outrasVariaveis = parseFloat(document.getElementById('despesaOutrasVariaveis').value) || 0;
+            
+            // Cálculo do saldo
+            const totalReceitas = salario + alugueis + dividendos + outrasReceitas;
+            const totalDespesasFixas = moradia + educacao + saude + transporte + alimentacao + servicosBasicos + outrasFixas;
+            const totalDespesasVariaveis = lazer + vestuario + presentes + viagens + outrasVariaveis;
+            
+            saldoMensal = totalReceitas - totalDespesasFixas - totalDespesasVariaveis;
+            
+            // Formatação e exibição
+            const formatoMoeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('saldoMensal').value = formatoMoeda.format(saldoMensal);
+            
+            // Atualizar índice de poupança se o campo de poupança mensal estiver preenchido
+            const poupancaMensal = parseFloat(document.getElementById('poupancaMensal').value) || 0;
+            if (totalReceitas > 0 && poupancaMensal > 0) {
+                indicePoupanca = (poupancaMensal / totalReceitas) * 100;
+            }
+            
+            return saldoMensal;
+        }
+        
+        function calcularPatrimonioTotal() {
+            // Patrimônio Físico
+            const imoveis = parseFloat(document.getElementById('imoveisValor').value) || 0;
+            const veiculos = parseFloat(document.getElementById('veiculosValor').value) || 0;
+            const outrosBens = parseFloat(document.getElementById('outrosBensValor').value) || 0;
+            
+            // Investimentos e Aplicações
+            const rendaFixa = parseFloat(document.getElementById('invRendaFixa').value) || 0;
+            const rendaVariavel = parseFloat(document.getElementById('invRendaVariavel').value) || 0;
+            const fundos = parseFloat(document.getElementById('invFundos').value) || 0;
+            const poupanca = parseFloat(document.getElementById('appPoupanca').value) || 0;
+            const previdencia = parseFloat(document.getElementById('appPrevidencia').value) || 0;
+            const negocios = parseFloat(document.getElementById('partNegocios').value) || 0;
+            const outrosLiquidos = parseFloat(document.getElementById('outrosLiquidos').value) || 0;
+            
+            patrimonioTotal = imoveis + veiculos + outrosBens + rendaFixa + rendaVariavel + 
+                             fundos + poupanca + previdencia + negocios + outrosLiquidos;
+            
+            calcularPatrimonioLiquido();
+            return patrimonioTotal;
+        }
+        
+        function calcularDividaTotal() {
+            const financiamentos = parseFloat(document.getElementById('financiamentoSaldo').value) || 0;
+            const emprestimos = parseFloat(document.getElementById('emprestimoSaldo').value) || 0;
+            const cartaoRotativo = parseFloat(document.getElementById('cartaoSaldoRotativo').value) || 0;
+            
+            dividaTotal = financiamentos + emprestimos + cartaoRotativo;
+            
+            // Calcular índice de endividamento se houver receita
+            const salario = parseFloat(document.getElementById('receitaSalario').value) || 0;
+            const alugueis = parseFloat(document.getElementById('receitaAlugueis').value) || 0;
+            const dividendos = parseFloat(document.getElementById('receitaDividendos').value) || 0;
+            const outrasReceitas = parseFloat(document.getElementById('receitaOutras').value) || 0;
+            
+            const totalReceitas = salario + alugueis + dividendos + outrasReceitas;
+            
+            if (totalReceitas > 0) {
+                // Parcelas mensais
+                const parcelaFinanciamento = parseFloat(document.getElementById('financiamentoParcela').value) || 0;
+                const parcelaEmprestimo = parseFloat(document.getElementById('emprestimoParcela').value) || 0;
+                
+                const totalParcelas = parcelaFinanciamento + parcelaEmprestimo;
+                indiceEndividamento = (totalParcelas / totalReceitas) * 100;
+            }
+            
+            calcularPatrimonioLiquido();
+            return dividaTotal;
+        }
+        
+        function calcularPatrimonioLiquido() {
+            patrimonioLiquido = patrimonioTotal - dividaTotal;
+            return patrimonioLiquido;
+        }
+        
+        // Análise do perfil financeiro
+        function determinarPerfilFinanceiro() {
+            // Verificar se há dados suficientes
+            if (patrimonioTotal === 0 && dividaTotal === 0 && saldoMensal === 0) {
+                return "DADOS INSUFICIENTES";
+            }
+            
+            // Verificar se há dívidas impagáveis
+            if (indiceEndividamento > 50 || (dividaTotal > 0 && saldoMensal <= 0)) {
+                return "DÍVIDAS IMPAGÁVEIS";
+            }
+            
+            // Verificar se há dívidas pagáveis
+            if (dividaTotal > 0 && indiceEndividamento > 30 && indiceEndividamento <= 50) {
+                return "DÍVIDAS PAGÁVEIS";
+            }
+            
+            // Verificar se está no zero a zero
+            if (saldoMensal === 0 || Math.abs(saldoMensal) < 0.05 * patrimonioTotal) {
+                if (dividaTotal > 0) {
+                    return "ZERO A ZERO OBRIGATÓRIO";
+                } else {
+                    return "ZERO A ZERO OPCIONAL";
                 }
             }
-        });
-    }
+            
+            // Verificar fluxo positivo
+            if (saldoMensal > 0 && indicePoupanca < 10) {
+                return "FLUXO POSITIVO";
+            }
+            
+            // Verificar poupador
+            if (indicePoupanca >= 10 && indicePoupanca < 20) {
+                return "POUPADOR";
+            }
+            
+            // Verificar investidor amador
+            const rendaVariavel = parseFloat(document.getElementById('invRendaVariavel').value) || 0;
+            const fundos = parseFloat(document.getElementById('invFundos').value) || 0;
+            const investimentosDiversificados = rendaVariavel + fundos;
+            
+            if (indicePoupanca >= 20 && investimentosDiversificados < 0.3 * patrimonioTotal) {
+                return "INVESTIDOR AMADOR";
+            }
+            
+            // Verificar investidor planejador
+            if (indicePoupanca >= 20 && investimentosDiversificados >= 0.3 * patrimonioTotal) {
+                return "INVESTIDOR PLANEJADOR";
+            }
+            
+            // Caso padrão
+            return "FLUXO POSITIVO";
+        }
+        
+        // Identificar pontos negativos
+        function identificarPontosNegativos() {
+            const pontosNegativos = [];
+            
+            // Verificar saldo mensal negativo
+            if (saldoMensal < 0) {
+                pontosNegativos.push("Saldo mensal negativo: suas despesas superam suas receitas.");
+            }
+            
+            // Verificar alto índice de endividamento
+            if (indiceEndividamento > 30) {
+                pontosNegativos.push(`Índice de endividamento elevado (${indiceEndividamento.toFixed(2)}%): o recomendado é manter abaixo de 30% da renda.`);
+            }
+            
+            // Verificar uso de cartão de crédito rotativo
+            const cartaoRotativo = parseFloat(document.getElementById('cartaoSaldoRotativo').value) || 0;
+            if (cartaoRotativo > 0) {
+                pontosNegativos.push("Uso do rotativo do cartão de crédito, que possui taxas de juros extremamente elevadas.");
+            }
+            
+            // Verificar uso frequente de cheque especial
+            const chequeEspecial = document.getElementById('chequeEspecialFrequencia').value;
+            if (chequeEspecial === 'frequentemente' || chequeEspecial === 'as_vezes') {
+                pontosNegativos.push("Uso frequente do cheque especial, que possui taxas de juros elevadas.");
+            }
+            
+            // Verificar ausência de reserva de emergência
+            const reservaEmergencia = parseFloat(document.getElementById('reservaEmergencia').value) || 0;
+            if (reservaEmergencia < 3) {
+                pontosNegativos.push("Reserva de emergência insuficiente: o recomendado é ter pelo menos 3 a 6 meses de despesas guardados.");
+            }
+            
+            // Verificar ausência de seguros essenciais
+            const seguroVida = document.querySelector('input[name="seguroVida"]:checked')?.value;
+            const planoSaude = document.querySelector('input[name="planoSaude"]:checked')?.value;
+            const seguroImovel = document.querySelector('input[name="seguroImovel"]:checked')?.value;
+            const seguroAuto = document.querySelector('input[name="seguroAuto"]:checked')?.value;
+            
+            const dependentes = parseInt(document.getElementById('dependentes').value) || 0;
+            if (dependentes > 0 && seguroVida === 'nao') {
+                pontosNegativos.push("Ausência de seguro de vida, apesar de possuir dependentes.");
+            }
+            
+            if (planoSaude === 'nao') {
+                pontosNegativos.push("Ausência de plano de saúde, o que pode gerar impactos financeiros significativos em caso de problemas de saúde.");
+            }
+            
+            const imoveis = parseFloat(document.getElementById('imoveisValor').value) || 0;
+            if (imoveis > 0 && seguroImovel === 'nao') {
+                pontosNegativos.push("Ausência de seguro residencial/imóvel para proteger seu patrimônio.");
+            }
+            
+            const veiculos = parseFloat(document.getElementById('veiculosValor').value) || 0;
+            if (veiculos > 0 && seguroAuto === 'nao') {
+                pontosNegativos.push("Ausência de seguro de automóvel para proteger seu veículo.");
+            }
+            
+            // Verificar planejamento para aposentadoria
+            const previdencia = document.querySelectorAll('input[name="prevComp"]:checked');
+            const aposentadoriaInvestimentos = document.getElementById('aposentadoriaInvestimentos').value;
+            
+            if (previdencia.length === 0 || (previdencia.length === 1 && previdencia[0].value === 'nenhum')) {
+                if (!aposentadoriaInvestimentos || aposentadoriaInvestimentos.trim() === '') {
+                    pontosNegativos.push("Ausência de planejamento para aposentadoria, seja via previdência complementar ou investimentos específicos.");
+                }
+            }
+            
+            // Verificar planejamento sucessório
+            const testamento = document.querySelector('input[name="sucessaoTestamento"]:checked')?.value;
+            const sucessaoInstrumentos = document.querySelectorAll('input[name="sucessaoInstrumentos"]:checked');
+            
+            if ((testamento === 'nao' || testamento === 'pensando') && sucessaoInstrumentos.length === 0) {
+                pontosNegativos.push("Ausência de planejamento sucessório, o que pode gerar complicações e custos adicionais para seus herdeiros.");
+            }
+            
+            // Verificar diversificação de investimentos
+            const rendaFixa = parseFloat(document.getElementById('invRendaFixa').value) || 0;
+            const rendaVariavel = parseFloat(document.getElementById('invRendaVariavel').value) || 0;
+            const fundos = parseFloat(document.getElementById('invFundos').value) || 0;
+            const poupanca = parseFloat(document.getElementById('appPoupanca').value) || 0;
+            
+            const totalInvestimentos = rendaFixa + rendaVariavel + fundos + poupanca;
+            
+            if (totalInvestimentos > 0) {
+                if (poupanca > 0.5 * totalInvestimentos) {
+                    pontosNegativos.push("Concentração excessiva em caderneta de poupança, que geralmente oferece retornos abaixo da inflação.");
+                }
+                
+                if (rendaVariavel === 0 && fundos === 0) {
+                    pontosNegativos.push("Ausência de investimentos em renda variável ou fundos diversificados, o que pode limitar o potencial de rentabilidade no longo prazo.");
+                }
+            }
+            
+            return pontosNegativos.length > 0 ? pontosNegativos : ["Nenhum ponto negativo crítico identificado."];
+        }
+        
+        // Gerar recomendações
+        function gerarRecomendacoes() {
+            const recomendacoes = [];
+            const perfil = determinarPerfilFinanceiro();
+            
+            // Recomendações baseadas no perfil
+            switch(perfil) {
+                case "DÍVIDAS IMPAGÁVEIS":
+                    recomendacoes.push("Priorize a renegociação de dívidas com taxas de juros mais altas.");
+                    recomendacoes.push("Considere a possibilidade de consolidação de dívidas para reduzir as taxas de juros.");
+                    recomendacoes.push("Reduza drasticamente despesas não essenciais para aumentar o saldo mensal.");
+                    recomendacoes.push("Busque fontes adicionais de renda temporárias para acelerar o pagamento de dívidas.");
+                    break;
+                    
+                case "DÍVIDAS PAGÁVEIS":
+                    recomendacoes.push("Crie um plano de amortização de dívidas, priorizando as com maiores taxas de juros.");
+                    recomendacoes.push("Evite contrair novas dívidas até quitar as existentes.");
+                    recomendacoes.push("Reavalie seu orçamento para aumentar o valor destinado ao pagamento de dívidas.");
+                    break;
+                    
+                case "ZERO A ZERO OBRIGATÓRIO":
+                case "ZERO A ZERO OPCIONAL":
+                    recomendacoes.push("Identifique despesas que podem ser reduzidas para criar uma margem de poupança.");
+                    recomendacoes.push("Estabeleça metas de economia mensais, mesmo que pequenas inicialmente.");
+                    recomendacoes.push("Considere fontes adicionais de renda para aumentar seu fluxo de caixa.");
+                    break;
+                    
+                case "FLUXO POSITIVO":
+                    recomendacoes.push("Estabeleça uma meta de poupança mensal de pelo menos 10% da sua renda.");
+                    recomendacoes.push("Crie uma reserva de emergência equivalente a 3-6 meses de despesas.");
+                    recomendacoes.push("Após constituir a reserva, comece a investir regularmente em produtos adequados ao seu perfil.");
+                    break;
+                    
+                case "POUPADOR":
+                    recomendacoes.push("Diversifique seus investimentos para além da poupança, buscando melhor rentabilidade.");
+                    recomendacoes.push("Considere investimentos em renda fixa com melhor retorno, como Tesouro Direto e CDBs.");
+                    recomendacoes.push("Busque educação financeira para entender melhor as opções de investimento disponíveis.");
+                    break;
+                    
+                case "INVESTIDOR AMADOR":
+                    recomendacoes.push("Diversifique ainda mais sua carteira de investimentos, incluindo diferentes classes de ativos.");
+                    recomendacoes.push("Considere uma alocação estratégica baseada em seus objetivos de longo prazo.");
+                    recomendacoes.push("Avalie a contratação de um planejador financeiro certificado para otimizar sua estratégia.");
+                    break;
+                    
+                case "INVESTIDOR PLANEJADOR":
+                    recomendacoes.push("Continue com a estratégia de diversificação e investimento regular.");
+                    recomendacoes.push("Revise periodicamente sua alocação de ativos para garantir alinhamento com seus objetivos.");
+                    recomendacoes.push("Considere estratégias mais sofisticadas de planejamento tributário e sucessório.");
+                    break;
+                    
+                default:
+                    recomendacoes.push("Estabeleça objetivos financeiros claros e mensuráveis.");
+                    recomendacoes.push("Crie um orçamento detalhado para acompanhar receitas e despesas.");
+                    recomendacoes.push("Constitua uma reserva de emergência antes de iniciar investimentos de maior risco.");
+            }
+            
+            // Recomendações específicas baseadas nos pontos negativos
+            const pontosNegativos = identificarPontosNegativos();
+            
+            if (pontosNegativos.includes("Saldo mensal negativo: suas despesas superam suas receitas.")) {
+                recomendacoes.push("Revise seu orçamento identificando despesas que podem ser reduzidas ou eliminadas.");
+                recomendacoes.push("Considere renegociar dívidas para reduzir o valor das parcelas mensais.");
+            }
+            
+            if (pontosNegativos.some(ponto => ponto.includes("Índice de endividamento elevado"))) {
+                recomendacoes.push("Evite contrair novas dívidas até reduzir seu índice de endividamento para menos de 30% da renda.");
+                recomendacoes.push("Considere a portabilidade de dívidas para instituições com taxas de juros mais baixas.");
+            }
+            
+            if (pontosNegativos.includes("Uso do rotativo do cartão de crédito, que possui taxas de juros extremamente elevadas.")) {
+                recomendacoes.push("Priorize o pagamento do saldo devedor do cartão de crédito, mesmo que isso signifique reduzir temporariamente outros investimentos.");
+                recomendacoes.push("Considere um empréstimo pessoal com taxa de juros menor para quitar o rotativo do cartão.");
+            }
+            
+            if (pontosNegativos.includes("Reserva de emergência insuficiente: o recomendado é ter pelo menos 3 a 6 meses de despesas guardados.")) {
+                recomendacoes.push("Estabeleça como prioridade a constituição de uma reserva de emergência em investimentos de alta liquidez.");
+                recomendacoes.push("Destine uma porcentagem fixa da sua renda mensal para a reserva de emergência até atingir o valor ideal.");
+            }
+            
+            // Remover duplicatas
+            return [...new Set(recomendacoes)];
+        }
+        
+        // Gerar análise completa
+        function gerarAnalise() {
+            // Calcular todos os indicadores
+            calcularSaldo();
+            calcularPatrimonioTotal();
+            calcularDividaTotal();
+            
+            // Determinar perfil financeiro
+            const perfil = determinarPerfilFinanceiro();
+            document.getElementById('perfilCalculado').innerText = perfil;
+            document.getElementById('perfilEditavel').value = perfil;
+            
+            // Identificar pontos negativos
+            const pontosNegativos = identificarPontosNegativos();
+            document.getElementById('pontosNegativosCalculados').innerHTML = pontosNegativos.map(ponto => `• ${ponto}`).join('<br>');
+            document.getElementById('pontosNegativosEditavel').value = pontosNegativos.map(ponto => `• ${ponto}`).join('\n');
+            
+            // Gerar recomendações
+            const recomendacoes = gerarRecomendacoes();
+            document.getElementById('recomendacoesCalculadas').innerHTML = recomendacoes.map(rec => `• ${rec}`).join('<br>');
+            
+            // Atualizar resumo financeiro
+            const formatoMoeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('patrimonioTotal').innerText = formatoMoeda.format(patrimonioTotal);
+            document.getElementById('dividaTotal').innerText = formatoMoeda.format(dividaTotal);
+            document.getElementById('patrimonioLiquido').innerText = formatoMoeda.format(patrimonioLiquido);
+            document.getElementById('saldoMensalResumo').innerText = formatoMoeda.format(saldoMensal);
+            document.getElementById('indiceEndividamento').innerText = indiceEndividamento.toFixed(2) + '%';
+            document.getElementById('indicePoupanca').innerText = indicePoupanca.toFixed(2) + '%';
+            
+            // Mostrar seção de análise
+            document.getElementById('secaoAnalise').style.display = 'block';
+            
+            // Esconder todas as abas do formulário
+            for (let i = 1; i <= 11; i++) {
+                document.getElementById('tab' + i).classList.remove('active');
+            }
+            
+            // Scroll para a seção de análise
+            document.getElementById('secaoAnalise').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function voltarAoFormulario() {
+            // Esconder seção de análise
+            document.getElementById('secaoAnalise').style.display = 'none';
+            
+            // Mostrar primeira aba do formulário
+            document.getElementById('tab1').classList.add('active');
+            atualizarProgressBar(1);
+            
+            // Scroll para o topo
+            window.scrollTo(0, 0);
+        }
+        
+        function gerarPDF() {
+            alert("Para gerar o PDF do seu diagnóstico financeiro, você precisará de uma biblioteca como jsPDF ou html2pdf.js. Em um ambiente de produção, esta funcionalidade estaria implementada para permitir o download do relatório completo.");
+            
+            // Em uma implementação real, usaríamos código como este:
+            /*
+            import { jsPDF } from "jspdf";
+            import html2canvas from "html2canvas";
+            
+            // Capturar o conteúdo da análise
+            const element = document.getElementById('secaoAnalise');
+            
+            html2canvas(element).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save('diagnostico_financeiro.pdf');
+            });
+            */
+        }
+    </script>
 
-    function atualizarInterface() {
-      const anoAtual = new Date().getFullYear(); // Ou permitir seleção de ano no futuro
-      atualizarTabelaLancamentos(lancamentos, anoAtual);
-      atualizarResumoFinanceiro(lancamentos, anoAtual);
-      // Gráficos são atualizados dentro de atualizarResumoFinanceiro
-    }
-
-    // Inicialização
-    document.addEventListener("DOMContentLoaded", () => {
-      carregarLancamentos();
-      atualizarInterface();
-      // Define o ano atual como padrão nas datas do modal para novos lançamentos
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      if (!document.getElementById("dataInicial").value) {
-        document.getElementById("dataInicial").value = `${currentYear}-01-01`;
-      }
-      if (!document.getElementById("dataFinal").value) {
-        document.getElementById("dataFinal").value = `${currentYear}-12-31`;
-      }
-    });
-
-  </script>
 </body>
 </html>
-
