@@ -10,60 +10,61 @@
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            background-color: #f4f7fa;
-            color: #333;
+            background-color: #0a1f1a; /* Verde escuro para fundo */
+            color: #e6e6e6; /* Texto claro */
         }
         .container {
             max-width: 800px;
             margin: auto;
-            background: #fff;
+            background: #0e2922; /* Verde esmeralda escuro */
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1a5a4c; /* Borda verde mais clara */
         }
         h1, h2, h3 {
-            color: #2c3e50;
+            color: #d4af37; /* Dourado */
             margin-bottom: 20px;
         }
         h1 {
             text-align: center;
             font-size: 2.2em;
             margin-bottom: 30px;
-            color: #1a5276;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         h2 {
             margin-top: 30px;
-            border-bottom: 2px solid #eee;
+            border-bottom: 2px solid #1a5a4c; /* Verde esmeralda médio */
             padding-bottom: 10px;
             font-size: 1.6em;
         }
         h3 {
-            color: #2980b9;
+            color: #c5a028; /* Dourado mais escuro */
             font-size: 1.3em;
             margin-top: 25px;
         }
         fieldset {
-            border: 1px solid #ddd;
+            border: 1px solid #1a5a4c; /* Verde esmeralda médio */
             border-radius: 5px;
             padding: 20px;
             margin-bottom: 25px;
-            background-color: #f9f9f9;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background-color: #0c2420; /* Verde esmeralda muito escuro */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         legend {
             font-weight: bold;
-            color: #2980b9;
+            color: #d4af37; /* Dourado */
             padding: 0 10px;
             font-size: 1.2em;
-            background-color: #fff;
-            border: 1px solid #ddd;
+            background-color: #0e2922; /* Verde esmeralda escuro */
+            border: 1px solid #1a5a4c; /* Verde esmeralda médio */
             border-radius: 4px;
         }
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #444;
+            color: #b8e0d8; /* Verde claro para labels */
         }
         input[type="text"],
         input[type="number"],
@@ -74,17 +75,19 @@
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
-            border: 1px solid #ccc;
+            border: 1px solid #1a5a4c; /* Verde esmeralda médio */
             border-radius: 4px;
             box-sizing: border-box;
             font-family: inherit;
             font-size: 1em;
             transition: border-color 0.3s;
+            background-color: #0a1f1a; /* Verde escuro */
+            color: #e6e6e6; /* Texto claro */
         }
         input:focus, select:focus, textarea:focus {
-            border-color: #3498db;
+            border-color: #d4af37; /* Dourado */
             outline: none;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); /* Sombra dourada */
         }
         textarea {
             min-height: 80px;
@@ -93,6 +96,7 @@
         input[type="radio"],
         input[type="checkbox"] {
             margin-right: 5px;
+            accent-color: #d4af37; /* Dourado para os checkboxes/radio */
         }
         .radio-group label,
         .checkbox-group label {
@@ -100,6 +104,7 @@
             display: inline-block;
             margin-right: 15px;
             margin-bottom: 10px;
+            color: #c5e0da; /* Verde claro para texto */
         }
 
         .form-group {
@@ -112,10 +117,10 @@
         }
 
         button {
-            background-color: #2980b9;
-            color: white;
+            background-color: #1a5a4c; /* Verde esmeralda médio */
+            color: #d4af37; /* Dourado */
             padding: 12px 25px;
-            border: none;
+            border: 1px solid #d4af37; /* Borda dourada */
             border-radius: 4px;
             cursor: pointer;
             font-size: 1em;
@@ -124,51 +129,57 @@
             margin: 0 10px;
         }
         button:hover {
-            background-color: #1a5276;
+            background-color: #d4af37; /* Dourado */
+            color: #0e2922; /* Verde escuro */
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
         button.secondary {
-            background-color: #f39c12;
+            background-color: #0e2922; /* Verde escuro */
+            color: #d4af37; /* Dourado */
         }
         button.secondary:hover {
-            background-color: #d68910;
+            background-color: #c5a028; /* Dourado mais escuro */
+            color: #0e2922; /* Verde escuro */
         }
 
         .analysis-section {
             margin-top: 30px;
             padding: 25px;
-            border: 1px solid #ddd;
+            border: 1px solid #1a5a4c; /* Verde esmeralda médio */
             border-radius: 5px;
-            background-color: #e9f7fe;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            background-color: #0c2420; /* Verde esmeralda muito escuro */
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
         .analysis-section h3 {
             margin-top: 0;
-            color: #1a5276;
+            color: #d4af37; /* Dourado */
         }
         .editable-textarea {
             width: 100%;
             min-height: 120px;
             padding: 12px;
-            border: 1px solid #ccc;
+            border: 1px solid #1a5a4c; /* Verde esmeralda médio */
             border-radius: 4px;
             box-sizing: border-box;
             margin-top: 10px;
             font-family: inherit;
+            background-color: #0a1f1a; /* Verde escuro */
+            color: #e6e6e6; /* Texto claro */
         }
         
         .progress-bar {
             width: 100%;
-            background-color: #e0e0e0;
+            background-color: #0a1f1a; /* Verde escuro */
             border-radius: 4px;
             margin: 20px 0;
             overflow: hidden;
+            border: 1px solid #1a5a4c; /* Verde esmeralda médio */
         }
         
         .progress {
             height: 10px;
-            background-color: #2980b9;
+            background-color: #d4af37; /* Dourado */
             width: 0%;
             transition: width 0.5s ease-in-out;
         }
@@ -188,32 +199,33 @@
         }
         
         .positive {
-            color: #27ae60;
+            color: #8fd14f; /* Verde claro */
             font-weight: bold;
         }
         
         .negative {
-            color: #c0392b;
+            color: #e74c3c; /* Vermelho */
             font-weight: bold;
         }
         
         .neutral {
-            color: #f39c12;
+            color: #d4af37; /* Dourado */
             font-weight: bold;
         }
         
         .result-card {
-            background-color: #fff;
+            background-color: #0c2420; /* Verde esmeralda muito escuro */
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border: 1px solid #1a5a4c; /* Verde esmeralda médio */
         }
         
         .result-card h4 {
             margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 1px solid #eee;
+            color: #d4af37; /* Dourado */
+            border-bottom: 1px solid #1a5a4c; /* Verde esmeralda médio */
             padding-bottom: 10px;
         }
         
@@ -222,13 +234,14 @@
             display: inline-block;
             cursor: help;
             margin-left: 5px;
+            color: #d4af37; /* Dourado */
         }
         
         .tooltip .tooltiptext {
             visibility: hidden;
             width: 250px;
-            background-color: #555;
-            color: #fff;
+            background-color: #0a1f1a; /* Verde escuro */
+            color: #e6e6e6; /* Texto claro */
             text-align: center;
             border-radius: 6px;
             padding: 10px;
@@ -241,6 +254,7 @@
             transition: opacity 0.3s;
             font-weight: normal;
             font-size: 0.9em;
+            border: 1px solid #d4af37; /* Borda dourada */
         }
         
         .tooltip:hover .tooltiptext {
@@ -441,7 +455,7 @@
                     <h3>Saldo Mensal</h3>
                     <div class="form-group">
                         <label>Saldo Mensal Estimado (Receitas - Despesas) (R$):</label>
-                        <input type="text" id="saldoMensal" name="saldoMensal" readonly style="background-color: #eee; font-weight: bold;">
+                        <input type="text" id="saldoMensal" name="saldoMensal" readonly style="background-color: #0a1f1a; font-weight: bold; border: 1px solid #d4af37;">
                     </div>
                      <div class="form-group">
                         <label for="periodoAnalise">Período de Análise Preferencial:</label>
