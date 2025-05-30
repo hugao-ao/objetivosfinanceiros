@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico Financeiro Online</title>
+    <title>Diagnóstico Financeiro Online - V2</title>
+    <!-- Incluir Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,7 +16,7 @@
             color: #e6e6e6; /* Texto claro */
         }
         .container {
-            max-width: 800px;
+            max-width: 900px; /* Aumentado para acomodar gráficos */
             margin: auto;
             background: #0e2922; /* Verde esmeralda escuro */
             padding: 30px;
@@ -110,6 +112,29 @@
         .form-group {
             margin-bottom: 20px;
         }
+        
+        .form-group-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group-inline label {
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+        
+        .form-group-inline input,
+        .form-group-inline select {
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+        
+        .form-group-inline .unit-selector {
+            width: auto;
+            min-width: 80px;
+        }
 
         .button-container {
             text-align: center;
@@ -141,6 +166,23 @@
         button.secondary:hover {
             background-color: #c5a028; /* Dourado mais escuro */
             color: #0e2922; /* Verde escuro */
+        }
+        button.add-item, button.remove-item {
+            background-color: #1a5a4c;
+            color: #d4af37;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            margin-left: 10px;
+            border: 1px solid #d4af37;
+        }
+        button.remove-item {
+            background-color: #5a1a1a; /* Vermelho escuro */
+            color: #e6e6e6;
+            border-color: #c5a028;
+        }
+        button.add-item:hover, button.remove-item:hover {
+            background-color: #d4af37;
+            color: #0e2922;
         }
 
         .analysis-section {
@@ -262,6 +304,37 @@
             opacity: 1;
         }
         
+        .dynamic-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px dashed #1a5a4c;
+            border-radius: 4px;
+        }
+        
+        .dynamic-item input[type="text"],
+        .dynamic-item input[type="number"] {
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+        
+        .dynamic-item select {
+             flex-grow: 0;
+             width: auto;
+             margin-bottom: 0;
+        }
+        
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
+            width: 100%;
+            max-width: 600px; /* Limitar largura do gráfico */
+            margin-bottom: 30px;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .container {
@@ -276,6 +349,21 @@
             }
             .tab-buttons {
                 flex-direction: column;
+            }
+            .dynamic-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .dynamic-item button.remove-item {
+                margin-top: 5px;
+                width: auto;
+            }
+            .form-group-inline {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-group-inline label {
+                 margin-bottom: 8px;
             }
         }
     </style>
@@ -295,7 +383,7 @@
                 <fieldset>
                     <legend>Bem-vindo(a)!</legend>
                     <p>Este diagnóstico tem como objetivo ajudar você a entender melhor sua situação financeira atual e identificar pontos de melhoria. Ao preencher as informações a seguir, você terá uma visão clara do seu patrimônio, fluxo de caixa, riscos e planejamento para o futuro.</p>
-                    <p>O preenchimento leva aproximadamente <strong>15-20 minutos</strong>.</p>
+                    <p>O preenchimento leva aproximadamente <strong>20-30 minutos</strong> (devido à maior flexibilidade).</p>
                     <p><strong>Privacidade:</strong> Suas informações são confidenciais e serão usadas apenas para gerar seu diagnóstico pessoal neste navegador. Nenhum dado será salvo externamente sem sua permissão.</p>
                 </fieldset>
 
@@ -341,34 +429,43 @@
                 <!-- 3. Objetivos Financeiros -->
                 <fieldset>
                     <legend>Objetivos Financeiros</legend>
-                    <div class="form-group">
-                        <label for="objetivoPrincipal">Qual seu principal objetivo financeiro hoje?</label>
-                        <textarea id="objetivoPrincipal" name="objetivoPrincipal" placeholder="Ex: Comprar uma casa, Aposentadoria tranquila, Viajar o mundo, Pagar dívidas..."></textarea>
+                    <div id="objetivosContainer">
+                        <!-- Objetivo 1 (padrão) -->
+                        <div class="dynamic-item objetivo-item">
+                            <div style="flex-grow: 1;">
+                                <div class="form-group">
+                                    <label>Objetivo:</label>
+                                    <input type="text" name="objetivoDescricao[]" placeholder="Ex: Comprar uma casa">
+                                </div>
+                                <div class="form-group">
+                                    <label>Importância:</label>
+                                    <textarea name="objetivoImportancia[]" placeholder="Por que é importante?"></textarea>
+                                </div>
+                                <div class="form-group-inline">
+                                    <label>Prazo:</label>
+                                    <input type="number" name="objetivoPrazoValor[]" min="0" step="any">
+                                    <select name="objetivoPrazoUnidade[]" class="unit-selector">
+                                        <option value="anos" selected>Anos</option>
+                                        <option value="meses">Meses</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Custo Estimado (R$):</label>
+                                    <input type="text" name="objetivoCusto[]" placeholder="0,00" class="currency">
+                                </div>
+                                <div class="form-group">
+                                    <label>Estratégia Atual:</label>
+                                    <textarea name="objetivoEstrategia[]" placeholder="Ex: Poupança mensal, Investimentos..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Valor Já Acumulado (R$):</label>
+                                    <input type="text" name="objetivoAcumulado[]" placeholder="0,00" class="currency">
+                                </div>
+                            </div>
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="objetivoImportancia">Por que este objetivo é importante para você?</label>
-                        <textarea id="objetivoImportancia" name="objetivoImportancia"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="objetivoPrazo">Em quanto tempo você gostaria de atingir este objetivo (em anos)?</label>
-                        <input type="number" id="objetivoPrazo" name="objetivoPrazo" min="0" step="0.5">
-                    </div>
-                     <div class="form-group">
-                        <label for="objetivoCusto">Quanto você estima que este objetivo custa (R$)?</label>
-                        <input type="number" id="objetivoCusto" name="objetivoCusto" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label for="objetivoEstrategia">Qual sua estratégia atual para atingir este objetivo?</label>
-                        <textarea id="objetivoEstrategia" name="objetivoEstrategia" placeholder="Ex: Poupança mensal, Investimentos específicos, Renda extra..."></textarea>
-                    </div>
-                     <div class="form-group">
-                        <label for="objetivoProgresso">Quanto você já acumulou para este objetivo (em %)?</label>
-                        <input type="number" id="objetivoProgresso" name="objetivoProgresso" min="0" max="100" step="1" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="objetivosSecundarios">Você tem outros objetivos financeiros importantes?</label>
-                        <textarea id="objetivosSecundarios" name="objetivosSecundarios" placeholder="Liste outros objetivos, se houver."></textarea>
-                    </div>
+                    <button type="button" class="add-item" onclick="adicionarObjetivo()">Adicionar Outro Objetivo</button>
                 </fieldset>
                 
                 <div class="tab-buttons">
@@ -382,75 +479,36 @@
                 <fieldset>
                     <legend>Fluxo de Caixa Mensal</legend>
                     <p>Informe os valores médios mensais.</p>
+                    
                     <h3>Receitas</h3>
-                    <div class="form-group">
-                        <label for="receitaSalario">Salário Líquido / Pró-labore (R$):</label>
-                        <input type="number" id="receitaSalario" name="receitaSalario" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    <div id="receitasContainer">
+                        <div class="dynamic-item receita-item">
+                            <input type="text" name="receitaDescricao[]" placeholder="Descrição (Ex: Salário Líquido)" value="Salário Líquido / Pró-labore">
+                            <input type="text" name="receitaValor[]" placeholder="0,00" class="currency" oninput="calcularSaldo()">
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="receitaAlugueis">Receita de Aluguéis (R$):</label>
-                        <input type="number" id="receitaAlugueis" name="receitaAlugueis" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                    <div class="form-group">
-                        <label for="receitaDividendos">Dividendos / Juros sobre Capital Próprio (R$):</label>
-                        <input type="number" id="receitaDividendos" name="receitaDividendos" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                     <div class="form-group">
-                        <label for="receitaOutras">Outras Receitas Recorrentes (R$):</label>
-                        <input type="number" id="receitaOutras" name="receitaOutras" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
+                    <button type="button" class="add-item" onclick="adicionarReceita()">Adicionar Receita</button>
 
                     <h3>Despesas Fixas</h3>
-                     <div class="form-group">
-                        <label for="despesaMoradia">Moradia (Aluguel/Financiamento, Condomínio, IPTU) (R$):</label>
-                        <input type="number" id="despesaMoradia" name="despesaMoradia" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                    <div id="despesasFixasContainer">
+                         <div class="dynamic-item despesa-fixa-item">
+                            <input type="text" name="despesaFixaDescricao[]" placeholder="Descrição (Ex: Moradia)" value="Moradia (Aluguel/Financiamento, Condomínio, IPTU)">
+                            <input type="text" name="despesaFixaValor[]" placeholder="0,00" class="currency" oninput="calcularSaldo()">
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="despesaEducacao">Educação (Mensalidades, Cursos) (R$):</label>
-                        <input type="number" id="despesaEducacao" name="despesaEducacao" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                    <div class="form-group">
-                        <label for="despesaSaude">Saúde (Plano, Medicamentos recorrentes) (R$):</label>
-                        <input type="number" id="despesaSaude" name="despesaSaude" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                    <div class="form-group">
-                        <label for="despesaTransporte">Transporte (Combustível, Passagens, Financiamento/Seguro Auto) (R$):</label>
-                        <input type="number" id="despesaTransporte" name="despesaTransporte" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                     <div class="form-group">
-                        <label for="despesaAlimentacaoFixa">Alimentação (Supermercado, Feira) (R$):</label>
-                        <input type="number" id="despesaAlimentacaoFixa" name="despesaAlimentacaoFixa" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                     <div class="form-group">
-                        <label for="despesaServicosBasicos">Serviços Básicos (Água, Luz, Gás, Internet, Telefone) (R$):</label>
-                        <input type="number" id="despesaServicosBasicos" name="despesaServicosBasicos" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                     <div class="form-group">
-                        <label for="despesaOutrasFixas">Outras Despesas Fixas (Assinaturas, Academia, etc.) (R$):</label>
-                        <input type="number" id="despesaOutrasFixas" name="despesaOutrasFixas" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
+                    <button type="button" class="add-item" onclick="adicionarDespesaFixa()">Adicionar Despesa Fixa</button>
 
                     <h3>Despesas Variáveis</h3>
-                     <div class="form-group">
-                        <label for="despesaLazer">Lazer (Restaurantes, Cinema, Shows, etc.) (R$):</label>
-                        <input type="number" id="despesaLazer" name="despesaLazer" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
+                     <div id="despesasVariaveisContainer">
+                         <div class="dynamic-item despesa-variavel-item">
+                            <input type="text" name="despesaVariavelDescricao[]" placeholder="Descrição (Ex: Lazer)" value="Lazer (Restaurantes, Cinema, etc.)">
+                            <input type="text" name="despesaVariavelValor[]" placeholder="0,00" class="currency" oninput="calcularSaldo()">
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
+                        </div>
                     </div>
-                     <div class="form-group">
-                        <label for="despesaVestuario">Vestuário e Cuidados Pessoais (R$):</label>
-                        <input type="number" id="despesaVestuario" name="despesaVestuario" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                     <div class="form-group">
-                        <label for="despesaPresentes">Presentes e Doações (R$):</label>
-                        <input type="number" id="despesaPresentes" name="despesaPresentes" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                     <div class="form-group">
-                        <label for="despesaViagens">Viagens (R$):</label>
-                        <input type="number" id="despesaViagens" name="despesaViagens" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
-                     <div class="form-group">
-                        <label for="despesaOutrasVariaveis">Outras Despesas Variáveis (R$):</label>
-                        <input type="number" id="despesaOutrasVariaveis" name="despesaOutrasVariaveis" min="0" step="0.01" placeholder="0.00" onchange="calcularSaldo()">
-                    </div>
+                    <button type="button" class="add-item" onclick="adicionarDespesaVariavel()">Adicionar Despesa Variável</button>
 
                     <h3>Saldo Mensal</h3>
                     <div class="form-group">
@@ -489,7 +547,7 @@
                     </div>
                     <div class="form-group">
                         <label for="contasTarifas">Gasto mensal estimado com tarifas bancárias (R$):</label>
-                        <input type="number" id="contasTarifas" name="contasTarifas" min="0" step="0.01" placeholder="0.00">
+                        <input type="text" id="contasTarifas" name="contasTarifas" placeholder="0,00" class="currency">
                     </div>
 
                     <h3>Cartões de Crédito</h3>
@@ -503,7 +561,7 @@
                     </div>
                     <div class="form-group">
                         <label for="cartoesAnuidades">Gasto anual estimado com anuidades de cartão (R$):</label>
-                        <input type="number" id="cartoesAnuidades" name="cartoesAnuidades" min="0" step="0.01" placeholder="0.00">
+                        <input type="text" id="cartoesAnuidades" name="cartoesAnuidades" placeholder="0,00" class="currency">
                     </div>
                     <div class="form-group">
                         <label>Você utiliza programas de recompensa (milhas, cashback)?</label>
@@ -530,38 +588,44 @@
                 <fieldset>
                     <legend>Patrimônio Físico</legend>
                     <h3>Imóveis</h3>
-                    <div class="form-group">
-                        <label for="imoveisValor">Valor estimado total dos seus imóveis (R$):</label>
-                        <input type="number" id="imoveisValor" name="imoveisValor" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
-                    </div>
-                     <div class="form-group">
-                        <label>Situação dos imóveis:</label>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" name="imoveisSituacao" value="quitado"> Quitado(s)</label>
-                            <label><input type="checkbox" name="imoveisSituacao" value="financiado"> Financiado(s)</label>
-                            <label><input type="checkbox" name="imoveisSituacao" value="heranca"> Herança</label>
+                    <div id="imoveisContainer">
+                        <div class="dynamic-item imovel-item">
+                            <input type="text" name="imovelDescricao[]" placeholder="Descrição (Ex: Apartamento Centro)">
+                            <input type="text" name="imovelValor[]" placeholder="Valor Estimado (R$)" class="currency" oninput="calcularPatrimonioTotal()">
+                            <select name="imovelSituacao[]">
+                                <option value="quitado">Quitado</option>
+                                <option value="financiado">Financiado</option>
+                                <option value="heranca">Herança</option>
+                            </select>
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
                         </div>
                     </div>
+                    <button type="button" class="add-item" onclick="adicionarImovel()">Adicionar Imóvel</button>
 
                     <h3>Veículos</h3>
-                    <div class="form-group">
-                        <label for="veiculosValor">Valor estimado total dos seus veículos (carros, motos, etc.) (R$):</label>
-                        <input type="number" id="veiculosValor" name="veiculosValor" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
-                    </div>
-                     <div class="form-group">
-                        <label>Situação dos veículos:</label>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" name="veiculosSituacao" value="quitado"> Quitado(s)</label>
-                            <label><input type="checkbox" name="veiculosSituacao" value="financiado"> Financiado(s)</label>
-                            <label><input type="checkbox" name="veiculosSituacao" value="consorcio"> Consórcio</label>
+                     <div id="veiculosContainer">
+                        <div class="dynamic-item veiculo-item">
+                            <input type="text" name="veiculoDescricao[]" placeholder="Descrição (Ex: Carro Marca X)">
+                            <input type="text" name="veiculoValor[]" placeholder="Valor Estimado (R$)" class="currency" oninput="calcularPatrimonioTotal()">
+                            <select name="veiculoSituacao[]">
+                                <option value="quitado">Quitado</option>
+                                <option value="financiado">Financiado</option>
+                                <option value="consorcio">Consórcio</option>
+                            </select>
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
                         </div>
                     </div>
+                    <button type="button" class="add-item" onclick="adicionarVeiculo()">Adicionar Veículo</button>
 
                     <h3>Outros Bens</h3>
-                     <div class="form-group">
-                        <label for="outrosBensValor">Valor estimado de outros bens de valor (joias, arte, coleções) (R$):</label>
-                        <input type="number" id="outrosBensValor" name="outrosBensValor" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                     <div id="outrosBensContainer">
+                        <div class="dynamic-item outro-bem-item">
+                            <input type="text" name="outroBemDescricao[]" placeholder="Descrição (Ex: Joias, Arte)">
+                            <input type="text" name="outroBemValor[]" placeholder="Valor Estimado (R$)" class="currency" oninput="calcularPatrimonioTotal()">
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
+                        </div>
                     </div>
+                    <button type="button" class="add-item" onclick="adicionarOutroBem()">Adicionar Outro Bem</button>
                 </fieldset>
                 
                 <div class="tab-buttons">
@@ -575,32 +639,28 @@
                 <fieldset>
                     <legend>Dívidas e Obrigações</legend>
                     <h3>Financiamentos (Imobiliário, Veículo, etc.)</h3>
-                    <div class="form-group">
-                        <label for="financiamentoSaldo">Saldo devedor total de financiamentos (R$):</label>
-                        <input type="number" id="financiamentoSaldo" name="financiamentoSaldo" min="0" step="0.01" placeholder="0.00" onchange="calcularDividaTotal()">
+                    <div id="financiamentosContainer">
+                        <div class="dynamic-item financiamento-item">
+                            <input type="text" name="financiamentoDescricao[]" placeholder="Descrição (Ex: Financiamento Imobiliário Banco X)">
+                            <input type="text" name="financiamentoSaldo[]" placeholder="Saldo Devedor (R$)" class="currency" oninput="calcularDividaTotal()">
+                            <input type="text" name="financiamentoParcela[]" placeholder="Parcela Mensal (R$)" class="currency" oninput="calcularDividaTotal()">
+                            <input type="number" name="financiamentoTaxa[]" placeholder="Taxa Juros Anual (%)" min="0" step="0.01">
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="financiamentoParcela">Valor total das parcelas mensais de financiamentos (R$):</label>
-                        <input type="number" id="financiamentoParcela" name="financiamentoParcela" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label for="financiamentoTaxaMedia">Taxa de juros média anual dos financiamentos (%):</label>
-                        <input type="number" id="financiamentoTaxaMedia" name="financiamentoTaxaMedia" min="0" step="0.01" placeholder="0.00">
-                    </div>
+                    <button type="button" class="add-item" onclick="adicionarFinanciamento()">Adicionar Financiamento</button>
 
                     <h3>Empréstimos (Pessoal, Consignado, etc.)</h3>
-                     <div class="form-group">
-                        <label for="emprestimoSaldo">Saldo devedor total de empréstimos (R$):</label>
-                        <input type="number" id="emprestimoSaldo" name="emprestimoSaldo" min="0" step="0.01" placeholder="0.00" onchange="calcularDividaTotal()">
+                     <div id="emprestimosContainer">
+                        <div class="dynamic-item emprestimo-item">
+                            <input type="text" name="emprestimoDescricao[]" placeholder="Descrição (Ex: Empréstimo Pessoal Banco Y)">
+                            <input type="text" name="emprestimoSaldo[]" placeholder="Saldo Devedor (R$)" class="currency" oninput="calcularDividaTotal()">
+                            <input type="text" name="emprestimoParcela[]" placeholder="Parcela Mensal (R$)" class="currency" oninput="calcularDividaTotal()">
+                            <input type="number" name="emprestimoTaxa[]" placeholder="Taxa Juros Anual (%)" min="0" step="0.01">
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="emprestimoParcela">Valor total das parcelas mensais de empréstimos (R$):</label>
-                        <input type="number" id="emprestimoParcela" name="emprestimoParcela" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                     <div class="form-group">
-                        <label for="emprestimoTaxaMedia">Taxa de juros média anual dos empréstimos (%):</label>
-                        <input type="number" id="emprestimoTaxaMedia" name="emprestimoTaxaMedia" min="0" step="0.01" placeholder="0.00">
-                    </div>
+                    <button type="button" class="add-item" onclick="adicionarEmprestimo()">Adicionar Empréstimo</button>
 
                     <h3>Cartão de Crédito</h3>
                     <div class="form-group">
@@ -613,7 +673,7 @@
                     </div>
                      <div class="form-group">
                         <label for="cartaoSaldoRotativo">Você possui saldo devedor no rotativo do cartão (R$)?</label>
-                        <input type="number" id="cartaoSaldoRotativo" name="cartaoSaldoRotativo" min="0" step="0.01" placeholder="0.00" onchange="calcularDividaTotal()">
+                        <input type="text" id="cartaoSaldoRotativo" name="cartaoSaldoRotativo" placeholder="0,00" class="currency" oninput="calcularDividaTotal()">
                     </div>
 
                     <h3>Cheque Especial</h3>
@@ -639,43 +699,42 @@
                 <fieldset>
                     <legend>Patrimônio Líquido (Investimentos e Aplicações)</legend>
                     <h3>Investimentos</h3>
-                    <div class="form-group">
-                        <label for="invRendaFixa">Valor total em Renda Fixa (CDB, LCI/LCA, Tesouro Direto, etc.) (R$):</label>
-                        <input type="number" id="invRendaFixa" name="invRendaFixa" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                    <div id="investimentosContainer">
+                        <div class="dynamic-item investimento-item">
+                            <input type="text" name="investimentoDescricao[]" placeholder="Descrição (Ex: CDB Banco X, Ações Y)">
+                            <select name="investimentoTipo[]">
+                                <option value="renda_fixa">Renda Fixa</option>
+                                <option value="renda_variavel">Renda Variável</option>
+                                <option value="fundo">Fundo de Investimento</option>
+                                <option value="previdencia">Previdência Privada</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                            <input type="text" name="investimentoValor[]" placeholder="Valor Atual (R$)" class="currency" oninput="calcularPatrimonioTotal()">
+                            <button type="button" class="remove-item" onclick="removerItem(this)" style="display: none;">Remover</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="invRendaVariavel">Valor total em Renda Variável (Ações, FIIs, ETFs, etc.) (R$):</label>
-                        <input type="number" id="invRendaVariavel" name="invRendaVariavel" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
-                    </div>
-                    <div class="form-group">
-                        <label for="invFundos">Valor total em Fundos de Investimento (Multimercado, Ações, Renda Fixa) (R$):</label>
-                        <input type="number" id="invFundos" name="invFundos" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
-                    </div>
+                    <button type="button" class="add-item" onclick="adicionarInvestimento()">Adicionar Investimento</button>
 
                     <h3>Aplicações Financeiras</h3>
                     <div class="form-group">
                         <label for="appPoupanca">Valor total em Caderneta de Poupança (R$):</label>
-                        <input type="number" id="appPoupanca" name="appPoupanca" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                        <input type="text" id="appPoupanca" name="appPoupanca" placeholder="0,00" class="currency" oninput="calcularPatrimonioTotal()">
                     </div>
-                    <div class="form-group">
-                        <label for="appPrevidencia">Valor total acumulado em Previdência Privada (PGBL/VGBL) (R$):</label>
-                        <input type="number" id="appPrevidencia" name="appPrevidencia" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
-                    </div>
-
+                    
                     <h3>Outros Ativos Líquidos</h3>
                      <div class="form-group">
                         <label for="partNegocios">Valor estimado de participações em negócios (R$):</label>
-                        <input type="number" id="partNegocios" name="partNegocios" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                        <input type="text" id="partNegocios" name="partNegocios" placeholder="0,00" class="currency" oninput="calcularPatrimonioTotal()">
                     </div>
                     <div class="form-group">
                         <label for="outrosLiquidos">Outros ativos com liquidez (Ex: Criptomoedas, saldo em conta) (R$):</label>
-                        <input type="number" id="outrosLiquidos" name="outrosLiquidos" min="0" step="0.01" placeholder="0.00" onchange="calcularPatrimonioTotal()">
+                        <input type="text" id="outrosLiquidos" name="outrosLiquidos" placeholder="0,00" class="currency" oninput="calcularPatrimonioTotal()">
                     </div>
 
                     <h3>Capacidade de Poupança</h3>
                     <div class="form-group">
                         <label for="poupancaMensal">Quanto você consegue poupar/investir em média por mês (R$)?</label>
-                        <input type="number" id="poupancaMensal" name="poupancaMensal" min="0" step="0.01" placeholder="0.00">
+                        <input type="text" id="poupancaMensal" name="poupancaMensal" placeholder="0,00" class="currency" oninput="calcularSaldo()">
                     </div>
                      <div class="form-group">
                         <label>Com que regularidade você consegue poupar/investir?</label>
@@ -686,8 +745,8 @@
                             <option value="nunca">Nunca</option>
                         </select>
                     </div>
-                     <div class="form-group">
-                        <label for="reservaEmergencia">Você possui uma reserva de emergência (equivalente a quantos meses de custo de vida)?</label>
+                     <div class="form-group-inline">
+                        <label for="reservaEmergencia">Reserva de emergência (equivalente a quantos meses de custo de vida)?</label>
                         <input type="number" id="reservaEmergencia" name="reservaEmergencia" min="0" step="0.5" placeholder="Ex: 6">
                     </div>
                 </fieldset>
@@ -703,15 +762,15 @@
                 <fieldset>
                     <legend>Gestão de Risco (Seguros e Proteção)</legend>
                     <div class="form-group">
-                        <label>Possui Seguro de Vida? <span class="tooltip">?<span class="tooltiptext">O seguro de vida garante proteção financeira para seus dependentes em caso de falecimento ou invalidez.</span></span></label>
+                        <label>Possui Seguro de Vida? <span class="tooltip">?<span class="tooltiptext">Garante proteção financeira para seus dependentes em caso de falecimento ou invalidez.</span></span></label>
                         <div class="radio-group">
                             <label><input type="radio" name="seguroVida" value="sim" onclick="toggleCobertura('seguroVidaCobertura', true)"> Sim</label>
                             <label><input type="radio" name="seguroVida" value="nao" checked onclick="toggleCobertura('seguroVidaCobertura', false)"> Não</label>
                         </div>
-                        <input type="number" id="seguroVidaCobertura" name="seguroVidaCobertura" placeholder="Valor da Cobertura (R$)" style="display: none; margin-top: 10px;">
+                        <input type="text" id="seguroVidaCobertura" name="seguroVidaCobertura" placeholder="Valor da Cobertura (R$)" class="currency" style="display: none; margin-top: 10px;">
                     </div>
                     <div class="form-group">
-                        <label>Possui Plano de Saúde? <span class="tooltip">?<span class="tooltiptext">O plano de saúde oferece cobertura para despesas médicas e hospitalares, reduzindo impactos financeiros em caso de problemas de saúde.</span></span></label>
+                        <label>Possui Plano de Saúde? <span class="tooltip">?<span class="tooltiptext">Oferece cobertura para despesas médicas e hospitalares.</span></span></label>
                         <div class="radio-group">
                             <label><input type="radio" name="planoSaude" value="sim" onclick="toggleCobertura('planoSaudeTipo', true)"> Sim</label>
                             <label><input type="radio" name="planoSaude" value="nao" checked onclick="toggleCobertura('planoSaudeTipo', false)"> Não</label>
@@ -780,13 +839,17 @@
                             <option value="outro">Outro</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="aposentadoriaContribuicaoTempo">Tempo total de contribuição estimado (em anos):</label>
+                    <div class="form-group-inline">
+                        <label for="aposentadoriaContribuicaoTempo">Tempo total de contribuição estimado:</label>
                         <input type="number" id="aposentadoriaContribuicaoTempo" name="aposentadoriaContribuicaoTempo" min="0">
+                        <select name="aposentadoriaContribuicaoUnidade" class="unit-selector">
+                            <option value="anos" selected>Anos</option>
+                            <option value="meses">Meses</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="aposentadoriaExpectativaINSS">Qual sua expectativa de valor do benefício do INSS/RPPS (R$ mensais)?</label>
-                        <input type="number" id="aposentadoriaExpectativaINSS" name="aposentadoriaExpectativaINSS" min="0" step="0.01" placeholder="0.00">
+                        <input type="text" id="aposentadoriaExpectativaINSS" name="aposentadoriaExpectativaINSS" placeholder="0,00" class="currency">
                     </div>
                     <div class="form-group">
                         <label>Você contribui para Previdência Complementar?</label>
@@ -799,7 +862,7 @@
                     </div>
                      <div class="form-group">
                         <label for="aposentadoriaInvestimentos">Você possui outros investimentos específicos para aposentadoria?</label>
-                        <textarea id="aposentadoriaInvestimentos" name="aposentadoriaInvestimentos" placeholder="Ex: Ações focadas em dividendos, Fundos de longo prazo..."></textarea>
+                        <textarea id="aposentadoriaInvestimentos" name="aposentadoriaInvestimentos" placeholder="Descreva os investimentos..."></textarea>
                     </div>
                     <div class="form-group">
                         <label for="aposentadoriaIdadeDesejada">Com que idade você planeja se aposentar?</label>
@@ -807,7 +870,7 @@
                     </div>
                     <div class="form-group">
                         <label for="aposentadoriaRendaDesejada">Qual a renda mensal que você deseja ter na aposentadoria (em valores de hoje, R$)?</label>
-                        <input type="number" id="aposentadoriaRendaDesejada" name="aposentadoriaRendaDesejada" min="0" step="0.01" placeholder="0.00">
+                        <input type="text" id="aposentadoriaRendaDesejada" name="aposentadoriaRendaDesejada" placeholder="0,00" class="currency">
                     </div>
                 </fieldset>
                 
@@ -858,7 +921,7 @@
                 <fieldset>
                     <legend>Planejamento Sucessório</legend>
                      <div class="form-group">
-                        <label>Você possui testamento? <span class="tooltip">?<span class="tooltiptext">O testamento permite definir como seus bens serão distribuídos após seu falecimento, respeitando a parte legítima dos herdeiros necessários.</span></span></label>
+                        <label>Você possui testamento? <span class="tooltip">?<span class="tooltiptext">Define como seus bens serão distribuídos após seu falecimento.</span></span></label>
                         <div class="radio-group">
                             <label><input type="radio" name="sucessaoTestamento" value="sim"> Sim</label>
                             <label><input type="radio" name="sucessaoTestamento" value="nao" checked> Não</label>
@@ -908,14 +971,24 @@
             <h2>Análise do Diagnóstico</h2>
             
             <div class="result-card">
-                <h3>Resumo Financeiro</h3>
+                <h3>Resumo Financeiro Geral</h3>
                 <div id="resumoFinanceiro">
-                    <p><strong>Patrimônio Total:</strong> <span id="patrimonioTotal">R$ 0,00</span></p>
+                    <p><strong>Patrimônio Bruto Total:</strong> <span id="patrimonioTotal">R$ 0,00</span></p>
                     <p><strong>Dívidas Totais:</strong> <span id="dividaTotal">R$ 0,00</span></p>
                     <p><strong>Patrimônio Líquido:</strong> <span id="patrimonioLiquido">R$ 0,00</span></p>
-                    <p><strong>Saldo Mensal:</strong> <span id="saldoMensalResumo">R$ 0,00</span></p>
-                    <p><strong>Índice de Endividamento:</strong> <span id="indiceEndividamento">0%</span></p>
-                    <p><strong>Índice de Poupança:</strong> <span id="indicePoupanca">0%</span></p>
+                    <p><strong>Saldo Mensal (Capacidade de Poupança):</strong> <span id="saldoMensalResumo">R$ 0,00</span></p>
+                    <p><strong>Índice de Endividamento (Parcelas/Renda):</strong> <span id="indiceEndividamento">0,00%</span></p>
+                    <p><strong>Índice de Poupança (Poupança/Renda):</strong> <span id="indicePoupanca">0,00%</span></p>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <h3>Visualização Financeira</h3>
+                <div class="chart-container">
+                    <canvas id="patrimonioChart"></canvas>
+                </div>
+                 <div class="chart-container">
+                    <canvas id="fluxoCaixaChart"></canvas>
                 </div>
             </div>
 
@@ -939,8 +1012,8 @@
             </div>
 
             <div class="result-card">
-                <h3>Principais Pontos de Atenção (Negativos)</h3>
-                <p id="pontosNegativosCalculados">Preencha o formulário para ver os pontos de atenção.</p>
+                <h3>Análise Detalhada dos Pontos de Atenção</h3>
+                <div id="pontosNegativosCalculados">Preencha o formulário para ver os pontos de atenção.</div>
                 <div class="form-group">
                     <label for="pontosNegativosEditavel">Edite a análise de pontos negativos se necessário:</label>
                     <textarea id="pontosNegativosEditavel" class="editable-textarea"></textarea>
@@ -948,8 +1021,8 @@
             </div>
             
             <div class="result-card">
-                <h3>Recomendações</h3>
-                <p id="recomendacoesCalculadas">Preencha o formulário para ver as recomendações.</p>
+                <h3>Análise de Viabilidade dos Objetivos</h3>
+                <div id="analiseObjetivos">Preencha o formulário para ver a análise dos objetivos.</div>
             </div>
             
             <div class="button-container">
@@ -961,13 +1034,40 @@
     </div>
 
     <script>
-        // Variáveis globais para armazenar os cálculos
+        // Variáveis globais para cálculos e gráficos
         let patrimonioTotal = 0;
         let dividaTotal = 0;
         let patrimonioLiquido = 0;
         let saldoMensal = 0;
+        let totalReceitas = 0;
+        let totalDespesasFixas = 0;
+        let totalDespesasVariaveis = 0;
+        let totalParcelasDividas = 0;
         let indiceEndividamento = 0;
         let indicePoupanca = 0;
+        let patrimonioChartInstance = null;
+        let fluxoCaixaChartInstance = null;
+        
+        // --- Funções de Formatação e Utilidades ---
+        function parseCurrency(value) {
+            if (!value) return 0;
+            // Remove R$, pontos de milhar e substitui vírgula por ponto
+            const cleanedValue = String(value).replace(/R\$\s?|\./g, ",").replace(",", ".");
+            return parseFloat(cleanedValue) || 0;
+        }
+
+        function formatCurrency(value) {
+            if (isNaN(value)) return "R$ 0,00";
+            return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        }
+
+        function formatInputCurrency(input) {
+            let value = input.value.replace(/\D/g, ""); // Remove tudo que não for dígito
+            value = (parseInt(value) / 100).toFixed(2) + "";
+            value = value.replace(".", ",");
+            value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1."); // Adiciona pontos de milhar
+            input.value = value === "NaN" ? "" : value;
+        }
         
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
@@ -980,9 +1080,19 @@
                 const periodoPersonalizado = document.getElementById('periodoPersonalizado');
                 periodoPersonalizado.style.display = this.value === 'personalizado' ? 'block' : 'none';
             });
+            
+            // Adicionar formatação de moeda aos inputs relevantes
+            document.querySelectorAll('.currency').forEach(input => {
+                input.addEventListener('input', () => formatInputCurrency(input));
+                // Formatar valores iniciais se houver
+                if(input.value) formatInputCurrency(input);
+            });
+            
+            // Garantir que o primeiro item de cada seção dinâmica não possa ser removido
+            atualizarBotoesRemover();
         });
         
-        // Navegação entre abas
+        // --- Funções de Navegação e UI ---
         function nextTab(currentTab, nextTab) {
             document.getElementById('tab' + currentTab).classList.remove('active');
             document.getElementById('tab' + nextTab).classList.add('active');
@@ -1003,384 +1113,8 @@
             document.getElementById('progress').style.width = progresso + '%';
         }
         
-        // Mostrar/esconder campos de cobertura
         function toggleCobertura(id, mostrar) {
             document.getElementById(id).style.display = mostrar ? 'block' : 'none';
-        }
-        
-        // Cálculos financeiros
-        function calcularSaldo() {
-            // Receitas
-            const salario = parseFloat(document.getElementById('receitaSalario').value) || 0;
-            const alugueis = parseFloat(document.getElementById('receitaAlugueis').value) || 0;
-            const dividendos = parseFloat(document.getElementById('receitaDividendos').value) || 0;
-            const outrasReceitas = parseFloat(document.getElementById('receitaOutras').value) || 0;
-            
-            // Despesas Fixas
-            const moradia = parseFloat(document.getElementById('despesaMoradia').value) || 0;
-            const educacao = parseFloat(document.getElementById('despesaEducacao').value) || 0;
-            const saude = parseFloat(document.getElementById('despesaSaude').value) || 0;
-            const transporte = parseFloat(document.getElementById('despesaTransporte').value) || 0;
-            const alimentacao = parseFloat(document.getElementById('despesaAlimentacaoFixa').value) || 0;
-            const servicosBasicos = parseFloat(document.getElementById('despesaServicosBasicos').value) || 0;
-            const outrasFixas = parseFloat(document.getElementById('despesaOutrasFixas').value) || 0;
-            
-            // Despesas Variáveis
-            const lazer = parseFloat(document.getElementById('despesaLazer').value) || 0;
-            const vestuario = parseFloat(document.getElementById('despesaVestuario').value) || 0;
-            const presentes = parseFloat(document.getElementById('despesaPresentes').value) || 0;
-            const viagens = parseFloat(document.getElementById('despesaViagens').value) || 0;
-            const outrasVariaveis = parseFloat(document.getElementById('despesaOutrasVariaveis').value) || 0;
-            
-            // Cálculo do saldo
-            const totalReceitas = salario + alugueis + dividendos + outrasReceitas;
-            const totalDespesasFixas = moradia + educacao + saude + transporte + alimentacao + servicosBasicos + outrasFixas;
-            const totalDespesasVariaveis = lazer + vestuario + presentes + viagens + outrasVariaveis;
-            
-            saldoMensal = totalReceitas - totalDespesasFixas - totalDespesasVariaveis;
-            
-            // Formatação e exibição
-            const formatoMoeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-            document.getElementById('saldoMensal').value = formatoMoeda.format(saldoMensal);
-            
-            // Atualizar índice de poupança se o campo de poupança mensal estiver preenchido
-            const poupancaMensal = parseFloat(document.getElementById('poupancaMensal').value) || 0;
-            if (totalReceitas > 0 && poupancaMensal > 0) {
-                indicePoupanca = (poupancaMensal / totalReceitas) * 100;
-            }
-            
-            return saldoMensal;
-        }
-        
-        function calcularPatrimonioTotal() {
-            // Patrimônio Físico
-            const imoveis = parseFloat(document.getElementById('imoveisValor').value) || 0;
-            const veiculos = parseFloat(document.getElementById('veiculosValor').value) || 0;
-            const outrosBens = parseFloat(document.getElementById('outrosBensValor').value) || 0;
-            
-            // Investimentos e Aplicações
-            const rendaFixa = parseFloat(document.getElementById('invRendaFixa').value) || 0;
-            const rendaVariavel = parseFloat(document.getElementById('invRendaVariavel').value) || 0;
-            const fundos = parseFloat(document.getElementById('invFundos').value) || 0;
-            const poupanca = parseFloat(document.getElementById('appPoupanca').value) || 0;
-            const previdencia = parseFloat(document.getElementById('appPrevidencia').value) || 0;
-            const negocios = parseFloat(document.getElementById('partNegocios').value) || 0;
-            const outrosLiquidos = parseFloat(document.getElementById('outrosLiquidos').value) || 0;
-            
-            patrimonioTotal = imoveis + veiculos + outrosBens + rendaFixa + rendaVariavel + 
-                             fundos + poupanca + previdencia + negocios + outrosLiquidos;
-            
-            calcularPatrimonioLiquido();
-            return patrimonioTotal;
-        }
-        
-        function calcularDividaTotal() {
-            const financiamentos = parseFloat(document.getElementById('financiamentoSaldo').value) || 0;
-            const emprestimos = parseFloat(document.getElementById('emprestimoSaldo').value) || 0;
-            const cartaoRotativo = parseFloat(document.getElementById('cartaoSaldoRotativo').value) || 0;
-            
-            dividaTotal = financiamentos + emprestimos + cartaoRotativo;
-            
-            // Calcular índice de endividamento se houver receita
-            const salario = parseFloat(document.getElementById('receitaSalario').value) || 0;
-            const alugueis = parseFloat(document.getElementById('receitaAlugueis').value) || 0;
-            const dividendos = parseFloat(document.getElementById('receitaDividendos').value) || 0;
-            const outrasReceitas = parseFloat(document.getElementById('receitaOutras').value) || 0;
-            
-            const totalReceitas = salario + alugueis + dividendos + outrasReceitas;
-            
-            if (totalReceitas > 0) {
-                // Parcelas mensais
-                const parcelaFinanciamento = parseFloat(document.getElementById('financiamentoParcela').value) || 0;
-                const parcelaEmprestimo = parseFloat(document.getElementById('emprestimoParcela').value) || 0;
-                
-                const totalParcelas = parcelaFinanciamento + parcelaEmprestimo;
-                indiceEndividamento = (totalParcelas / totalReceitas) * 100;
-            }
-            
-            calcularPatrimonioLiquido();
-            return dividaTotal;
-        }
-        
-        function calcularPatrimonioLiquido() {
-            patrimonioLiquido = patrimonioTotal - dividaTotal;
-            return patrimonioLiquido;
-        }
-        
-        // Análise do perfil financeiro
-        function determinarPerfilFinanceiro() {
-            // Verificar se há dados suficientes
-            if (patrimonioTotal === 0 && dividaTotal === 0 && saldoMensal === 0) {
-                return "DADOS INSUFICIENTES";
-            }
-            
-            // Verificar se há dívidas impagáveis
-            if (indiceEndividamento > 50 || (dividaTotal > 0 && saldoMensal <= 0)) {
-                return "DÍVIDAS IMPAGÁVEIS";
-            }
-            
-            // Verificar se há dívidas pagáveis
-            if (dividaTotal > 0 && indiceEndividamento > 30 && indiceEndividamento <= 50) {
-                return "DÍVIDAS PAGÁVEIS";
-            }
-            
-            // Verificar se está no zero a zero
-            if (saldoMensal === 0 || Math.abs(saldoMensal) < 0.05 * patrimonioTotal) {
-                if (dividaTotal > 0) {
-                    return "ZERO A ZERO OBRIGATÓRIO";
-                } else {
-                    return "ZERO A ZERO OPCIONAL";
-                }
-            }
-            
-            // Verificar fluxo positivo
-            if (saldoMensal > 0 && indicePoupanca < 10) {
-                return "FLUXO POSITIVO";
-            }
-            
-            // Verificar poupador
-            if (indicePoupanca >= 10 && indicePoupanca < 20) {
-                return "POUPADOR";
-            }
-            
-            // Verificar investidor amador
-            const rendaVariavel = parseFloat(document.getElementById('invRendaVariavel').value) || 0;
-            const fundos = parseFloat(document.getElementById('invFundos').value) || 0;
-            const investimentosDiversificados = rendaVariavel + fundos;
-            
-            if (indicePoupanca >= 20 && investimentosDiversificados < 0.3 * patrimonioTotal) {
-                return "INVESTIDOR AMADOR";
-            }
-            
-            // Verificar investidor planejador
-            if (indicePoupanca >= 20 && investimentosDiversificados >= 0.3 * patrimonioTotal) {
-                return "INVESTIDOR PLANEJADOR";
-            }
-            
-            // Caso padrão
-            return "FLUXO POSITIVO";
-        }
-        
-        // Identificar pontos negativos
-        function identificarPontosNegativos() {
-            const pontosNegativos = [];
-            
-            // Verificar saldo mensal negativo
-            if (saldoMensal < 0) {
-                pontosNegativos.push("Saldo mensal negativo: suas despesas superam suas receitas.");
-            }
-            
-            // Verificar alto índice de endividamento
-            if (indiceEndividamento > 30) {
-                pontosNegativos.push(`Índice de endividamento elevado (${indiceEndividamento.toFixed(2)}%): o recomendado é manter abaixo de 30% da renda.`);
-            }
-            
-            // Verificar uso de cartão de crédito rotativo
-            const cartaoRotativo = parseFloat(document.getElementById('cartaoSaldoRotativo').value) || 0;
-            if (cartaoRotativo > 0) {
-                pontosNegativos.push("Uso do rotativo do cartão de crédito, que possui taxas de juros extremamente elevadas.");
-            }
-            
-            // Verificar uso frequente de cheque especial
-            const chequeEspecial = document.getElementById('chequeEspecialFrequencia').value;
-            if (chequeEspecial === 'frequentemente' || chequeEspecial === 'as_vezes') {
-                pontosNegativos.push("Uso frequente do cheque especial, que possui taxas de juros elevadas.");
-            }
-            
-            // Verificar ausência de reserva de emergência
-            const reservaEmergencia = parseFloat(document.getElementById('reservaEmergencia').value) || 0;
-            if (reservaEmergencia < 3) {
-                pontosNegativos.push("Reserva de emergência insuficiente: o recomendado é ter pelo menos 3 a 6 meses de despesas guardados.");
-            }
-            
-            // Verificar ausência de seguros essenciais
-            const seguroVida = document.querySelector('input[name="seguroVida"]:checked')?.value;
-            const planoSaude = document.querySelector('input[name="planoSaude"]:checked')?.value;
-            const seguroImovel = document.querySelector('input[name="seguroImovel"]:checked')?.value;
-            const seguroAuto = document.querySelector('input[name="seguroAuto"]:checked')?.value;
-            
-            const dependentes = parseInt(document.getElementById('dependentes').value) || 0;
-            if (dependentes > 0 && seguroVida === 'nao') {
-                pontosNegativos.push("Ausência de seguro de vida, apesar de possuir dependentes.");
-            }
-            
-            if (planoSaude === 'nao') {
-                pontosNegativos.push("Ausência de plano de saúde, o que pode gerar impactos financeiros significativos em caso de problemas de saúde.");
-            }
-            
-            const imoveis = parseFloat(document.getElementById('imoveisValor').value) || 0;
-            if (imoveis > 0 && seguroImovel === 'nao') {
-                pontosNegativos.push("Ausência de seguro residencial/imóvel para proteger seu patrimônio.");
-            }
-            
-            const veiculos = parseFloat(document.getElementById('veiculosValor').value) || 0;
-            if (veiculos > 0 && seguroAuto === 'nao') {
-                pontosNegativos.push("Ausência de seguro de automóvel para proteger seu veículo.");
-            }
-            
-            // Verificar planejamento para aposentadoria
-            const previdencia = document.querySelectorAll('input[name="prevComp"]:checked');
-            const aposentadoriaInvestimentos = document.getElementById('aposentadoriaInvestimentos').value;
-            
-            if (previdencia.length === 0 || (previdencia.length === 1 && previdencia[0].value === 'nenhum')) {
-                if (!aposentadoriaInvestimentos || aposentadoriaInvestimentos.trim() === '') {
-                    pontosNegativos.push("Ausência de planejamento para aposentadoria, seja via previdência complementar ou investimentos específicos.");
-                }
-            }
-            
-            // Verificar planejamento sucessório
-            const testamento = document.querySelector('input[name="sucessaoTestamento"]:checked')?.value;
-            const sucessaoInstrumentos = document.querySelectorAll('input[name="sucessaoInstrumentos"]:checked');
-            
-            if ((testamento === 'nao' || testamento === 'pensando') && sucessaoInstrumentos.length === 0) {
-                pontosNegativos.push("Ausência de planejamento sucessório, o que pode gerar complicações e custos adicionais para seus herdeiros.");
-            }
-            
-            // Verificar diversificação de investimentos
-            const rendaFixa = parseFloat(document.getElementById('invRendaFixa').value) || 0;
-            const rendaVariavel = parseFloat(document.getElementById('invRendaVariavel').value) || 0;
-            const fundos = parseFloat(document.getElementById('invFundos').value) || 0;
-            const poupanca = parseFloat(document.getElementById('appPoupanca').value) || 0;
-            
-            const totalInvestimentos = rendaFixa + rendaVariavel + fundos + poupanca;
-            
-            if (totalInvestimentos > 0) {
-                if (poupanca > 0.5 * totalInvestimentos) {
-                    pontosNegativos.push("Concentração excessiva em caderneta de poupança, que geralmente oferece retornos abaixo da inflação.");
-                }
-                
-                if (rendaVariavel === 0 && fundos === 0) {
-                    pontosNegativos.push("Ausência de investimentos em renda variável ou fundos diversificados, o que pode limitar o potencial de rentabilidade no longo prazo.");
-                }
-            }
-            
-            return pontosNegativos.length > 0 ? pontosNegativos : ["Nenhum ponto negativo crítico identificado."];
-        }
-        
-        // Gerar recomendações
-        function gerarRecomendacoes() {
-            const recomendacoes = [];
-            const perfil = determinarPerfilFinanceiro();
-            
-            // Recomendações baseadas no perfil
-            switch(perfil) {
-                case "DÍVIDAS IMPAGÁVEIS":
-                    recomendacoes.push("Priorize a renegociação de dívidas com taxas de juros mais altas.");
-                    recomendacoes.push("Considere a possibilidade de consolidação de dívidas para reduzir as taxas de juros.");
-                    recomendacoes.push("Reduza drasticamente despesas não essenciais para aumentar o saldo mensal.");
-                    recomendacoes.push("Busque fontes adicionais de renda temporárias para acelerar o pagamento de dívidas.");
-                    break;
-                    
-                case "DÍVIDAS PAGÁVEIS":
-                    recomendacoes.push("Crie um plano de amortização de dívidas, priorizando as com maiores taxas de juros.");
-                    recomendacoes.push("Evite contrair novas dívidas até quitar as existentes.");
-                    recomendacoes.push("Reavalie seu orçamento para aumentar o valor destinado ao pagamento de dívidas.");
-                    break;
-                    
-                case "ZERO A ZERO OBRIGATÓRIO":
-                case "ZERO A ZERO OPCIONAL":
-                    recomendacoes.push("Identifique despesas que podem ser reduzidas para criar uma margem de poupança.");
-                    recomendacoes.push("Estabeleça metas de economia mensais, mesmo que pequenas inicialmente.");
-                    recomendacoes.push("Considere fontes adicionais de renda para aumentar seu fluxo de caixa.");
-                    break;
-                    
-                case "FLUXO POSITIVO":
-                    recomendacoes.push("Estabeleça uma meta de poupança mensal de pelo menos 10% da sua renda.");
-                    recomendacoes.push("Crie uma reserva de emergência equivalente a 3-6 meses de despesas.");
-                    recomendacoes.push("Após constituir a reserva, comece a investir regularmente em produtos adequados ao seu perfil.");
-                    break;
-                    
-                case "POUPADOR":
-                    recomendacoes.push("Diversifique seus investimentos para além da poupança, buscando melhor rentabilidade.");
-                    recomendacoes.push("Considere investimentos em renda fixa com melhor retorno, como Tesouro Direto e CDBs.");
-                    recomendacoes.push("Busque educação financeira para entender melhor as opções de investimento disponíveis.");
-                    break;
-                    
-                case "INVESTIDOR AMADOR":
-                    recomendacoes.push("Diversifique ainda mais sua carteira de investimentos, incluindo diferentes classes de ativos.");
-                    recomendacoes.push("Considere uma alocação estratégica baseada em seus objetivos de longo prazo.");
-                    recomendacoes.push("Avalie a contratação de um planejador financeiro certificado para otimizar sua estratégia.");
-                    break;
-                    
-                case "INVESTIDOR PLANEJADOR":
-                    recomendacoes.push("Continue com a estratégia de diversificação e investimento regular.");
-                    recomendacoes.push("Revise periodicamente sua alocação de ativos para garantir alinhamento com seus objetivos.");
-                    recomendacoes.push("Considere estratégias mais sofisticadas de planejamento tributário e sucessório.");
-                    break;
-                    
-                default:
-                    recomendacoes.push("Estabeleça objetivos financeiros claros e mensuráveis.");
-                    recomendacoes.push("Crie um orçamento detalhado para acompanhar receitas e despesas.");
-                    recomendacoes.push("Constitua uma reserva de emergência antes de iniciar investimentos de maior risco.");
-            }
-            
-            // Recomendações específicas baseadas nos pontos negativos
-            const pontosNegativos = identificarPontosNegativos();
-            
-            if (pontosNegativos.includes("Saldo mensal negativo: suas despesas superam suas receitas.")) {
-                recomendacoes.push("Revise seu orçamento identificando despesas que podem ser reduzidas ou eliminadas.");
-                recomendacoes.push("Considere renegociar dívidas para reduzir o valor das parcelas mensais.");
-            }
-            
-            if (pontosNegativos.some(ponto => ponto.includes("Índice de endividamento elevado"))) {
-                recomendacoes.push("Evite contrair novas dívidas até reduzir seu índice de endividamento para menos de 30% da renda.");
-                recomendacoes.push("Considere a portabilidade de dívidas para instituições com taxas de juros mais baixas.");
-            }
-            
-            if (pontosNegativos.includes("Uso do rotativo do cartão de crédito, que possui taxas de juros extremamente elevadas.")) {
-                recomendacoes.push("Priorize o pagamento do saldo devedor do cartão de crédito, mesmo que isso signifique reduzir temporariamente outros investimentos.");
-                recomendacoes.push("Considere um empréstimo pessoal com taxa de juros menor para quitar o rotativo do cartão.");
-            }
-            
-            if (pontosNegativos.includes("Reserva de emergência insuficiente: o recomendado é ter pelo menos 3 a 6 meses de despesas guardados.")) {
-                recomendacoes.push("Estabeleça como prioridade a constituição de uma reserva de emergência em investimentos de alta liquidez.");
-                recomendacoes.push("Destine uma porcentagem fixa da sua renda mensal para a reserva de emergência até atingir o valor ideal.");
-            }
-            
-            // Remover duplicatas
-            return [...new Set(recomendacoes)];
-        }
-        
-        // Gerar análise completa
-        function gerarAnalise() {
-            // Calcular todos os indicadores
-            calcularSaldo();
-            calcularPatrimonioTotal();
-            calcularDividaTotal();
-            
-            // Determinar perfil financeiro
-            const perfil = determinarPerfilFinanceiro();
-            document.getElementById('perfilCalculado').innerText = perfil;
-            document.getElementById('perfilEditavel').value = perfil;
-            
-            // Identificar pontos negativos
-            const pontosNegativos = identificarPontosNegativos();
-            document.getElementById('pontosNegativosCalculados').innerHTML = pontosNegativos.map(ponto => `• ${ponto}`).join('<br>');
-            document.getElementById('pontosNegativosEditavel').value = pontosNegativos.map(ponto => `• ${ponto}`).join('\n');
-            
-            // Gerar recomendações
-            const recomendacoes = gerarRecomendacoes();
-            document.getElementById('recomendacoesCalculadas').innerHTML = recomendacoes.map(rec => `• ${rec}`).join('<br>');
-            
-            // Atualizar resumo financeiro
-            const formatoMoeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-            document.getElementById('patrimonioTotal').innerText = formatoMoeda.format(patrimonioTotal);
-            document.getElementById('dividaTotal').innerText = formatoMoeda.format(dividaTotal);
-            document.getElementById('patrimonioLiquido').innerText = formatoMoeda.format(patrimonioLiquido);
-            document.getElementById('saldoMensalResumo').innerText = formatoMoeda.format(saldoMensal);
-            document.getElementById('indiceEndividamento').innerText = indiceEndividamento.toFixed(2) + '%';
-            document.getElementById('indicePoupanca').innerText = indicePoupanca.toFixed(2) + '%';
-            
-            // Mostrar seção de análise
-            document.getElementById('secaoAnalise').style.display = 'block';
-            
-            // Esconder todas as abas do formulário
-            for (let i = 1; i <= 11; i++) {
-                document.getElementById('tab' + i).classList.remove('active');
-            }
-            
-            // Scroll para a seção de análise
-            document.getElementById('secaoAnalise').scrollIntoView({ behavior: 'smooth' });
         }
         
         function voltarAoFormulario() {
@@ -1395,29 +1129,714 @@
             window.scrollTo(0, 0);
         }
         
+        // --- Funções de Adicionar/Remover Itens Dinâmicos ---
+        function adicionarItem(containerId, itemClassName, htmlTemplate) {
+            const container = document.getElementById(containerId);
+            const newItem = document.createElement('div');
+            newItem.className = `dynamic-item ${itemClassName}`;
+            newItem.innerHTML = htmlTemplate;
+            container.appendChild(newItem);
+            
+            // Adicionar formatação de moeda aos novos inputs currency
+            newItem.querySelectorAll('.currency').forEach(input => {
+                input.addEventListener('input', () => formatInputCurrency(input));
+            });
+            
+            // Recalcular se necessário (ex: fluxo de caixa)
+            if (containerId.includes('receitas') || containerId.includes('despesas')) {
+                calcularSaldo();
+            } else if (containerId.includes('imoveis') || containerId.includes('veiculos') || containerId.includes('outrosBens') || containerId.includes('investimentos')) {
+                 calcularPatrimonioTotal();
+            } else if (containerId.includes('financiamentos') || containerId.includes('emprestimos')) {
+                 calcularDividaTotal();
+            }
+            
+            atualizarBotoesRemover();
+        }
+
+        function removerItem(button) {
+            const item = button.closest('.dynamic-item');
+            const container = item.parentElement;
+            item.remove();
+            
+             // Recalcular se necessário
+            const containerId = container.id;
+            if (containerId.includes('receitas') || containerId.includes('despesas')) {
+                calcularSaldo();
+            } else if (containerId.includes('imoveis') || containerId.includes('veiculos') || containerId.includes('outrosBens') || containerId.includes('investimentos')) {
+                 calcularPatrimonioTotal();
+            } else if (containerId.includes('financiamentos') || containerId.includes('emprestimos')) {
+                 calcularDividaTotal();
+            }
+            
+            atualizarBotoesRemover();
+        }
+        
+        function atualizarBotoesRemover() {
+            const dynamicContainers = document.querySelectorAll('[id$="Container"]');
+            dynamicContainers.forEach(container => {
+                const items = container.querySelectorAll('.dynamic-item');
+                items.forEach((item, index) => {
+                    const removeButton = item.querySelector('.remove-item');
+                    if (removeButton) {
+                        removeButton.style.display = items.length > 1 ? 'inline-block' : 'none';
+                    }
+                });
+            });
+        }
+
+        // Funções específicas para adicionar itens
+        function adicionarObjetivo() {
+            const html = `
+                <div style="flex-grow: 1;">
+                    <div class="form-group">
+                        <label>Objetivo:</label>
+                        <input type="text" name="objetivoDescricao[]" placeholder="Ex: Comprar uma casa">
+                    </div>
+                    <div class="form-group">
+                        <label>Importância:</label>
+                        <textarea name="objetivoImportancia[]" placeholder="Por que é importante?"></textarea>
+                    </div>
+                    <div class="form-group-inline">
+                        <label>Prazo:</label>
+                        <input type="number" name="objetivoPrazoValor[]" min="0" step="any">
+                        <select name="objetivoPrazoUnidade[]" class="unit-selector">
+                            <option value="anos" selected>Anos</option>
+                            <option value="meses">Meses</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Custo Estimado (R$):</label>
+                        <input type="text" name="objetivoCusto[]" placeholder="0,00" class="currency">
+                    </div>
+                    <div class="form-group">
+                        <label>Estratégia Atual:</label>
+                        <textarea name="objetivoEstrategia[]" placeholder="Ex: Poupança mensal, Investimentos..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Valor Já Acumulado (R$):</label>
+                        <input type="text" name="objetivoAcumulado[]" placeholder="0,00" class="currency">
+                    </div>
+                </div>
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('objetivosContainer', 'objetivo-item', html);
+        }
+
+        function adicionarReceita() {
+            const html = `
+                <input type="text" name="receitaDescricao[]" placeholder="Descrição da Receita">
+                <input type="text" name="receitaValor[]" placeholder="0,00" class="currency" oninput="calcularSaldo()">
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('receitasContainer', 'receita-item', html);
+        }
+
+        function adicionarDespesaFixa() {
+            const html = `
+                <input type="text" name="despesaFixaDescricao[]" placeholder="Descrição da Despesa Fixa">
+                <input type="text" name="despesaFixaValor[]" placeholder="0,00" class="currency" oninput="calcularSaldo()">
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('despesasFixasContainer', 'despesa-fixa-item', html);
+        }
+
+        function adicionarDespesaVariavel() {
+            const html = `
+                <input type="text" name="despesaVariavelDescricao[]" placeholder="Descrição da Despesa Variável">
+                <input type="text" name="despesaVariavelValor[]" placeholder="0,00" class="currency" oninput="calcularSaldo()">
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('despesasVariaveisContainer', 'despesa-variavel-item', html);
+        }
+        
+        function adicionarImovel() {
+            const html = `
+                <input type="text" name="imovelDescricao[]" placeholder="Descrição (Ex: Apartamento Centro)">
+                <input type="text" name="imovelValor[]" placeholder="Valor Estimado (R$)" class="currency" oninput="calcularPatrimonioTotal()">
+                <select name="imovelSituacao[]">
+                    <option value="quitado">Quitado</option>
+                    <option value="financiado">Financiado</option>
+                    <option value="heranca">Herança</option>
+                </select>
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('imoveisContainer', 'imovel-item', html);
+        }
+        
+        function adicionarVeiculo() {
+            const html = `
+                <input type="text" name="veiculoDescricao[]" placeholder="Descrição (Ex: Carro Marca X)">
+                <input type="text" name="veiculoValor[]" placeholder="Valor Estimado (R$)" class="currency" oninput="calcularPatrimonioTotal()">
+                <select name="veiculoSituacao[]">
+                    <option value="quitado">Quitado</option>
+                    <option value="financiado">Financiado</option>
+                    <option value="consorcio">Consórcio</option>
+                </select>
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('veiculosContainer', 'veiculo-item', html);
+        }
+        
+        function adicionarOutroBem() {
+            const html = `
+                <input type="text" name="outroBemDescricao[]" placeholder="Descrição (Ex: Joias, Arte)">
+                <input type="text" name="outroBemValor[]" placeholder="Valor Estimado (R$)" class="currency" oninput="calcularPatrimonioTotal()">
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('outrosBensContainer', 'outro-bem-item', html);
+        }
+        
+        function adicionarFinanciamento() {
+            const html = `
+                <input type="text" name="financiamentoDescricao[]" placeholder="Descrição (Ex: Financiamento Imobiliário Banco X)">
+                <input type="text" name="financiamentoSaldo[]" placeholder="Saldo Devedor (R$)" class="currency" oninput="calcularDividaTotal()">
+                <input type="text" name="financiamentoParcela[]" placeholder="Parcela Mensal (R$)" class="currency" oninput="calcularDividaTotal()">
+                <input type="number" name="financiamentoTaxa[]" placeholder="Taxa Juros Anual (%)" min="0" step="0.01">
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('financiamentosContainer', 'financiamento-item', html);
+        }
+        
+        function adicionarEmprestimo() {
+            const html = `
+                <input type="text" name="emprestimoDescricao[]" placeholder="Descrição (Ex: Empréstimo Pessoal Banco Y)">
+                <input type="text" name="emprestimoSaldo[]" placeholder="Saldo Devedor (R$)" class="currency" oninput="calcularDividaTotal()">
+                <input type="text" name="emprestimoParcela[]" placeholder="Parcela Mensal (R$)" class="currency" oninput="calcularDividaTotal()">
+                <input type="number" name="emprestimoTaxa[]" placeholder="Taxa Juros Anual (%)" min="0" step="0.01">
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('emprestimosContainer', 'emprestimo-item', html);
+        }
+        
+        function adicionarInvestimento() {
+            const html = `
+                <input type="text" name="investimentoDescricao[]" placeholder="Descrição (Ex: CDB Banco X, Ações Y)">
+                <select name="investimentoTipo[]">
+                    <option value="renda_fixa">Renda Fixa</option>
+                    <option value="renda_variavel">Renda Variável</option>
+                    <option value="fundo">Fundo de Investimento</option>
+                    <option value="previdencia">Previdência Privada</option>
+                    <option value="outro">Outro</option>
+                </select>
+                <input type="text" name="investimentoValor[]" placeholder="Valor Atual (R$)" class="currency" oninput="calcularPatrimonioTotal()">
+                <button type="button" class="remove-item" onclick="removerItem(this)">Remover</button>
+            `;
+            adicionarItem('investimentosContainer', 'investimento-item', html);
+        }
+
+        // --- Funções de Cálculo Financeiro ---
+        function calcularSaldo() {
+            totalReceitas = 0;
+            document.querySelectorAll('#receitasContainer .receita-item input[name="receitaValor[]"]').forEach(input => {
+                totalReceitas += parseCurrency(input.value);
+            });
+
+            totalDespesasFixas = 0;
+            document.querySelectorAll('#despesasFixasContainer .despesa-fixa-item input[name="despesaFixaValor[]"]').forEach(input => {
+                totalDespesasFixas += parseCurrency(input.value);
+            });
+
+            totalDespesasVariaveis = 0;
+            document.querySelectorAll('#despesasVariaveisContainer .despesa-variavel-item input[name="despesaVariavelValor[]"]').forEach(input => {
+                totalDespesasVariaveis += parseCurrency(input.value);
+            });
+            
+            saldoMensal = totalReceitas - totalDespesasFixas - totalDespesasVariaveis;
+            document.getElementById('saldoMensal').value = formatCurrency(saldoMensal);
+            
+            // Atualizar índice de poupança
+            const poupancaMensal = parseCurrency(document.getElementById('poupancaMensal').value);
+            indicePoupanca = (totalReceitas > 0 && poupancaMensal > 0) ? (poupancaMensal / totalReceitas) * 100 : 0;
+            
+            // Atualizar índice de endividamento (depende das parcelas)
+            calcularDividaTotal(); // Recalcula dívidas e o índice
+            
+            return saldoMensal;
+        }
+        
+        function calcularPatrimonioTotal() {
+            let totalPatrimonioFisico = 0;
+            document.querySelectorAll('#imoveisContainer .imovel-item input[name="imovelValor[]"]').forEach(input => totalPatrimonioFisico += parseCurrency(input.value));
+            document.querySelectorAll('#veiculosContainer .veiculo-item input[name="veiculoValor[]"]').forEach(input => totalPatrimonioFisico += parseCurrency(input.value));
+            document.querySelectorAll('#outrosBensContainer .outro-bem-item input[name="outroBemValor[]"]').forEach(input => totalPatrimonioFisico += parseCurrency(input.value));
+            
+            let totalInvestimentos = 0;
+            document.querySelectorAll('#investimentosContainer .investimento-item input[name="investimentoValor[]"]').forEach(input => totalInvestimentos += parseCurrency(input.value));
+            totalInvestimentos += parseCurrency(document.getElementById('appPoupanca').value);
+            totalInvestimentos += parseCurrency(document.getElementById('partNegocios').value);
+            totalInvestimentos += parseCurrency(document.getElementById('outrosLiquidos').value);
+            
+            patrimonioTotal = totalPatrimonioFisico + totalInvestimentos;
+            
+            calcularPatrimonioLiquido();
+            return patrimonioTotal;
+        }
+        
+        function calcularDividaTotal() {
+            dividaTotal = 0;
+            totalParcelasDividas = 0;
+            
+            document.querySelectorAll('#financiamentosContainer .financiamento-item').forEach(item => {
+                dividaTotal += parseCurrency(item.querySelector('input[name="financiamentoSaldo[]"]').value);
+                totalParcelasDividas += parseCurrency(item.querySelector('input[name="financiamentoParcela[]"]').value);
+            });
+            
+            document.querySelectorAll('#emprestimosContainer .emprestimo-item').forEach(item => {
+                dividaTotal += parseCurrency(item.querySelector('input[name="emprestimoSaldo[]"]').value);
+                totalParcelasDividas += parseCurrency(item.querySelector('input[name="emprestimoParcela[]"]').value);
+            });
+            
+            dividaTotal += parseCurrency(document.getElementById('cartaoSaldoRotativo').value);
+            // Não somamos parcela do rotativo aqui, pois o ideal é não ter.
+            
+            // Recalcular índice de endividamento
+            indiceEndividamento = (totalReceitas > 0) ? (totalParcelasDividas / totalReceitas) * 100 : 0;
+            
+            calcularPatrimonioLiquido();
+            return dividaTotal;
+        }
+        
+        function calcularPatrimonioLiquido() {
+            patrimonioLiquido = patrimonioTotal - dividaTotal;
+            return patrimonioLiquido;
+        }
+        
+        // --- Funções de Análise e Geração de Resultados ---
+        function determinarPerfilFinanceiro() {
+            // Lógica similar à anterior, mas usando os valores recalculados
+            if (totalReceitas === 0 && patrimonioTotal === 0 && dividaTotal === 0) return "DADOS INSUFICIENTES";
+            if (indiceEndividamento > 50 || (dividaTotal > 0 && saldoMensal <= 0 && totalParcelasDividas > 0)) return "DÍVIDAS IMPAGÁVEIS";
+            if (dividaTotal > 0 && indiceEndividamento > 30 && indiceEndividamento <= 50) return "DÍVIDAS PAGÁVEIS";
+            if (Math.abs(saldoMensal) < 0.01 * totalReceitas && totalReceitas > 0) { // Tolerância pequena para zero a zero
+                return dividaTotal > 0 ? "ZERO A ZERO OBRIGATÓRIO" : "ZERO A ZERO OPCIONAL";
+            }
+            if (saldoMensal > 0 && indicePoupanca < 10) return "FLUXO POSITIVO";
+            if (indicePoupanca >= 10 && indicePoupanca < 20) return "POUPADOR";
+            
+            let totalInvestimentosValor = 0;
+            document.querySelectorAll('#investimentosContainer .investimento-item input[name="investimentoValor[]"]').forEach(input => totalInvestimentosValor += parseCurrency(input.value));
+            totalInvestimentosValor += parseCurrency(document.getElementById('appPoupanca').value);
+            
+            let valorRendaVariavelFundos = 0;
+            document.querySelectorAll('#investimentosContainer .investimento-item').forEach(item => {
+                const tipo = item.querySelector('select[name="investimentoTipo[]"]').value;
+                if (tipo === 'renda_variavel' || tipo === 'fundo') {
+                    valorRendaVariavelFundos += parseCurrency(item.querySelector('input[name="investimentoValor[]"]').value);
+                }
+            });
+
+            if (indicePoupanca >= 20 && valorRendaVariavelFundos < 0.3 * totalInvestimentosValor) return "INVESTIDOR AMADOR";
+            if (indicePoupanca >= 20 && valorRendaVariavelFundos >= 0.3 * totalInvestimentosValor) return "INVESTIDOR PLANEJADOR";
+            
+            return "FLUXO POSITIVO"; // Default
+        }
+        
+        function identificarPontosNegativosDetalhado() {
+            const pontosNegativos = [];
+            const formatoMoeda = (val) => formatCurrency(val);
+            const formatoPercentual = (val) => `${val.toFixed(2)}%`.replace('.', ',');
+
+            // Fluxo de Caixa
+            if (saldoMensal < 0) {
+                pontosNegativos.push(`<strong>Fluxo de Caixa Negativo:</strong> Seu saldo mensal é de ${formatoMoeda(saldoMensal)}, indicando que suas despesas superam suas receitas. É crucial revisar o orçamento.`);
+            } else if (saldoMensal === 0) {
+                 pontosNegativos.push(`<strong>Fluxo de Caixa Zerado:</strong> Seu saldo mensal é zero. Embora não esteja negativo, não há capacidade de poupança/investimento, o que dificulta o crescimento patrimonial e a realização de objetivos.`);
+            }
+            
+            // Endividamento
+            if (indiceEndividamento > 30) {
+                pontosNegativos.push(`<strong>Alto Comprometimento de Renda com Dívidas:</strong> Seu índice de endividamento é de ${formatoPercentual(indiceEndividamento)}. O ideal é que as parcelas de dívidas não ultrapassem 30% da sua renda bruta mensal (${formatoMoeda(totalReceitas)}). Valores acima disso aumentam o risco de inadimplência.`);
+            }
+            if (dividaTotal > patrimonioLiquido && patrimonioLiquido > 0) {
+                 pontosNegativos.push(`<strong>Endividamento Superior ao Patrimônio Líquido:</strong> Suas dívidas totais (${formatoMoeda(dividaTotal)}) superam seu patrimônio líquido (${formatoMoeda(patrimonioLiquido)}). Isso indica uma situação de vulnerabilidade financeira.`);
+            }
+            if (patrimonioLiquido <= 0 && dividaTotal > 0) {
+                 pontosNegativos.push(`<strong>Patrimônio Líquido Negativo:</strong> Suas dívidas totais (${formatoMoeda(dividaTotal)}) superam seus bens e investimentos (${formatoMoeda(patrimonioTotal)}), resultando em um patrimônio líquido negativo (${formatoMoeda(patrimonioLiquido)}). Situação de alto risco.`);
+            }
+            const cartaoRotativo = parseCurrency(document.getElementById('cartaoSaldoRotativo').value);
+            if (cartaoRotativo > 0) {
+                pontosNegativos.push(`<strong>Uso do Rotativo do Cartão:</strong> Você possui saldo devedor de ${formatoMoeda(cartaoRotativo)} no rotativo. As taxas de juros do rotativo são as mais altas do mercado e podem levar a um crescimento exponencial da dívida.`);
+            }
+            const chequeEspecial = document.getElementById('chequeEspecialFrequencia').value;
+            if (chequeEspecial === 'frequentemente' || chequeEspecial === 'as_vezes') {
+                pontosNegativos.push(`<strong>Uso Frequente do Cheque Especial:</strong> Utilizar o cheque especial com frequência indica descontrole financeiro e acarreta juros elevados.`);
+            }
+            
+            // Poupança e Investimentos
+            const poupancaMensal = parseCurrency(document.getElementById('poupancaMensal').value);
+            if (poupancaMensal <= 0 && saldoMensal > 0) {
+                 pontosNegativos.push(`<strong>Ausência de Poupança/Investimento Mensal:</strong> Apesar de ter um saldo mensal positivo (${formatoMoeda(saldoMensal)}), você não está direcionando recursos para poupança ou investimentos, o que impede o crescimento patrimonial.`);
+            } else if (indicePoupanca < 10 && saldoMensal > 0) {
+                 pontosNegativos.push(`<strong>Baixo Índice de Poupança:</strong> Seu índice de poupança é de ${formatoPercentual(indicePoupanca)}. Recomenda-se poupar/investir pelo menos 10-15% da renda mensal para construir um futuro financeiro sólido.`);
+            }
+            const reservaEmergencia = parseFloat(document.getElementById('reservaEmergencia').value) || 0;
+            const custoVidaMensal = totalDespesasFixas + totalDespesasVariaveis;
+            if (reservaEmergencia === 0) {
+                 pontosNegativos.push(`<strong>Ausência de Reserva de Emergência:</strong> Você não possui reserva de emergência. Recomenda-se ter o equivalente a 3-6 meses do seu custo de vida (${formatoMoeda(custoVidaMensal)}) guardado para imprevistos.`);
+            } else if (custoVidaMensal > 0 && reservaEmergencia < 3) {
+                 pontosNegativos.push(`<strong>Reserva de Emergência Insuficiente:</strong> Sua reserva (${reservaEmergencia} meses) é inferior ao mínimo recomendado de 3 meses do seu custo de vida (${formatoMoeda(custoVidaMensal)}).`);
+            }
+            const poupancaValor = parseCurrency(document.getElementById('appPoupanca').value);
+            let totalInvestimentosValor = 0;
+            document.querySelectorAll('#investimentosContainer .investimento-item input[name="investimentoValor[]"]').forEach(input => totalInvestimentosValor += parseCurrency(input.value));
+            totalInvestimentosValor += poupancaValor;
+            if (totalInvestimentosValor > 0 && poupancaValor / totalInvestimentosValor > 0.5) {
+                 pontosNegativos.push(`<strong>Concentração em Poupança:</strong> Mais de 50% dos seus investimentos estão na caderneta de poupança (${formatoMoeda(poupancaValor)}). A poupança geralmente rende abaixo da inflação, corroendo seu poder de compra no longo prazo.`);
+            }
+            
+            // Gestão de Risco
+            const dependentes = parseInt(document.getElementById('dependentes').value) || 0;
+            const seguroVida = document.querySelector('input[name="seguroVida"]:checked')?.value;
+            if (dependentes > 0 && seguroVida === 'nao') {
+                pontosNegativos.push(`<strong>Ausência de Seguro de Vida com Dependentes:</strong> Você possui ${dependentes} dependente(s) e não tem seguro de vida. Em caso de imprevisto, seus dependentes podem ficar desamparados financeiramente.`);
+            }
+            const planoSaude = document.querySelector('input[name="planoSaude"]:checked')?.value;
+            if (planoSaude === 'nao') {
+                pontosNegativos.push(`<strong>Ausência de Plano de Saúde:</strong> Não possuir plano de saúde expõe você a altos custos médicos inesperados, que podem comprometer seriamente suas finanças.`);
+            }
+            // Adicionar verificações para outros seguros se aplicável (imóvel, auto)
+            
+            // Planejamento de Aposentadoria
+            const idadeAposentadoria = parseInt(document.getElementById('aposentadoriaIdadeDesejada').value) || 0;
+            const rendaDesejada = parseCurrency(document.getElementById('aposentadoriaRendaDesejada').value);
+            if (idadeAposentadoria === 0 || rendaDesejada === 0) {
+                 pontosNegativos.push(`<strong>Planejamento de Aposentadoria Incompleto:</strong> Faltam informações cruciais sobre a idade desejada para aposentar ou a renda mensal desejada, dificultando a avaliação da sua preparação para esta fase.`);
+            } else {
+                // Lógica básica de projeção (simplificada)
+                const idadeAtual = calcularIdade(document.getElementById('nascimento').value);
+                const anosContribuicaoRestantes = idadeAposentadoria - idadeAtual;
+                if (anosContribuicaoRestantes <= 0) {
+                     pontosNegativos.push(`<strong>Idade de Aposentadoria Atingida ou Ultrapassada:</strong> A idade desejada para aposentadoria já foi atingida ou ultrapassada.`);
+                } else {
+                    const poupancaAtualTotal = totalInvestimentosValor; // Simplificado
+                    const montanteNecessario = calcularMontanteAposentadoria(rendaDesejada, idadeAposentadoria);
+                    const montanteProjetado = calcularMontanteProjetado(poupancaAtualTotal, poupancaMensal, anosContribuicaoRestantes);
+                    
+                    if (montanteProjetado < montanteNecessario) {
+                        pontosNegativos.push(`<strong>Preparação para Aposentadoria Insuficiente:</strong> Com base na sua poupança atual e capacidade de investimento mensal, a projeção indica que você poderá não atingir o montante necessário (${formatoMoeda(montanteNecessario)}) para a renda desejada (${formatoMoeda(rendaDesejada)}) aos ${idadeAposentadoria} anos. O montante projetado é de ${formatoMoeda(montanteProjetado)}.`);
+                    }
+                }
+            }
+            
+            // Planejamento Sucessório
+            const testamento = document.querySelector('input[name="sucessaoTestamento"]:checked')?.value;
+            if (patrimonioTotal > 0 && testamento === 'nao') {
+                 pontosNegativos.push(`<strong>Ausência de Planejamento Sucessório Formal:</strong> Você possui patrimônio (${formatoMoeda(patrimonioTotal)}) mas não tem testamento. Isso pode levar a processos de inventário mais longos, custosos e potencialmente conflituosos para seus herdeiros.`);
+            }
+
+            return pontosNegativos.length > 0 ? pontosNegativos : ["Nenhum ponto de atenção crítico identificado com base nas informações fornecidas."];
+        }
+        
+        function calcularIdade(dataNascimento) {
+            if (!dataNascimento) return 0;
+            const hoje = new Date();
+            const nasc = new Date(dataNascimento);
+            let idade = hoje.getFullYear() - nasc.getFullYear();
+            const m = hoje.getMonth() - nasc.getMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
+                idade--;
+            }
+            return idade;
+        }
+        
+        // Funções simplificadas para cálculo de aposentadoria (necessitam de refinamento)
+        function calcularMontanteAposentadoria(rendaDesejada, idadeAposentadoria) {
+            // Suposição muito simplificada: 25 anos de recebimento após aposentar, taxa de retirada de 4% a.a.
+            const anosRecebimento = 25;
+            const taxaRetiradaAnual = 0.04;
+            const rendaAnualDesejada = rendaDesejada * 12;
+            return rendaAnualDesejada / taxaRetiradaAnual; 
+        }
+        
+        function calcularMontanteProjetado(valorAtual, aporteMensal, anosRestantes) {
+            // Suposição simplificada: taxa de juros real de 4% a.a.
+            const taxaJurosAnual = 0.04;
+            const taxaJurosMensal = Math.pow(1 + taxaJurosAnual, 1/12) - 1;
+            const mesesRestantes = anosRestantes * 12;
+            
+            let montante = valorAtual * Math.pow(1 + taxaJurosMensal, mesesRestantes);
+            if (aporteMensal > 0 && taxaJurosMensal > 0) {
+                 montante += aporteMensal * ( (Math.pow(1 + taxaJurosMensal, mesesRestantes) - 1) / taxaJurosMensal );
+            }
+            return montante;
+        }
+        
+        function analisarViabilidadeObjetivos() {
+            const objetivosContainer = document.getElementById('objetivosContainer');
+            const objetivoItems = objetivosContainer.querySelectorAll('.objetivo-item');
+            const analiseDiv = document.getElementById('analiseObjetivos');
+            analiseDiv.innerHTML = ''; // Limpar análise anterior
+            
+            const poupancaMensalDisponivel = parseCurrency(document.getElementById('poupancaMensal').value);
+            
+            if (objetivoItems.length === 0 || (objetivoItems.length === 1 && !objetivoItems[0].querySelector('input[name="objetivoDescricao[]"]').value)) {
+                analiseDiv.innerHTML = '<p>Nenhum objetivo financeiro informado.</p>';
+                return;
+            }
+            
+            if (poupancaMensalDisponivel <= 0) {
+                 analiseDiv.innerHTML = '<p>Com uma capacidade de poupança mensal nula ou negativa, atingir objetivos financeiros que requerem acumulação de capital se torna inviável sem mudanças significativas no fluxo de caixa ou patrimônio.</p>';
+                 return;
+            }
+            
+            let htmlAnalise = '<h4>Análise Objetivo a Objetivo:</h4>';
+            let poupancaComprometida = 0;
+            
+            objetivoItems.forEach((item, index) => {
+                const descricao = item.querySelector('input[name="objetivoDescricao[]"]').value || `Objetivo ${index + 1}`;
+                const custo = parseCurrency(item.querySelector('input[name="objetivoCusto[]"]').value);
+                const acumulado = parseCurrency(item.querySelector('input[name="objetivoAcumulado[]"]').value);
+                const prazoValor = parseFloat(item.querySelector('input[name="objetivoPrazoValor[]"]').value) || 0;
+                const prazoUnidade = item.querySelector('select[name="objetivoPrazoUnidade[]"]').value;
+                
+                htmlAnalise += `<div class="result-card"><h5>${descricao}</h5>`;
+                
+                if (custo <= 0 || prazoValor <= 0) {
+                    htmlAnalise += '<p class="neutral">Informações insuficientes (custo ou prazo) para análise.</p></div>';
+                    return; // Próximo objetivo
+                }
+                
+                const valorFaltante = custo - acumulado;
+                const prazoMeses = prazoUnidade === 'anos' ? prazoValor * 12 : prazoValor;
+                
+                if (valorFaltante <= 0) {
+                    htmlAnalise += `<p class="positive">Objetivo já atingido ou superado (valor acumulado: ${formatCurrency(acumulado)}).</p></div>`;
+                    return; // Próximo objetivo
+                }
+                
+                if (prazoMeses <= 0) {
+                     htmlAnalise += `<p class="negative">Prazo inválido ou já expirado.</p></div>`;
+                     return; // Próximo objetivo
+                }
+                
+                // Cálculo simplificado da poupança mensal necessária (sem juros)
+                const poupancaNecessariaSimples = valorFaltante / prazoMeses;
+                
+                // Cálculo da poupança mensal necessária (com juros - taxa simplificada 4% a.a.)
+                const taxaJurosMensal = Math.pow(1 + 0.04, 1/12) - 1;
+                let poupancaNecessariaComJuros = 0;
+                if (taxaJurosMensal > 0) {
+                     poupancaNecessariaComJuros = valorFaltante * taxaJurosMensal / (Math.pow(1 + taxaJurosMensal, prazoMeses) - 1);
+                } else {
+                    poupancaNecessariaComJuros = poupancaNecessariaSimples; // Caso taxa seja zero
+                }
+                
+                htmlAnalise += `<p><strong>Custo Total:</strong> ${formatCurrency(custo)}</p>`;
+                htmlAnalise += `<p><strong>Valor Acumulado:</strong> ${formatCurrency(acumulado)}</p>`;
+                htmlAnalise += `<p><strong>Valor Faltante:</strong> ${formatCurrency(valorFaltante)}</p>`;
+                htmlAnalise += `<p><strong>Prazo Restante:</strong> ${prazoValor} ${prazoUnidade}</p>`;
+                htmlAnalise += `<p><strong>Poupança Mensal Necessária (Estimada*):</strong> ${formatCurrency(poupancaNecessariaComJuros)}</p>`;
+                
+                const poupancaDisponivelParaEste = poupancaMensalDisponivel - poupancaComprometida;
+                
+                if (poupancaDisponivelParaEste >= poupancaNecessariaComJuros) {
+                    htmlAnalise += `<p class="positive">Com a sua capacidade de poupança mensal atual (${formatCurrency(poupancaMensalDisponivel)}), e considerando a poupança já alocada para objetivos anteriores, este objetivo parece <strong>viável</strong> no prazo estipulado.</p>`;
+                    poupancaComprometida += poupancaNecessariaComJuros;
+                } else {
+                    const deficitMensal = poupancaNecessariaComJuros - poupancaDisponivelParaEste;
+                    htmlAnalise += `<p class="negative">Com a sua capacidade de poupança mensal disponível para este objetivo (${formatCurrency(poupancaDisponivelParaEste)}), este objetivo parece <strong>inviável</strong> no prazo estipulado. Seria necessário poupar ${formatCurrency(deficitMensal)} a mais por mês.</p>`;
+                    // Não comprometer poupança se não for viável
+                }
+                htmlAnalise += `<p><small>*Estimativa considera uma taxa de juros real de 4% a.a. sobre o valor poupado mensalmente. A viabilidade real depende da rentabilidade dos seus investimentos.</small></p>`;
+                htmlAnalise += `</div>`;
+            });
+            
+            analiseDiv.innerHTML = htmlAnalise;
+        }
+        
+        // --- Funções de Geração de Gráficos ---
+        function criarGraficos() {
+            const ctxPatrimonio = document.getElementById('patrimonioChart').getContext('2d');
+            const ctxFluxoCaixa = document.getElementById('fluxoCaixaChart').getContext('2d');
+            
+            // Destruir gráficos anteriores se existirem
+            if (patrimonioChartInstance) patrimonioChartInstance.destroy();
+            if (fluxoCaixaChartInstance) fluxoCaixaChartInstance.destroy();
+            
+            // Dados para Gráfico de Patrimônio (Pizza: Ativos vs Dívidas)
+            const dataPatrimonio = {
+                labels: ['Patrimônio Líquido', 'Dívidas'],
+                datasets: [{
+                    data: [Math.max(0, patrimonioLiquido), dividaTotal], // Garante que não seja negativo no gráfico
+                    backgroundColor: [
+                        '#1a5a4c', // Verde Esmeralda Médio
+                        '#e74c3c'  // Vermelho para dívidas
+                    ],
+                    borderColor: '#0e2922', // Verde Esmeralda Escuro
+                    borderWidth: 1
+                }]
+            };
+            
+            // Dados para Gráfico de Fluxo de Caixa (Barras: Receitas vs Despesas)
+            const dataFluxoCaixa = {
+                labels: ['Receitas', 'Despesas Fixas', 'Despesas Variáveis', 'Saldo'],
+                datasets: [{
+                    label: 'Fluxo de Caixa Mensal (R$)',
+                    data: [totalReceitas, totalDespesasFixas, totalDespesasVariaveis, saldoMensal],
+                    backgroundColor: [
+                        '#8fd14f', // Verde Claro
+                        '#f39c12', // Laranja
+                        '#e74c3c', // Vermelho
+                        saldoMensal >= 0 ? '#1a5a4c' : '#c0392b' // Verde Médio ou Vermelho Escuro
+                    ],
+                     borderColor: '#d4af37', // Dourado
+                     borderWidth: 1
+                }]
+            };
+            
+            // Criar Gráfico de Patrimônio
+            patrimonioChartInstance = new Chart(ctxPatrimonio, {
+                type: 'doughnut',
+                data: dataPatrimonio,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Composição Patrimonial (Total: ${formatCurrency(patrimonioTotal)})`,
+                            color: '#d4af37',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            labels: {
+                                color: '#e6e6e6' // Texto claro
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Criar Gráfico de Fluxo de Caixa
+            fluxoCaixaChartInstance = new Chart(ctxFluxoCaixa, {
+                type: 'bar',
+                data: dataFluxoCaixa,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // Barras horizontais para melhor leitura
+                    scales: {
+                        x: {
+                            ticks: { 
+                                color: '#e6e6e6',
+                                callback: function(value, index, values) {
+                                    return formatCurrency(value);
+                                }
+                             },
+                            grid: { color: 'rgba(212, 175, 55, 0.2)' } // Grid dourado suave
+                        },
+                        y: {
+                            ticks: { color: '#e6e6e6' },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                         title: {
+                            display: true,
+                            text: 'Fluxo de Caixa Mensal',
+                            color: '#d4af37',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                           display: false // Legenda não necessária para gráfico de barras simples
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += formatCurrency(context.parsed.x);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Função Principal de Geração da Análise ---
+        function gerarAnalise() {
+            // Calcular todos os indicadores
+            calcularSaldo();
+            calcularPatrimonioTotal(); // Já chama calcularPatrimonioLiquido
+            calcularDividaTotal(); // Já chama calcularPatrimonioLiquido e atualiza indiceEndividamento
+            
+            // Determinar perfil financeiro
+            const perfil = determinarPerfilFinanceiro();
+            document.getElementById('perfilCalculado').innerText = perfil;
+            document.getElementById('perfilEditavel').value = perfil;
+            
+            // Identificar pontos negativos detalhados
+            const pontosNegativos = identificarPontosNegativosDetalhado();
+            document.getElementById('pontosNegativosCalculados').innerHTML = pontosNegativos.map(ponto => `<p>${ponto}</p>`).join('');
+            document.getElementById('pontosNegativosEditavel').value = pontosNegativos.join('\n\n'); // Usar quebra de linha dupla para textarea
+            
+            // Analisar viabilidade dos objetivos
+            analisarViabilidadeObjetivos();
+            
+            // Atualizar resumo financeiro
+            document.getElementById('patrimonioTotal').innerText = formatCurrency(patrimonioTotal);
+            document.getElementById('dividaTotal').innerText = formatCurrency(dividaTotal);
+            document.getElementById('patrimonioLiquido').innerText = formatCurrency(patrimonioLiquido);
+            document.getElementById('saldoMensalResumo').innerText = formatCurrency(saldoMensal);
+            document.getElementById('indiceEndividamento').innerText = `${indiceEndividamento.toFixed(2)}%`.replace('.', ',');
+            document.getElementById('indicePoupanca').innerText = `${indicePoupanca.toFixed(2)}%`.replace('.', ',');
+            
+            // Criar/Atualizar gráficos
+            criarGraficos();
+            
+            // Mostrar seção de análise
+            document.getElementById('secaoAnalise').style.display = 'block';
+            
+            // Esconder todas as abas do formulário
+            for (let i = 1; i <= 11; i++) {
+                document.getElementById('tab' + i).classList.remove('active');
+            }
+            
+            // Scroll para a seção de análise
+            document.getElementById('secaoAnalise').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // --- Função de Geração de PDF (Placeholder) ---
         function gerarPDF() {
-            alert("Para gerar o PDF do seu diagnóstico financeiro, você precisará de uma biblioteca como jsPDF ou html2pdf.js. Em um ambiente de produção, esta funcionalidade estaria implementada para permitir o download do relatório completo.");
+            alert("A funcionalidade de geração de PDF requer bibliotecas adicionais (como jsPDF e html2canvas) e uma implementação mais complexa para capturar corretamente o conteúdo dinâmico e os gráficos. Em um ambiente de produção, esta funcionalidade estaria habilitada.");
             
-            // Em uma implementação real, usaríamos código como este:
+            // Exemplo (requer instalação e importação das libs):
             /*
-            import { jsPDF } from "jspdf";
-            import html2canvas from "html2canvas";
-            
-            // Capturar o conteúdo da análise
+            const { jsPDF } = window.jspdf;
             const element = document.getElementById('secaoAnalise');
             
-            html2canvas(element).then(canvas => {
+            html2canvas(element, { scale: 2 }).then(canvas => { // Aumentar escala para melhor qualidade
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgProps = pdf.getImageProperties(imgData);
                 const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save('diagnostico_financeiro.pdf');
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgProps = pdf.getImageProperties(imgData);
+                const ratio = imgProps.height / imgProps.width;
+                let imgHeight = pdfWidth * ratio;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+                heightLeft -= pdfHeight;
+
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+                    heightLeft -= pdfHeight;
+                }
+                pdf.save('diagnostico_financeiro_detalhado.pdf');
             });
             */
         }
+
     </script>
 
 </body>
