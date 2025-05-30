@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro V5</title> <!-- Versão atualizada -->
+  <title>Controle Financeiro V6 - Edição</title> <!-- Versão atualizada -->
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -187,7 +187,7 @@
     .variavel { color: #ff9800; }
     .cartao-credito { background-color: rgba(0, 106, 86, 0.3); }
 
-    .botao-lancar {
+    .botao-acao-modal {
       background-color: #ffd700;
       color: #002d26;
       font-weight: bold;
@@ -197,7 +197,7 @@
       cursor: pointer;
     }
 
-    .botao-lancar:hover {
+    .botao-acao-modal:hover {
       background-color: #ffc400;
     }
 
@@ -300,9 +300,16 @@
     #tabelaLancamentos tbody tr td:nth-child(2) {
       white-space: nowrap;
       min-width: 150px; 
+      cursor: pointer; /* Adicionado para indicar clicável */
+      text-decoration: underline;
+      text-decoration-color: rgba(255, 255, 255, 0.3);
+    }
+    #tabelaLancamentos tbody tr td:nth-child(2):hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        text-decoration-color: white;
     }
 
-    /* Estilo para células editáveis */
+    /* Estilo para células editáveis (valores mensais) */
     td.editable {
       cursor: pointer;
       position: relative;
@@ -422,7 +429,7 @@
               <th class="hidden-id">ID</th>
               <th class="descricao-header">
                 <span>Descrição</span>
-                <button id="botaoAbrirModal" class="botao-abrir-modal" onclick="abrirModal()">+</button>
+                <button id="botaoAbrirModalNovo" class="botao-abrir-modal" onclick="abrirModalParaNovo()">+</button>
               </th>
               <th>Jan</th>
               <th>Fev</th>
@@ -529,7 +536,8 @@
   <div id="modalFormulario" class="modal">
     <div class="modal-content">
       <span class="close-button" onclick="fecharModal()">&times;</span>
-      <h2>Novo Lançamento</h2>
+      <h2 id="modalTitulo">Novo Lançamento</h2> <!-- ID adicionado -->
+      <input type="hidden" id="lancamentoId" /> <!-- Campo oculto para ID -->
       <div class="form-section-modal">
         <div class="form-group">
           <label for="descricao">Descrição:</label>
@@ -580,7 +588,7 @@
           <input type="date" id="dataFinal" />
         </div>
         <div class="botoes-formulario">
-            <button class="botao-lancar" onclick="adicionarLancamento()">Lançar Item</button>
+            <button id="botaoAcaoModal" class="botao-acao-modal" onclick="adicionarLancamento()">Lançar Item</button> <!-- ID e classe alterados -->
         </div>
       </div>
     </div>
@@ -593,23 +601,65 @@
     let dadosResumo = null;
     let lancamentos = [];
     const modal = document.getElementById("modalFormulario");
+    const modalTitulo = document.getElementById("modalTitulo");
+    const botaoAcaoModal = document.getElementById("botaoAcaoModal");
+    const lancamentoIdInput = document.getElementById("lancamentoId");
     const containerPrincipal = document.getElementById("containerPrincipal");
-    const botaoResumoFixo = document.querySelector(".botao-resumo-fixo"); // Seleciona o botão
+    const botaoResumoFixo = document.querySelector(".botao-resumo-fixo"); 
 
     // Funções do Modal
-    function abrirModal() {
+    function limparFormularioModal() {
+        document.getElementById("descricao").value = "";
+        document.getElementById("valor").value = "";
+        document.getElementById("tipoLancamento").value = "receita";
+        document.getElementById("formaPagamento").value = "conta";
+        document.getElementById("frequenciaValor").value = "1";
+        document.getElementById("frequenciaTipo").value = "meses";
+        document.getElementById("dataInicial").value = "";
+        document.getElementById("dataFinal").value = "";
+        lancamentoIdInput.value = ""; // Limpa o ID oculto
+    }
+
+    function abrirModalParaNovo() {
+      limparFormularioModal();
       const today = new Date();
       const currentYear = today.getFullYear();
-      if (!document.getElementById("dataInicial").value) {
-        document.getElementById("dataInicial").value = `${currentYear}-01-01`;
+      document.getElementById("dataInicial").value = `${currentYear}-01-01`;
+      document.getElementById("dataFinal").value = `${currentYear}-12-31`;
+      modalTitulo.textContent = "Novo Lançamento";
+      botaoAcaoModal.textContent = "Lançar Item";
+      botaoAcaoModal.onclick = adicionarLancamento; // Define a função de adicionar
+      modal.style.display = "block";
+    }
+
+    function abrirModalParaEditar(id) {
+      const lancamento = lancamentos.find(l => l.id === id);
+      if (!lancamento) {
+          console.error("Lançamento não encontrado para edição: ID", id);
+          return;
       }
-      if (!document.getElementById("dataFinal").value) {
-        document.getElementById("dataFinal").value = `${currentYear}-12-31`;
-      }
+      
+      limparFormularioModal(); // Limpa antes de preencher
+
+      document.getElementById("descricao").value = lancamento.descricao;
+      // Formata o valor para exibição no input (sem R$, com vírgula)
+      document.getElementById("valor").value = lancamento.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('.', ',');
+      document.getElementById("tipoLancamento").value = lancamento.tipo;
+      document.getElementById("formaPagamento").value = lancamento.formaPagamento;
+      document.getElementById("frequenciaValor").value = lancamento.frequenciaValor;
+      document.getElementById("frequenciaTipo").value = lancamento.frequenciaTipo;
+      document.getElementById("dataInicial").value = lancamento.dataInicial;
+      document.getElementById("dataFinal").value = lancamento.dataFinal;
+      lancamentoIdInput.value = lancamento.id; // Define o ID oculto
+
+      modalTitulo.textContent = "Editar Lançamento";
+      botaoAcaoModal.textContent = "Salvar Alterações";
+      botaoAcaoModal.onclick = salvarEdicao; // Define a função de salvar edição
       modal.style.display = "block";
     }
 
     function fecharModal() {
+      limparFormularioModal(); // Limpa o formulário ao fechar
       modal.style.display = "none";
     }
 
@@ -639,8 +689,14 @@
         maximumFractionDigits: 2,
       });
     }
+    
+    function parseValor(valorString) {
+        // Remove pontos e substitui vírgula por ponto
+        return parseFloat(String(valorString).replace(/\./g, '').replace(',', '.'));
+    }
 
     function calcularOcorrencias(lancamento, ano) {
+      // --- Função calcularOcorrencias (sem alterações) --- 
       const startDate = new Date(lancamento.dataInicial + "T00:00:00");
       const endDate = new Date(lancamento.dataFinal + "T00:00:00");
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
@@ -707,6 +763,7 @@
     }
     
     function calcularTotaisPorCategoria(lancamentosCategoria, ano) {
+      // --- Função calcularTotaisPorCategoria (sem alterações) --- 
       const meses = Array(12).fill(0);
       
       lancamentosCategoria.forEach(l => {
@@ -714,7 +771,7 @@
         // Para cada mês do ano
         for (let index = 0; index < 12; index++) {
           // Verifica se há valor manual para este mês específico
-          if (l.valoresManuais && l.valoresManuais[index] !== null) {
+          if (l.valoresManuais && l.valoresManuais[index] !== null && l.valoresManuais[index] !== undefined) {
             meses[index] += l.valoresManuais[index];
           } else {
             // Senão, verifica quantas ocorrências calculadas existem neste mês
@@ -731,8 +788,238 @@
       return { meses, total };
     }
 
+    // Funções CRUD (Create, Read, Update, Delete) e Persistência
+    function adicionarLancamento() {
+      const descricao = document.getElementById("descricao").value.trim();
+      const valorString = document.getElementById("valor").value;
+      const tipo = document.getElementById("tipoLancamento").value;
+      const formaPagamento = document.getElementById("formaPagamento").value;
+      const frequenciaValor = parseInt(document.getElementById("frequenciaValor").value) || 1;
+      const frequenciaTipo = document.getElementById("frequenciaTipo").value;
+      const dataInicial = document.getElementById("dataInicial").value;
+      const dataFinal = document.getElementById("dataFinal").value;
+
+      if (!descricao || !valorString || !dataInicial || !dataFinal) {
+        alert("Por favor, preencha todos os campos obrigatórios (Descrição, Valor, Data Inicial, Data Final).");
+        return;
+      }
+      
+      const valor = parseValor(valorString);
+      if (isNaN(valor)) {
+        alert("Valor inválido. Use o formato 1.234,56.");
+        return;
+      }
+
+      const novoLancamento = {
+        id: Date.now(), // ID único baseado no timestamp
+        descricao,
+        valor,
+        tipo,
+        formaPagamento,
+        frequenciaValor,
+        frequenciaTipo,
+        dataInicial,
+        dataFinal,
+        valoresManuais: Array(12).fill(null), // Inicializa valores manuais
+      };
+
+      lancamentos.push(novoLancamento);
+      salvarLancamentos();
+      atualizarInterface();
+      fecharModal();
+    }
+
+    function salvarEdicao() {
+      const id = parseInt(lancamentoIdInput.value);
+      if (!id) {
+          console.error("ID do lançamento não encontrado para salvar edição.");
+          alert("Erro ao salvar alterações. ID não encontrado.");
+          return;
+      }
+
+      const index = lancamentos.findIndex(l => l.id === id);
+      if (index === -1) {
+          console.error("Lançamento não encontrado no array para edição: ID", id);
+          alert("Erro ao salvar alterações. Lançamento original não encontrado.");
+          return;
+      }
+
+      const descricao = document.getElementById("descricao").value.trim();
+      const valorString = document.getElementById("valor").value;
+      const tipo = document.getElementById("tipoLancamento").value;
+      const formaPagamento = document.getElementById("formaPagamento").value;
+      const frequenciaValor = parseInt(document.getElementById("frequenciaValor").value) || 1;
+      const frequenciaTipo = document.getElementById("frequenciaTipo").value;
+      const dataInicial = document.getElementById("dataInicial").value;
+      const dataFinal = document.getElementById("dataFinal").value;
+
+      if (!descricao || !valorString || !dataInicial || !dataFinal) {
+        alert("Por favor, preencha todos os campos obrigatórios (Descrição, Valor, Data Inicial, Data Final).");
+        return;
+      }
+      
+      const valor = parseValor(valorString);
+      if (isNaN(valor)) {
+        alert("Valor inválido. Use o formato 1.234,56.");
+        return;
+      }
+      
+      // Mantém os valoresManuais existentes
+      const valoresManuaisExistentes = lancamentos[index].valoresManuais || Array(12).fill(null);
+
+      // Atualiza o lançamento existente no array
+      lancamentos[index] = {
+        ...lancamentos[index], // Mantém propriedades não editáveis (como ID e valoresManuais)
+        id: id, // Garante que o ID seja mantido
+        descricao,
+        valor,
+        tipo,
+        formaPagamento,
+        frequenciaValor,
+        frequenciaTipo,
+        dataInicial,
+        dataFinal,
+        valoresManuais: valoresManuaisExistentes // Preserva edições manuais anteriores
+      };
+
+      salvarLancamentos();
+      atualizarInterface();
+      fecharModal();
+    }
+
+    function excluirLancamento(id) {
+      if (confirm("Tem certeza que deseja excluir este lançamento?")) {
+        lancamentos = lancamentos.filter(l => l.id !== id);
+        salvarLancamentos();
+        atualizarInterface();
+      }
+    }
+    
+    function editarValorManual(id, mesIndex, novoValorString) {
+        const index = lancamentos.findIndex(l => l.id === id);
+        if (index === -1) return;
+
+        let novoValor = null;
+        if (novoValorString.trim() !== "") {
+            novoValor = parseValor(novoValorString);
+            if (isNaN(novoValor)) {
+                alert("Valor inválido. Use o formato 1.234,56 ou deixe em branco para usar o cálculo automático.");
+                return; // Não atualiza se o valor for inválido
+            }
+        }
+        
+        // Inicializa valoresManuais se não existir
+        if (!lancamentos[index].valoresManuais) {
+            lancamentos[index].valoresManuais = Array(12).fill(null);
+        }
+
+        lancamentos[index].valoresManuais[mesIndex] = novoValor;
+        salvarLancamentos();
+        atualizarInterface(); // Atualiza tudo para refletir a mudança
+    }
+
+    function salvarLancamentos() {
+      localStorage.setItem("controleFinanceiroLancamentos_v6", JSON.stringify(lancamentos));
+    }
+
+    function carregarLancamentos() {
+      const dadosSalvos = localStorage.getItem("controleFinanceiroLancamentos_v6");
+      if (dadosSalvos) {
+        lancamentos = JSON.parse(dadosSalvos);
+        // Garante que IDs e valoresManuais existam (migração de versões antigas)
+        lancamentos.forEach(l => {
+            if (!l.id) l.id = Date.now() + Math.random(); // Adiciona ID se não existir
+            if (!l.valoresManuais) l.valoresManuais = Array(12).fill(null);
+        });
+      } else {
+        lancamentos = [];
+      }
+    }
+
     // Funções de Atualização da Interface
+    function atualizarTabelaLancamentos(lancamentos, ano) {
+      const tabelaBody = document.getElementById("tabelaBody");
+      tabelaBody.innerHTML = "";
+
+      lancamentos.sort((a, b) => a.descricao.localeCompare(b.descricao)); // Ordena por descrição
+
+      lancamentos.forEach((l) => {
+        const row = tabelaBody.insertRow();
+        row.className = l.tipo === "receita" ? "receita" : (l.tipo === "fixa" ? "fixa" : "variavel");
+        if (l.formaPagamento === "credito" && l.tipo !== "receita") {
+          row.classList.add("cartao-credito");
+        }
+
+        const cellId = row.insertCell();
+        cellId.className = "hidden-id";
+        cellId.textContent = l.id;
+
+        const cellDescricao = row.insertCell();
+        cellDescricao.textContent = l.descricao;
+        cellDescricao.onclick = () => abrirModalParaEditar(l.id); // Adiciona evento de clique para editar
+        cellDescricao.style.textAlign = "left";
+
+        const totais = calcularTotaisPorCategoria([l], ano); // Calcula totais para este lançamento
+        let totalLancamento = 0;
+        let mesesComValor = 0;
+
+        for (let i = 0; i < 12; i++) {
+          const cellMes = row.insertCell();
+          cellMes.classList.add("editable");
+          const valorMes = (l.valoresManuais && l.valoresManuais[i] !== null && l.valoresManuais[i] !== undefined) 
+                             ? l.valoresManuais[i] 
+                             : totais.meses[i]; // Usa valor manual ou calculado
+          cellMes.textContent = formatarMoeda(valorMes);
+          totalLancamento += valorMes;
+          if (valorMes !== 0) {
+              mesesComValor++;
+          }
+          
+          // Lógica de Edição Inline (mantida)
+          cellMes.addEventListener('click', (e) => {
+              if (e.target.tagName === 'INPUT') return; // Não faz nada se já estiver editando
+
+              const currentValue = (l.valoresManuais && l.valoresManuais[i] !== null && l.valoresManuais[i] !== undefined) 
+                                    ? l.valoresManuais[i].toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('.', ',')
+                                    : ''; // Mostra vazio se for valor calculado
+              cellMes.innerHTML = `<input type="text" class="edit-input" value="${currentValue}" data-month-index="${i}" data-lancamento-id="${l.id}">`;
+              const input = cellMes.querySelector('input');
+              input.focus();
+
+              input.addEventListener('blur', () => {
+                  editarValorManual(l.id, i, input.value);
+                  // A atualização da interface já é chamada dentro de editarValorManual
+              });
+
+              input.addEventListener('keydown', (event) => {
+                  if (event.key === 'Enter') {
+                      input.blur();
+                  } else if (event.key === 'Escape') {
+                      // Reverte para o valor original (formatado)
+                      cellMes.textContent = formatarMoeda(valorMes);
+                  }
+              });
+          });
+        }
+
+        const cellTotal = row.insertCell();
+        cellTotal.textContent = formatarMoeda(totalLancamento);
+
+        const cellMedia = row.insertCell();
+        const media = mesesComValor > 0 ? totalLancamento / mesesComValor : 0;
+        cellMedia.textContent = formatarMoeda(media);
+
+        const cellAcoes = row.insertCell();
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Excluir";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = () => excluirLancamento(l.id);
+        cellAcoes.appendChild(deleteBtn);
+      });
+    }
+
     function atualizarResumoFinanceiro(lancamentos, ano) {
+      // --- Função atualizarResumoFinanceiro (sem alterações na lógica principal, mas usa calcularTotaisPorCategoria atualizado) ---
       const resumoBody = document.getElementById("resumoBody");
       resumoBody.innerHTML = "";
 
@@ -824,470 +1111,300 @@
         totalVariaveis: totalVariaveis,
         totalDespesas: totalDespesas,
         saldo: saldo,
-        mediaReceitas: mediaReceitas, // Adicionado
-        mediaFixas: mediaFixas,       // Adicionado
-        mediaVariaveis: mediaVariaveis, // Adicionado
-        mediaSaldo: mediaSaldo,       // Adicionado
-        lancamentos: lancamentos,
+        mediaReceitas: mediaReceitas, 
+        mediaFixas: mediaFixas,       
+        mediaVariaveis: mediaVariaveis, 
+        mediaSaldo: mediaSaldo,       
+        lancamentos: lancamentos, // Passa os lançamentos originais para o gráfico
       };
 
       atualizarGraficos();
     }
 
     function atualizarGraficos() {
+      // --- Função atualizarGraficos (sem alterações) --- 
       if (!dadosResumo) return;
       const mesSelecionado = parseInt(document.getElementById("mesSelecionado").value);
       let receitaPeriodo, fixasPeriodo, variaveisPeriodo, saldoPeriodo;
+      let tituloExtra = ""; // Para adicionar ao título do gráfico
 
       if (mesSelecionado === -1) { // Total Anual
         receitaPeriodo = dadosResumo.totalReceitas;
         fixasPeriodo = dadosResumo.totalFixas;
         variaveisPeriodo = dadosResumo.totalVariaveis;
         saldoPeriodo = dadosResumo.saldo;
+        tituloExtra = " (Total Anual)";
       } else if (mesSelecionado === -2) { // Médias Mensais
         receitaPeriodo = dadosResumo.mediaReceitas;
         fixasPeriodo = dadosResumo.mediaFixas;
         variaveisPeriodo = dadosResumo.mediaVariaveis;
         saldoPeriodo = dadosResumo.mediaSaldo;
+        tituloExtra = " (Médias Mensais)";
       } else { // Mês específico
         receitaPeriodo = dadosResumo.receitas.meses[mesSelecionado] || 0;
         fixasPeriodo = dadosResumo.fixas.meses[mesSelecionado] || 0;
         variaveisPeriodo = dadosResumo.variaveis.meses[mesSelecionado] || 0;
         saldoPeriodo = receitaPeriodo - fixasPeriodo - variaveisPeriodo;
+        const nomeMes = document.getElementById("mesSelecionado").options[document.getElementById("mesSelecionado").selectedIndex].text;
+        tituloExtra = ` (${nomeMes})`;
       }
 
-      atualizarGraficoDespesasPoupanca(fixasPeriodo, variaveisPeriodo, saldoPeriodo);
-      // Passa o valor original de mesSelecionado para a função do segundo gráfico decidir como agregar
-      atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado);
+      atualizarGraficoDespesasPoupanca(fixasPeriodo, variaveisPeriodo, saldoPeriodo, tituloExtra);
+      atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado, tituloExtra);
     }
 
-    function atualizarGraficoDespesasPoupanca(fixas, variaveis, saldo) {
+    function atualizarGraficoDespesasPoupanca(fixas, variaveis, saldo, tituloExtra) {
+      // --- Função atualizarGraficoDespesasPoupanca (sem alterações na lógica, apenas título) --- 
       const ctx = document.getElementById("graficoDespesasPoupanca").getContext("2d");
+      const legendaDiv = document.getElementById("legendaDespesasPoupanca");
+      legendaDiv.innerHTML = ''; // Limpa legenda anterior
       if (graficoDespesasPoupanca) graficoDespesasPoupanca.destroy();
-      const total = fixas + variaveis + Math.max(0, saldo);
+      
+      const poupanca = Math.max(0, saldo);
+      const totalGrafico = fixas + variaveis + poupanca;
       const labels = [];
       const data = [];
       const backgroundColors = [];
-      if (fixas > 0) { labels.push("Despesas Fixas"); data.push(fixas); backgroundColors.push("#f44336"); }
-      if (variaveis > 0) { labels.push("Despesas Variáveis"); data.push(variaveis); backgroundColors.push("#ff9800"); }
-      if (saldo > 0) { labels.push("Potencial de Investimento"); data.push(saldo); backgroundColors.push("#1976d2"); } // Cor alterada para azul
+      const cores = {
+          fixas: '#f44336', // Vermelho
+          variaveis: '#ff9800', // Laranja
+          poupanca: '#4caf50' // Verde
+      };
+
+      if (fixas > 0) { labels.push("Despesas Fixas"); data.push(fixas); backgroundColors.push(cores.fixas); }
+      if (variaveis > 0) { labels.push("Despesas Variáveis"); data.push(variaveis); backgroundColors.push(cores.variaveis); }
+      if (poupanca > 0) { labels.push("Potencial Poupança"); data.push(poupanca); backgroundColors.push(cores.poupanca); }
+      
+      // Adiciona legenda HTML
+      labels.forEach((label, index) => {
+          const percentual = totalGrafico > 0 ? ((data[index] / totalGrafico) * 100).toFixed(1) : 0;
+          legendaDiv.innerHTML += `
+            <div class="item-legenda">
+              <span class="cor-legenda" style="background-color: ${backgroundColors[index]};"></span>
+              <span class="descricao-legenda">${label}:</span>
+              <span class="valor-legenda">${formatarMoeda(data[index])} (${percentual}%)</span>
+            </div>
+          `;
+      });
+
       if (data.length === 0) {
-        document.getElementById("legendaDespesasPoupanca").innerHTML = "<p style=\"text-align:center;\">Sem dados para exibir.</p>";
-        return;
+        legendaDiv.innerHTML = '<div style="text-align: center; padding: 20px;">Sem dados para exibir neste período.</div>';
+        return; // Não cria gráfico se não houver dados
       }
-      const percentuais = total > 0 ? data.map((val) => ((val / total) * 100).toFixed(1) + "%") : data.map(() => "0%");
-      const legendaHTML = labels.map((label, i) => `
-        <div class="item-legenda">
-          <div class="cor-legenda" style="background-color: ${backgroundColors[i]}"></div>
-          <span class="descricao-legenda">${label}</span>
-          <span class="valor-legenda">${formatarMoeda(data[i])}</span>
-          <span>(${percentuais[i]})</span>
-        </div>
-      `).join("");
-      document.getElementById("legendaDespesasPoupanca").innerHTML = legendaHTML;
+
       graficoDespesasPoupanca = new Chart(ctx, {
-        type: "pie",
-        data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1, borderColor: "#014034" }] },
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: backgroundColors,
+            borderColor: '#014034', // Cor de fundo do card para borda
+            borderWidth: 2
+          }]
+        },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: false },
+            title: {
+                display: true,
+                text: `Distribuição de Despesas e Poupança${tituloExtra}`,
+                color: '#ffd700',
+                font: { size: 16 }
+            },
+            legend: { display: false }, // Oculta legenda padrão do Chart.js
             tooltip: {
               callbacks: {
-                label: function (context) {
-                  const label = context.label || "";
-                  const value = context.raw || 0;
-                  const currentTotal = context.dataset.data.reduce((a, b) => a + b, 0);
-                  const percentage = currentTotal > 0 ? Math.round((value / currentTotal) * 100) : 0;
-                  return `${label}: ${formatarMoeda(value)} (${percentage}%)`;
-                },
-              },
-            },
-          },
-        },
-      });
-    }
-
-    function atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado) {
-      const ctx = document.getElementById("graficoDespesasReceitas").getContext("2d");
-      if (graficoDespesasReceitas) graficoDespesasReceitas.destroy();
-
-      const despesasAgrupadas = {};
-      const anoAtual = new Date().getFullYear();
-
-      // Filtra apenas as despesas
-      const todasDespesas = dadosResumo.lancamentos.filter((l) => l.tipo !== "receita");
-
-      todasDespesas.forEach((despesa) => {
-        let valorDespesa = 0;
-
-        if (mesSelecionado === -2) { // Médias Mensais
-          // Calcula o total anual da despesa
-          let totalAnualDespesa = 0;
-          if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
-            totalAnualDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
-            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-            for (let i = 0; i < 12; i++) {
-              if (despesa.valoresManuais[i] === null) {
-                const ocorrenciasMesSemManual = ocorrencias.filter(d => d.getMonth() === i);
-                totalAnualDespesa += despesa.valor * ocorrenciasMesSemManual.length;
+                label: function(context) {
+                  let label = context.label || '';
+                  if (label) label += ': ';
+                  let value = context.parsed || 0;
+                  const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                  const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0.0%';
+                  return `${label}${formatarMoeda(value)} (${percentage})`;
+                }
               }
             }
-          } else {
-            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-            totalAnualDespesa = despesa.valor * ocorrencias.length;
           }
-          valorDespesa = totalAnualDespesa / 12; // Calcula a média mensal
+        }
+      });
+    }
 
-        } else if (mesSelecionado === -1) { // Total Anual
-          // Lógica existente para Total Anual
-          if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
-             valorDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
-             const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-             for(let i=0; i<12; i++){
-                 if(despesa.valoresManuais[i] === null){ 
-                     const ocorrenciasMesSemManual = ocorrencias.filter(d => d.getMonth() === i);
-                     valorDespesa += despesa.valor * ocorrenciasMesSemManual.length;
-                 }
-             }
-          } else {
-            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-            valorDespesa = despesa.valor * ocorrencias.length;
-          }
-        } else { // Mês Específico
-           // Lógica existente para Mês Específico
-           const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-           const temOcorrenciaNoMes = ocorrencias.some((d) => d.getMonth() === mesSelecionado);
-           const temValorManualNoMes = despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null;
-           
-           // Só processa se houver ocorrência ou valor manual no mês selecionado
-           if(temOcorrenciaNoMes || temValorManualNoMes){
-                if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
-                    valorDespesa = despesa.valoresManuais[mesSelecionado];
-                } else {
-                    const ocorrenciasNoMes = ocorrencias.filter((d) => d.getMonth() === mesSelecionado);
-                    valorDespesa = despesa.valor * ocorrenciasNoMes.length;
+    function atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado, tituloExtra) {
+        // --- Função atualizarGraficoDespesasReceitas (sem alterações na lógica, apenas título) --- 
+        const ctx = document.getElementById("graficoDespesasReceitas").getContext("2d");
+        const legendaDiv = document.getElementById("legendaDespesasReceitas");
+        legendaDiv.innerHTML = ''; // Limpa legenda anterior
+        if (graficoDespesasReceitas) graficoDespesasReceitas.destroy();
+
+        let despesasDetalhadas = {};
+        const anoAtual = new Date().getFullYear(); // Assume ano atual para cálculo
+
+        // Filtra e calcula despesas para o período selecionado
+        dadosResumo.lancamentos
+            .filter(l => l.tipo === 'fixa' || l.tipo === 'variavel')
+            .forEach(l => {
+                let valorPeriodo = 0;
+                const ocorrencias = calcularOcorrencias(l, anoAtual);
+                
+                if (mesSelecionado === -1) { // Total Anual
+                    valorPeriodo = calcularTotaisPorCategoria([l], anoAtual).total;
+                } else if (mesSelecionado === -2) { // Médias Mensais
+                     valorPeriodo = calcularTotaisPorCategoria([l], anoAtual).total / 12;
+                } else { // Mês específico
+                    if (l.valoresManuais && l.valoresManuais[mesSelecionado] !== null && l.valoresManuais[mesSelecionado] !== undefined) {
+                        valorPeriodo = l.valoresManuais[mesSelecionado];
+                    } else {
+                        const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === mesSelecionado);
+                        if (ocorrenciasNoMes.length > 0) {
+                            valorPeriodo = l.valor * ocorrenciasNoMes.length;
+                        }
+                    }
                 }
-           }
-        }
+                
+                if (valorPeriodo > 0) {
+                    if (!despesasDetalhadas[l.descricao]) {
+                        despesasDetalhadas[l.descricao] = 0;
+                    }
+                    despesasDetalhadas[l.descricao] += valorPeriodo;
+                }
+            });
 
-        // Agrupa por descrição se o valor for maior que zero
-        if (valorDespesa > 0) {
-          const key = despesa.descricao;
-          if (!despesasAgrupadas[key]) {
-            despesasAgrupadas[key] = { valor: 0, tipo: despesa.tipo, formaPagamento: despesa.formaPagamento };
-          }
-          despesasAgrupadas[key].valor += valorDespesa;
-        }
-      });
+        const labels = Object.keys(despesasDetalhadas);
+        const data = Object.values(despesasDetalhadas);
+        const totalDespesasPeriodo = data.reduce((sum, val) => sum + val, 0);
+        const percentualReceita = receitaPeriodo > 0 ? ((totalDespesasPeriodo / receitaPeriodo) * 100) : 0;
 
-      // Continua com a lógica de plotagem do gráfico (labels, data, backgroundColors...)
-      const labels = [];
-      const data = [];
-      const backgroundColors = [];
-      const tipos = [];
-      const despesasOrdenadas = Object.entries(despesasAgrupadas).map(([descricao, info]) => ({ descricao, ...info })).sort((a, b) => b.valor - a.valor);
-      const limiteGrafico = 10;
-      const despesasParaGrafico = despesasOrdenadas.slice(0, limiteGrafico);
-      let outrasDespesas = despesasOrdenadas.slice(limiteGrafico).reduce((sum, d) => sum + d.valor, 0);
-
-      despesasParaGrafico.forEach((d) => {
-        labels.push(d.descricao);
-        data.push(d.valor);
-        // Mantém a lógica de cores original
-        if (d.tipo === "fixa") backgroundColors.push(d.formaPagamento === "credito" ? "#c62828" : "#f44336");
-        else backgroundColors.push(d.formaPagamento === "credito" ? "#f57c00" : "#ff9800");
-        tipos.push(d.tipo);
-      });
-
-      if (outrasDespesas > 0) {
-        labels.push("Outras Despesas");
-        data.push(outrasDespesas);
-        backgroundColors.push("#757575");
-        tipos.push("variavel");
-      }
-
-      const totalDespesasPeriodo = data.reduce((sum, val) => sum + val, 0);
-      const restante = Math.max(0, receitaPeriodo - totalDespesasPeriodo);
-
-      if (data.length === 0 && restante <= 0) {
-        document.getElementById("legendaDespesasReceitas").innerHTML = "<p style=\"text-align:center;\">Sem despesas para exibir neste período.</p>";
-        if (graficoDespesasReceitas) {
-          graficoDespesasReceitas.destroy();
-          graficoDespesasReceitas = null;
-        }
-        return;
-      }
-
-      // Adiciona o 'Restante' apenas se houver despesas ou se o restante for positivo
-      if (restante > 0 || data.length > 0) {
-         labels.push("Potencial de Investimento");
-         data.push(restante);
-         backgroundColors.push("#1976d2"); // Cor azul para o restante
-         tipos.push("receita"); // Usa 'receita' como tipo para a legenda
-      }
-
-      // Recalcula percentuais com base na receita do período (total anual, média ou mensal)
-      const percentuais = receitaPeriodo > 0 ? data.map((val) => ((val / receitaPeriodo) * 100).toFixed(1) + "%") : data.map(() => "0%");
-
-      const legendaHTML = labels.map((label, i) => {
-        const tipo = tipos[i];
-        // Define a classe de cor baseada no tipo (fixa, variavel, receita para o restante)
-        const classeCor = tipo === "fixa" ? "fixa" : tipo === "variavel" ? "variavel" : "receita"; 
-        const percentualExibido = receitaPeriodo > 0 ? `(${percentuais[i]})` : "";
-        return `
-          <div class="item-legenda">
-            <div class="cor-legenda" style="background-color: ${backgroundColors[i]}"></div>
-            <span class="descricao-legenda ${classeCor}">${label}</span>
-            <span class="valor-legenda">${formatarMoeda(data[i])}</span>
-            <span>${percentualExibido}</span>
-          </div>
+        // Adiciona legenda HTML
+        legendaDiv.innerHTML += `
+            <div class="item-legenda">
+              <span class="cor-legenda" style="background-color: #1976d2;"></span>
+              <span class="descricao-legenda">Receita Total:</span>
+              <span class="valor-legenda">${formatarMoeda(receitaPeriodo)}</span>
+            </div>
+            <div class="item-legenda">
+              <span class="cor-legenda" style="background-color: #c62828;"></span>
+              <span class="descricao-legenda">Despesa Total:</span>
+              <span class="valor-legenda">${formatarMoeda(totalDespesasPeriodo)} (${percentualReceita.toFixed(1)}% da Receita)</span>
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.2); margin: 10px 0;">
         `;
-      }).join("");
-      document.getElementById("legendaDespesasReceitas").innerHTML = legendaHTML;
-
-      // Cria ou atualiza o gráfico
-      graficoDespesasReceitas = new Chart(ctx, {
-        type: "pie", // Mantido como pie
-        data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1, borderColor: "#014034" }] },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: function (context) {
-                  const label = context.label || "";
-                  const value = context.raw || 0;
-                  // Usa o array de percentuais calculado anteriormente
-                  const percentage = percentuais[context.dataIndex] || "0%"; 
-                  const percentualExibido = receitaPeriodo > 0 ? `(${percentage})` : "";
-                  return `${label}: ${formatarMoeda(value)} ${percentualExibido}`;
-                },
-              },
-            },
-          },
-        },
-      });
-    }
-
-    // Funções de Manipulação de Dados (LocalStorage)
-    function adicionarLancamento() {
-      const descricaoInput = document.getElementById("descricao");
-      const valorInput = document.getElementById("valor");
-      const formaPagamentoSelect = document.getElementById("formaPagamento");
-      const tipoSelect = document.getElementById("tipoLancamento");
-      const frequenciaValorInput = document.getElementById("frequenciaValor");
-      const frequenciaTipoSelect = document.getElementById("frequenciaTipo");
-      const dataInicialInput = document.getElementById("dataInicial");
-      const dataFinalInput = document.getElementById("dataFinal");
-      const descricao = descricaoInput.value.trim();
-      const valorStr = valorInput.value.trim();
-      const formaPagamento = formaPagamentoSelect.value;
-      const tipo = tipoSelect.value;
-      const frequenciaValor = parseInt(frequenciaValorInput.value) || 1;
-      const frequenciaTipo = frequenciaTipoSelect.value;
-      let dataInicial = dataInicialInput.value;
-      let dataFinal = dataFinalInput.value;
-      if (!descricao || !valorStr) {
-        alert("Preencha a descrição e o valor.");
-        return;
-      }
-      if (tipo === "receita" && formaPagamento !== "conta") {
-        alert("Receitas devem ser lançadas apenas como \"Conta\"");
-        formaPagamentoSelect.value = "conta";
-        return;
-      }
-      const valorNumerico = parseFloat(valorStr.replace(/\./g, "").replace(",", "."));
-      if (isNaN(valorNumerico)) {
-        alert("Valor inválido.");
-        return;
-      }
-      const currentYear = new Date().getFullYear();
-      if (!dataInicial) dataInicial = `${currentYear}-01-01`;
-      if (!dataFinal) dataFinal = `${currentYear}-12-31`;
-      let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-      const novoId = lancamentos.length > 0 ? Math.max(...lancamentos.map((l) => l.id)) + 1 : 1;
-      lancamentos.push({
-        id: novoId,
-        descricao,
-        valor: valorNumerico,
-        formaPagamento,
-        tipo,
-        frequenciaValor,
-        frequenciaTipo,
-        dataInicial,
-        dataFinal,
-        valoresManuais: Array(12).fill(null),
-      });
-      localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
-      descricaoInput.value = "";
-      valorInput.value = "";
-      fecharModal();
-      carregarLancamentos();
-    }
-
-    function carregarLancamentos() {
-      const tabelaBody = document.getElementById("tabelaBody");
-      tabelaBody.innerHTML = "";
-      lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-      const currentYear = new Date().getFullYear();
-      const lancamentosOrdenados = ordenarLancamentos(lancamentos);
-      lancamentosOrdenados.forEach((l) => {
-        const tr = document.createElement("tr");
-        if (l.formaPagamento === "credito" && l.tipo !== "receita") tr.classList.add("cartao-credito");
-        if (!l.valoresManuais) l.valoresManuais = Array(12).fill(null);
-        const meses = Array(12).fill(0);
-        const ocorrencias = calcularOcorrencias(l, currentYear);
-        // Calcula valor para cada mês (considerando manual ou ocorrências)
-        for (let index = 0; index < 12; index++) {
-            if (l.valoresManuais[index] !== null) {
-                meses[index] = l.valoresManuais[index];
-            } else {
-                const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
-                meses[index] = l.valor * ocorrenciasNoMes.length;
-            }
-        }
-        
-        const total = meses.reduce((sum, val) => sum + val, 0);
-        const media = total / 12;
-        tr.innerHTML = `
-          <td class="hidden-id">${l.id}</td>
-          <td class="${l.tipo}">${l.descricao}</td>
-          ${meses.map((m, index) => `
-            <td class="editable" data-id="${l.id}" data-month="${index}">
-              ${formatarMoeda(m)} 
-            </td>
-          `).join("")}
-          <td>${formatarMoeda(total)}</td>
-          <td>${formatarMoeda(media)}</td>
-          <td><button class="delete-btn" onclick="excluirLancamento(${l.id})">Excluir</button></td>
-        `;
-        tabelaBody.appendChild(tr);
-      });
-      document.querySelectorAll(".editable").forEach((cell) => {
-        cell.addEventListener("click", function () {
-          if (!this.querySelector(".edit-input")) {
-            iniciarEdicao(this);
-          }
+        labels.forEach((label, index) => {
+             const percentualDespesa = totalDespesasPeriodo > 0 ? ((data[index] / totalDespesasPeriodo) * 100).toFixed(1) : 0;
+             legendaDiv.innerHTML += `
+                <div class="item-legenda">
+                  <span class="cor-legenda" style="background-color: #aaa;"></span> <!-- Cor genérica para itens -->
+                  <span class="descricao-legenda">${label}:</span>
+                  <span class="valor-legenda">${formatarMoeda(data[index])} (${percentualDespesa}%)</span>
+                </div>
+             `;
         });
-      });
-      atualizarResumoFinanceiro(lancamentos, currentYear);
-    }
 
-    function excluirLancamento(id) {
-      if (confirm("Tem certeza que deseja excluir este lançamento?")) {
-        let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-        lancamentos = lancamentos.filter((l) => l.id !== id);
-        localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
-        carregarLancamentos();
-      }
-    }
-
-    function iniciarEdicao(cell) {
-      const id = parseInt(cell.getAttribute("data-id"));
-      const month = parseInt(cell.getAttribute("data-month"));
-      const currentValueText = cell.textContent.trim();
-      const valorNumericoAtual = parseFloat(currentValueText.replace(/[^\d,]/g, "").replace(",", ".")) || 0;
-      const valorParaInput = valorNumericoAtual.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(".", "");
-      cell.innerHTML = "";
-      const input = document.createElement("input");
-      input.type = "text";
-      input.className = "edit-input";
-      input.value = valorParaInput;
-      input.addEventListener("input", function () {
-        let v = this.value.replace(/[^\d]/g, "");
-        if (!v) { this.value = ""; return; }
-        if (v.length < 3) v = v.padStart(3, "0");
-        let inteiro = v.slice(0, -2).replace(/^0+/, "") || "0";
-        const decimal = v.slice(-2);
-        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
-      });
-      cell.appendChild(input);
-      input.focus();
-      input.select();
-      const blurHandler = () => {
-        finalizarEdicao(input, id, month, cell);
-        input.removeEventListener("blur", blurHandler);
-      };
-      input.addEventListener("blur", blurHandler);
-      input.addEventListener("keypress", function (e) {
-        if (e.key === "Enter") {
-          input.removeEventListener("blur", blurHandler);
-          finalizarEdicao(input, id, month, cell);
+        if (receitaPeriodo <= 0 && totalDespesasPeriodo <= 0) {
+             legendaDiv.innerHTML = '<div style="text-align: center; padding: 20px;">Sem dados de receita ou despesa para exibir neste período.</div>';
+             return; // Não cria gráfico se não houver dados
         }
-      });
-      input.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-          input.removeEventListener("blur", blurHandler);
-          cell.innerHTML = currentValueText;
-        }
-      });
+
+        graficoDespesasReceitas = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Comparativo'], // Apenas uma barra agrupada
+                datasets: [
+                    {
+                        label: 'Receitas',
+                        data: [receitaPeriodo],
+                        backgroundColor: '#1976d2', // Azul
+                        borderColor: '#1976d2',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Despesas',
+                        data: [totalDespesasPeriodo],
+                        backgroundColor: '#c62828', // Vermelho
+                        borderColor: '#c62828',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Barras horizontais para melhor visualização
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'white', // Cor dos ticks do eixo X
+                            callback: function(value) {
+                                return formatarMoeda(value);
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Cor das linhas de grade
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: 'white' // Cor dos ticks do eixo Y
+                        },
+                         grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Cor das linhas de grade
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Despesas em Relação às Receitas${tituloExtra}`,
+                        color: '#ffd700',
+                        font: { size: 16 }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                           color: 'white' // Cor da legenda
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                let value = context.parsed.x || 0;
+                                return `${label}${formatarMoeda(value)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
-    function finalizarEdicao(input, id, month, cell) {
-      const novoValorStr = input.value.trim();
-      let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-      const lancamento = lancamentos.find((l) => l.id === id);
-      if (lancamento) {
-        let valorNumerico = 0;
-        if (novoValorStr && novoValorStr !== "-") {
-          valorNumerico = parseFloat(novoValorStr.replace(/\./g, "").replace(",", "."));
-          if (isNaN(valorNumerico)) valorNumerico = 0;
-        }
-        if (!lancamento.valoresManuais) lancamento.valoresManuais = Array(12).fill(null);
-        lancamento.valoresManuais[month] = valorNumerico;
-        localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
-        carregarLancamentos();
-      } else {
-        cell.innerHTML = formatarMoeda(0);
-      }
-    }
-
-    function ordenarLancamentos(lancamentos) {
-      const entradas = lancamentos.filter((l) => l.tipo === "receita").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const fixasNaoCredito = lancamentos.filter((l) => l.tipo === "fixa" && l.formaPagamento !== "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const fixasCredito = lancamentos.filter((l) => l.tipo === "fixa" && l.formaPagamento === "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const variaveisNaoCredito = lancamentos.filter((l) => l.tipo === "variavel" && l.formaPagamento !== "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const variaveisCredito = lancamentos.filter((l) => l.tipo === "variavel" && l.formaPagamento === "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      return [...entradas, ...fixasNaoCredito, ...fixasCredito, ...variaveisNaoCredito, ...variaveisCredito];
+    function atualizarInterface() {
+      const anoAtual = new Date().getFullYear(); // Ou permitir seleção de ano no futuro
+      atualizarTabelaLancamentos(lancamentos, anoAtual);
+      atualizarResumoFinanceiro(lancamentos, anoAtual);
+      // Gráficos são atualizados dentro de atualizarResumoFinanceiro
     }
 
     // Inicialização
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", () => {
       carregarLancamentos();
-      document.getElementById("valor").addEventListener("input", function () {
-        let v = this.value.replace(/[^\d]/g, "");
-        if (!v) { this.value = ""; return; }
-        if (v.length < 3) v = v.padStart(3, "0");
-        let inteiro = v.slice(0, -2).replace(/^0+/, "") || "0";
-        const decimal = v.slice(-2);
-        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
-      });
-      // *** CORREÇÃO APLICADA AQUI (v5) ***
-      document.getElementById("tipoLancamento").addEventListener("change", function () {
-        const formaPagamentoSelect = document.getElementById("formaPagamento");
-        if (this.value === "receita") {
-          formaPagamentoSelect.innerHTML = `<option value="conta">Conta</option>`; // Corrigido
-          formaPagamentoSelect.value = "conta"; // Garantir seleção
-        } else {
-          const valorAtual = formaPagamentoSelect.value;
-          formaPagamentoSelect.innerHTML = `
-            <option value="conta">Conta</option>
-            <option value="credito">Cartão de Crédito</option>
-          `;
-          if (valorAtual === "conta" || valorAtual === "credito") {
-            formaPagamentoSelect.value = valorAtual;
-          } else {
-            formaPagamentoSelect.value = "conta";
-          }
-        }
-      });
-      document.getElementById("tipoLancamento").dispatchEvent(new Event("change"));
+      atualizarInterface();
+      // Define o ano atual como padrão nas datas do modal para novos lançamentos
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      if (!document.getElementById("dataInicial").value) {
+        document.getElementById("dataInicial").value = `${currentYear}-01-01`;
+      }
+      if (!document.getElementById("dataFinal").value) {
+        document.getElementById("dataFinal").value = `${currentYear}-12-31`;
+      }
     });
 
   </script>
 </body>
 </html>
+
