@@ -791,7 +791,7 @@
             <select id="subcategoria" class="categoria-select">
               <option value="">Nenhuma</option>
             </select>
-            <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento(\'subcategorias\')">Gerenciar</button>
+            <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento('subcategorias')">Gerenciar</button> <!-- CORRIGIDO -->
           </div>
 
           <!-- Campo Cartão (inicialmente oculto) -->
@@ -801,7 +801,7 @@
               <select id="cartaoCredito" class="categoria-select">
                 <option value="">Selecione o cartão</option>
               </select>
-              <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento(\'cartoes\')">Gerenciar</button>
+              <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento('cartoes')">Gerenciar</button> <!-- CORRIGIDO -->
             </div>
           </div>
 
@@ -872,7 +872,7 @@
             <select id="subcategoriaEdicao" class="categoria-select">
               <option value="">Nenhuma</option>
             </select>
-            <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento(\'subcategorias\')">Gerenciar</button>
+            <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento('subcategorias')">Gerenciar</button> <!-- CORRIGIDO -->
           </div>
 
           <!-- Campo Cartão Edição (inicialmente oculto) -->
@@ -882,7 +882,7 @@
               <select id="cartaoCreditoEdicao" class="categoria-select">
                 <option value="">Selecione o cartão</option>
               </select>
-              <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento(\'cartoes\')">Gerenciar</button>
+              <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento('cartoes')">Gerenciar</button> <!-- CORRIGIDO -->
             </div>
           </div>
 
@@ -1640,7 +1640,7 @@
           const corClass = obterCorSubcategoria(index);
           const media = dados.total / 12;
           subcategoriasHTML += `
-            <tr class="${corClass}" onclick="abrirModalDetalhamento(\'${nome}\')">
+            <tr class="${corClass}" onclick="abrirModalDetalhamento('${nome}')">
               <td>${nome}</td>
               ${dados.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
               <td>${formatarMoeda(dados.total)}</td>
@@ -1657,7 +1657,7 @@
           const media = dados.total / 12;
           // Usando a classe 'cartao-laranja' para todos os cartões individuais
           cartoesHTML += `
-            <tr class="cartao-laranja" onclick="abrirModalDetalhamento(\'${dados.nome}\', ${id})">
+            <tr class="cartao-laranja" onclick="abrirModalDetalhamento('${dados.nome}', ${id})">
               <td>${dados.nome}</td>
               ${dados.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
               <td>${formatarMoeda(dados.total)}</td>
@@ -1668,20 +1668,20 @@
       }
 
       resumoBody.innerHTML = `
-        <tr class="receita" onclick="abrirModalDetalhamento(\'Receitas\')">
+        <tr class="receita" onclick="abrirModalDetalhamento('Receitas')">
           <td>Receitas</td>
           ${receitas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(totalReceitas)}</td>
           <td>${formatarMoeda(mediaReceitas)}</td>
         </tr>
         ${spacerRowHTML} 
-        <tr class="fixa" onclick="abrirModalDetalhamento(\'Despesas Fixas\')">
+        <tr class="fixa" onclick="abrirModalDetalhamento('Despesas Fixas')">
           <td>Despesas Fixas</td>
           ${fixas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(totalFixas)}</td>
           <td>${formatarMoeda(mediaFixas)}</td>
         </tr>
-        <tr class="variavel" onclick="abrirModalDetalhamento(\'Despesas Variáveis\')">
+        <tr class="variavel" onclick="abrirModalDetalhamento('Despesas Variáveis')">
           <td>Despesas Variáveis</td>
           ${variaveis.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(totalVariaveis)}</td>
@@ -1709,13 +1709,13 @@
         </tr>
         ${cartoesHTML} <!-- Cartões individuais aqui -->
         ${spacerRowHTML}
-        <tr class="cartao-laranja" onclick="abrirModalDetalhamento(\'Cartão de Crédito (Total)\')">
+        <tr class="cartao-laranja" onclick="abrirModalDetalhamento('Cartão de Crédito (Total)')">
           <td>Cartão de Crédito (Total)</td>
           ${cartaoTotal.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(cartaoTotal.total)}</td>
           <td>${formatarMoeda(mediaCartaoTotal)}</td>
         </tr>
-        <tr class="conta-amarela" onclick="abrirModalDetalhamento(\'Conta\')">
+        <tr class="conta-amarela" onclick="abrirModalDetalhamento('Conta')">
           <td>Conta</td>
           ${conta.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(conta.total)}</td>
@@ -2065,7 +2065,7 @@
         // Adicionar onclick para abrir modal de edição, exceto nas células editáveis e botão excluir
         tr.onclick = function(event) {
           // Verificar se o clique foi em uma célula editável ou no botão excluir
-          if (event.target.classList.contains(\'editable\') || event.target.classList.contains(\'delete-btn\')) {
+          if (event.target.classList.contains('editable') || event.target.classList.contains('delete-btn')) { // CORRIGIDO
             return; // Não abrir modal de edição
           }
           abrirModalEdicao(l.id);
