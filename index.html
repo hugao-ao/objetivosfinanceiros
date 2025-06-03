@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro V8 - Modificado</title> <!-- Versão atualizada -->
+  <title>Controle Financeiro V9 - Avançado</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -28,32 +28,44 @@
     .conta-amarela {
         color: #fbc02d; /* Amarelo não brilhante */
     }
+    
+    /* Container principal expandido para 3 seções */
     .container-principal {
       display: flex;
-      width: 200%; /* Mantido para o slide do resumo */
+      width: 300%; /* Expandido para 3 seções */
       transition: transform 0.5s ease;
     }
 
-    .container-ativo {
-      transform: translateX(-50%); /* Mantido para mostrar o resumo */
+    .container-resumo-ativo {
+      transform: translateX(-33.33%); /* Para mostrar o resumo */
     }
 
-    /* Nova seção para conter apenas a tabela de lançamentos */
+    .container-mensagens-ativo {
+      transform: translateX(-66.66%); /* Para mostrar as mensagens */
+    }
+
+    /* Seções do container */
     .secao-lancamentos {
-      width: 50%; /* Ocupa metade do container principal */
+      width: 33.33%; /* 1/3 do container */
       padding-right: 20px;
       box-sizing: border-box;
     }
 
     .secao-resumo {
-      width: 50%; /* Ocupa a outra metade */
+      width: 33.33%; /* 1/3 do container */
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .secao-mensagens {
+      width: 33.33%; /* 1/3 do container */
       padding-left: 20px;
       box-sizing: border-box;
     }
 
     /* Estilos para o Modal */
     .modal {
-      display: none; /* Escondido por padrão */
+      display: none;
       position: fixed; 
       z-index: 100; 
       left: 0;
@@ -201,13 +213,11 @@
       background-color: #ffc400;
     }
 
-    /* Botão Resumo Fixo */
-    .botao-resumo-fixo {
+    /* Botões de navegação fixos */
+    .botao-navegacao-fixo {
       position: fixed;
       top: 20px;
-      right: 20px;
       z-index: 50;
-      background-color: #2196F3;
       color: white;
       font-weight: bold;
       border: none;
@@ -215,19 +225,39 @@
       border-radius: 5px;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: opacity 0.3s ease, visibility 0.3s ease; /* Adiciona transição */
+      transition: opacity 0.3s ease, visibility 0.3s ease;
       opacity: 1;
       visibility: visible;
     }
-    
-    /* Esconde o botão quando o resumo está ativo */
-    .container-ativo ~ .botao-resumo-fixo {
-        opacity: 0;
-        visibility: hidden;
+
+    .botao-resumo-fixo {
+      right: 20px;
+      background-color: #2196F3;
+    }
+
+    .botao-mensagens-fixo {
+      right: 200px;
+      background-color: #9c27b0;
     }
 
     .botao-resumo-fixo:hover {
       background-color: #0b7dda;
+    }
+
+    .botao-mensagens-fixo:hover {
+      background-color: #7b1fa2;
+    }
+
+    /* Esconde botões quando não aplicável */
+    .container-resumo-ativo ~ .botao-resumo-fixo {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .container-mensagens-ativo ~ .botao-resumo-fixo,
+    .container-mensagens-ativo ~ .botao-mensagens-fixo {
+        opacity: 0;
+        visibility: hidden;
     }
 
     .botao-voltar {
@@ -263,6 +293,13 @@
     }
 
     .resumo-titulo {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #ffd700;
+      text-align: center;
+    }
+
+    .mensagens-titulo {
       font-size: 18px;
       margin-bottom: 15px;
       color: #ffd700;
@@ -398,10 +435,10 @@
     
     /* Linha de espaçamento na tabela de resumo */
     .spacer-row td {
-        height: 10px; /* Altura do espaço */
+        height: 10px;
         padding: 0;
-        border: none; /* Remove bordas */
-        background-color: #002d26; /* Cor de fundo do corpo */
+        border: none;
+        background-color: #002d26;
     }
 
     /* Estilos para subcategorias e cartões */
@@ -520,7 +557,7 @@
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
-      flex-wrap: wrap; /* Para responsividade */
+      flex-wrap: wrap;
     }
 
     .novo-item-input {
@@ -528,11 +565,11 @@
       padding: 8px;
       border-radius: 5px;
       border: none;
-      min-width: 150px; /* Largura mínima */
+      min-width: 150px;
     }
 
     .novo-item-input.dia {
-      flex: 0 0 80px; /* Largura fixa para dia */
+      flex: 0 0 80px;
     }
 
     .botao-adicionar-item {
@@ -654,6 +691,169 @@
       background-color: rgba(255, 215, 0, 0.1);
     }
 
+    /* Estilos para seção de insights */
+    .insights-container {
+      margin-top: 30px;
+      background-color: #014034;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .insights-titulo {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ffd700;
+      font-size: 18px;
+    }
+
+    .insight-item {
+      background-color: #006a56;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 4px solid #ffd700;
+    }
+
+    .insight-tipo {
+      font-weight: bold;
+      color: #ffd700;
+      margin-bottom: 5px;
+    }
+
+    .insight-texto {
+      line-height: 1.5;
+    }
+
+    .insight-valor {
+      font-weight: bold;
+      color: #4caf50;
+    }
+
+    .insight-alerta {
+      color: #f44336;
+    }
+
+    /* Estilos para seção de mensagens */
+    .simulador-container {
+      background-color: #014034;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .simulador-titulo {
+      color: #ffd700;
+      font-size: 16px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .simulador-controles {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .simulador-controles label {
+      font-weight: bold;
+    }
+
+    .simulador-controles input,
+    .simulador-controles select {
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      background-color: #006a56;
+      color: white;
+    }
+
+    .botao-simular {
+      background-color: #ffd700;
+      color: #002d26;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .botao-simular:hover {
+      background-color: #ffc400;
+    }
+
+    .mensagens-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .mensagem-card {
+      background-color: #014034;
+      border-radius: 10px;
+      padding: 20px;
+      border-left: 4px solid;
+    }
+
+    .mensagem-hoje {
+      border-left-color: #4caf50;
+    }
+
+    .mensagem-semana {
+      border-left-color: #ff9800;
+    }
+
+    .mensagem-mes {
+      border-left-color: #2196f3;
+    }
+
+    .mensagem-titulo {
+      font-weight: bold;
+      color: #ffd700;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .mensagem-lista {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .mensagem-item {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mensagem-item:last-child {
+      border-bottom: none;
+    }
+
+    .mensagem-descricao {
+      flex: 1;
+    }
+
+    .mensagem-valor {
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .mensagem-data {
+      font-size: 12px;
+      color: #b0bec5;
+      margin-left: 10px;
+    }
+
+    .mensagem-vazia {
+      text-align: center;
+      color: #b0bec5;
+      font-style: italic;
+    }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -661,7 +861,7 @@
 
   <h1>Controle Financeiro</h1>
   
-  <!-- Container Principal (Lançamentos e Resumo) -->
+  <!-- Container Principal (Lançamentos, Resumo e Mensagens) -->
   <div class="container-principal" id="containerPrincipal">
     <!-- Seção da Tabela de Lançamentos -->
     <div class="secao-lancamentos">
@@ -722,7 +922,7 @@
               <th>Nov</th>
               <th>Dez</th>
               <th>Total</th>
-              <th>Média</th> <!-- Nova coluna Média -->
+              <th>Média</th>
             </tr>
           </thead>
           <tbody id="resumoBody">
@@ -750,6 +950,7 @@
           <option value="10">Novembro</option>
           <option value="11">Dezembro</option>
         </select>
+        <button class="botao-lancar" onclick="mostrarMensagens()" style="margin-left: 20px;">Ver Mensagens →</button>
       </div>
 
       <div class="graficos-container">
@@ -768,12 +969,65 @@
           </div>
           <div class="legenda-grafico" id="legendaDespesasReceitas"></div>
         </div>
+
+        <!-- Novos Gráficos -->
+        <div class="grafico-card">
+          <div class="grafico-titulo">Distribuição por Cartões de Crédito</div>
+          <div class="grafico">
+            <canvas id="graficoCartoes"></canvas>
+          </div>
+          <div class="legenda-grafico" id="legendaCartoes"></div>
+        </div>
+
+        <div class="grafico-card">
+          <div class="grafico-titulo">Análise de Subcategorias</div>
+          <div class="grafico">
+            <canvas id="graficoSubcategorias"></canvas>
+          </div>
+          <div class="legenda-grafico" id="legendaSubcategorias"></div>
+        </div>
+      </div>
+
+      <!-- Seção de Insights -->
+      <div class="insights-container">
+        <div class="insights-titulo">💡 Insights Inteligentes</div>
+        <div id="insightsContent">
+          <!-- Insights serão inseridos aqui -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Mensagens -->
+    <div class="secao-mensagens">
+      <button class="botao-voltar" onclick="voltarParaResumo()">← Voltar para Resumo</button>
+      
+      <div class="mensagens-titulo">📱 Central de Mensagens</div>
+
+      <!-- Simulador de Data -->
+      <div class="simulador-container">
+        <div class="simulador-titulo">🗓️ Simulador de Data</div>
+        <div class="simulador-controles">
+          <label>
+            <input type="radio" name="tipoData" value="hoje" checked onchange="atualizarSimulador()"> Hoje
+          </label>
+          <label>
+            <input type="radio" name="tipoData" value="especifica" onchange="atualizarSimulador()"> Data Específica:
+          </label>
+          <input type="date" id="dataEspecifica" onchange="atualizarSimulador()" disabled>
+          <button class="botao-simular" onclick="gerarMensagens()">Gerar Mensagens</button>
+        </div>
+      </div>
+
+      <!-- Container das Mensagens -->
+      <div class="mensagens-container" id="mensagensContainer">
+        <!-- Mensagens serão inseridas aqui -->
       </div>
     </div>
   </div>
   
-  <!-- Botão Resumo Fixo (movido para fora do container principal para CSS funcionar) -->
-  <button class="botao-resumo-fixo" onclick="mostrarResumo()">Ver Resumo e Análises</button>
+  <!-- Botões de Navegação Fixos -->
+  <button class="botao-navegacao-fixo botao-resumo-fixo" onclick="mostrarResumo()">Ver Resumo e Análises</button>
+  <button class="botao-navegacao-fixo botao-mensagens-fixo" onclick="mostrarMensagens()">Ver Mensagens</button>
 
   <!-- Modal do Formulário de Adição -->
   <div id="modalFormulario" class="modal">
@@ -976,17 +1230,18 @@
     // Variáveis globais
     let graficoDespesasPoupanca = null;
     let graficoDespesasReceitas = null;
+    let graficoCartoes = null;
+    let graficoSubcategorias = null;
     let dadosResumo = null;
     let lancamentos = [];
     let subcategorias = [];
-    let cartoes = []; // Variável para cartões
-    let tipoGerenciamentoAtual = null; // Para saber qual modal de gerenciamento está aberto
+    let cartoes = [];
+    let tipoGerenciamentoAtual = null;
     const modal = document.getElementById("modalFormulario");
     const modalEdicao = document.getElementById("modalEdicao");
     const modalGerenciamento = document.getElementById("modalGerenciamento");
     const modalDetalhamento = document.getElementById("modalDetalhamento");
     const containerPrincipal = document.getElementById("containerPrincipal");
-    const botaoResumoFixo = document.querySelector(".botao-resumo-fixo");
 
     // Função para mostrar/esconder campo de cartão
     function toggleCartaoContainer() {
@@ -1001,7 +1256,6 @@
         cartaoContainer.style.display = "none";
         cartaoContainer.classList.remove("show");
         cartaoContainer.classList.remove("obrigatorio");
-        // Limpa a seleção do cartão quando não é necessário
         document.getElementById("cartaoCredito").value = "";
       }
     }
@@ -1019,9 +1273,30 @@
         cartaoContainer.style.display = "none";
         cartaoContainer.classList.remove("show");
         cartaoContainer.classList.remove("obrigatorio");
-        // Limpa a seleção do cartão quando não é necessário
         document.getElementById("cartaoCreditoEdicao").value = "";
       }
+    }
+
+    // Funções de navegação
+    function mostrarResumo() {
+      containerPrincipal.classList.remove("container-mensagens-ativo");
+      containerPrincipal.classList.add("container-resumo-ativo");
+    }
+
+    function mostrarMensagens() {
+      containerPrincipal.classList.remove("container-resumo-ativo");
+      containerPrincipal.classList.add("container-mensagens-ativo");
+      gerarMensagens(); // Gera mensagens automaticamente
+    }
+
+    function voltarParaLancamentos() {
+      containerPrincipal.classList.remove("container-resumo-ativo");
+      containerPrincipal.classList.remove("container-mensagens-ativo");
+    }
+
+    function voltarParaResumo() {
+      containerPrincipal.classList.remove("container-mensagens-ativo");
+      containerPrincipal.classList.add("container-resumo-ativo");
     }
 
     // Funções de Gerenciamento (Subcategorias e Cartões)
@@ -1050,7 +1325,6 @@
         select.appendChild(option);
       });
       
-      // Tenta manter o valor selecionado se ele ainda existir nos dados
       if (valorAtual && dados.find(d => d.id == valorAtual)) {
         select.value = valorAtual;
       }
@@ -1062,7 +1336,7 @@
       const formNovoItem = document.getElementById("formNovoItem");
       const listaGerenciamento = document.getElementById("listaGerenciamento");
 
-      listaGerenciamento.innerHTML = ""; // Limpa a lista
+      listaGerenciamento.innerHTML = "";
 
       if (tipo === "subcategorias") {
         tituloModal.textContent = "Gerenciar Subcategorias";
@@ -1156,14 +1430,14 @@
         cartoes.push(novoItem);
         listaDados = cartoes;
         storageKey = "cartoes";
-        diaVencimentoInput.value = ""; // Limpa campo dia
+        diaVencimentoInput.value = "";
       }
 
       if (novoItem) {
         localStorage.setItem(storageKey, JSON.stringify(listaDados));
         adicionarItemNaLista(novoItem);
         atualizarSelects();
-        nomeInput.value = ""; // Limpa campo nome
+        nomeInput.value = "";
       }
     }
 
@@ -1195,7 +1469,7 @@
 
       if (tipoGerenciamentoAtual === "cartoes") {
         const novoDiaVencimentoStr = prompt("Novo dia de vencimento (1-31):", item.diaVencimento);
-        if (novoDiaVencimentoStr === null) return; // Cancelou no segundo prompt
+        if (novoDiaVencimentoStr === null) return;
         const novoDiaVencimento = parseInt(novoDiaVencimentoStr);
         if (!novoDiaVencimento || novoDiaVencimento < 1 || novoDiaVencimento > 31) {
           alert("Dia de vencimento inválido.");
@@ -1206,7 +1480,6 @@
       }
 
       localStorage.setItem(storageKey, JSON.stringify(listaDados));
-      // Atualiza a lista visualmente
       const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
       if (itemElement) {
         itemElement.querySelector(".item-gerenciamento-nome").textContent = item.nome;
@@ -1232,7 +1505,6 @@
 
       if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
 
-      // Remove o item da lista
       if (tipoGerenciamentoAtual === "subcategorias") {
         subcategorias = subcategorias.filter(s => s.id !== id);
       } else if (tipoGerenciamentoAtual === "cartoes") {
@@ -1241,7 +1513,6 @@
 
       localStorage.setItem(storageKey, JSON.stringify(tipoGerenciamentoAtual === "subcategorias" ? subcategorias : cartoes));
       
-      // Remove da lista visual
       const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
       if (itemElement) {
         itemElement.remove();
@@ -1254,1040 +1525,1225 @@
     function calcularDiaFechamento(diaVencimento) {
       let diaFechamento = diaVencimento - 7;
       if (diaFechamento <= 0) {
-        diaFechamento += 30; // Aproximação para mês anterior
+        diaFechamento += 30;
       }
       return diaFechamento;
     }
 
-    // Funções do Modal de Adição
+    // Continua na próxima parte...
+
+
+    // Funções de Modal
     function abrirModal() {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      if (!document.getElementById("dataInicial").value) {
-        document.getElementById("dataInicial").value = `${currentYear}-01-01`;
-      }
-      if (!document.getElementById("dataFinal").value) {
-        document.getElementById("dataFinal").value = `${currentYear}-12-31`;
-      }
-      // Garante que o campo cartão esteja no estado correto ao abrir
-      toggleCartaoContainer();
       modal.style.display = "block";
+      document.getElementById("dataInicial").value = new Date().toISOString().split('T')[0];
+      document.getElementById("dataFinal").value = new Date(new Date().getFullYear(), 11, 31).toISOString().split('T')[0];
     }
 
     function fecharModal() {
       modal.style.display = "none";
-    }
-
-    // Funções do Modal de Edição
-    function abrirModalEdicao(id) {
-      const lancamento = lancamentos.find(l => l.id === id);
-      if (!lancamento) return;
-
-      document.getElementById("editLancamentoId").value = id;
-      document.getElementById("descricaoEdicao").value = lancamento.descricao;
-      document.getElementById("valorEdicao").value = formatarMoedaParaInput(lancamento.valor);
-      document.getElementById("tipoLancamentoEdicao").value = lancamento.tipo;
-      document.getElementById("formaPagamentoEdicao").value = lancamento.formaPagamento;
-      document.getElementById("subcategoriaEdicao").value = lancamento.subcategoria || "";
-      document.getElementById("cartaoCreditoEdicao").value = lancamento.cartaoId || ""; // Carrega cartão
-      document.getElementById("frequenciaValorEdicao").value = lancamento.frequenciaValor;
-      document.getElementById("frequenciaTipoEdicao").value = lancamento.frequenciaTipo;
-      document.getElementById("dataInicialEdicao").value = lancamento.dataInicial;
-      document.getElementById("dataFinalEdicao").value = lancamento.dataFinal;
-
-      // Trigger change para atualizar forma de pagamento e visibilidade do cartão
-      toggleCartaoContainerEdicao();
-      
-      modalEdicao.style.display = "block";
+      limparFormulario();
     }
 
     function fecharModalEdicao() {
       modalEdicao.style.display = "none";
     }
 
-    function salvarEdicao() {
-      const id = parseInt(document.getElementById("editLancamentoId").value);
-      const descricao = document.getElementById("descricaoEdicao").value.trim();
-      const valorStr = document.getElementById("valorEdicao").value.trim();
-      const formaPagamento = document.getElementById("formaPagamentoEdicao").value;
-      const tipo = document.getElementById("tipoLancamentoEdicao").value;
-      const subcategoria = document.getElementById("subcategoriaEdicao").value || null;
-      const cartaoId = document.getElementById("cartaoCreditoEdicao").value || null; // Pega ID do cartão
-      const frequenciaValor = parseInt(document.getElementById("frequenciaValorEdicao").value) || 1;
-      const frequenciaTipo = document.getElementById("frequenciaTipoEdicao").value;
-      const dataInicial = document.getElementById("dataInicialEdicao").value;
-      const dataFinal = document.getElementById("dataFinalEdicao").value;
+    function fecharModalDetalhamento() {
+      modalDetalhamento.style.display = "none";
+    }
 
-      if (!descricao || !valorStr) {
-        alert("Preencha a descrição e o valor.");
-        return;
-      }
-
-      if (tipo === "receita" && formaPagamento !== "conta") {
-        alert("Receitas devem ser lançadas apenas como \"Conta\"");
-        return;
-      }
-      
-      // Validação do Cartão Obrigatório
-      if (formaPagamento === "credito" && !cartaoId) {
-          alert("Selecione um cartão de crédito para este lançamento.");
-          return;
-      }
-
-      const valorNumerico = parseFloat(valorStr.replace(/\./g, "").replace(",", "."));
-      if (isNaN(valorNumerico)) {
-        alert("Valor inválido.");
-        return;
-      }
-
-      let lancamentosArray = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-      const lancamentoIndex = lancamentosArray.findIndex(l => l.id === id);
-      
-      if (lancamentoIndex !== -1) {
-        lancamentosArray[lancamentoIndex] = {
-          ...lancamentosArray[lancamentoIndex],
-          descricao,
-          valor: valorNumerico,
-          formaPagamento,
-          tipo,
-          subcategoria,
-          cartaoId: formaPagamento === "credito" ? cartaoId : null, // Salva ID do cartão
-          frequenciaValor,
-          frequenciaTipo,
-          dataInicial,
-          dataFinal
-        };
-        
-        localStorage.setItem("lancamentos", JSON.stringify(lancamentosArray));
-        fecharModalEdicao();
-        carregarLancamentos();
-      }
+    function limparFormulario() {
+      document.getElementById("descricao").value = "";
+      document.getElementById("valor").value = "";
+      document.getElementById("tipoLancamento").value = "receita";
+      document.getElementById("formaPagamento").value = "conta";
+      document.getElementById("subcategoria").value = "";
+      document.getElementById("cartaoCredito").value = "";
+      document.getElementById("frequenciaValor").value = "1";
+      document.getElementById("frequenciaTipo").value = "meses";
+      toggleCartaoContainer();
     }
 
     // Função para adicionar lançamento
     function adicionarLancamento() {
       const descricao = document.getElementById("descricao").value.trim();
       const valorStr = document.getElementById("valor").value.trim();
+      const tipoLancamento = document.getElementById("tipoLancamento").value;
       const formaPagamento = document.getElementById("formaPagamento").value;
-      const tipo = document.getElementById("tipoLancamento").value;
-      const subcategoria = document.getElementById("subcategoria").value || null;
-      const cartaoId = document.getElementById("cartaoCredito").value || null;
-      const frequenciaValor = parseInt(document.getElementById("frequenciaValor").value) || 1;
+      const subcategoriaId = document.getElementById("subcategoria").value;
+      const cartaoCreditoId = document.getElementById("cartaoCredito").value;
+      const frequenciaValor = parseInt(document.getElementById("frequenciaValor").value);
       const frequenciaTipo = document.getElementById("frequenciaTipo").value;
       const dataInicial = document.getElementById("dataInicial").value;
       const dataFinal = document.getElementById("dataFinal").value;
 
-      if (!descricao || !valorStr) {
-        alert("Preencha a descrição e o valor.");
+      if (!descricao || !valorStr || !dataInicial || !dataFinal) {
+        alert("Preencha todos os campos obrigatórios.");
         return;
       }
 
-      if (tipo === "receita" && formaPagamento !== "conta") {
-        alert("Receitas devem ser lançadas apenas como \"Conta\"");
+      if (tipoLancamento !== "receita" && formaPagamento === "credito" && !cartaoCreditoId) {
+        alert("Selecione um cartão de crédito para despesas pagas no cartão.");
         return;
       }
 
-      // Validação do Cartão Obrigatório
-      if (formaPagamento === "credito" && !cartaoId) {
-        alert("Selecione um cartão de crédito para este lançamento.");
+      if (tipoLancamento === "receita" && formaPagamento === "credito") {
+        alert("Receitas só podem ser lançadas como 'Conta'.");
         return;
       }
 
-      const valorNumerico = parseFloat(valorStr.replace(/\./g, "").replace(",", "."));
-      if (isNaN(valorNumerico)) {
-        alert("Valor inválido.");
+      const valor = parseFloat(valorStr.replace(",", "."));
+      if (isNaN(valor) || valor <= 0) {
+        alert("Digite um valor válido.");
         return;
       }
 
-      const lancamentosArray = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-      const novoId = lancamentosArray.length > 0 ? Math.max(...lancamentosArray.map(l => l.id)) + 1 : 1;
+      const novoId = lancamentos.length > 0 ? Math.max(...lancamentos.map(l => l.id)) + 1 : 1;
+      
+      const subcategoriaNome = subcategoriaId ? subcategorias.find(s => s.id == subcategoriaId)?.nome || "" : "";
+      const cartaoNome = cartaoCreditoId ? cartoes.find(c => c.id == cartaoCreditoId)?.nome || "" : "";
 
       const novoLancamento = {
         id: novoId,
-        descricao,
-        valor: valorNumerico,
-        formaPagamento,
-        tipo,
-        subcategoria,
-        cartaoId: formaPagamento === "credito" ? cartaoId : null,
-        frequenciaValor,
-        frequenciaTipo,
-        dataInicial,
-        dataFinal,
-        valoresManuais: null
+        descricao: descricao,
+        valor: valor,
+        tipo: tipoLancamento,
+        formaPagamento: formaPagamento,
+        subcategoria: subcategoriaNome,
+        cartao: cartaoNome,
+        frequenciaValor: frequenciaValor,
+        frequenciaTipo: frequenciaTipo,
+        dataInicial: dataInicial,
+        dataFinal: dataFinal,
+        valores: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       };
 
-      lancamentosArray.push(novoLancamento);
-      localStorage.setItem("lancamentos", JSON.stringify(lancamentosArray));
-
-      // Limpar formulário
-      document.getElementById("descricao").value = "";
-      document.getElementById("valor").value = "";
-      document.getElementById("subcategoria").value = "";
-      document.getElementById("cartaoCredito").value = "";
-      document.getElementById("frequenciaValor").value = "1";
-      document.getElementById("frequenciaTipo").value = "meses";
-
+      calcularValoresMensais(novoLancamento);
+      lancamentos.push(novoLancamento);
+      salvarDados();
+      atualizarTabela();
       fecharModal();
-      carregarLancamentos();
     }
 
-    // Resto das funções continuam igual...
-    // (Devido ao limite de caracteres, vou continuar na próxima parte)
+    // Função para calcular valores mensais baseado na recorrência
+    function calcularValoresMensais(lancamento) {
+      const dataInicio = new Date(lancamento.dataInicial);
+      const dataFim = new Date(lancamento.dataFinal);
+      const valores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-
-    // Funções de Detalhamento Modal
-    function abrirModalDetalhamento(categoria, cartaoId = null) {
-      const currentYear = new Date().getFullYear();
-      const titulo = document.getElementById("tituloDetalhamento");
-      const lista = document.getElementById("listaDetalhamento");
+      let dataAtual = new Date(dataInicio);
       
-      titulo.textContent = `Detalhamento: ${categoria}`;
-      lista.innerHTML = "";
-
-      let itensCategoria = [];
-      let totalCategoria = 0;
-
-      // Determinar quais lançamentos pertencem à categoria
-      if (cartaoId) {
-        // Detalhamento de um cartão específico
-        itensCategoria = lancamentos.filter(l => l.cartaoId == cartaoId);
-      } else {
-        switch(categoria) {
-          case "Receitas":
-            itensCategoria = lancamentos.filter(l => l.tipo === "receita");
-            break;
-          case "Despesas Fixas":
-            itensCategoria = lancamentos.filter(l => l.tipo === "fixa");
-            break;
-          case "Despesas Variáveis":
-            itensCategoria = lancamentos.filter(l => l.tipo === "variavel");
-            break;
-          case "Cartão de Crédito (Total)":
-            itensCategoria = lancamentos.filter(l => l.formaPagamento === "credito" && l.tipo !== "receita");
-            break;
-          case "Conta":
-            itensCategoria = lancamentos.filter(l => l.formaPagamento === "conta" && l.tipo !== "receita");
-            break;
-          default:
-            // Subcategoria
-            const subcategoriaObj = subcategorias.find(s => s.nome === categoria);
-            if (subcategoriaObj) {
-              itensCategoria = lancamentos.filter(l => l.subcategoria == subcategoriaObj.id);
+      while (dataAtual <= dataFim) {
+        const mes = dataAtual.getMonth();
+        
+        // Lógica para cartão de crédito - considera data de fechamento
+        if (lancamento.formaPagamento === "credito" && lancamento.cartao) {
+          const cartao = cartoes.find(c => c.nome === lancamento.cartao);
+          if (cartao) {
+            const dataFechamento = new Date(dataAtual.getFullYear(), mes, cartao.diaFechamento);
+            const dataVencimento = new Date(dataAtual.getFullYear(), mes, cartao.diaVencimento);
+            
+            // Se a compra foi após o fechamento, vai para o próximo mês
+            if (dataAtual.getDate() > cartao.diaFechamento) {
+              const proximoMes = mes === 11 ? 0 : mes + 1;
+              if (proximoMes < 12) {
+                valores[proximoMes] += lancamento.valor;
+              }
+            } else {
+              valores[mes] += lancamento.valor;
             }
+          } else {
+            valores[mes] += lancamento.valor;
+          }
+        } else {
+          valores[mes] += lancamento.valor;
+        }
+
+        // Calcular próxima data baseada na frequência
+        switch (lancamento.frequenciaTipo) {
+          case "unico":
+            dataAtual = new Date(dataFim.getTime() + 1);
+            break;
+          case "dias":
+            dataAtual.setDate(dataAtual.getDate() + lancamento.frequenciaValor);
+            break;
+          case "dias_uteis":
+            for (let i = 0; i < lancamento.frequenciaValor; i++) {
+              do {
+                dataAtual.setDate(dataAtual.getDate() + 1);
+              } while (dataAtual.getDay() === 0 || dataAtual.getDay() === 6);
+            }
+            break;
+          case "segunda":
+          case "terca":
+          case "quarta":
+          case "quinta":
+          case "sexta":
+            const diasSemana = { segunda: 1, terca: 2, quarta: 3, quinta: 4, sexta: 5 };
+            const diaAlvo = diasSemana[lancamento.frequenciaTipo];
+            dataAtual.setDate(dataAtual.getDate() + (7 * lancamento.frequenciaValor));
+            break;
+          case "semanas":
+            dataAtual.setDate(dataAtual.getDate() + (7 * lancamento.frequenciaValor));
+            break;
+          case "quinzenas":
+            dataAtual.setDate(dataAtual.getDate() + (15 * lancamento.frequenciaValor));
+            break;
+          case "meses":
+            dataAtual.setMonth(dataAtual.getMonth() + lancamento.frequenciaValor);
+            break;
+          case "anos":
+            dataAtual.setFullYear(dataAtual.getFullYear() + lancamento.frequenciaValor);
+            break;
         }
       }
 
-      // Calcular valores e percentuais
-      itensCategoria.forEach(lancamento => {
-        const ocorrencias = calcularOcorrencias(lancamento, currentYear);
-        let valorTotal = 0;
-        
-        for (let index = 0; index < 12; index++) {
-          if (lancamento.valoresManuais && lancamento.valoresManuais[index] !== null) {
-            valorTotal += lancamento.valoresManuais[index];
+      lancamento.valores = valores;
+    }
+
+    // Função para editar lançamento
+    function editarLancamento(id) {
+      const lancamento = lancamentos.find(l => l.id === id);
+      if (!lancamento) return;
+
+      document.getElementById("editLancamentoId").value = id;
+      document.getElementById("descricaoEdicao").value = lancamento.descricao;
+      document.getElementById("valorEdicao").value = lancamento.valor.toString().replace(".", ",");
+      document.getElementById("tipoLancamentoEdicao").value = lancamento.tipo;
+      document.getElementById("formaPagamentoEdicao").value = lancamento.formaPagamento;
+      
+      const subcategoriaId = subcategorias.find(s => s.nome === lancamento.subcategoria)?.id || "";
+      document.getElementById("subcategoriaEdicao").value = subcategoriaId;
+      
+      const cartaoId = cartoes.find(c => c.nome === lancamento.cartao)?.id || "";
+      document.getElementById("cartaoCreditoEdicao").value = cartaoId;
+      
+      document.getElementById("frequenciaValorEdicao").value = lancamento.frequenciaValor;
+      document.getElementById("frequenciaTipoEdicao").value = lancamento.frequenciaTipo;
+      document.getElementById("dataInicialEdicao").value = lancamento.dataInicial;
+      document.getElementById("dataFinalEdicao").value = lancamento.dataFinal;
+
+      toggleCartaoContainerEdicao();
+      modalEdicao.style.display = "block";
+    }
+
+    function salvarEdicao() {
+      const id = parseInt(document.getElementById("editLancamentoId").value);
+      const lancamento = lancamentos.find(l => l.id === id);
+      if (!lancamento) return;
+
+      const descricao = document.getElementById("descricaoEdicao").value.trim();
+      const valorStr = document.getElementById("valorEdicao").value.trim();
+      const tipoLancamento = document.getElementById("tipoLancamentoEdicao").value;
+      const formaPagamento = document.getElementById("formaPagamentoEdicao").value;
+      const subcategoriaId = document.getElementById("subcategoriaEdicao").value;
+      const cartaoCreditoId = document.getElementById("cartaoCreditoEdicao").value;
+      const frequenciaValor = parseInt(document.getElementById("frequenciaValorEdicao").value);
+      const frequenciaTipo = document.getElementById("frequenciaTipoEdicao").value;
+      const dataInicial = document.getElementById("dataInicialEdicao").value;
+      const dataFinal = document.getElementById("dataFinalEdicao").value;
+
+      if (!descricao || !valorStr || !dataInicial || !dataFinal) {
+        alert("Preencha todos os campos obrigatórios.");
+        return;
+      }
+
+      if (tipoLancamento !== "receita" && formaPagamento === "credito" && !cartaoCreditoId) {
+        alert("Selecione um cartão de crédito para despesas pagas no cartão.");
+        return;
+      }
+
+      if (tipoLancamento === "receita" && formaPagamento === "credito") {
+        alert("Receitas só podem ser lançadas como 'Conta'.");
+        return;
+      }
+
+      const valor = parseFloat(valorStr.replace(",", "."));
+      if (isNaN(valor) || valor <= 0) {
+        alert("Digite um valor válido.");
+        return;
+      }
+
+      const subcategoriaNome = subcategoriaId ? subcategorias.find(s => s.id == subcategoriaId)?.nome || "" : "";
+      const cartaoNome = cartaoCreditoId ? cartoes.find(c => c.id == cartaoCreditoId)?.nome || "" : "";
+
+      lancamento.descricao = descricao;
+      lancamento.valor = valor;
+      lancamento.tipo = tipoLancamento;
+      lancamento.formaPagamento = formaPagamento;
+      lancamento.subcategoria = subcategoriaNome;
+      lancamento.cartao = cartaoNome;
+      lancamento.frequenciaValor = frequenciaValor;
+      lancamento.frequenciaTipo = frequenciaTipo;
+      lancamento.dataInicial = dataInicial;
+      lancamento.dataFinal = dataFinal;
+
+      calcularValoresMensais(lancamento);
+      salvarDados();
+      atualizarTabela();
+      fecharModalEdicao();
+    }
+
+    // Função para excluir lançamento
+    function excluirLancamento(id) {
+      if (confirm("Tem certeza que deseja excluir este lançamento?")) {
+        lancamentos = lancamentos.filter(l => l.id !== id);
+        salvarDados();
+        atualizarTabela();
+      }
+    }
+
+    // Função para atualizar tabela
+    function atualizarTabela() {
+      const tbody = document.getElementById("tabelaBody");
+      tbody.innerHTML = "";
+
+      lancamentos.forEach(lancamento => {
+        const row = tbody.insertRow();
+        row.onclick = () => editarLancamento(lancamento.id);
+
+        const cellId = row.insertCell(0);
+        cellId.textContent = lancamento.id;
+        cellId.className = "hidden-id";
+
+        const cellDescricao = row.insertCell(1);
+        cellDescricao.textContent = lancamento.descricao;
+
+        for (let i = 0; i < 12; i++) {
+          const cell = row.insertCell(i + 2);
+          const valor = lancamento.valores[i];
+          if (valor !== 0) {
+            cell.textContent = `R$ ${valor.toFixed(2).replace(".", ",")}`;
+            if (lancamento.tipo === "receita") {
+              cell.className = "receita";
+            } else if (lancamento.tipo === "fixa") {
+              cell.className = "fixa";
+            } else {
+              cell.className = "variavel";
+            }
+            if (lancamento.formaPagamento === "credito") {
+              cell.classList.add("cartao-credito");
+            }
           } else {
-            const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
-            valorTotal += lancamento.valor * ocorrenciasNoMes.length;
+            cell.textContent = "";
           }
         }
-        
-        totalCategoria += valorTotal;
-        const mediaAnual = valorTotal / 12;
-        
-        const item = document.createElement("div");
-        item.className = "item-detalhamento";
-        item.innerHTML = `
-          <div class="item-detalhamento-info">${lancamento.descricao}</div>
-          <div class="item-detalhamento-valores">
-            <div class="item-detalhamento-valor">${formatarMoeda(valorTotal)}</div>
-            <div class="item-detalhamento-media">Média: ${formatarMoeda(mediaAnual)}</div>
-            <div class="item-detalhamento-percentual">0%</div>
-          </div>
-        `;
-        lista.appendChild(item);
+
+        const cellTotal = row.insertCell(14);
+        const total = lancamento.valores.reduce((sum, val) => sum + val, 0);
+        cellTotal.textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
+        if (lancamento.tipo === "receita") {
+          cellTotal.className = "receita";
+        } else if (lancamento.tipo === "fixa") {
+          cellTotal.className = "fixa";
+        } else {
+          cellTotal.className = "variavel";
+        }
+
+        const cellMedia = row.insertCell(15);
+        const mesesComValor = lancamento.valores.filter(v => v > 0).length;
+        const media = mesesComValor > 0 ? total / mesesComValor : 0;
+        cellMedia.textContent = `R$ ${media.toFixed(2).replace(".", ",")}`;
+
+        const cellAcoes = row.insertCell(16);
+        cellAcoes.innerHTML = `<button class="delete-btn" onclick="event.stopPropagation(); excluirLancamento(${lancamento.id})">Excluir</button>`;
+        cellAcoes.onclick = (e) => e.stopPropagation();
       });
 
-      // Atualizar percentuais
-      const itensDetalhamento = lista.querySelectorAll(".item-detalhamento");
-      itensDetalhamento.forEach((item, index) => {
-        const valorElement = item.querySelector(".item-detalhamento-valor");
-        const percentualElement = item.querySelector(".item-detalhamento-percentual");
-        const valor = parseFloat(valorElement.textContent.replace(/[^\d,-]/g, "").replace(",", "."));
-        const percentual = totalCategoria > 0 ? ((valor / totalCategoria) * 100).toFixed(1) : 0;
-        percentualElement.textContent = `${percentual}%`;
+      atualizarResumo();
+    }
+
+    // Função para atualizar resumo
+    function atualizarResumo() {
+      const resumoBody = document.getElementById("resumoBody");
+      resumoBody.innerHTML = "";
+
+      const categorias = {
+        "Receitas": { valores: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], classe: "receita" },
+        "Despesas Fixas": { valores: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], classe: "fixa" },
+        "Despesas Variáveis": { valores: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], classe: "variavel" }
+      };
+
+      // Calcular totais por categoria
+      lancamentos.forEach(lancamento => {
+        for (let i = 0; i < 12; i++) {
+          if (lancamento.tipo === "receita") {
+            categorias["Receitas"].valores[i] += lancamento.valores[i];
+          } else if (lancamento.tipo === "fixa") {
+            categorias["Despesas Fixas"].valores[i] += lancamento.valores[i];
+          } else {
+            categorias["Despesas Variáveis"].valores[i] += lancamento.valores[i];
+          }
+        }
       });
+
+      // Adicionar linhas das categorias
+      Object.keys(categorias).forEach(categoria => {
+        const row = resumoBody.insertRow();
+        row.onclick = () => mostrarDetalhamento(categoria);
+
+        const cellCategoria = row.insertCell(0);
+        cellCategoria.textContent = categoria;
+        cellCategoria.className = categorias[categoria].classe;
+
+        for (let i = 0; i < 12; i++) {
+          const cell = row.insertCell(i + 1);
+          const valor = categorias[categoria].valores[i];
+          if (valor !== 0) {
+            cell.textContent = `R$ ${valor.toFixed(2).replace(".", ",")}`;
+            cell.className = categorias[categoria].classe;
+          } else {
+            cell.textContent = "";
+          }
+        }
+
+        const cellTotal = row.insertCell(13);
+        const total = categorias[categoria].valores.reduce((sum, val) => sum + val, 0);
+        cellTotal.textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
+        cellTotal.className = categorias[categoria].classe;
+
+        const cellMedia = row.insertCell(14);
+        const mesesComValor = categorias[categoria].valores.filter(v => v > 0).length;
+        const media = mesesComValor > 0 ? total / mesesComValor : 0;
+        cellMedia.textContent = `R$ ${media.toFixed(2).replace(".", ",")}`;
+        cellMedia.className = categorias[categoria].classe;
+      });
+
+      // Linha de espaçamento
+      const spacerRow = resumoBody.insertRow();
+      spacerRow.className = "spacer-row";
+      for (let i = 0; i < 15; i++) {
+        spacerRow.insertCell(i);
+      }
+
+      // Linha de saldo
+      const saldoRow = resumoBody.insertRow();
+      const cellSaldoCategoria = saldoRow.insertCell(0);
+      cellSaldoCategoria.textContent = "Saldo";
+      cellSaldoCategoria.style.fontWeight = "bold";
+
+      for (let i = 0; i < 12; i++) {
+        const cell = saldoRow.insertCell(i + 1);
+        const saldo = categorias["Receitas"].valores[i] - categorias["Despesas Fixas"].valores[i] - categorias["Despesas Variáveis"].valores[i];
+        if (saldo !== 0) {
+          cell.textContent = `R$ ${saldo.toFixed(2).replace(".", ",")}`;
+          cell.className = saldo >= 0 ? "saldo-positivo" : "saldo-negativo";
+        } else {
+          cell.textContent = "";
+        }
+      }
+
+      const cellSaldoTotal = saldoRow.insertCell(13);
+      const saldoTotal = categorias["Receitas"].valores.reduce((sum, val) => sum + val, 0) - 
+                        categorias["Despesas Fixas"].valores.reduce((sum, val) => sum + val, 0) - 
+                        categorias["Despesas Variáveis"].valores.reduce((sum, val) => sum + val, 0);
+      cellSaldoTotal.textContent = `R$ ${saldoTotal.toFixed(2).replace(".", ",")}`;
+      cellSaldoTotal.className = saldoTotal >= 0 ? "saldo-positivo" : "saldo-negativo";
+      cellSaldoTotal.style.fontWeight = "bold";
+
+      const cellSaldoMedia = saldoRow.insertCell(14);
+      const mesesComSaldo = 12;
+      const saldoMedio = saldoTotal / mesesComSaldo;
+      cellSaldoMedia.textContent = `R$ ${saldoMedio.toFixed(2).replace(".", ",")}`;
+      cellSaldoMedia.className = saldoMedio >= 0 ? "saldo-positivo" : "saldo-negativo";
+
+      dadosResumo = categorias;
+      atualizarGraficos();
+      gerarInsights();
+    }
+
+    // Funções de Detalhamento
+    function mostrarDetalhamento(categoria) {
+      const tituloDetalhamento = document.getElementById("tituloDetalhamento");
+      const listaDetalhamento = document.getElementById("listaDetalhamento");
+      
+      tituloDetalhamento.textContent = `Detalhamento: ${categoria}`;
+      listaDetalhamento.innerHTML = "";
+
+      let tipoFiltro;
+      if (categoria === "Receitas") tipoFiltro = "receita";
+      else if (categoria === "Despesas Fixas") tipoFiltro = "fixa";
+      else if (categoria === "Despesas Variáveis") tipoFiltro = "variavel";
+
+      const lancamentosFiltrados = lancamentos.filter(l => l.tipo === tipoFiltro);
+
+      if (lancamentosFiltrados.length === 0) {
+        listaDetalhamento.innerHTML = '<div class="mensagem-vazia">Nenhum lançamento encontrado para esta categoria.</div>';
+      } else {
+        lancamentosFiltrados.forEach(lancamento => {
+          const divItem = document.createElement("div");
+          divItem.className = "item-detalhamento";
+
+          const total = lancamento.valores.reduce((sum, val) => sum + val, 0);
+          const mesesComValor = lancamento.valores.filter(v => v > 0).length;
+          const media = mesesComValor > 0 ? total / mesesComValor : 0;
+          const totalGeral = dadosResumo[categoria].valores.reduce((sum, val) => sum + val, 0);
+          const percentual = totalGeral > 0 ? (total / totalGeral * 100) : 0;
+
+          let infoAdicional = "";
+          if (lancamento.subcategoria) {
+            infoAdicional += ` • ${lancamento.subcategoria}`;
+          }
+          if (lancamento.cartao) {
+            infoAdicional += ` • ${lancamento.cartao}`;
+          }
+
+          divItem.innerHTML = `
+            <div class="item-detalhamento-info">
+              <strong>${lancamento.descricao}</strong>${infoAdicional}
+              <div style="font-size: 12px; color: #b0bec5; margin-top: 5px;">
+                ${lancamento.frequenciaTipo !== 'unico' ? `A cada ${lancamento.frequenciaValor} ${lancamento.frequenciaTipo}` : 'Lançamento único'} 
+                • ${lancamento.dataInicial} até ${lancamento.dataFinal}
+              </div>
+            </div>
+            <div class="item-detalhamento-valores">
+              <div class="item-detalhamento-valor">R$ ${total.toFixed(2).replace(".", ",")}</div>
+              <div class="item-detalhamento-media">Média: R$ ${media.toFixed(2).replace(".", ",")}</div>
+              <div class="item-detalhamento-percentual">${percentual.toFixed(1)}% do total</div>
+            </div>
+          `;
+          listaDetalhamento.appendChild(divItem);
+        });
+      }
 
       modalDetalhamento.style.display = "block";
     }
 
-    function fecharModalDetalhamento() {
-      modalDetalhamento.style.display = "none";
-    }
-
-    // Event handlers para cliques nos modais
-    window.onclick = function (event) {
-      if (event.target == modal) {
-        fecharModal();
-      }
-      if (event.target == modalEdicao) {
-        fecharModalEdicao();
-      }
-      if (event.target == modalGerenciamento) {
-        fecharModalGerenciamento();
-      }
-      if (event.target == modalDetalhamento) {
-        fecharModalDetalhamento();
-      }
-    };
-
-    // Funções de Navegação e Exibição
-    function mostrarResumo() {
-      containerPrincipal.classList.add("container-ativo");
-    }
-
-    function voltarParaLancamentos() {
-      containerPrincipal.classList.remove("container-ativo");
-    }
-
-    // Funções de Formatação e Cálculo
-    function formatarMoeda(valor) {
-      const numero = typeof valor === "number" ? valor : parseFloat(String(valor).replace(/[^\d,-]/g, "").replace(",", "."));
-      if (isNaN(numero)) return "R$ 0,00";
-      return numero.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-
-    function formatarMoedaParaInput(valor) {
-      if (!valor) return "";
-      return valor.toLocaleString("pt-BR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    }
-
-    function calcularOcorrencias(lancamento, ano) {
-      const startDate = new Date(lancamento.dataInicial + "T00:00:00");
-      const endDate = new Date(lancamento.dataFinal + "T00:00:00");
-      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        console.error("Datas inválidas para o lançamento:", lancamento);
-        return [];
-      }
-      const ocorrencias = [];
-      if (lancamento.frequenciaTipo === "unico") {
-        if (startDate.getFullYear() === ano) {
-          ocorrencias.push(new Date(startDate));
-        }
-        return ocorrencias;
-      }
-      const inicioAno = new Date(`${ano}-01-01T00:00:00`);
-      const fimAno = new Date(`${ano}-12-31T00:00:00`);
-      const dataInicioCalculo = startDate > inicioAno ? startDate : inicioAno;
-      const dataFimCalculo = endDate < fimAno ? endDate : fimAno;
-      if (dataInicioCalculo > dataFimCalculo) return ocorrencias;
-      let currentDate = new Date(dataInicioCalculo);
-      let safetyBreak = 0;
-      while (currentDate <= dataFimCalculo && safetyBreak < 500) {
-        if (currentDate >= startDate && currentDate <= endDate && currentDate.getFullYear() === ano) {
-          ocorrencias.push(new Date(currentDate));
-        }
-        const currentDayOfMonth = currentDate.getDate();
-        let dataAnterior = new Date(currentDate);
-        switch (lancamento.frequenciaTipo) {
-          case "dias": currentDate.setDate(currentDate.getDate() + lancamento.frequenciaValor); break;
-          case "dias_uteis":
-            let diasAdicionados = 0;
-            while (diasAdicionados < lancamento.frequenciaValor) {
-              currentDate.setDate(currentDate.getDate() + 1);
-              if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) diasAdicionados++;
-            }
-            break;
-          case "meses":
-            currentDate.setMonth(currentDate.getMonth() + lancamento.frequenciaValor);
-            if (currentDate.getDate() !== currentDayOfMonth) currentDate.setDate(0);
-            break;
-          case "anos":
-            currentDate.setFullYear(currentDate.getFullYear() + lancamento.frequenciaValor);
-            if (currentDate.getDate() !== currentDayOfMonth) currentDate.setDate(0);
-            break;
-          case "semanas": currentDate.setDate(currentDate.getDate() + 7 * lancamento.frequenciaValor); break;
-          case "quinzenas": currentDate.setDate(currentDate.getDate() + 15 * lancamento.frequenciaValor); break;
-          case "segunda": case "terca": case "quarta": case "quinta": case "sexta":
-            const diaSemana = { segunda: 1, terca: 2, quarta: 3, quinta: 4, sexta: 5 };
-            const diaAlvo = diaSemana[lancamento.frequenciaTipo];
-            do { currentDate.setDate(currentDate.getDate() + 1); } while (currentDate.getDay() !== diaAlvo);
-            if (lancamento.frequenciaValor > 1) currentDate.setDate(currentDate.getDate() + 7 * (lancamento.frequenciaValor - 1));
-            break;
-          default:
-            console.warn("Tipo de frequência desconhecido:", lancamento.frequenciaTipo);
-            currentDate.setMonth(currentDate.getMonth() + 1);
-        }
-        if (currentDate.getTime() === dataAnterior.getTime()) {
-          console.error("Loop infinito detectado em calcularOcorrencias", lancamento);
-          break;
-        }
-        safetyBreak++;
-        if (safetyBreak >= 500) console.error("Safety break atingido em calcularOcorrencias", lancamento);
-      }
-      return ocorrencias;
-    }
-    
-    function calcularTotaisPorCategoria(lancamentosCategoria, ano) {
-      const meses = Array(12).fill(0);
-      
-      lancamentosCategoria.forEach(l => {
-        const ocorrencias = calcularOcorrencias(l, ano);
-        for (let index = 0; index < 12; index++) {
-          if (l.valoresManuais && l.valoresManuais[index] !== null) {
-            meses[index] += l.valoresManuais[index];
-          } else {
-            const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
-            if (ocorrenciasNoMes.length > 0) {
-              meses[index] += l.valor * ocorrenciasNoMes.length; 
-            }
-          }
-        }
-      });
-      
-      const total = meses.reduce((sum, val) => sum + val, 0);
-      return { meses, total };
-    }
-
-    function calcularTotaisPorSubcategoria(lancamentos, ano) {
-      const subcategoriasResumo = {};
-      
-      lancamentos.forEach(l => {
-        if (l.subcategoria && l.tipo !== "receita") {
-          const subcategoriaNome = subcategorias.find(s => s.id == l.subcategoria)?.nome || "Subcategoria Removida";
-          
-          if (!subcategoriasResumo[subcategoriaNome]) {
-            subcategoriasResumo[subcategoriaNome] = { meses: Array(12).fill(0), total: 0 };
-          }
-          
-          const ocorrencias = calcularOcorrencias(l, ano);
-          for (let index = 0; index < 12; index++) {
-            if (l.valoresManuais && l.valoresManuais[index] !== null) {
-              subcategoriasResumo[subcategoriaNome].meses[index] += l.valoresManuais[index];
-            } else {
-              const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
-              if (ocorrenciasNoMes.length > 0) {
-                subcategoriasResumo[subcategoriaNome].meses[index] += l.valor * ocorrenciasNoMes.length;
-              }
-            }
-          }
-          subcategoriasResumo[subcategoriaNome].total = subcategoriasResumo[subcategoriaNome].meses.reduce((sum, val) => sum + val, 0);
-        }
-      });
-      
-      return subcategoriasResumo;
-    }
-
-    // Função para calcular totais por cartão, considerando fechamento
-    function calcularTotaisPorCartao(lancamentos, ano) {
-      const cartoesResumo = {};
-
-      cartoes.forEach(cartao => {
-        cartoesResumo[cartao.id] = { nome: cartao.nome, meses: Array(12).fill(0), total: 0 };
-      });
-
-      lancamentos.forEach(l => {
-        if (l.formaPagamento === "credito" && l.cartaoId && cartoesResumo[l.cartaoId]) {
-          const cartao = cartoes.find(c => c.id == l.cartaoId);
-          if (!cartao) return; // Cartão não encontrado
-
-          const ocorrencias = calcularOcorrencias(l, ano);
-          
-          ocorrencias.forEach(dataOcorrencia => {
-            const diaOcorrencia = dataOcorrencia.getDate();
-            let mesFatura = dataOcorrencia.getMonth();
-
-            // Se a compra foi feita após ou no dia do fechamento, vai para a fatura do mês seguinte
-            if (diaOcorrencia >= cartao.diaFechamento) {
-              mesFatura = (mesFatura + 1) % 12;
-            }
-
-            if (l.valoresManuais && l.valoresManuais[dataOcorrencia.getMonth()] !== null) {
-              cartoesResumo[l.cartaoId].meses[mesFatura] += l.valoresManuais[dataOcorrencia.getMonth()];
-            } else {
-              cartoesResumo[l.cartaoId].meses[mesFatura] += l.valor;
-            }
-          });
-        }
-      });
-
-      // Calcular totais
-      Object.values(cartoesResumo).forEach(cartao => {
-        cartao.total = cartao.meses.reduce((sum, val) => sum + val, 0);
-      });
-
-      return cartoesResumo;
-    }
-
-    // Função para obter cor de subcategoria
-    function obterCorSubcategoria(index) {
-      const cores = [
-        "subcategoria-cor-1", "subcategoria-cor-2", "subcategoria-cor-3", "subcategoria-cor-4",
-        "subcategoria-cor-5", "subcategoria-cor-6", "subcategoria-cor-7", "subcategoria-cor-8",
-        "subcategoria-cor-9", "subcategoria-cor-10", "subcategoria-cor-11", "subcategoria-cor-12"
-      ];
-      return cores[index % cores.length];
-    }
-
-    // Funções de Atualização da Interface
-    function atualizarResumoFinanceiro(lancamentos, ano) {
-      const resumoBody = document.getElementById("resumoBody");
-      resumoBody.innerHTML = "";
-
-      const receitas = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "receita"), ano);
-      const fixas = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "fixa"), ano);
-      const variaveis = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "variavel"), ano);
-      const cartaoTotal = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "credito" && l.tipo !== "receita"), ano);
-      const conta = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "conta" && l.tipo !== "receita"), ano);
-      const subcategoriasResumo = calcularTotaisPorSubcategoria(lancamentos, ano);
-      const cartoesResumo = calcularTotaisPorCartao(lancamentos, ano);
-
-      const totalReceitas = receitas.total;
-      const totalFixas = fixas.total;
-      const totalVariaveis = variaveis.total;
-      const totalDespesas = totalFixas + totalVariaveis;
-      const saldo = totalReceitas - totalDespesas;
-      
-      const mediaReceitas = totalReceitas / 12;
-      const mediaFixas = totalFixas / 12;
-      const mediaVariaveis = totalVariaveis / 12;
-      const mediaTotalDespesas = totalDespesas / 12;
-      const mediaSaldo = saldo / 12;
-      const mediaCartaoTotal = cartaoTotal.total / 12;
-      const mediaConta = conta.total / 12;
-      
-      const spacerRowHTML = `<tr class="spacer-row"><td colspan="15"></td></tr>`;
-
-      let subcategoriasHTML = "";
-      if (Object.keys(subcategoriasResumo).length > 0) {
-        subcategoriasHTML = spacerRowHTML;
-        Object.entries(subcategoriasResumo).forEach(([nome, dados], index) => {
-          const corClass = obterCorSubcategoria(index);
-          const media = dados.total / 12;
-          subcategoriasHTML += `
-            <tr class="${corClass}" onclick="abrirModalDetalhamento('${nome}')">
-              <td>${nome}</td>
-              ${dados.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-              <td>${formatarMoeda(dados.total)}</td>
-              <td>${formatarMoeda(media)}</td>
-            </tr>
-          `;
-        });
-      }
-
-      let cartoesHTML = "";
-      if (Object.keys(cartoesResumo).length > 0) {
-        cartoesHTML = spacerRowHTML;
-        Object.entries(cartoesResumo).forEach(([id, dados]) => {
-          const media = dados.total / 12;
-          // Usando a classe 'cartao-laranja' para todos os cartões individuais
-          cartoesHTML += `
-            <tr class="cartao-laranja" onclick="abrirModalDetalhamento('${dados.nome}', ${id})">
-              <td>${dados.nome}</td>
-              ${dados.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-              <td>${formatarMoeda(dados.total)}</td>
-              <td>${formatarMoeda(media)}</td>
-            </tr>
-          `;
-        });
-      }
-
-      resumoBody.innerHTML = `
-        <tr class="receita" onclick="abrirModalDetalhamento('Receitas')">
-          <td>Receitas</td>
-          ${receitas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(totalReceitas)}</td>
-          <td>${formatarMoeda(mediaReceitas)}</td>
-        </tr>
-        ${spacerRowHTML} 
-        <tr class="fixa" onclick="abrirModalDetalhamento('Despesas Fixas')">
-          <td>Despesas Fixas</td>
-          ${fixas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(totalFixas)}</td>
-          <td>${formatarMoeda(mediaFixas)}</td>
-        </tr>
-        <tr class="variavel" onclick="abrirModalDetalhamento('Despesas Variáveis')">
-          <td>Despesas Variáveis</td>
-          ${variaveis.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(totalVariaveis)}</td>
-          <td>${formatarMoeda(mediaVariaveis)}</td>
-        </tr>
-        <tr onclick="event.stopPropagation()">
-          <td>Total Despesas</td>
-          ${Array(12).fill(0).map((_, i) => {
-            const mesTotal = (fixas.meses[i] || 0) + (variaveis.meses[i] || 0);
-            return `<td>${formatarMoeda(mesTotal)}</td>`;
-          }).join("")}
-          <td>${formatarMoeda(totalDespesas)}</td>
-          <td>${formatarMoeda(mediaTotalDespesas)}</td>
-        </tr>
-        ${spacerRowHTML}
-        <tr onclick="event.stopPropagation()"> 
-          <td class="saldo-positivo">Potencial de Investimento</td>
-          ${Array(12).fill(0).map((_, i) => {
-            const mesSaldo = (receitas.meses[i] || 0) - (fixas.meses[i] || 0) - (variaveis.meses[i] || 0);
-            const classeCor = mesSaldo >= 0 ? "saldo-positivo" : "saldo-negativo";
-            return `<td class="${classeCor}">${formatarMoeda(mesSaldo)}</td>`;
-          }).join("")}
-          <td class="${saldo >= 0 ? "saldo-positivo" : "saldo-negativo"}">${formatarMoeda(saldo)}</td>
-          <td class="${mediaSaldo >= 0 ? "saldo-positivo" : "saldo-negativo"}">${formatarMoeda(mediaSaldo)}</td>
-        </tr>
-        ${cartoesHTML}
-        ${spacerRowHTML}
-        <tr class="cartao-laranja" onclick="abrirModalDetalhamento('Cartão de Crédito (Total)')">
-          <td>Cartão de Crédito (Total)</td>
-          ${cartaoTotal.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(cartaoTotal.total)}</td>
-          <td>${formatarMoeda(mediaCartaoTotal)}</td>
-        </tr>
-        <tr class="conta-amarela" onclick="abrirModalDetalhamento('Conta')">
-          <td>Conta</td>
-          ${conta.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(conta.total)}</td>
-          <td>${formatarMoeda(mediaConta)}</td>
-        </tr>
-        ${subcategoriasHTML}
-      `;
-
-      dadosResumo = {
-        receitas: receitas,
-        fixas: fixas,
-        variaveis: variaveis,
-        totalReceitas: totalReceitas,
-        totalFixas: totalFixas,
-        totalVariaveis: totalVariaveis,
-        totalDespesas: totalDespesas,
-        saldo: saldo,
-        mediaReceitas: mediaReceitas,
-        mediaFixas: mediaFixas,
-        mediaVariaveis: mediaVariaveis,
-        mediaSaldo: mediaSaldo,
-        lancamentos: lancamentos,
-      };
-
-      atualizarGraficos();
-    }
-
+    // Funções dos Gráficos
     function atualizarGraficos() {
       if (!dadosResumo) return;
+
       const mesSelecionado = parseInt(document.getElementById("mesSelecionado").value);
-      let receitaPeriodo, fixasPeriodo, variaveisPeriodo, saldoPeriodo;
+      
+      atualizarGraficoDespesasPoupanca(mesSelecionado);
+      atualizarGraficoDespesasReceitas(mesSelecionado);
+      atualizarGraficoCartoes(mesSelecionado);
+      atualizarGraficoSubcategorias(mesSelecionado);
+    }
+
+    function atualizarGraficoDespesasPoupanca(mesSelecionado) {
+      const ctx = document.getElementById("graficoDespesasPoupanca").getContext("2d");
+      const legenda = document.getElementById("legendaDespesasPoupanca");
+
+      if (graficoDespesasPoupanca) {
+        graficoDespesasPoupanca.destroy();
+      }
+
+      let receitas, despesasFixas, despesasVariaveis;
 
       if (mesSelecionado === -1) {
-        receitaPeriodo = dadosResumo.totalReceitas;
-        fixasPeriodo = dadosResumo.totalFixas;
-        variaveisPeriodo = dadosResumo.totalVariaveis;
-        saldoPeriodo = dadosResumo.saldo;
+        receitas = dadosResumo["Receitas"].valores.reduce((sum, val) => sum + val, 0);
+        despesasFixas = dadosResumo["Despesas Fixas"].valores.reduce((sum, val) => sum + val, 0);
+        despesasVariaveis = dadosResumo["Despesas Variáveis"].valores.reduce((sum, val) => sum + val, 0);
       } else if (mesSelecionado === -2) {
-        receitaPeriodo = dadosResumo.mediaReceitas;
-        fixasPeriodo = dadosResumo.mediaFixas;
-        variaveisPeriodo = dadosResumo.mediaVariaveis;
-        saldoPeriodo = dadosResumo.mediaSaldo;
+        const mesesComReceita = dadosResumo["Receitas"].valores.filter(v => v > 0).length;
+        const mesesComFixa = dadosResumo["Despesas Fixas"].valores.filter(v => v > 0).length;
+        const mesesComVariavel = dadosResumo["Despesas Variáveis"].valores.filter(v => v > 0).length;
+        
+        receitas = mesesComReceita > 0 ? dadosResumo["Receitas"].valores.reduce((sum, val) => sum + val, 0) / mesesComReceita : 0;
+        despesasFixas = mesesComFixa > 0 ? dadosResumo["Despesas Fixas"].valores.reduce((sum, val) => sum + val, 0) / mesesComFixa : 0;
+        despesasVariaveis = mesesComVariavel > 0 ? dadosResumo["Despesas Variáveis"].valores.reduce((sum, val) => sum + val, 0) / mesesComVariavel : 0;
       } else {
-        receitaPeriodo = dadosResumo.receitas.meses[mesSelecionado] || 0;
-        fixasPeriodo = dadosResumo.fixas.meses[mesSelecionado] || 0;
-        variaveisPeriodo = dadosResumo.variaveis.meses[mesSelecionado] || 0;
-        saldoPeriodo = receitaPeriodo - fixasPeriodo - variaveisPeriodo;
+        receitas = dadosResumo["Receitas"].valores[mesSelecionado];
+        despesasFixas = dadosResumo["Despesas Fixas"].valores[mesSelecionado];
+        despesasVariaveis = dadosResumo["Despesas Variáveis"].valores[mesSelecionado];
       }
 
-      atualizarGraficoDespesasPoupanca(fixasPeriodo, variaveisPeriodo, saldoPeriodo);
-      atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado);
-    }
-
-    function atualizarGraficoDespesasPoupanca(fixas, variaveis, saldo) {
-      const ctx = document.getElementById("graficoDespesasPoupanca").getContext("2d");
-      if (graficoDespesasPoupanca) graficoDespesasPoupanca.destroy();
-      const total = fixas + variaveis + Math.max(0, saldo);
+      const poupanca = Math.max(0, receitas - despesasFixas - despesasVariaveis);
+      const dados = [];
       const labels = [];
-      const data = [];
-      const backgroundColors = [];
-      if (fixas > 0) { labels.push("Despesas Fixas"); data.push(fixas); backgroundColors.push("#f44336"); }
-      if (variaveis > 0) { labels.push("Despesas Variáveis"); data.push(variaveis); backgroundColors.push("#ff9800"); }
-      if (saldo > 0) { labels.push("Potencial de Investimento"); data.push(saldo); backgroundColors.push("#1976d2"); }
-      if (data.length === 0) {
-        document.getElementById("legendaDespesasPoupanca").innerHTML = "<p style=\"text-align:center;\">Sem dados para exibir.</p>";
+      const cores = [];
+
+      if (despesasFixas > 0) {
+        dados.push(despesasFixas);
+        labels.push("Despesas Fixas");
+        cores.push("#f44336");
+      }
+      if (despesasVariaveis > 0) {
+        dados.push(despesasVariaveis);
+        labels.push("Despesas Variáveis");
+        cores.push("#ff9800");
+      }
+      if (poupanca > 0) {
+        dados.push(poupanca);
+        labels.push("Poupança");
+        cores.push("#4caf50");
+      }
+
+      if (dados.length === 0) {
+        legenda.innerHTML = '<div class="mensagem-vazia">Sem despesas para exibir neste período.</div>';
         return;
       }
-      const percentuais = total > 0 ? data.map((val) => ((val / total) * 100).toFixed(1) + "%") : data.map(() => "0%");
-      const legendaHTML = labels.map((label, i) => `
-        <div class="item-legenda">
-          <div class="cor-legenda" style="background-color: ${backgroundColors[i]}"></div>
-          <span class="descricao-legenda">${label}</span>
-          <span class="valor-legenda">${formatarMoeda(data[i])}</span>
-          <span>(${percentuais[i]})</span>
-        </div>
-      `).join("");
-      document.getElementById("legendaDespesasPoupanca").innerHTML = legendaHTML;
+
       graficoDespesasPoupanca = new Chart(ctx, {
-        type: "pie",
-        data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1, borderColor: "#014034" }] },
+        type: "doughnut",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: dados,
+            backgroundColor: cores,
+            borderWidth: 2,
+            borderColor: "#002d26"
+          }]
+        },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: function (context) {
-                  const label = context.label || "";
-                  const value = context.raw || 0;
-                  const currentTotal = context.dataset.data.reduce((a, b) => a + b, 0);
-                  const percentage = currentTotal > 0 ? Math.round((value / currentTotal) * 100) : 0;
-                  return `${label}: ${formatarMoeda(value)} (${percentage}%)`;
-                },
-              },
-            },
-          },
-        },
+            legend: { display: false }
+          }
+        }
+      });
+
+      // Atualizar legenda
+      legenda.innerHTML = "";
+      labels.forEach((label, index) => {
+        const item = document.createElement("div");
+        item.className = "item-legenda";
+        item.innerHTML = `
+          <div class="cor-legenda" style="background-color: ${cores[index]}"></div>
+          <span class="descricao-legenda">${label}:</span>
+          <span class="valor-legenda">R$ ${dados[index].toFixed(2).replace(".", ",")}</span>
+        `;
+        legenda.appendChild(item);
       });
     }
 
-    function atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado) {
+    function atualizarGraficoDespesasReceitas(mesSelecionado) {
       const ctx = document.getElementById("graficoDespesasReceitas").getContext("2d");
-      if (graficoDespesasReceitas) graficoDespesasReceitas.destroy();
+      const legenda = document.getElementById("legendaDespesasReceitas");
 
-      const despesasAgrupadas = {};
-      const anoAtual = new Date().getFullYear();
-      const todasDespesas = dadosResumo.lancamentos.filter((l) => l.tipo !== "receita");
-
-      todasDespesas.forEach((despesa) => {
-        let valorDespesa = 0;
-
-        if (mesSelecionado === -2) {
-          let totalAnualDespesa = 0;
-          if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
-            totalAnualDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
-            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-            for (let i = 0; i < 12; i++) {
-              if (despesa.valoresManuais[i] === null) {
-                const ocorrenciasMesSemManual = ocorrencias.filter(d => d.getMonth() === i);
-                totalAnualDespesa += despesa.valor * ocorrenciasMesSemManual.length;
-              }
-            }
-          } else {
-            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-            totalAnualDespesa = despesa.valor * ocorrencias.length;
-          }
-          valorDespesa = totalAnualDespesa / 12;
-
-        } else if (mesSelecionado === -1) {
-          if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
-             valorDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
-             const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-             for(let i=0; i<12; i++){
-                 if(despesa.valoresManuais[i] === null){ 
-                     const ocorrenciasMesSemManual = ocorrencias.filter(d => d.getMonth() === i);
-                     valorDespesa += despesa.valor * ocorrenciasMesSemManual.length;
-                 }
-             }
-          } else {
-            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-            valorDespesa = despesa.valor * ocorrencias.length;
-          }
-        } else {
-           const ocorrencias = calcularOcorrencias(despesa, anoAtual);
-           const temOcorrenciaNoMes = ocorrencias.some((d) => d.getMonth() === mesSelecionado);
-           const temValorManualNoMes = despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null;
-           
-           if(temOcorrenciaNoMes || temValorManualNoMes){
-                if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
-                    valorDespesa = despesa.valoresManuais[mesSelecionado];
-                } else {
-                    const ocorrenciasNoMes = ocorrencias.filter((d) => d.getMonth() === mesSelecionado);
-                    valorDespesa = despesa.valor * ocorrenciasNoMes.length;
-                }
-           }
-        }
-
-        if (valorDespesa > 0) {
-          const key = despesa.descricao;
-          if (!despesasAgrupadas[key]) {
-            despesasAgrupadas[key] = { valor: 0, tipo: despesa.tipo, formaPagamento: despesa.formaPagamento };
-          }
-          despesasAgrupadas[key].valor += valorDespesa;
-        }
-      });
-
-      const labels = [];
-      const data = [];
-      const backgroundColors = [];
-      const tipos = [];
-      const despesasOrdenadas = Object.entries(despesasAgrupadas).map(([descricao, info]) => ({ descricao, ...info })).sort((a, b) => b.valor - a.valor);
-      const limiteGrafico = 10;
-      const despesasParaGrafico = despesasOrdenadas.slice(0, limiteGrafico);
-      let outrasDespesas = despesasOrdenadas.slice(limiteGrafico).reduce((sum, d) => sum + d.valor, 0);
-
-      despesasParaGrafico.forEach((d) => {
-        labels.push(d.descricao);
-        data.push(d.valor);
-        if (d.tipo === "fixa") backgroundColors.push(d.formaPagamento === "credito" ? "#c62828" : "#f44336");
-        else backgroundColors.push(d.formaPagamento === "credito" ? "#f57c00" : "#ff9800");
-        tipos.push(d.tipo);
-      });
-
-      if (outrasDespesas > 0) {
-        labels.push("Outras Despesas");
-        data.push(outrasDespesas);
-        backgroundColors.push("#757575");
-        tipos.push("variavel");
+      if (graficoDespesasReceitas) {
+        graficoDespesasReceitas.destroy();
       }
 
-      const totalDespesasPeriodo = data.reduce((sum, val) => sum + val, 0);
-      const restante = Math.max(0, receitaPeriodo - totalDespesasPeriodo);
+      let receitas, despesas;
 
-      if (data.length === 0 && restante <= 0) {
-        document.getElementById("legendaDespesasReceitas").innerHTML = "<p style=\"text-align:center;\">Sem despesas para exibir neste período.</p>";
-        if (graficoDespesasReceitas) {
-          graficoDespesasReceitas.destroy();
-          graficoDespesasReceitas = null;
-        }
+      if (mesSelecionado === -1) {
+        receitas = dadosResumo["Receitas"].valores.reduce((sum, val) => sum + val, 0);
+        despesas = dadosResumo["Despesas Fixas"].valores.reduce((sum, val) => sum + val, 0) + 
+                   dadosResumo["Despesas Variáveis"].valores.reduce((sum, val) => sum + val, 0);
+      } else if (mesSelecionado === -2) {
+        const mesesComReceita = dadosResumo["Receitas"].valores.filter(v => v > 0).length;
+        const totalDespesasFixas = dadosResumo["Despesas Fixas"].valores.reduce((sum, val) => sum + val, 0);
+        const totalDespesasVariaveis = dadosResumo["Despesas Variáveis"].valores.reduce((sum, val) => sum + val, 0);
+        const mesesComDespesa = Math.max(
+          dadosResumo["Despesas Fixas"].valores.filter(v => v > 0).length,
+          dadosResumo["Despesas Variáveis"].valores.filter(v => v > 0).length
+        );
+        
+        receitas = mesesComReceita > 0 ? dadosResumo["Receitas"].valores.reduce((sum, val) => sum + val, 0) / mesesComReceita : 0;
+        despesas = mesesComDespesa > 0 ? (totalDespesasFixas + totalDespesasVariaveis) / mesesComDespesa : 0;
+      } else {
+        receitas = dadosResumo["Receitas"].valores[mesSelecionado];
+        despesas = dadosResumo["Despesas Fixas"].valores[mesSelecionado] + 
+                   dadosResumo["Despesas Variáveis"].valores[mesSelecionado];
+      }
+
+      const dados = [];
+      const labels = [];
+      const cores = [];
+
+      if (receitas > 0) {
+        dados.push(receitas);
+        labels.push("Receitas");
+        cores.push("#4caf50");
+      }
+      if (despesas > 0) {
+        dados.push(despesas);
+        labels.push("Despesas");
+        cores.push("#f44336");
+      }
+
+      if (dados.length === 0) {
+        legenda.innerHTML = '<div class="mensagem-vazia">Sem dados para exibir neste período.</div>';
         return;
       }
-
-      if (restante > 0 || data.length > 0) {
-         labels.push("Potencial de Investimento");
-         data.push(restante);
-         backgroundColors.push("#1976d2");
-         tipos.push("receita");
-      }
-
-      const percentuais = receitaPeriodo > 0 ? data.map((val) => ((val / receitaPeriodo) * 100).toFixed(1) + "%") : data.map(() => "0%");
-
-      const legendaHTML = labels.map((label, i) => {
-        const tipo = tipos[i];
-        const classeCor = tipo === "fixa" ? "fixa" : tipo === "variavel" ? "variavel" : "receita"; 
-        const percentualExibido = receitaPeriodo > 0 ? `(${percentuais[i]})` : "";
-        return `
-          <div class="item-legenda">
-            <div class="cor-legenda" style="background-color: ${backgroundColors[i]}"></div>
-            <span class="descricao-legenda ${classeCor}">${label}</span>
-            <span class="valor-legenda">${formatarMoeda(data[i])}</span>
-            <span>${percentualExibido}</span>
-          </div>
-        `;
-      }).join("");
-      document.getElementById("legendaDespesasReceitas").innerHTML = legendaHTML;
 
       graficoDespesasReceitas = new Chart(ctx, {
-        type: "pie",
-        data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1, borderColor: "#014034" }] },
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: dados,
+            backgroundColor: cores,
+            borderWidth: 2,
+            borderColor: "#002d26"
+          }]
+        },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: function (context) {
-                  const label = context.label || "";
-                  const value = context.raw || 0;
-                  const percentage = receitaPeriodo > 0 ? Math.round((value / receitaPeriodo) * 100) : 0;
-                  return `${label}: ${formatarMoeda(value)} (${percentage}%)`;
-                },
-              },
-            },
+            legend: { display: false }
           },
-        },
-      });
-    }
-
-    function carregarLancamentos() {
-      const tabelaBody = document.getElementById("tabelaBody");
-      tabelaBody.innerHTML = "";
-      lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-      const currentYear = new Date().getFullYear();
-      const lancamentosOrdenados = ordenarLancamentos(lancamentos);
-      lancamentosOrdenados.forEach((l) => {
-        const tr = document.createElement("tr");
-        if (l.formaPagamento === "credito" && l.tipo !== "receita") tr.classList.add("cartao-credito");
-        if (!l.valoresManuais) l.valoresManuais = Array(12).fill(null);
-        const meses = Array(12).fill(0);
-        const ocorrencias = calcularOcorrencias(l, currentYear);
-        for (let index = 0; index < 12; index++) {
-            if (l.valoresManuais[index] !== null) {
-                meses[index] = l.valoresManuais[index];
-            } else {
-                const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
-                meses[index] = l.valor * ocorrenciasNoMes.length;
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: "#ffffff" },
+              grid: { color: "rgba(255,255,255,0.1)" }
+            },
+            x: {
+              ticks: { color: "#ffffff" },
+              grid: { color: "rgba(255,255,255,0.1)" }
             }
-        }
-        const total = meses.reduce((sum, val) => sum + val, 0);
-        const media = total / 12;
-        const classeCSS = l.tipo === "receita" ? "receita" : l.tipo === "fixa" ? "fixa" : "variavel";
-        
-        // Adicionar onclick para abrir modal de edição, exceto nas células editáveis e botão excluir
-        tr.onclick = function(event) {
-          // Verificar se o clique foi em uma célula editável ou no botão excluir
-          if (event.target.classList.contains('editable') || event.target.classList.contains('delete-btn')) {
-            return; // Não abrir modal de edição
           }
-          abrirModalEdicao(l.id);
-        };
-        
-        tr.innerHTML = `
-          <td class="hidden-id">${l.id}</td>
-          <td class="${classeCSS}">${l.descricao}</td>
-          ${meses.map((m, i) => `<td class="editable" onclick="event.stopPropagation(); editarCelula(this, ${l.id}, ${i})">${formatarMoeda(m)}</td>`).join("")}
-          <td class="${classeCSS}">${formatarMoeda(total)}</td>
-          <td class="${classeCSS}">${formatarMoeda(media)}</td>
-          <td><button class="delete-btn" onclick="event.stopPropagation(); excluirLancamento(${l.id})">Excluir</button></td>
+        }
+      });
+
+      // Atualizar legenda
+      legenda.innerHTML = "";
+      labels.forEach((label, index) => {
+        const item = document.createElement("div");
+        item.className = "item-legenda";
+        item.innerHTML = `
+          <div class="cor-legenda" style="background-color: ${cores[index]}"></div>
+          <span class="descricao-legenda">${label}:</span>
+          <span class="valor-legenda">R$ ${dados[index].toFixed(2).replace(".", ",")}</span>
         `;
-        tabelaBody.appendChild(tr);
-      });
-      atualizarResumoFinanceiro(lancamentos, currentYear);
-    }
-
-    function excluirLancamento(id) {
-      if (!confirm("Tem certeza que deseja excluir este lançamento?")) return;
-      let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-      lancamentos = lancamentos.filter((l) => l.id !== id);
-      localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
-      carregarLancamentos();
-    }
-
-    function editarCelula(cell, id, month) {
-      if (cell.querySelector("input")) return;
-      const currentValueText = cell.innerHTML;
-      const currentValue = parseFloat(currentValueText.replace(/[^\d,-]/g, "").replace(",", ".")) || 0;
-      const input = document.createElement("input");
-      input.type = "text";
-      input.className = "edit-input";
-      input.value = currentValue > 0 ? formatarMoeda(currentValue).replace("R$ ", "").replace(".", "").replace(",", ".") : "";
-      cell.innerHTML = "";
-      input.addEventListener("input", function () {
-        let v = this.value.replace(/[^\d]/g, "");
-        if (!v) { this.value = ""; return; }
-        if (v.length < 3) v = v.padStart(3, "0");
-        let inteiro = v.slice(0, -2).replace(/^0+/, "") || "0";
-        const decimal = v.slice(-2);
-        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
-      });
-      cell.appendChild(input);
-      input.focus();
-      input.select();
-      const blurHandler = () => {
-        finalizarEdicao(input, id, month, cell);
-        input.removeEventListener("blur", blurHandler);
-      };
-      input.addEventListener("blur", blurHandler);
-      input.addEventListener("keypress", function (e) {
-        if (e.key === "Enter") {
-          input.removeEventListener("blur", blurHandler);
-          finalizarEdicao(input, id, month, cell);
-        }
-      });
-      input.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-          input.removeEventListener("blur", blurHandler);
-          cell.innerHTML = currentValueText;
-        }
+        legenda.appendChild(item);
       });
     }
 
-    function finalizarEdicao(input, id, month, cell) {
-      const novoValorStr = input.value.trim();
-      let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-      const lancamento = lancamentos.find((l) => l.id === id);
-      if (lancamento) {
-        let valorNumerico = 0;
-        if (novoValorStr && novoValorStr !== "-") {
-          valorNumerico = parseFloat(novoValorStr.replace(/\./g, "").replace(",", "."));
-          if (isNaN(valorNumerico)) valorNumerico = 0;
+    function atualizarGraficoCartoes(mesSelecionado) {
+      const ctx = document.getElementById("graficoCartoes").getContext("2d");
+      const legenda = document.getElementById("legendaCartoes");
+
+      if (graficoCartoes) {
+        graficoCartoes.destroy();
+      }
+
+      // Calcular gastos por cartão
+      const gastosPorCartao = {};
+      
+      lancamentos.forEach(lancamento => {
+        if (lancamento.formaPagamento === "credito" && lancamento.cartao) {
+          if (!gastosPorCartao[lancamento.cartao]) {
+            gastosPorCartao[lancamento.cartao] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          }
+          for (let i = 0; i < 12; i++) {
+            gastosPorCartao[lancamento.cartao][i] += lancamento.valores[i];
+          }
         }
-        if (!lancamento.valoresManuais) lancamento.valoresManuais = Array(12).fill(null);
-        lancamento.valoresManuais[month] = valorNumerico;
-        localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
-        carregarLancamentos();
-      } else {
-        cell.innerHTML = formatarMoeda(0);
+      });
+
+      const dados = [];
+      const labels = [];
+      const cores = ["#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3", "#00bcd4", "#009688", "#4caf50"];
+
+      Object.keys(gastosPorCartao).forEach((cartao, index) => {
+        let valor;
+        if (mesSelecionado === -1) {
+          valor = gastosPorCartao[cartao].reduce((sum, val) => sum + val, 0);
+        } else if (mesSelecionado === -2) {
+          const mesesComGasto = gastosPorCartao[cartao].filter(v => v > 0).length;
+          valor = mesesComGasto > 0 ? gastosPorCartao[cartao].reduce((sum, val) => sum + val, 0) / mesesComGasto : 0;
+        } else {
+          valor = gastosPorCartao[cartao][mesSelecionado];
+        }
+
+        if (valor > 0) {
+          dados.push(valor);
+          labels.push(cartao);
+        }
+      });
+
+      if (dados.length === 0) {
+        legenda.innerHTML = '<div class="mensagem-vazia">Nenhum gasto no cartão neste período.</div>';
+        return;
+      }
+
+      graficoCartoes = new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: dados,
+            backgroundColor: cores.slice(0, dados.length),
+            borderWidth: 2,
+            borderColor: "#002d26"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+
+      // Atualizar legenda
+      legenda.innerHTML = "";
+      labels.forEach((label, index) => {
+        const item = document.createElement("div");
+        item.className = "item-legenda";
+        item.innerHTML = `
+          <div class="cor-legenda" style="background-color: ${cores[index]}"></div>
+          <span class="descricao-legenda">${label}:</span>
+          <span class="valor-legenda">R$ ${dados[index].toFixed(2).replace(".", ",")}</span>
+        `;
+        legenda.appendChild(item);
+      });
+    }
+
+    function atualizarGraficoSubcategorias(mesSelecionado) {
+      const ctx = document.getElementById("graficoSubcategorias").getContext("2d");
+      const legenda = document.getElementById("legendaSubcategorias");
+
+      if (graficoSubcategorias) {
+        graficoSubcategorias.destroy();
+      }
+
+      // Calcular gastos por subcategoria
+      const gastosPorSubcategoria = {};
+      
+      lancamentos.forEach(lancamento => {
+        if (lancamento.subcategoria && lancamento.tipo !== "receita") {
+          if (!gastosPorSubcategoria[lancamento.subcategoria]) {
+            gastosPorSubcategoria[lancamento.subcategoria] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          }
+          for (let i = 0; i < 12; i++) {
+            gastosPorSubcategoria[lancamento.subcategoria][i] += lancamento.valores[i];
+          }
+        }
+      });
+
+      const dados = [];
+      const labels = [];
+      const cores = ["#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3", "#00bcd4", "#009688", "#8bc34a", "#cddc39", "#ffeb3b", "#ff5722", "#795548"];
+
+      Object.keys(gastosPorSubcategoria).forEach((subcategoria, index) => {
+        let valor;
+        if (mesSelecionado === -1) {
+          valor = gastosPorSubcategoria[subcategoria].reduce((sum, val) => sum + val, 0);
+        } else if (mesSelecionado === -2) {
+          const mesesComGasto = gastosPorSubcategoria[subcategoria].filter(v => v > 0).length;
+          valor = mesesComGasto > 0 ? gastosPorSubcategoria[subcategoria].reduce((sum, val) => sum + val, 0) / mesesComGasto : 0;
+        } else {
+          valor = gastosPorSubcategoria[subcategoria][mesSelecionado];
+        }
+
+        if (valor > 0) {
+          dados.push(valor);
+          labels.push(subcategoria);
+        }
+      });
+
+      if (dados.length === 0) {
+        legenda.innerHTML = '<div class="mensagem-vazia">Nenhuma subcategoria com gastos neste período.</div>';
+        return;
+      }
+
+      graficoSubcategorias = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: dados,
+            backgroundColor: cores.slice(0, dados.length),
+            borderWidth: 2,
+            borderColor: "#002d26"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+
+      // Atualizar legenda
+      legenda.innerHTML = "";
+      labels.forEach((label, index) => {
+        const item = document.createElement("div");
+        item.className = "item-legenda";
+        item.innerHTML = `
+          <div class="cor-legenda" style="background-color: ${cores[index]}"></div>
+          <span class="descricao-legenda">${label}:</span>
+          <span class="valor-legenda">R$ ${dados[index].toFixed(2).replace(".", ",")}</span>
+        `;
+        legenda.appendChild(item);
+      });
+    }
+
+    // Função para gerar insights
+    function gerarInsights() {
+      const insightsContent = document.getElementById("insightsContent");
+      insightsContent.innerHTML = "";
+
+      if (!dadosResumo) return;
+
+      const insights = [];
+
+      // Calcular totais anuais
+      const totalReceitas = dadosResumo["Receitas"].valores.reduce((sum, val) => sum + val, 0);
+      const totalDespesasFixas = dadosResumo["Despesas Fixas"].valores.reduce((sum, val) => sum + val, 0);
+      const totalDespesasVariaveis = dadosResumo["Despesas Variáveis"].valores.reduce((sum, val) => sum + val, 0);
+      const totalDespesas = totalDespesasFixas + totalDespesasVariaveis;
+      const saldoAnual = totalReceitas - totalDespesas;
+
+      // Insight 1: Análise do saldo
+      if (saldoAnual > 0) {
+        insights.push({
+          tipo: "💰 Situação Financeira",
+          texto: `Parabéns! Você tem um saldo positivo de <span class="insight-valor">R$ ${saldoAnual.toFixed(2).replace(".", ",")}</span> no ano. Isso representa ${((saldoAnual / totalReceitas) * 100).toFixed(1)}% das suas receitas sendo poupadas.`
+        });
+      } else if (saldoAnual < 0) {
+        insights.push({
+          tipo: "⚠️ Atenção",
+          texto: `Você está gastando <span class="insight-alerta">R$ ${Math.abs(saldoAnual).toFixed(2).replace(".", ",")}</span> a mais do que ganha. É importante revisar seus gastos para equilibrar o orçamento.`
+        });
+      }
+
+      // Insight 2: Distribuição de despesas
+      if (totalDespesas > 0) {
+        const percentualFixas = (totalDespesasFixas / totalDespesas) * 100;
+        const percentualVariaveis = (totalDespesasVariaveis / totalDespesas) * 100;
+        
+        insights.push({
+          tipo: "📊 Distribuição de Gastos",
+          texto: `Suas despesas se dividem em ${percentualFixas.toFixed(1)}% fixas e ${percentualVariaveis.toFixed(1)}% variáveis. ${percentualFixas > 70 ? 'Considere revisar gastos fixos para ter mais flexibilidade.' : 'Boa distribuição entre gastos fixos e variáveis.'}`
+        });
+      }
+
+      // Insight 3: Análise de cartões
+      const gastosCartao = lancamentos
+        .filter(l => l.formaPagamento === "credito")
+        .reduce((sum, l) => sum + l.valores.reduce((s, v) => s + v, 0), 0);
+      
+      if (gastosCartao > 0 && totalDespesas > 0) {
+        const percentualCartao = (gastosCartao / totalDespesas) * 100;
+        insights.push({
+          tipo: "💳 Uso do Cartão",
+          texto: `${percentualCartao.toFixed(1)}% dos seus gastos são feitos no cartão de crédito (<span class="insight-valor">R$ ${gastosCartao.toFixed(2).replace(".", ",")}</span>). ${percentualCartao > 50 ? 'Monitore os gastos no cartão para evitar surpresas na fatura.' : 'Uso moderado do cartão de crédito.'}`
+        });
+      }
+
+      // Insight 4: Maior categoria de gasto
+      if (totalDespesasFixas > totalDespesasVariaveis) {
+        insights.push({
+          tipo: "🎯 Foco de Otimização",
+          texto: `Suas despesas fixas representam a maior parte dos gastos. Considere renegociar contratos ou buscar alternativas mais econômicas para reduzir custos fixos.`
+        });
+      } else if (totalDespesasVariaveis > totalDespesasFixas) {
+        insights.push({
+          tipo: "🎯 Foco de Otimização",
+          texto: `Suas despesas variáveis são maiores que as fixas. Isso oferece mais flexibilidade para ajustar o orçamento conforme necessário.`
+        });
+      }
+
+      // Insight 5: Projeção anual
+      const mediaReceitas = totalReceitas / 12;
+      const mediaDespesas = totalDespesas / 12;
+      const projecaoSaldo = (mediaReceitas - mediaDespesas) * 12;
+      
+      if (Math.abs(projecaoSaldo - saldoAnual) < 100) {
+        insights.push({
+          tipo: "📈 Projeção",
+          texto: `Mantendo o padrão atual, você terá um saldo de <span class="${projecaoSaldo >= 0 ? 'insight-valor' : 'insight-alerta'}">R$ ${projecaoSaldo.toFixed(2).replace(".", ",")}</span> ao final do ano.`
+        });
+      }
+
+      // Renderizar insights
+      insights.forEach(insight => {
+        const insightDiv = document.createElement("div");
+        insightDiv.className = "insight-item";
+        insightDiv.innerHTML = `
+          <div class="insight-tipo">${insight.tipo}</div>
+          <div class="insight-texto">${insight.texto}</div>
+        `;
+        insightsContent.appendChild(insightDiv);
+      });
+
+      if (insights.length === 0) {
+        insightsContent.innerHTML = '<div class="mensagem-vazia">Adicione alguns lançamentos para ver insights personalizados.</div>';
       }
     }
 
-    function ordenarLancamentos(lancamentos) {
-      const entradas = lancamentos.filter((l) => l.tipo === "receita").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const fixasNaoCredito = lancamentos.filter((l) => l.tipo === "fixa" && l.formaPagamento !== "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const fixasCredito = lancamentos.filter((l) => l.tipo === "fixa" && l.formaPagamento === "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const variaveisNaoCredito = lancamentos.filter((l) => l.tipo === "variavel" && l.formaPagamento !== "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      const variaveisCredito = lancamentos.filter((l) => l.tipo === "variavel" && l.formaPagamento === "credito").sort((a, b) => a.descricao.localeCompare(b.descricao));
-      return [...entradas, ...fixasNaoCredito, ...fixasCredito, ...variaveisNaoCredito, ...variaveisCredito];
+    // Funções do Sistema de Mensagens
+    function atualizarSimulador() {
+      const tipoData = document.querySelector('input[name="tipoData"]:checked').value;
+      const dataEspecifica = document.getElementById("dataEspecifica");
+      
+      if (tipoData === "especifica") {
+        dataEspecifica.disabled = false;
+        if (!dataEspecifica.value) {
+          dataEspecifica.value = new Date().toISOString().split('T')[0];
+        }
+      } else {
+        dataEspecifica.disabled = true;
+      }
+    }
+
+    function gerarMensagens() {
+      const tipoData = document.querySelector('input[name="tipoData"]:checked').value;
+      let dataReferencia;
+      
+      if (tipoData === "hoje") {
+        dataReferencia = new Date();
+      } else {
+        const dataEspecifica = document.getElementById("dataEspecifica").value;
+        if (!dataEspecifica) {
+          alert("Selecione uma data específica.");
+          return;
+        }
+        dataReferencia = new Date(dataEspecifica);
+      }
+
+      const mensagensContainer = document.getElementById("mensagensContainer");
+      mensagensContainer.innerHTML = "";
+
+      // Gerar mensagens para hoje, semana e mês
+      const mensagemHoje = gerarMensagemPeriodo(dataReferencia, "hoje");
+      const mensagemSemana = gerarMensagemPeriodo(dataReferencia, "semana");
+      const mensagemMes = gerarMensagemPeriodo(dataReferencia, "mes");
+
+      mensagensContainer.appendChild(mensagemHoje);
+      mensagensContainer.appendChild(mensagemSemana);
+      mensagensContainer.appendChild(mensagemMes);
+    }
+
+    function gerarMensagemPeriodo(dataReferencia, periodo) {
+      const mensagemCard = document.createElement("div");
+      mensagemCard.className = `mensagem-card mensagem-${periodo}`;
+
+      let titulo, itens;
+      
+      if (periodo === "hoje") {
+        titulo = `📅 Hoje (${dataReferencia.toLocaleDateString('pt-BR')})`;
+        itens = calcularItensHoje(dataReferencia);
+      } else if (periodo === "semana") {
+        const inicioSemana = new Date(dataReferencia);
+        inicioSemana.setDate(dataReferencia.getDate() - dataReferencia.getDay());
+        const fimSemana = new Date(inicioSemana);
+        fimSemana.setDate(inicioSemana.getDate() + 6);
+        titulo = `📆 Esta Semana (${inicioSemana.toLocaleDateString('pt-BR')} - ${fimSemana.toLocaleDateString('pt-BR')})`;
+        itens = calcularItensSemana(dataReferencia);
+      } else {
+        titulo = `🗓️ Este Mês (${dataReferencia.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })})`;
+        itens = calcularItensMes(dataReferencia);
+      }
+
+      mensagemCard.innerHTML = `
+        <div class="mensagem-titulo">${titulo}</div>
+        <ul class="mensagem-lista" id="lista-${periodo}">
+          ${itens.length > 0 ? itens.map(item => `
+            <li class="mensagem-item">
+              <span class="mensagem-descricao">${item.descricao}</span>
+              <span class="mensagem-valor ${item.tipo === 'receita' ? 'receita' : (item.tipo === 'fixa' ? 'fixa' : 'variavel')}">R$ ${item.valor.toFixed(2).replace(".", ",")}</span>
+              <span class="mensagem-data">${item.data}</span>
+            </li>
+          `).join('') : '<li class="mensagem-vazia">Nenhum lançamento previsto para este período.</li>'}
+        </ul>
+      `;
+
+      return mensagemCard;
+    }
+
+    function calcularItensHoje(dataReferencia) {
+      const itens = [];
+      const hoje = new Date(dataReferencia);
+      
+      lancamentos.forEach(lancamento => {
+        const datasOcorrencia = calcularDatasOcorrencia(lancamento, hoje.getFullYear());
+        
+        datasOcorrencia.forEach(data => {
+          if (data.toDateString() === hoje.toDateString()) {
+            // Para cartão de crédito, considerar data de vencimento da fatura
+            let dataExibicao = data.toLocaleDateString('pt-BR');
+            if (lancamento.formaPagamento === "credito" && lancamento.cartao) {
+              const cartao = cartoes.find(c => c.nome === lancamento.cartao);
+              if (cartao) {
+                const dataVencimento = new Date(data.getFullYear(), data.getMonth(), cartao.diaVencimento);
+                if (data.getDate() > cartao.diaFechamento) {
+                  dataVencimento.setMonth(dataVencimento.getMonth() + 1);
+                }
+                dataExibicao = `Venc: ${dataVencimento.toLocaleDateString('pt-BR')}`;
+              }
+            }
+            
+            itens.push({
+              descricao: `${lancamento.descricao}${lancamento.cartao ? ` (${lancamento.cartao})` : ''}${lancamento.subcategoria ? ` • ${lancamento.subcategoria}` : ''}`,
+              valor: lancamento.valor,
+              tipo: lancamento.tipo,
+              data: dataExibicao
+            });
+          }
+        });
+      });
+
+      return itens.sort((a, b) => b.valor - a.valor);
+    }
+
+    function calcularItensSemana(dataReferencia) {
+      const itens = [];
+      const inicioSemana = new Date(dataReferencia);
+      inicioSemana.setDate(dataReferencia.getDate() - dataReferencia.getDay());
+      const fimSemana = new Date(inicioSemana);
+      fimSemana.setDate(inicioSemana.getDate() + 6);
+      
+      lancamentos.forEach(lancamento => {
+        const datasOcorrencia = calcularDatasOcorrencia(lancamento, dataReferencia.getFullYear());
+        
+        datasOcorrencia.forEach(data => {
+          if (data >= inicioSemana && data <= fimSemana) {
+            let dataExibicao = data.toLocaleDateString('pt-BR');
+            if (lancamento.formaPagamento === "credito" && lancamento.cartao) {
+              const cartao = cartoes.find(c => c.nome === lancamento.cartao);
+              if (cartao) {
+                const dataVencimento = new Date(data.getFullYear(), data.getMonth(), cartao.diaVencimento);
+                if (data.getDate() > cartao.diaFechamento) {
+                  dataVencimento.setMonth(dataVencimento.getMonth() + 1);
+                }
+                dataExibicao = `Venc: ${dataVencimento.toLocaleDateString('pt-BR')}`;
+              }
+            }
+            
+            itens.push({
+              descricao: `${lancamento.descricao}${lancamento.cartao ? ` (${lancamento.cartao})` : ''}${lancamento.subcategoria ? ` • ${lancamento.subcategoria}` : ''}`,
+              valor: lancamento.valor,
+              tipo: lancamento.tipo,
+              data: dataExibicao
+            });
+          }
+        });
+      });
+
+      return itens.sort((a, b) => new Date(a.data.replace('Venc: ', '')) - new Date(b.data.replace('Venc: ', '')));
+    }
+
+    function calcularItensMes(dataReferencia) {
+      const itens = [];
+      const inicioMes = new Date(dataReferencia.getFullYear(), dataReferencia.getMonth(), 1);
+      const fimMes = new Date(dataReferencia.getFullYear(), dataReferencia.getMonth() + 1, 0);
+      
+      lancamentos.forEach(lancamento => {
+        const datasOcorrencia = calcularDatasOcorrencia(lancamento, dataReferencia.getFullYear());
+        
+        datasOcorrencia.forEach(data => {
+          if (data >= inicioMes && data <= fimMes) {
+            let dataExibicao = data.toLocaleDateString('pt-BR');
+            if (lancamento.formaPagamento === "credito" && lancamento.cartao) {
+              const cartao = cartoes.find(c => c.nome === lancamento.cartao);
+              if (cartao) {
+                const dataVencimento = new Date(data.getFullYear(), data.getMonth(), cartao.diaVencimento);
+                if (data.getDate() > cartao.diaFechamento) {
+                  dataVencimento.setMonth(dataVencimento.getMonth() + 1);
+                }
+                dataExibicao = `Venc: ${dataVencimento.toLocaleDateString('pt-BR')}`;
+              }
+            }
+            
+            itens.push({
+              descricao: `${lancamento.descricao}${lancamento.cartao ? ` (${lancamento.cartao})` : ''}${lancamento.subcategoria ? ` • ${lancamento.subcategoria}` : ''}`,
+              valor: lancamento.valor,
+              tipo: lancamento.tipo,
+              data: dataExibicao
+            });
+          }
+        });
+      });
+
+      return itens.sort((a, b) => new Date(a.data.replace('Venc: ', '')) - new Date(b.data.replace('Venc: ', '')));
+    }
+
+    function calcularDatasOcorrencia(lancamento, ano) {
+      const datas = [];
+      const dataInicio = new Date(lancamento.dataInicial);
+      const dataFim = new Date(lancamento.dataFinal);
+      
+      // Ajustar para o ano específico se necessário
+      if (dataInicio.getFullYear() !== ano) {
+        dataInicio.setFullYear(ano);
+      }
+      if (dataFim.getFullYear() !== ano) {
+        dataFim.setFullYear(ano);
+      }
+
+      let dataAtual = new Date(dataInicio);
+      
+      while (dataAtual <= dataFim && dataAtual.getFullYear() === ano) {
+        datas.push(new Date(dataAtual));
+
+        // Calcular próxima data baseada na frequência
+        switch (lancamento.frequenciaTipo) {
+          case "unico":
+            dataAtual = new Date(dataFim.getTime() + 1);
+            break;
+          case "dias":
+            dataAtual.setDate(dataAtual.getDate() + lancamento.frequenciaValor);
+            break;
+          case "dias_uteis":
+            for (let i = 0; i < lancamento.frequenciaValor; i++) {
+              do {
+                dataAtual.setDate(dataAtual.getDate() + 1);
+              } while (dataAtual.getDay() === 0 || dataAtual.getDay() === 6);
+            }
+            break;
+          case "segunda":
+          case "terca":
+          case "quarta":
+          case "quinta":
+          case "sexta":
+            dataAtual.setDate(dataAtual.getDate() + (7 * lancamento.frequenciaValor));
+            break;
+          case "semanas":
+            dataAtual.setDate(dataAtual.getDate() + (7 * lancamento.frequenciaValor));
+            break;
+          case "quinzenas":
+            dataAtual.setDate(dataAtual.getDate() + (15 * lancamento.frequenciaValor));
+            break;
+          case "meses":
+            dataAtual.setMonth(dataAtual.getMonth() + lancamento.frequenciaValor);
+            break;
+          case "anos":
+            dataAtual.setFullYear(dataAtual.getFullYear() + lancamento.frequenciaValor);
+            break;
+        }
+      }
+
+      return datas;
+    }
+
+    // Funções de persistência
+    function salvarDados() {
+      localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+    }
+
+    function carregarDados() {
+      const dadosSalvos = localStorage.getItem("lancamentos");
+      if (dadosSalvos) {
+        lancamentos = JSON.parse(dadosSalvos);
+      }
+      carregarDadosGerenciamento();
+      atualizarTabela();
     }
 
     // Inicialização
-    document.addEventListener("DOMContentLoaded", function () {
-      carregarDadosGerenciamento(); // Carrega subcategorias e cartões
-      carregarLancamentos();
+    window.onload = function() {
+      carregarDados();
+      atualizarSimulador();
       
-      // Listeners para formatação de valor
-      document.getElementById("valor").addEventListener("input", function () {
-        let v = this.value.replace(/[^\d]/g, "");
-        if (!v) { this.value = ""; return; }
-        if (v.length < 3) v = v.padStart(3, "0");
-        let inteiro = v.slice(0, -2).replace(/^0+/, "") || "0";
-        const decimal = v.slice(-2);
-        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
-      });
-      
-      document.getElementById("valorEdicao").addEventListener("input", function () {
-        let v = this.value.replace(/[^\d]/g, "");
-        if (!v) { this.value = ""; return; }
-        if (v.length < 3) v = v.padStart(3, "0");
-        let inteiro = v.slice(0, -2).replace(/^0+/, "") || "0";
-        const decimal = v.slice(-2);
-        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
-      });
-      
-      // Listeners para tipo de lançamento (afeta forma de pagamento)
-      document.getElementById("tipoLancamento").addEventListener("change", function () {
-        const formaPagamentoSelect = document.getElementById("formaPagamento");
-        if (this.value === "receita") {
-          formaPagamentoSelect.innerHTML = `<option value="conta">Conta</option>`;
-          formaPagamentoSelect.value = "conta";
-        } else {
-          const valorAtual = formaPagamentoSelect.value;
-          formaPagamentoSelect.innerHTML = `
-            <option value="conta">Conta</option>
-            <option value="credito">Cartão de Crédito</option>
-          `;
-          if (valorAtual === "conta" || valorAtual === "credito") {
-            formaPagamentoSelect.value = valorAtual;
-          } else {
-            formaPagamentoSelect.value = "conta";
-          }
+      // Fechar modais clicando fora
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          fecharModal();
         }
-        // Dispara o change da forma de pagamento para atualizar visibilidade do cartão
-        toggleCartaoContainer();
-      });
-      
-      document.getElementById("tipoLancamentoEdicao").addEventListener("change", function () {
-        const formaPagamentoSelect = document.getElementById("formaPagamentoEdicao");
-        if (this.value === "receita") {
-          formaPagamentoSelect.innerHTML = `<option value="conta">Conta</option>`;
-          formaPagamentoSelect.value = "conta";
-        } else {
-          const valorAtual = formaPagamentoSelect.value;
-          formaPagamentoSelect.innerHTML = `
-            <option value="conta">Conta</option>
-            <option value="credito">Cartão de Crédito</option>
-          `;
-          if (valorAtual === "conta" || valorAtual === "credito") {
-            formaPagamentoSelect.value = valorAtual;
-          } else {
-            formaPagamentoSelect.value = "conta";
-          }
+        if (event.target === modalEdicao) {
+          fecharModalEdicao();
         }
-        // Dispara o change da forma de pagamento para atualizar visibilidade do cartão
-        toggleCartaoContainerEdicao();
-      });
-    });
-
+        if (event.target === modalGerenciamento) {
+          fecharModalGerenciamento();
+        }
+        if (event.target === modalDetalhamento) {
+          fecharModalDetalhamento();
+        }
+      };
+    };
   </script>
 </body>
 </html>
