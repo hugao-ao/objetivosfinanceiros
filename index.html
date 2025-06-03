@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro V6</title> <!-- Versão atualizada -->
+  <title>Controle Financeiro V7</title> <!-- Versão atualizada -->
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -535,6 +535,78 @@
     .subcategoria-cor-11 { color: #ff5722; }
     .subcategoria-cor-12 { color: #795548; }
 
+    /* Linha clicável na tabela principal */
+    #tabelaLancamentos tbody tr {
+      cursor: pointer;
+    }
+    #tabelaLancamentos tbody tr:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Linha clicável na tabela de resumo */
+    #tabelaResumo tbody tr {
+      cursor: pointer;
+    }
+    #tabelaResumo tbody tr:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Modal de detalhamento */
+    .modal-detalhamento {
+      display: none;
+      position: fixed;
+      z-index: 150;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7);
+      padding-top: 60px;
+    }
+
+    .modal-detalhamento-content {
+      background-color: #014034;
+      margin: 5% auto;
+      padding: 30px;
+      border: 1px solid #888;
+      width: 70%;
+      max-width: 800px;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .lista-detalhamento {
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .item-detalhamento {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 5px;
+      background-color: #006a56;
+      border-radius: 5px;
+    }
+
+    .item-detalhamento-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .item-detalhamento-valor {
+      font-weight: bold;
+      margin-right: 15px;
+    }
+
+    .item-detalhamento-percentual {
+      color: #ffd700;
+      font-size: 14px;
+    }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -542,7 +614,7 @@
 
   <h1>Controle Financeiro</h1>
   
-  <!-- Container Principal (Lançamentos e Resumo ) -->
+  <!-- Container Principal (Lançamentos e Resumo) -->
   <div class="container-principal" id="containerPrincipal">
     <!-- Seção da Tabela de Lançamentos -->
     <div class="secao-lancamentos">
@@ -656,7 +728,7 @@
   <!-- Botão Resumo Fixo (movido para fora do container principal para CSS funcionar) -->
   <button class="botao-resumo-fixo" onclick="mostrarResumo()">Ver Resumo e Análises</button>
 
-  <!-- Modal do Formulário -->
+  <!-- Modal do Formulário de Adição -->
   <div id="modalFormulario" class="modal">
     <div class="modal-content">
       <span class="close-button" onclick="fecharModal()">&times;</span>
@@ -725,6 +797,76 @@
     </div>
   </div>
 
+  <!-- Modal do Formulário de Edição -->
+  <div id="modalEdicao" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="fecharModalEdicao()">&times;</span>
+      <h2>Editar Lançamento</h2>
+      <input type="hidden" id="editLancamentoId">
+      <div class="form-section-modal">
+        <div class="form-group">
+          <label for="descricaoEdicao">Descrição:</label>
+          <input type="text" id="descricaoEdicao" placeholder="Ex: Salário, Luz" />
+
+          <label for="valorEdicao">Valor (R$):</label>
+          <input type="text" id="valorEdicao" placeholder="Ex: 1.500,00" />
+          
+          <label for="tipoLancamentoEdicao">Tipo de Lançamento:</label>
+          <select id="tipoLancamentoEdicao">
+            <option value="receita">Receita</option>
+            <option value="fixa">Despesa Fixa</option>
+            <option value="variavel">Despesa Variável</option>
+          </select>
+
+          <label for="formaPagamentoEdicao">Forma de Pagamento:</label>
+          <select id="formaPagamentoEdicao">
+            <option value="conta">Conta</option>
+            <option value="credito">Cartão de Crédito</option>
+          </select>
+
+          <label for="subcategoriaEdicao">Subcategoria (opcional):</label>
+          <div class="subcategoria-container">
+            <select id="subcategoriaEdicao" class="subcategoria-select">
+              <option value="">Nenhuma</option>
+            </select>
+            <button type="button" class="botao-gerenciar-subcategorias" onclick="abrirModalSubcategorias()">Gerenciar</button>
+          </div>
+
+        </div>
+
+        <div class="form-group">
+          <label for="frequenciaValorEdicao">A cada:</label>
+          <input type="number" id="frequenciaValorEdicao" min="1" value="1" />
+
+          <label for="frequenciaTipoEdicao">Unidade de Frequência:</label>
+          <select id="frequenciaTipoEdicao">
+            <option value="unico">não se repete</option>
+            <option value="dias">dias</option>
+            <option value="dias_uteis">dias úteis</option>
+            <option value="segunda">segunda</option>
+            <option value="terca">terça</option>
+            <option value="quarta">quarta</option>
+            <option value="quinta">quinta</option>
+            <option value="sexta">sexta</option>
+            <option value="semanas">semanas</option>
+            <option value="quinzenas">quinzenas</option>
+            <option value="meses" selected>meses</option>
+            <option value="anos">anos</option>
+          </select>
+
+          <label for="dataInicialEdicao">Data Inicial:</label>
+          <input type="date" id="dataInicialEdicao" />
+
+          <label for="dataFinalEdicao">Data Final:</label>
+          <input type="date" id="dataFinalEdicao" />
+        </div>
+        <div class="botoes-formulario">
+            <button class="botao-lancar" onclick="salvarEdicao()">Salvar Edição</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal de Gerenciamento de Subcategorias -->
   <div id="modalSubcategorias" class="modal-subcategorias">
     <div class="modal-subcategorias-content">
@@ -746,6 +888,22 @@
     </div>
   </div>
 
+  <!-- Modal de Detalhamento -->
+  <div id="modalDetalhamento" class="modal-detalhamento">
+    <div class="modal-detalhamento-content">
+      <span class="close-button" onclick="fecharModalDetalhamento()">&times;</span>
+      <h2 id="tituloDetalhamento">Detalhamento da Categoria</h2>
+      
+      <div class="lista-detalhamento" id="listaDetalhamento">
+        <!-- Lista de itens será inserida aqui -->
+      </div>
+      
+      <div style="text-align: right;">
+        <button class="botao-lancar" onclick="fecharModalDetalhamento()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Variáveis globais
     let graficoDespesasPoupanca = null;
@@ -755,19 +913,22 @@
     let subcategorias = [];
     let editandoSubcategoria = null;
     const modal = document.getElementById("modalFormulario");
+    const modalEdicao = document.getElementById("modalEdicao");
     const modalSubcategorias = document.getElementById("modalSubcategorias");
+    const modalDetalhamento = document.getElementById("modalDetalhamento");
     const containerPrincipal = document.getElementById("containerPrincipal");
     const botaoResumoFixo = document.querySelector(".botao-resumo-fixo");
 
     // Funções de Subcategorias
     function carregarSubcategorias() {
       subcategorias = JSON.parse(localStorage.getItem("subcategorias") || "[]");
-      atualizarSelectSubcategorias();
+      atualizarSelectSubcategorias("subcategoria"); // Para modal de adição
+      atualizarSelectSubcategorias("subcategoriaEdicao"); // Para modal de edição
       atualizarListaSubcategorias();
     }
 
-    function atualizarSelectSubcategorias() {
-      const select = document.getElementById("subcategoria");
+    function atualizarSelectSubcategorias(selectId) {
+      const select = document.getElementById(selectId);
       const valorAtual = select.value;
       select.innerHTML = '<option value="">Nenhuma</option>';
       
@@ -820,7 +981,8 @@
       
       localStorage.setItem("subcategorias", JSON.stringify(subcategorias));
       input.value = "";
-      atualizarSelectSubcategorias();
+      atualizarSelectSubcategorias("subcategoria");
+      atualizarSelectSubcategorias("subcategoriaEdicao");
       atualizarListaSubcategorias();
     }
 
@@ -844,7 +1006,8 @@
       
       subcategoria.nome = nomeFormatado;
       localStorage.setItem("subcategorias", JSON.stringify(subcategorias));
-      atualizarSelectSubcategorias();
+      atualizarSelectSubcategorias("subcategoria");
+      atualizarSelectSubcategorias("subcategoriaEdicao");
       atualizarListaSubcategorias();
     }
 
@@ -856,7 +1019,8 @@
       
       subcategorias = subcategorias.filter(s => s.id !== id);
       localStorage.setItem("subcategorias", JSON.stringify(subcategorias));
-      atualizarSelectSubcategorias();
+      atualizarSelectSubcategorias("subcategoria");
+      atualizarSelectSubcategorias("subcategoriaEdicao");
       atualizarListaSubcategorias();
     }
 
@@ -878,7 +1042,7 @@
       return cores[index % cores.length];
     }
 
-    // Funções do Modal
+    // Funções do Modal de Adição
     function abrirModal() {
       const today = new Date();
       const currentYear = today.getFullYear();
@@ -895,12 +1059,176 @@
       modal.style.display = "none";
     }
 
+    // Funções do Modal de Edição
+    function abrirModalEdicao(id) {
+      const lancamento = lancamentos.find(l => l.id === id);
+      if (!lancamento) return;
+
+      document.getElementById("editLancamentoId").value = id;
+      document.getElementById("descricaoEdicao").value = lancamento.descricao;
+      document.getElementById("valorEdicao").value = formatarMoedaParaInput(lancamento.valor);
+      document.getElementById("tipoLancamentoEdicao").value = lancamento.tipo;
+      document.getElementById("formaPagamentoEdicao").value = lancamento.formaPagamento;
+      document.getElementById("subcategoriaEdicao").value = lancamento.subcategoria || "";
+      document.getElementById("frequenciaValorEdicao").value = lancamento.frequenciaValor;
+      document.getElementById("frequenciaTipoEdicao").value = lancamento.frequenciaTipo;
+      document.getElementById("dataInicialEdicao").value = lancamento.dataInicial;
+      document.getElementById("dataFinalEdicao").value = lancamento.dataFinal;
+
+      // Trigger change event para atualizar forma de pagamento
+      document.getElementById("tipoLancamentoEdicao").dispatchEvent(new Event("change"));
+      
+      modalEdicao.style.display = "block";
+    }
+
+    function fecharModalEdicao() {
+      modalEdicao.style.display = "none";
+    }
+
+    function salvarEdicao() {
+      const id = parseInt(document.getElementById("editLancamentoId").value);
+      const descricao = document.getElementById("descricaoEdicao").value.trim();
+      const valorStr = document.getElementById("valorEdicao").value.trim();
+      const formaPagamento = document.getElementById("formaPagamentoEdicao").value;
+      const tipo = document.getElementById("tipoLancamentoEdicao").value;
+      const subcategoria = document.getElementById("subcategoriaEdicao").value || null;
+      const frequenciaValor = parseInt(document.getElementById("frequenciaValorEdicao").value) || 1;
+      const frequenciaTipo = document.getElementById("frequenciaTipoEdicao").value;
+      const dataInicial = document.getElementById("dataInicialEdicao").value;
+      const dataFinal = document.getElementById("dataFinalEdicao").value;
+
+      if (!descricao || !valorStr) {
+        alert("Preencha a descrição e o valor.");
+        return;
+      }
+
+      if (tipo === "receita" && formaPagamento !== "conta") {
+        alert("Receitas devem ser lançadas apenas como \"Conta\"");
+        return;
+      }
+
+      const valorNumerico = parseFloat(valorStr.replace(/\./g, "").replace(",", "."));
+      if (isNaN(valorNumerico)) {
+        alert("Valor inválido.");
+        return;
+      }
+
+      let lancamentosArray = JSON.parse(localStorage.getItem("lancamentos") || "[]");
+      const lancamentoIndex = lancamentosArray.findIndex(l => l.id === id);
+      
+      if (lancamentoIndex !== -1) {
+        lancamentosArray[lancamentoIndex] = {
+          ...lancamentosArray[lancamentoIndex],
+          descricao,
+          valor: valorNumerico,
+          formaPagamento,
+          tipo,
+          subcategoria,
+          frequenciaValor,
+          frequenciaTipo,
+          dataInicial,
+          dataFinal
+        };
+        
+        localStorage.setItem("lancamentos", JSON.stringify(lancamentosArray));
+        fecharModalEdicao();
+        carregarLancamentos();
+      }
+    }
+
+    // Funções do Modal de Detalhamento
+    function abrirModalDetalhamento(categoria) {
+      const currentYear = new Date().getFullYear();
+      const titulo = document.getElementById("tituloDetalhamento");
+      const lista = document.getElementById("listaDetalhamento");
+      
+      titulo.textContent = `Detalhamento: ${categoria}`;
+      lista.innerHTML = "";
+
+      let itensCategoria = [];
+      let totalCategoria = 0;
+
+      // Determinar quais lançamentos pertencem à categoria
+      switch(categoria) {
+        case "Receitas":
+          itensCategoria = lancamentos.filter(l => l.tipo === "receita");
+          break;
+        case "Despesas Fixas":
+          itensCategoria = lancamentos.filter(l => l.tipo === "fixa");
+          break;
+        case "Despesas Variáveis":
+          itensCategoria = lancamentos.filter(l => l.tipo === "variavel");
+          break;
+        case "Cartão de Crédito":
+          itensCategoria = lancamentos.filter(l => l.formaPagamento === "credito" && l.tipo !== "receita");
+          break;
+        case "Conta":
+          itensCategoria = lancamentos.filter(l => l.formaPagamento === "conta" && l.tipo !== "receita");
+          break;
+        default:
+          // Subcategoria
+          const subcategoriaObj = subcategorias.find(s => s.nome === categoria);
+          if (subcategoriaObj) {
+            itensCategoria = lancamentos.filter(l => l.subcategoria == subcategoriaObj.id);
+          }
+      }
+
+      // Calcular valores e percentuais
+      itensCategoria.forEach(lancamento => {
+        const ocorrencias = calcularOcorrencias(lancamento, currentYear);
+        let valorTotal = 0;
+        
+        for (let index = 0; index < 12; index++) {
+          if (lancamento.valoresManuais && lancamento.valoresManuais[index] !== null) {
+            valorTotal += lancamento.valoresManuais[index];
+          } else {
+            const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
+            valorTotal += lancamento.valor * ocorrenciasNoMes.length;
+          }
+        }
+        
+        totalCategoria += valorTotal;
+        
+        const item = document.createElement("div");
+        item.className = "item-detalhamento";
+        item.innerHTML = `
+          <div class="item-detalhamento-info">${lancamento.descricao}</div>
+          <div class="item-detalhamento-valor">${formatarMoeda(valorTotal)}</div>
+          <div class="item-detalhamento-percentual">0%</div>
+        `;
+        lista.appendChild(item);
+      });
+
+      // Atualizar percentuais
+      const itensDetalhamento = lista.querySelectorAll(".item-detalhamento");
+      itensDetalhamento.forEach((item, index) => {
+        const valorElement = item.querySelector(".item-detalhamento-valor");
+        const percentualElement = item.querySelector(".item-detalhamento-percentual");
+        const valor = parseFloat(valorElement.textContent.replace(/[^\d,-]/g, "").replace(",", "."));
+        const percentual = totalCategoria > 0 ? ((valor / totalCategoria) * 100).toFixed(1) : 0;
+        percentualElement.textContent = `${percentual}%`;
+      });
+
+      modalDetalhamento.style.display = "block";
+    }
+
+    function fecharModalDetalhamento() {
+      modalDetalhamento.style.display = "none";
+    }
+
+    // Event handlers para cliques nos modais
     window.onclick = function (event) {
       if (event.target == modal) {
         fecharModal();
       }
+      if (event.target == modalEdicao) {
+        fecharModalEdicao();
+      }
       if (event.target == modalSubcategorias) {
         fecharModalSubcategorias();
+      }
+      if (event.target == modalDetalhamento) {
+        fecharModalDetalhamento();
       }
     };
 
@@ -920,6 +1248,14 @@
       return numero.toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+
+    function formatarMoedaParaInput(valor) {
+      if (!valor) return "";
+      return valor.toLocaleString("pt-BR", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
@@ -1076,7 +1412,7 @@
           const corClass = obterCorSubcategoria(index);
           const media = dados.total / 12;
           subcategoriasHTML += `
-            <tr class="${corClass}">
+            <tr class="${corClass}" onclick="abrirModalDetalhamento('${nome}')">
               <td>${nome}</td>
               ${dados.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
               <td>${formatarMoeda(dados.total)}</td>
@@ -1087,26 +1423,26 @@
       }
 
       resumoBody.innerHTML = `
-        <tr class="receita">
+        <tr class="receita" onclick="abrirModalDetalhamento('Receitas')">
           <td>Receitas</td>
           ${receitas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(totalReceitas)}</td>
           <td>${formatarMoeda(mediaReceitas)}</td>
         </tr>
         ${spacerRowHTML} 
-        <tr class="fixa">
+        <tr class="fixa" onclick="abrirModalDetalhamento('Despesas Fixas')">
           <td>Despesas Fixas</td>
           ${fixas.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(totalFixas)}</td>
           <td>${formatarMoeda(mediaFixas)}</td>
         </tr>
-        <tr class="variavel">
+        <tr class="variavel" onclick="abrirModalDetalhamento('Despesas Variáveis')">
           <td>Despesas Variáveis</td>
           ${variaveis.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(totalVariaveis)}</td>
           <td>${formatarMoeda(mediaVariaveis)}</td>
         </tr>
-        <tr>
+        <tr onclick="event.stopPropagation()">
           <td>Total Despesas</td>
           ${Array(12).fill(0).map((_, i) => {
             const mesTotal = (fixas.meses[i] || 0) + (variaveis.meses[i] || 0);
@@ -1116,7 +1452,7 @@
           <td>${formatarMoeda(mediaTotalDespesas)}</td>
         </tr>
         ${spacerRowHTML}
-        <tr> 
+        <tr onclick="event.stopPropagation()"> 
           <td class="saldo-positivo">Potencial de Investimento</td>
           ${Array(12).fill(0).map((_, i) => {
             const mesSaldo = (receitas.meses[i] || 0) - (fixas.meses[i] || 0) - (variaveis.meses[i] || 0);
@@ -1127,13 +1463,13 @@
           <td class="${mediaSaldo >= 0 ? "saldo-positivo" : "saldo-negativo"}">${formatarMoeda(mediaSaldo)}</td>
         </tr>
         ${spacerRowHTML}
-        <tr class="cartao-laranja">
+        <tr class="cartao-laranja" onclick="abrirModalDetalhamento('Cartão de Crédito')">
           <td>Cartão de Crédito</td>
           ${cartao.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(cartao.total)}</td>
           <td>${formatarMoeda(mediaCartao)}</td>
         </tr>
-        <tr class="conta-amarela">
+        <tr class="conta-amarela" onclick="abrirModalDetalhamento('Conta')">
           <td>Conta</td>
           ${conta.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
           <td>${formatarMoeda(conta.total)}</td>
@@ -1468,13 +1804,23 @@
         const total = meses.reduce((sum, val) => sum + val, 0);
         const media = total / 12;
         const classeCSS = l.tipo === "receita" ? "receita" : l.tipo === "fixa" ? "fixa" : "variavel";
+        
+        // Adicionar onclick para abrir modal de edição, exceto nas células editáveis e botão excluir
+        tr.onclick = function(event) {
+          // Verificar se o clique foi em uma célula editável ou no botão excluir
+          if (event.target.classList.contains('editable') || event.target.classList.contains('delete-btn')) {
+            return; // Não abrir modal de edição
+          }
+          abrirModalEdicao(l.id);
+        };
+        
         tr.innerHTML = `
           <td class="hidden-id">${l.id}</td>
           <td class="${classeCSS}">${l.descricao}</td>
-          ${meses.map((m, i) => `<td class="editable" onclick="editarCelula(this, ${l.id}, ${i})">${formatarMoeda(m)}</td>`).join("")}
+          ${meses.map((m, i) => `<td class="editable" onclick="event.stopPropagation(); editarCelula(this, ${l.id}, ${i})">${formatarMoeda(m)}</td>`).join("")}
           <td class="${classeCSS}">${formatarMoeda(total)}</td>
           <td class="${classeCSS}">${formatarMoeda(media)}</td>
-          <td><button class="delete-btn" onclick="excluirLancamento(${l.id})">Excluir</button></td>
+          <td><button class="delete-btn" onclick="event.stopPropagation(); excluirLancamento(${l.id})">Excluir</button></td>
         `;
         tabelaBody.appendChild(tr);
       });
@@ -1568,6 +1914,16 @@
         const decimal = v.slice(-2);
         this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
       });
+      
+      document.getElementById("valorEdicao").addEventListener("input", function () {
+        let v = this.value.replace(/[^\d]/g, "");
+        if (!v) { this.value = ""; return; }
+        if (v.length < 3) v = v.padStart(3, "0");
+        let inteiro = v.slice(0, -2).replace(/^0+/, "") || "0";
+        const decimal = v.slice(-2);
+        this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
+      });
+      
       document.getElementById("tipoLancamento").addEventListener("change", function () {
         const formaPagamentoSelect = document.getElementById("formaPagamento");
         if (this.value === "receita") {
@@ -1586,9 +1942,31 @@
           }
         }
       });
+      
+      document.getElementById("tipoLancamentoEdicao").addEventListener("change", function () {
+        const formaPagamentoSelect = document.getElementById("formaPagamentoEdicao");
+        if (this.value === "receita") {
+          formaPagamentoSelect.innerHTML = `<option value="conta">Conta</option>`;
+          formaPagamentoSelect.value = "conta";
+        } else {
+          const valorAtual = formaPagamentoSelect.value;
+          formaPagamentoSelect.innerHTML = `
+            <option value="conta">Conta</option>
+            <option value="credito">Cartão de Crédito</option>
+          `;
+          if (valorAtual === "conta" || valorAtual === "credito") {
+            formaPagamentoSelect.value = valorAtual;
+          } else {
+            formaPagamentoSelect.value = "conta";
+          }
+        }
+      });
+      
       document.getElementById("tipoLancamento").dispatchEvent(new Event("change"));
+      document.getElementById("tipoLancamentoEdicao").dispatchEvent(new Event("change"));
     });
 
   </script>
 </body>
 </html>
+
