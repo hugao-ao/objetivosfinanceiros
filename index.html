@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro V5</title> <!-- Versão atualizada -->
+  <title>Controle Financeiro V6</title> <!-- Versão atualizada -->
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -404,6 +404,137 @@
         background-color: #002d26; /* Cor de fundo do corpo */
     }
 
+    /* Estilos para subcategorias */
+    .subcategoria-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .subcategoria-select {
+      flex: 1;
+    }
+
+    .botao-gerenciar-subcategorias {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .botao-gerenciar-subcategorias:hover {
+      background-color: #45a049;
+    }
+
+    /* Modal de gerenciamento de subcategorias */
+    .modal-subcategorias {
+      display: none;
+      position: fixed;
+      z-index: 200;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7);
+      padding-top: 60px;
+    }
+
+    .modal-subcategorias-content {
+      background-color: #014034;
+      margin: 5% auto;
+      padding: 30px;
+      border: 1px solid #888;
+      width: 60%;
+      max-width: 500px;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .lista-subcategorias {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .item-subcategoria {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      margin-bottom: 5px;
+      background-color: #006a56;
+      border-radius: 5px;
+    }
+
+    .botao-editar-subcategoria,
+    .botao-excluir-subcategoria {
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+
+    .botao-excluir-subcategoria {
+      background-color: #c62828;
+    }
+
+    .botao-editar-subcategoria:hover {
+      background-color: #e68a00;
+    }
+
+    .botao-excluir-subcategoria:hover {
+      background-color: #b71c1c;
+    }
+
+    .nova-subcategoria-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .nova-subcategoria-input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    .botao-adicionar-subcategoria {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .botao-adicionar-subcategoria:hover {
+      background-color: #45a049;
+    }
+
+    /* Cores aleatórias para subcategorias */
+    .subcategoria-cor-1 { color: #e91e63; }
+    .subcategoria-cor-2 { color: #9c27b0; }
+    .subcategoria-cor-3 { color: #673ab7; }
+    .subcategoria-cor-4 { color: #3f51b5; }
+    .subcategoria-cor-5 { color: #2196f3; }
+    .subcategoria-cor-6 { color: #00bcd4; }
+    .subcategoria-cor-7 { color: #009688; }
+    .subcategoria-cor-8 { color: #8bc34a; }
+    .subcategoria-cor-9 { color: #cddc39; }
+    .subcategoria-cor-10 { color: #ffeb3b; }
+    .subcategoria-cor-11 { color: #ff5722; }
+    .subcategoria-cor-12 { color: #795548; }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -411,7 +542,7 @@
 
   <h1>Controle Financeiro</h1>
   
-  <!-- Container Principal (Lançamentos e Resumo) -->
+  <!-- Container Principal (Lançamentos e Resumo ) -->
   <div class="container-principal" id="containerPrincipal">
     <!-- Seção da Tabela de Lançamentos -->
     <div class="secao-lancamentos">
@@ -551,6 +682,14 @@
             <option value="credito">Cartão de Crédito</option>
           </select>
 
+          <label for="subcategoria">Subcategoria (opcional):</label>
+          <div class="subcategoria-container">
+            <select id="subcategoria" class="subcategoria-select">
+              <option value="">Nenhuma</option>
+            </select>
+            <button type="button" class="botao-gerenciar-subcategorias" onclick="abrirModalSubcategorias()">Gerenciar</button>
+          </div>
+
         </div>
 
         <div class="form-group">
@@ -586,15 +725,158 @@
     </div>
   </div>
 
+  <!-- Modal de Gerenciamento de Subcategorias -->
+  <div id="modalSubcategorias" class="modal-subcategorias">
+    <div class="modal-subcategorias-content">
+      <span class="close-button" onclick="fecharModalSubcategorias()">&times;</span>
+      <h2>Gerenciar Subcategorias</h2>
+      
+      <div class="nova-subcategoria-container">
+        <input type="text" id="novaSubcategoriaInput" class="nova-subcategoria-input" placeholder="Nome da nova subcategoria" />
+        <button class="botao-adicionar-subcategoria" onclick="adicionarSubcategoria()">Adicionar</button>
+      </div>
+      
+      <div class="lista-subcategorias" id="listaSubcategorias">
+        <!-- Lista de subcategorias será inserida aqui -->
+      </div>
+      
+      <div style="text-align: right;">
+        <button class="botao-lancar" onclick="fecharModalSubcategorias()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Variáveis globais
     let graficoDespesasPoupanca = null;
     let graficoDespesasReceitas = null;
     let dadosResumo = null;
     let lancamentos = [];
+    let subcategorias = [];
+    let editandoSubcategoria = null;
     const modal = document.getElementById("modalFormulario");
+    const modalSubcategorias = document.getElementById("modalSubcategorias");
     const containerPrincipal = document.getElementById("containerPrincipal");
-    const botaoResumoFixo = document.querySelector(".botao-resumo-fixo"); // Seleciona o botão
+    const botaoResumoFixo = document.querySelector(".botao-resumo-fixo");
+
+    // Funções de Subcategorias
+    function carregarSubcategorias() {
+      subcategorias = JSON.parse(localStorage.getItem("subcategorias") || "[]");
+      atualizarSelectSubcategorias();
+      atualizarListaSubcategorias();
+    }
+
+    function atualizarSelectSubcategorias() {
+      const select = document.getElementById("subcategoria");
+      const valorAtual = select.value;
+      select.innerHTML = '<option value="">Nenhuma</option>';
+      
+      subcategorias.forEach(sub => {
+        const option = document.createElement("option");
+        option.value = sub.id;
+        option.textContent = sub.nome;
+        select.appendChild(option);
+      });
+      
+      if (valorAtual && subcategorias.find(s => s.id == valorAtual)) {
+        select.value = valorAtual;
+      }
+    }
+
+    function atualizarListaSubcategorias() {
+      const lista = document.getElementById("listaSubcategorias");
+      lista.innerHTML = "";
+      
+      subcategorias.forEach(sub => {
+        const item = document.createElement("div");
+        item.className = "item-subcategoria";
+        item.innerHTML = `
+          <span>${sub.nome}</span>
+          <div>
+            <button class="botao-editar-subcategoria" onclick="editarSubcategoria(${sub.id})">Editar</button>
+            <button class="botao-excluir-subcategoria" onclick="excluirSubcategoria(${sub.id})">Excluir</button>
+          </div>
+        `;
+        lista.appendChild(item);
+      });
+    }
+
+    function adicionarSubcategoria() {
+      const input = document.getElementById("novaSubcategoriaInput");
+      const nome = input.value.trim();
+      
+      if (!nome) {
+        alert("Digite o nome da subcategoria.");
+        return;
+      }
+      
+      if (subcategorias.find(s => s.nome.toLowerCase() === nome.toLowerCase())) {
+        alert("Já existe uma subcategoria com este nome.");
+        return;
+      }
+      
+      const novoId = subcategorias.length > 0 ? Math.max(...subcategorias.map(s => s.id)) + 1 : 1;
+      subcategorias.push({ id: novoId, nome: nome });
+      
+      localStorage.setItem("subcategorias", JSON.stringify(subcategorias));
+      input.value = "";
+      atualizarSelectSubcategorias();
+      atualizarListaSubcategorias();
+    }
+
+    function editarSubcategoria(id) {
+      const subcategoria = subcategorias.find(s => s.id === id);
+      if (!subcategoria) return;
+      
+      const novoNome = prompt("Editar subcategoria:", subcategoria.nome);
+      if (novoNome === null) return;
+      
+      const nomeFormatado = novoNome.trim();
+      if (!nomeFormatado) {
+        alert("Nome não pode estar vazio.");
+        return;
+      }
+      
+      if (subcategorias.find(s => s.id !== id && s.nome.toLowerCase() === nomeFormatado.toLowerCase())) {
+        alert("Já existe uma subcategoria com este nome.");
+        return;
+      }
+      
+      subcategoria.nome = nomeFormatado;
+      localStorage.setItem("subcategorias", JSON.stringify(subcategorias));
+      atualizarSelectSubcategorias();
+      atualizarListaSubcategorias();
+    }
+
+    function excluirSubcategoria(id) {
+      const subcategoria = subcategorias.find(s => s.id === id);
+      if (!subcategoria) return;
+      
+      if (!confirm(`Tem certeza que deseja excluir a subcategoria "${subcategoria.nome}"?`)) return;
+      
+      subcategorias = subcategorias.filter(s => s.id !== id);
+      localStorage.setItem("subcategorias", JSON.stringify(subcategorias));
+      atualizarSelectSubcategorias();
+      atualizarListaSubcategorias();
+    }
+
+    function abrirModalSubcategorias() {
+      modalSubcategorias.style.display = "block";
+    }
+
+    function fecharModalSubcategorias() {
+      modalSubcategorias.style.display = "none";
+      document.getElementById("novaSubcategoriaInput").value = "";
+    }
+
+    function obterCorSubcategoria(index) {
+      const cores = [
+        'subcategoria-cor-1', 'subcategoria-cor-2', 'subcategoria-cor-3', 'subcategoria-cor-4',
+        'subcategoria-cor-5', 'subcategoria-cor-6', 'subcategoria-cor-7', 'subcategoria-cor-8',
+        'subcategoria-cor-9', 'subcategoria-cor-10', 'subcategoria-cor-11', 'subcategoria-cor-12'
+      ];
+      return cores[index % cores.length];
+    }
 
     // Funções do Modal
     function abrirModal() {
@@ -616,6 +898,9 @@
     window.onclick = function (event) {
       if (event.target == modal) {
         fecharModal();
+      }
+      if (event.target == modalSubcategorias) {
+        fecharModalSubcategorias();
       }
     };
 
@@ -660,7 +945,7 @@
       const dataFimCalculo = endDate < fimAno ? endDate : fimAno;
       if (dataInicioCalculo > dataFimCalculo) return ocorrencias;
       let currentDate = new Date(dataInicioCalculo);
-      let safetyBreak = 0; // Safety break
+      let safetyBreak = 0;
       while (currentDate <= dataFimCalculo && safetyBreak < 500) {
         if (currentDate >= startDate && currentDate <= endDate && currentDate.getFullYear() === ano) {
           ocorrencias.push(new Date(currentDate));
@@ -711,16 +996,12 @@
       
       lancamentosCategoria.forEach(l => {
         const ocorrencias = calcularOcorrencias(l, ano);
-        // Para cada mês do ano
         for (let index = 0; index < 12; index++) {
-          // Verifica se há valor manual para este mês específico
           if (l.valoresManuais && l.valoresManuais[index] !== null) {
             meses[index] += l.valoresManuais[index];
           } else {
-            // Senão, verifica quantas ocorrências calculadas existem neste mês
             const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
             if (ocorrenciasNoMes.length > 0) {
-              // Adiciona o valor base multiplicado pelo número de ocorrências no mês
               meses[index] += l.valor * ocorrenciasNoMes.length; 
             }
           }
@@ -729,6 +1010,35 @@
       
       const total = meses.reduce((sum, val) => sum + val, 0);
       return { meses, total };
+    }
+
+    function calcularTotaisPorSubcategoria(lancamentos, ano) {
+      const subcategoriasResumo = {};
+      
+      lancamentos.forEach(l => {
+        if (l.subcategoria && l.tipo !== "receita") {
+          const subcategoriaNome = subcategorias.find(s => s.id == l.subcategoria)?.nome || "Subcategoria Removida";
+          
+          if (!subcategoriasResumo[subcategoriaNome]) {
+            subcategoriasResumo[subcategoriaNome] = { meses: Array(12).fill(0), total: 0 };
+          }
+          
+          const ocorrencias = calcularOcorrencias(l, ano);
+          for (let index = 0; index < 12; index++) {
+            if (l.valoresManuais && l.valoresManuais[index] !== null) {
+              subcategoriasResumo[subcategoriaNome].meses[index] += l.valoresManuais[index];
+            } else {
+              const ocorrenciasNoMes = ocorrencias.filter(data => data.getMonth() === index);
+              if (ocorrenciasNoMes.length > 0) {
+                subcategoriasResumo[subcategoriaNome].meses[index] += l.valor * ocorrenciasNoMes.length;
+              }
+            }
+          }
+          subcategoriasResumo[subcategoriaNome].total = subcategoriasResumo[subcategoriaNome].meses.reduce((sum, val) => sum + val, 0);
+        }
+      });
+      
+      return subcategoriasResumo;
     }
 
     // Funções de Atualização da Interface
@@ -741,6 +1051,7 @@
       const variaveis = calcularTotaisPorCategoria(lancamentos.filter((l) => l.tipo === "variavel"), ano);
       const cartao = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "credito" && l.tipo !== "receita"), ano);
       const conta = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "conta" && l.tipo !== "receita"), ano);
+      const subcategoriasResumo = calcularTotaisPorSubcategoria(lancamentos, ano);
 
       const totalReceitas = receitas.total;
       const totalFixas = fixas.total;
@@ -748,7 +1059,6 @@
       const totalDespesas = totalFixas + totalVariaveis;
       const saldo = totalReceitas - totalDespesas;
       
-      // Calcula médias
       const mediaReceitas = totalReceitas / 12;
       const mediaFixas = totalFixas / 12;
       const mediaVariaveis = totalVariaveis / 12;
@@ -757,8 +1067,24 @@
       const mediaCartao = cartao.total / 12;
       const mediaConta = conta.total / 12;
       
-      // Linha de espaçamento (HTML string)
-      const spacerRowHTML = `<tr class="spacer-row"><td colspan="15"></td></tr>`; // Colspan = 1 (Cat) + 12 (Meses) + 1 (Total) + 1 (Média)
+      const spacerRowHTML = `<tr class="spacer-row"><td colspan="15"></td></tr>`;
+
+      let subcategoriasHTML = "";
+      if (Object.keys(subcategoriasResumo).length > 0) {
+        subcategoriasHTML = spacerRowHTML;
+        Object.entries(subcategoriasResumo).forEach(([nome, dados], index) => {
+          const corClass = obterCorSubcategoria(index);
+          const media = dados.total / 12;
+          subcategoriasHTML += `
+            <tr class="${corClass}">
+              <td>${nome}</td>
+              ${dados.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
+              <td>${formatarMoeda(dados.total)}</td>
+              <td>${formatarMoeda(media)}</td>
+            </tr>
+          `;
+        });
+      }
 
       resumoBody.innerHTML = `
         <tr class="receita">
@@ -791,7 +1117,7 @@
         </tr>
         ${spacerRowHTML}
         <tr> 
-          <td class="saldo-positivo">Potencial de Investimento</td> <!-- Sempre azul -->
+          <td class="saldo-positivo">Potencial de Investimento</td>
           ${Array(12).fill(0).map((_, i) => {
             const mesSaldo = (receitas.meses[i] || 0) - (fixas.meses[i] || 0) - (variaveis.meses[i] || 0);
             const classeCor = mesSaldo >= 0 ? "saldo-positivo" : "saldo-negativo";
@@ -813,6 +1139,7 @@
           <td>${formatarMoeda(conta.total)}</td>
           <td>${formatarMoeda(mediaConta)}</td>
         </tr>
+        ${subcategoriasHTML}
       `;
 
       dadosResumo = {
@@ -824,10 +1151,10 @@
         totalVariaveis: totalVariaveis,
         totalDespesas: totalDespesas,
         saldo: saldo,
-        mediaReceitas: mediaReceitas, // Adicionado
-        mediaFixas: mediaFixas,       // Adicionado
-        mediaVariaveis: mediaVariaveis, // Adicionado
-        mediaSaldo: mediaSaldo,       // Adicionado
+        mediaReceitas: mediaReceitas,
+        mediaFixas: mediaFixas,
+        mediaVariaveis: mediaVariaveis,
+        mediaSaldo: mediaSaldo,
         lancamentos: lancamentos,
       };
 
@@ -839,17 +1166,17 @@
       const mesSelecionado = parseInt(document.getElementById("mesSelecionado").value);
       let receitaPeriodo, fixasPeriodo, variaveisPeriodo, saldoPeriodo;
 
-      if (mesSelecionado === -1) { // Total Anual
+      if (mesSelecionado === -1) {
         receitaPeriodo = dadosResumo.totalReceitas;
         fixasPeriodo = dadosResumo.totalFixas;
         variaveisPeriodo = dadosResumo.totalVariaveis;
         saldoPeriodo = dadosResumo.saldo;
-      } else if (mesSelecionado === -2) { // Médias Mensais
+      } else if (mesSelecionado === -2) {
         receitaPeriodo = dadosResumo.mediaReceitas;
         fixasPeriodo = dadosResumo.mediaFixas;
         variaveisPeriodo = dadosResumo.mediaVariaveis;
         saldoPeriodo = dadosResumo.mediaSaldo;
-      } else { // Mês específico
+      } else {
         receitaPeriodo = dadosResumo.receitas.meses[mesSelecionado] || 0;
         fixasPeriodo = dadosResumo.fixas.meses[mesSelecionado] || 0;
         variaveisPeriodo = dadosResumo.variaveis.meses[mesSelecionado] || 0;
@@ -857,7 +1184,6 @@
       }
 
       atualizarGraficoDespesasPoupanca(fixasPeriodo, variaveisPeriodo, saldoPeriodo);
-      // Passa o valor original de mesSelecionado para a função do segundo gráfico decidir como agregar
       atualizarGraficoDespesasReceitas(receitaPeriodo, mesSelecionado);
     }
 
@@ -870,7 +1196,7 @@
       const backgroundColors = [];
       if (fixas > 0) { labels.push("Despesas Fixas"); data.push(fixas); backgroundColors.push("#f44336"); }
       if (variaveis > 0) { labels.push("Despesas Variáveis"); data.push(variaveis); backgroundColors.push("#ff9800"); }
-      if (saldo > 0) { labels.push("Potencial de Investimento"); data.push(saldo); backgroundColors.push("#1976d2"); } // Cor alterada para azul
+      if (saldo > 0) { labels.push("Potencial de Investimento"); data.push(saldo); backgroundColors.push("#1976d2"); }
       if (data.length === 0) {
         document.getElementById("legendaDespesasPoupanca").innerHTML = "<p style=\"text-align:center;\">Sem dados para exibir.</p>";
         return;
@@ -915,15 +1241,12 @@
 
       const despesasAgrupadas = {};
       const anoAtual = new Date().getFullYear();
-
-      // Filtra apenas as despesas
       const todasDespesas = dadosResumo.lancamentos.filter((l) => l.tipo !== "receita");
 
       todasDespesas.forEach((despesa) => {
         let valorDespesa = 0;
 
-        if (mesSelecionado === -2) { // Médias Mensais
-          // Calcula o total anual da despesa
+        if (mesSelecionado === -2) {
           let totalAnualDespesa = 0;
           if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
             totalAnualDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
@@ -938,10 +1261,9 @@
             const ocorrencias = calcularOcorrencias(despesa, anoAtual);
             totalAnualDespesa = despesa.valor * ocorrencias.length;
           }
-          valorDespesa = totalAnualDespesa / 12; // Calcula a média mensal
+          valorDespesa = totalAnualDespesa / 12;
 
-        } else if (mesSelecionado === -1) { // Total Anual
-          // Lógica existente para Total Anual
+        } else if (mesSelecionado === -1) {
           if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
              valorDespesa = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
              const ocorrencias = calcularOcorrencias(despesa, anoAtual);
@@ -955,13 +1277,11 @@
             const ocorrencias = calcularOcorrencias(despesa, anoAtual);
             valorDespesa = despesa.valor * ocorrencias.length;
           }
-        } else { // Mês Específico
-           // Lógica existente para Mês Específico
+        } else {
            const ocorrencias = calcularOcorrencias(despesa, anoAtual);
            const temOcorrenciaNoMes = ocorrencias.some((d) => d.getMonth() === mesSelecionado);
            const temValorManualNoMes = despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null;
            
-           // Só processa se houver ocorrência ou valor manual no mês selecionado
            if(temOcorrenciaNoMes || temValorManualNoMes){
                 if (despesa.valoresManuais && despesa.valoresManuais[mesSelecionado] !== null) {
                     valorDespesa = despesa.valoresManuais[mesSelecionado];
@@ -972,7 +1292,6 @@
            }
         }
 
-        // Agrupa por descrição se o valor for maior que zero
         if (valorDespesa > 0) {
           const key = despesa.descricao;
           if (!despesasAgrupadas[key]) {
@@ -982,7 +1301,6 @@
         }
       });
 
-      // Continua com a lógica de plotagem do gráfico (labels, data, backgroundColors...)
       const labels = [];
       const data = [];
       const backgroundColors = [];
@@ -995,7 +1313,6 @@
       despesasParaGrafico.forEach((d) => {
         labels.push(d.descricao);
         data.push(d.valor);
-        // Mantém a lógica de cores original
         if (d.tipo === "fixa") backgroundColors.push(d.formaPagamento === "credito" ? "#c62828" : "#f44336");
         else backgroundColors.push(d.formaPagamento === "credito" ? "#f57c00" : "#ff9800");
         tipos.push(d.tipo);
@@ -1020,20 +1337,17 @@
         return;
       }
 
-      // Adiciona o 'Restante' apenas se houver despesas ou se o restante for positivo
       if (restante > 0 || data.length > 0) {
          labels.push("Potencial de Investimento");
          data.push(restante);
-         backgroundColors.push("#1976d2"); // Cor azul para o restante
-         tipos.push("receita"); // Usa 'receita' como tipo para a legenda
+         backgroundColors.push("#1976d2");
+         tipos.push("receita");
       }
 
-      // Recalcula percentuais com base na receita do período (total anual, média ou mensal)
       const percentuais = receitaPeriodo > 0 ? data.map((val) => ((val / receitaPeriodo) * 100).toFixed(1) + "%") : data.map(() => "0%");
 
       const legendaHTML = labels.map((label, i) => {
         const tipo = tipos[i];
-        // Define a classe de cor baseada no tipo (fixa, variavel, receita para o restante)
         const classeCor = tipo === "fixa" ? "fixa" : tipo === "variavel" ? "variavel" : "receita"; 
         const percentualExibido = receitaPeriodo > 0 ? `(${percentuais[i]})` : "";
         return `
@@ -1047,9 +1361,8 @@
       }).join("");
       document.getElementById("legendaDespesasReceitas").innerHTML = legendaHTML;
 
-      // Cria ou atualiza o gráfico
       graficoDespesasReceitas = new Chart(ctx, {
-        type: "pie", // Mantido como pie
+        type: "pie",
         data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1, borderColor: "#014034" }] },
         options: {
           responsive: true,
@@ -1061,7 +1374,6 @@
                 label: function (context) {
                   const label = context.label || "";
                   const value = context.raw || 0;
-                  // Usa o array de percentuais calculado anteriormente
                   const percentage = percentuais[context.dataIndex] || "0%"; 
                   const percentualExibido = receitaPeriodo > 0 ? `(${percentage})` : "";
                   return `${label}: ${formatarMoeda(value)} ${percentualExibido}`;
@@ -1079,6 +1391,7 @@
       const valorInput = document.getElementById("valor");
       const formaPagamentoSelect = document.getElementById("formaPagamento");
       const tipoSelect = document.getElementById("tipoLancamento");
+      const subcategoriaSelect = document.getElementById("subcategoria");
       const frequenciaValorInput = document.getElementById("frequenciaValor");
       const frequenciaTipoSelect = document.getElementById("frequenciaTipo");
       const dataInicialInput = document.getElementById("dataInicial");
@@ -1087,6 +1400,7 @@
       const valorStr = valorInput.value.trim();
       const formaPagamento = formaPagamentoSelect.value;
       const tipo = tipoSelect.value;
+      const subcategoria = subcategoriaSelect.value || null;
       const frequenciaValor = parseInt(frequenciaValorInput.value) || 1;
       const frequenciaTipo = frequenciaTipoSelect.value;
       let dataInicial = dataInicialInput.value;
@@ -1116,6 +1430,7 @@
         valor: valorNumerico,
         formaPagamento,
         tipo,
+        subcategoria,
         frequenciaValor,
         frequenciaTipo,
         dataInicial,
@@ -1125,6 +1440,7 @@
       localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
       descricaoInput.value = "";
       valorInput.value = "";
+      subcategoriaSelect.value = "";
       fecharModal();
       carregarLancamentos();
     }
@@ -1141,7 +1457,6 @@
         if (!l.valoresManuais) l.valoresManuais = Array(12).fill(null);
         const meses = Array(12).fill(0);
         const ocorrencias = calcularOcorrencias(l, currentYear);
-        // Calcula valor para cada mês (considerando manual ou ocorrências)
         for (let index = 0; index < 12; index++) {
             if (l.valoresManuais[index] !== null) {
                 meses[index] = l.valoresManuais[index];
@@ -1150,53 +1465,39 @@
                 meses[index] = l.valor * ocorrenciasNoMes.length;
             }
         }
-        
         const total = meses.reduce((sum, val) => sum + val, 0);
         const media = total / 12;
+        const classeCSS = l.tipo === "receita" ? "receita" : l.tipo === "fixa" ? "fixa" : "variavel";
         tr.innerHTML = `
           <td class="hidden-id">${l.id}</td>
-          <td class="${l.tipo}">${l.descricao}</td>
-          ${meses.map((m, index) => `
-            <td class="editable" data-id="${l.id}" data-month="${index}">
-              ${formatarMoeda(m)} 
-            </td>
-          `).join("")}
-          <td>${formatarMoeda(total)}</td>
-          <td>${formatarMoeda(media)}</td>
+          <td class="${classeCSS}">${l.descricao}</td>
+          ${meses.map((m, i) => `<td class="editable" onclick="editarCelula(this, ${l.id}, ${i})">${formatarMoeda(m)}</td>`).join("")}
+          <td class="${classeCSS}">${formatarMoeda(total)}</td>
+          <td class="${classeCSS}">${formatarMoeda(media)}</td>
           <td><button class="delete-btn" onclick="excluirLancamento(${l.id})">Excluir</button></td>
         `;
         tabelaBody.appendChild(tr);
-      });
-      document.querySelectorAll(".editable").forEach((cell) => {
-        cell.addEventListener("click", function () {
-          if (!this.querySelector(".edit-input")) {
-            iniciarEdicao(this);
-          }
-        });
       });
       atualizarResumoFinanceiro(lancamentos, currentYear);
     }
 
     function excluirLancamento(id) {
-      if (confirm("Tem certeza que deseja excluir este lançamento?")) {
-        let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
-        lancamentos = lancamentos.filter((l) => l.id !== id);
-        localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
-        carregarLancamentos();
-      }
+      if (!confirm("Tem certeza que deseja excluir este lançamento?")) return;
+      let lancamentos = JSON.parse(localStorage.getItem("lancamentos") || "[]");
+      lancamentos = lancamentos.filter((l) => l.id !== id);
+      localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+      carregarLancamentos();
     }
 
-    function iniciarEdicao(cell) {
-      const id = parseInt(cell.getAttribute("data-id"));
-      const month = parseInt(cell.getAttribute("data-month"));
-      const currentValueText = cell.textContent.trim();
-      const valorNumericoAtual = parseFloat(currentValueText.replace(/[^\d,]/g, "").replace(",", ".")) || 0;
-      const valorParaInput = valorNumericoAtual.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(".", "");
-      cell.innerHTML = "";
+    function editarCelula(cell, id, month) {
+      if (cell.querySelector("input")) return;
+      const currentValueText = cell.innerHTML;
+      const currentValue = parseFloat(currentValueText.replace(/[^\d,-]/g, "").replace(",", ".")) || 0;
       const input = document.createElement("input");
       input.type = "text";
       input.className = "edit-input";
-      input.value = valorParaInput;
+      input.value = currentValue > 0 ? formatarMoeda(currentValue).replace("R$ ", "").replace(".", "").replace(",", ".") : "";
+      cell.innerHTML = "";
       input.addEventListener("input", function () {
         let v = this.value.replace(/[^\d]/g, "");
         if (!v) { this.value = ""; return; }
@@ -1257,6 +1558,7 @@
 
     // Inicialização
     document.addEventListener("DOMContentLoaded", function () {
+      carregarSubcategorias();
       carregarLancamentos();
       document.getElementById("valor").addEventListener("input", function () {
         let v = this.value.replace(/[^\d]/g, "");
@@ -1266,12 +1568,11 @@
         const decimal = v.slice(-2);
         this.value = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimal;
       });
-      // *** CORREÇÃO APLICADA AQUI (v5) ***
       document.getElementById("tipoLancamento").addEventListener("change", function () {
         const formaPagamentoSelect = document.getElementById("formaPagamento");
         if (this.value === "receita") {
-          formaPagamentoSelect.innerHTML = `<option value="conta">Conta</option>`; // Corrigido
-          formaPagamentoSelect.value = "conta"; // Garantir seleção
+          formaPagamentoSelect.innerHTML = `<option value="conta">Conta</option>`;
+          formaPagamentoSelect.value = "conta";
         } else {
           const valorAtual = formaPagamentoSelect.value;
           formaPagamentoSelect.innerHTML = `
