@@ -1962,7 +1962,21 @@
       const cartaoTotal = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "credito" && l.tipo !== "receita"), ano);
       const conta = calcularTotaisPorCategoria(lancamentos.filter((l) => l.formaPagamento === "conta" && l.tipo !== "receita"), ano);
       const subcategoriasResumo = calcularTotaisPorSubcategoria(lancamentos, ano);
-      const cartoesResumo = calcularTotaisPorCartao(lancamentos, ano);
+            const cartoesResumo = calcularTotaisPorCartao(lancamentos, ano);
+
+      // *** INÍCIO MODIFICAÇÃO: Calcular total agregado dos cartões ***
+      const cartaoTotalAgregado = { meses: Array(12).fill(0), total: 0 };
+      Object.values(cartoesResumo).forEach(dadosCartao => {
+          if (dadosCartao && dadosCartao.meses) { // Check if dadosCartao and meses exist
+            for (let i = 0; i < 12; i++) {
+                cartaoTotalAgregado.meses[i] += dadosCartao.meses[i] || 0; // Add || 0 for safety
+            }
+            cartaoTotalAgregado.total += dadosCartao.total || 0; // Add || 0 for safety
+          }
+      });
+      const mediaCartaoTotalAgregado = cartaoTotalAgregado.total / 12;
+      // *** FIM MODIFICAÇÃO ***
+
 
       const totalReceitas = receitas.total;
       const totalFixas = fixas.total;
@@ -1975,7 +1989,7 @@
       const mediaVariaveis = totalVariaveis / 12;
       const mediaTotalDespesas = totalDespesas / 12;
       const mediaSaldo = saldo / 12;
-      const mediaCartaoTotal = cartaoTotal.total / 12;
+      // const mediaCartaoTotal = cartaoTotal.total / 12; // Removido - Média agora é agregada
       const mediaConta = conta.total / 12;
       
       const spacerRowHTML = `<tr class="spacer-row"><td colspan="15"></td></tr>`;
@@ -2056,11 +2070,11 @@
         </tr>
         ${cartoesHTML}
         ${spacerRowHTML}
-        <tr class="cartao-laranja" onclick="abrirModalDetalhamento('Cartão de Crédito (Total)')">
+                <tr class="cartao-laranja" onclick="abrirModalDetalhamento('Cartão de Crédito (Total)')">
           <td>Cartão de Crédito (Total)</td>
-          ${cartaoTotal.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
-          <td>${formatarMoeda(cartaoTotal.total)}</td>
-          <td>${formatarMoeda(mediaCartaoTotal)}</td>
+          ${cartaoTotalAgregado.meses.map((m) => `<td>${formatarMoeda(m)}</td>`).join("")}
+          <td>${formatarMoeda(cartaoTotalAgregado.total)}</td>
+          <td>${formatarMoeda(mediaCartaoTotalAgregado)}</td>
         </tr>
         <tr class="conta-amarela" onclick="abrirModalDetalhamento('Conta')">
           <td>Conta</td>
