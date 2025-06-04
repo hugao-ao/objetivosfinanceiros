@@ -1316,10 +1316,8 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
       const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);if (itemElement) {
         itemElement.remove();
       }
-      
-      atualizarSelects();
+           atualizarSelects();
     }
-      }
 
 // *** INÍCIO MODIFICAÇÃO: Função para editar dia de fechamento manualmente ***
     function editarDiaFechamentoManual(id) {
