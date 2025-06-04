@@ -1651,10 +1651,12 @@
       const diaSelecionado = dataSelecionada.getDate(); // 1-31
 
       // Calcular início/fim da semana e mês
+      const diaDaSemana = dataSelecionada.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
       const inicioSemana = new Date(dataSelecionada);
-      inicioSemana.setDate(diaSelecionado - dataSelecionada.getDay()); // Vai para o domingo anterior
+      // Ajusta para segunda-feira: Se for domingo (0), subtrai 6 dias, senão subtrai (diaDaSemana - 1) dias.
+      inicioSemana.setDate(diaSelecionado - (diaDaSemana === 0 ? 6 : diaDaSemana - 1)); 
       const fimSemana = new Date(inicioSemana);
-      fimSemana.setDate(inicioSemana.getDate() + 6); // Vai para o próximo sábado
+      fimSemana.setDate(inicioSemana.getDate() + 6); // Adiciona 6 dias para chegar ao domingo
 
       const inicioMes = new Date(anoSelecionado, mesSelecionado, 1);
       const fimMes = new Date(anoSelecionado, mesSelecionado + 1, 0); // Último dia do mês
@@ -1682,18 +1684,19 @@
             fimMesNorm.setHours(0, 0, 0, 0);
 
             const textoLancamento = `${l.descricao} (${formatarMoeda(l.valor)} - ${l.tipo})`;
+            const estiloReceita = l.tipo === 'receita' ? ' style="color: #4caf50;"' : '';
 
             // Dia
             if (dataOcorrencia.getTime() === dataSelecionadaNorm.getTime()) {
-                mensagensDia.push(`<li>${textoLancamento}</li>`);
+                mensagensDia.push(`<li${estiloReceita}>${textoLancamento}</li>`);
             }
             // Semana
             if (dataOcorrencia >= inicioSemanaNorm && dataOcorrencia <= fimSemanaNorm) {
-                mensagensSemana.push(`<li>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);
+                mensagensSemana.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);
             }
             // Mês
             if (dataOcorrencia >= inicioMesNorm && dataOcorrencia <= fimMesNorm) {
-                mensagensMes.push(`<li>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);
+                mensagensMes.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);
             }
         });
       });
