@@ -1295,8 +1295,33 @@
         listaDados = subcategorias;
         storageKey = "subcategorias";
       }
+      else if (tipoGerenciamentoAtual === "cartoes") {
+        item = cartoes.find(c => c.id === id);
+        listaDados = cartoes;
+        storageKey = "cartoes";
+      }
+      if (!item) return;
+if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
 
-    // *** INÍCIO MODIFICAÇÃO: Função para editar dia de fechamento manualmente ***
+      // Remove o item da lista
+      if (tipoGerenciamentoAtual === "subcategorias") {
+        subcategorias = subcategorias.filter(s => s.id !== id);
+      } else if (tipoGerenciamentoAtual === "cartoes") {
+        cartoes = cartoes.filter(c => c.id !== id);
+      }
+
+      localStorage.setItem(storageKey, JSON.stringify(tipoGerenciamentoAtual === "subcategorias" ? subcategorias : cartoes));
+      
+      // Remove da lista visual
+      const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);if (itemElement) {
+        itemElement.remove();
+      }
+      
+      atualizarSelects();
+    }
+      }
+
+// *** INÍCIO MODIFICAÇÃO: Função para editar dia de fechamento manualmente ***
     function editarDiaFechamentoManual(id) {
       const item = cartoes.find(c => c.id === id);
       if (!item) return;
@@ -1329,8 +1354,8 @@
       localStorage.setItem("cartoes", JSON.stringify(cartoes));
 
       // Atualiza a lista visualmente
-      const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
-        const detalheElement = itemElement ? itemElement.querySelector(".item-gerenciamento-detalhe") : null; // MOD: Define detalheElement  if (detalheElement) {
+      const itemElementParaAtualizar = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
+        const detalheElement = itemElementParaAtualizar ? itemElement.querySelector(".item-gerenciamento-detalhe") : null; // MOD: Define detalheElement  if (detalheElement) {
           // Reconstroi o HTML do detalhe com o span clicável atualizado
           detalheElement.innerHTML = `Vencimento: dia ${item.diaVencimento} / Fechamento: dia <span class="dia-fechamento-editavel" onclick="editarDiaFechamentoManual(${item.id})">${getDiaFechamentoEfetivo(item)}</span>`;
         }
@@ -1340,26 +1365,6 @@
       carregarLancamentos();
       // *** FIM MODIFICAÇÃO ***
 
-      if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
-
-      // Remove o item da lista
-      if (tipoGerenciamentoAtual === "subcategorias") {
-        subcategorias = subcategorias.filter(s => s.id !== id);
-      } else if (tipoGerenciamentoAtual === "cartoes") {
-        cartoes = cartoes.filter(c => c.id !== id);
-      }
-
-      localStorage.setItem(storageKey, JSON.stringify(tipoGerenciamentoAtual === "subcategorias" ? subcategorias : cartoes));
-      
-      // Remove da lista visual
-      const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
-        const detalheElement = itemElement ? itemElement.querySelector(".item-gerenciamento-detalhe") : null;
-      if (itemElement) {
-        itemElement.remove();
-      }
-      
-      atualizarSelects();
-    }
 
     // Função para calcular dia de fechamento (7 dias antes do vencimento)
     function calcularDiaFechamento(diaVencimento) {
