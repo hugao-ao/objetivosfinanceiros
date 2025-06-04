@@ -659,7 +659,18 @@
       background-color: rgba(255, 215, 0, 0.1);
     }
 
-  </style>
+  
+    /* MOD: Estilo para dia de fechamento editável */
+    .dia-fechamento-editavel {
+      cursor: pointer;
+      text-decoration: underline;
+      color: #ffd700; /* Cor de destaque */
+      font-weight: bold;
+    }
+    .dia-fechamento-editavel:hover {
+      color: #ffec8b; /* Cor mais clara no hover */
+    }
+</style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -1210,7 +1221,7 @@
         }
         const novoId = cartoes.length > 0 ? Math.max(...cartoes.map(c => c.id)) + 1 : 1;
         const diaFechamento = calcularDiaFechamento(diaVencimento);
-        novoItem = { id: novoId, nome: nome, diaVencimento: diaVencimento, diaFechamento: diaFechamento };
+        novoItem = { id: novoId, nome: nome, diaVencimento: diaVencimento, diaFechamentoManual: null, diaFechamento: diaFechamento }; // MOD: Added diaFechamentoManual: null
         cartoes.push(novoItem);
         listaDados = cartoes;
         storageKey = "cartoes";
@@ -1260,12 +1271,14 @@
           return;
         }
         item.diaVencimento = novoDiaVencimento;
-        item.diaFechamento = calcularDiaFechamento(novoDiaVencimento);
+        item.diaFechamentoManual = null; // MOD: Reset manual day when due date changes
+        item.diaFechamento = calcularDiaFechamento(novoDiaVencimento); // MOD: Calculate effective day
       }
 
       localStorage.setItem(storageKey, JSON.stringify(listaDados));
       // Atualiza a lista visualmente
       const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
+        const detalheElement = itemElement ? itemElement.querySelector(".item-gerenciamento-detalhe") : null;
       if (itemElement) {
         itemElement.querySelector(".item-gerenciamento-nome").textContent = item.nome;
         if (tipoGerenciamentoAtual === "cartoes") {
@@ -1281,7 +1294,56 @@
         item = subcategorias.find(s => s.id === id);
         listaDados = subcategorias;
         storageKey = "subcategorias";
-      } else if (tipoGerenciamentoAtual === "cartoes") {
+      }
+
+    // *** INÍCIO MODIFICAÇÃO: Função para editar dia de fechamento manualmente ***
+    function editarDiaFechamentoManual(id) {
+      const item = cartoes.find(c => c.id === id);
+      if (!item) return;
+
+      const diaAtual = item.diaFechamentoManual !== null ? item.diaFechamentoManual : ''; // Mostra vazio se for automático
+      const novoDiaManualStr = prompt(`Editar dia de fechamento manual para "${item.nome}" (1-31). Deixe vazio ou digite 0 para cálculo automático (baseado no vencimento):`, diaAtual);
+
+      if (novoDiaManualStr === null) return; // Cancelou
+
+      const diaTrimmed = novoDiaManualStr.trim();
+
+      if (diaTrimmed === '' || diaTrimmed === '0') {
+        // Definir como automático
+        item.diaFechamentoManual = null;
+        alert(`Dia de fechamento para "${item.nome}" definido para cálculo automático.`);
+      } else {
+        const novoDiaManual = parseInt(diaTrimmed);
+        if (isNaN(novoDiaManual) || novoDiaManual < 1 || novoDiaManual > 31) {
+          alert("Dia de fechamento inválido. Use um número entre 1 e 31, ou 0/vazio para automático.");
+          return;
+        }
+        item.diaFechamentoManual = novoDiaManual;
+        alert(`Dia de fechamento manual para "${item.nome}" definido para ${novoDiaManual}.`);
+      }
+
+      // Atualiza o dia de fechamento efetivo que será usado nos cálculos
+      item.diaFechamento = getDiaFechamentoEfetivo(item);
+
+      // Salva no localStorage
+      localStorage.setItem("cartoes", JSON.stringify(cartoes));
+
+      // Atualiza a lista visualmente
+      const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
+        const detalheElement = itemElement ? itemElement.querySelector(".item-gerenciamento-detalhe") : null;
+      if (itemElement) {
+        const detalheElement = itemElement.querySelector(".item-gerenciamento-detalhe");
+        if (detalheElement) {
+          // Reconstroi o HTML do detalhe com o span clicável atualizado
+          detalheElement.innerHTML = `Vencimento: dia ${item.diaVencimento} / Fechamento: dia <span class="dia-fechamento-editavel" onclick="editarDiaFechamentoManual(${item.id})">${getDiaFechamentoEfetivo(item)}</span>`;
+        }
+      }
+
+      // Recarrega os lançamentos para atualizar o resumo financeiro
+      carregarLancamentos();
+    }
+    // *** FIM MODIFICAÇÃO ***
+ else if (tipoGerenciamentoAtual === "cartoes") {
         item = cartoes.find(c => c.id === id);
         listaDados = cartoes;
         storageKey = "cartoes";
@@ -1301,6 +1363,7 @@
       
       // Remove da lista visual
       const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
+        const detalheElement = itemElement ? itemElement.querySelector(".item-gerenciamento-detalhe") : null;
       if (itemElement) {
         itemElement.remove();
       }
@@ -1314,6 +1377,18 @@
       if (diaFechamento <= 0) {
         diaFechamento += 30; // Aproximação para mês anterior
       }
+
+    // *** INÍCIO MODIFICAÇÃO: Função para obter dia de fechamento efetivo ***
+    function getDiaFechamentoEfetivo(cartao) {
+      // Se diaFechamentoManual for null ou 0, calcula automaticamente
+      if (cartao.diaFechamentoManual === null || cartao.diaFechamentoManual === 0) {
+        return calcularDiaFechamento(cartao.diaVencimento);
+      }
+      // Senão, retorna o dia manual
+      return cartao.diaFechamentoManual;
+    }
+    // *** FIM MODIFICAÇÃO ***
+
       return diaFechamento;
     }
 
@@ -1919,8 +1994,8 @@
             const diaOcorrencia = dataOcorrencia.getDate();
             let mesFatura = dataOcorrencia.getMonth();
 
-            // Se a compra foi feita após ou no dia do fechamento, vai para a fatura do mês seguinte
-            if (diaOcorrencia >= cartao.diaFechamento) {
+            // Se a compra foi feita APÓS o dia do fechamento, vai para a fatura do mês seguinte
+            if (diaOcorrencia > cartao.diaFechamento) { // AJUSTE: Alterado de >= para >
               mesFatura = (mesFatura + 1) % 12;
             }
 
