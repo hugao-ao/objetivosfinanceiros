@@ -1330,10 +1330,7 @@
 
       // Atualiza a lista visualmente
       const itemElement = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
-        const detalheElement = itemElement ? itemElement.querySelector(".item-gerenciamento-detalhe") : null;
-      if (itemElement) {
-        const detalheElement = itemElement.querySelector(".item-gerenciamento-detalhe");
-        if (detalheElement) {
+        const detalheElement = itemElement ? itemElement.querySelector(".item-gerenciamento-detalhe") : null; // MOD: Define detalheElement  if (detalheElement) {
           // Reconstroi o HTML do detalhe com o span clicável atualizado
           detalheElement.innerHTML = `Vencimento: dia ${item.diaVencimento} / Fechamento: dia <span class="dia-fechamento-editavel" onclick="editarDiaFechamentoManual(${item.id})">${getDiaFechamentoEfetivo(item)}</span>`;
         }
