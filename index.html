@@ -1341,14 +1341,7 @@
 
       // Recarrega os lançamentos para atualizar o resumo financeiro
       carregarLancamentos();
-    }
-    // *** FIM MODIFICAÇÃO ***
- else if (tipoGerenciamentoAtual === "cartoes") {
-        item = cartoes.find(c => c.id === id);
-        listaDados = cartoes;
-        storageKey = "cartoes";
-      }
-      if (!item) return;
+      // *** FIM MODIFICAÇÃO ***      if (!item) return;
 
       if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
 
