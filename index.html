@@ -1349,15 +1349,18 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
       item.diaFechamento = getDiaFechamentoEfetivo(item);
 
       // Salva no localStorage
-      localStorage.setItem("cartoes", JSON.stringify(carto'''
-          // Atualiza a lista visualmente
-          const itemElementParaAtualizar = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
-          const detalheElement = itemElementParaAtualizar ? itemElement.querySelector(".item-gerenciamento-detalhe") : null; // MOD: Define detalheElement
-          if (detalheElement) {
-            // Reconstroi o HTML do detalhe com o span clicável atualizado
-            detalheElement.innerHTML = `Vencimento: dia ${item.diaVencimento} / Fechamento: dia <span class="dia-fechamento-editavel" onclick="editarDiaFechamentoManual(${item.id})">${getDiaFechamentoEfetivo(item)}</span>`;
-          }
-          // Recarrega os lançamentos para atualizar o resumo financeiro'''    // *** FIM MODIFICAÇÃO ***
+      	localStorage.setItem("cartoes", JSON.stringify(cartoes));
+
+		// Atualiza a lista visualmente
+		const itemElementParaAtualizar = document.querySelector(`.item-gerenciamento[data-id="${id}"]`);
+		const detalheElement = itemElementParaAtualizar ? itemElement.querySelector(".item-gerenciamento-detalhe") : null; // MOD: Define detalheElement
+		if (detalheElement) {
+		  // Reconstroi o HTML do detalhe com o span clicável atualizado
+		  detalheElement.innerHTML = `Vencimento: dia ${item.diaVencimento} / Fechamento: dia <span class="dia-fechamento-editavel" onclick="editarDiaFechamentoManual(${item.id})">${getDiaFechamentoEfetivo(item)}</span>`;
+		}
+		carregarLancamentos(); // Recarrega os lançamentos para atualizar o resumo financeiro
+	  } // Closes editarDiaFechamentoManual function
+	  // *** FIM MODIFICAÇÃO ***
 
 
     // Função para calcular dia de fechamento (7 dias antes do vencimento)
