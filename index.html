@@ -1770,8 +1770,8 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
 
 	  // Calcula totais por cartão ANTES do loop para ter os valores disponíveis
 	  const totaisCartoesAno = calcularTotaisPorCartao(lancamentos, anoSelecionado);
-
-	  // 2. Verificar Fechamento/Vencimento de Cartões\ncartoes.forEach(cartao => {
+	  // 2. Verificar Fechamento/Vencimento de Cartões
+	  cartoes.forEach(cartao => {
         const diaFechamento = cartao.diaFechamento;
         const diaVencimento = cartao.diaVencimento;
 
@@ -1833,8 +1833,8 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
         if (dataVencimentoNoMes >= inicioMesNorm && dataVencimentoNoMes <= fimMesNorm) {
             mensagensMes.push(`<li style="color: #c62828;">${dataVencimentoNoMes.toLocaleDateString("pt-BR")}: ${textoVencimento}</li>`);
         }
-    } // Closes arrow function body
-); // Closes forEach call
+    }
+);
 
 	      // Ordenar mensagens da semana e mês por data (extraindo data do texto)
 	  const sortByDate = (a, b) => {
