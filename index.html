@@ -1763,12 +1763,15 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
             }
             // Mês
             if (dataOcorrencia >= inicioMesNorm && dataOcorrencia <= fimMesNorm) {
-                mensagensMes.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString'''
-      // Calcula totais por cartão ANTES do loop para ter os valores disponíveis
-      const totaisCartoesAno = calcularTotaisPorCartao(lancamentos, anoSelecionado);
+              				mensagensMes.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);
+			}
+		}); // Closes ocorrenciasAno.forEach
+	  }); // Closes lancamentos.forEach
 
-      // 2. Verificar Fechamento/Vencimento de Cartões
-      cartoes.forEach(cartao => {
+	  // Calcula totais por cartão ANTES do loop para ter os valores disponíveis
+	  const totaisCartoesAno = calcularTotaisPorCartao(lancamentos, anoSelecionado);
+
+	  // 2. Verificar Fechamento/Vencimento de Cartões     cartoes.forEach(cartao => {
         const diaFechamento = cartao.diaFechamento;
         const diaVencimento = cartao.diaVencimento;
 
