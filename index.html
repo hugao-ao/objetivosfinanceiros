@@ -2623,14 +2623,61 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
         insightsHTML += `<li>Você registrou despesas (<strong>${formatarMoeda(dados.totalDespesas)}</strong>) mas nenhuma receita anual. Verifique seus lançamentos.</li>`;
       }
 
-      // Insight 3: Maiores Categorias de Despesa (Anual)
-      const despesasCategorizadas = [
-        { nome: "Despesas Fixas", valor: dados.totalFixas },
-        { nome: "Despesas Variáveis", valor: dados.totalVariaveis },
-      ].sort((a, b) => b.valor - a.valor);
+      // Insight 3			// Insight 3: Maiores Despesas por Descrição (Anual) - MODIFICADO
+			const despesasAgrupadasPorDescricao = {};
+			const anoAtualInsight = new Date().getFullYear(); // Renomeado para evitar conflito
+			const todasDespesasInsight = dados.lancamentos.filter((l) => l.tipo !== "receita");
 
-      if (dados.totalDespesas > 0) {
-        insightsHTML += `<li>Anualmente, suas maiores categorias de despesa são: <strong>${despesasCategorizadas[0].nome}</strong> (${formatarMoeda(despesasCategorizadas[0].valor)})${despesasCategorizadas.length > 1 ? ` e <strong>${despesasCategorizadas[1].nome}</strong> (${formatarMoeda(despesasCategorizadas[1].valor)})` : ''}.</li>`;
+			todasDespesasInsight.forEach((despesa) => {
+				let totalAnualDespesa = 0;
+				// Calcula o total anual da despesa (considerando ocorrências e valores manuais)
+				if (despesa.valoresManuais && despesa.valoresManuais.some((v) => v !== null)) {
+					// Soma valores manuais não nulos
+					let somaValoresManuais = despesa.valoresManuais.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
+					// Calcula ocorrências para meses sem valor manual
+					const ocorrencias = calcularOcorrencias(despesa, anoAtualInsight);
+					let somaOcorrenciasNormais = 0;
+					for(let i=0; i<12; i++){
+						if(despesa.valoresManuais[i] === null){ // Apenas meses sem valor manual
+							const ocorrenciasMesSemManual = ocorrencias.filter(d => d.getMonth() === i);
+							somaOcorrenciasNormais += despesa.valor * ocorrenciasMesSemManual.length;
+						}
+					}
+					totalAnualDespesa = somaValoresManuais + somaOcorrenciasNormais;
+				} else {
+					// Se não há valores manuais, calcula baseado nas ocorrências
+					const ocorrencias = calcularOcorrencias(despesa, anoAtualInsight);
+					totalAnualDespesa = despesa.valor * ocorrencias.length;
+				}
+
+				if (totalAnualDespesa > 0) {
+					const key = despesa.descricao;
+					if (!despesasAgrupadasPorDescricao[key]) {
+						despesasAgrupadasPorDescricao[key] = 0;
+					}
+					despesasAgrupadasPorDescricao[key] += totalAnualDespesa;
+				}
+			});
+
+			const despesasOrdenadasPorDescricao = Object.entries(despesasAgrupadasPorDescricao)
+												.map(([descricao, valor]) => ({ descricao, valor }))
+												.sort((a, b) => b.valor - a.valor);
+
+			if (despesasOrdenadasPorDescricao.length > 0) {
+				const top1 = despesasOrdenadasPorDescricao[0];
+				let insightTexto = `<li>Anualmente, suas maiores despesas individuais são: <strong>${top1.descricao}</strong> (${formatarMoeda(top1.valor)})`;
+				if (despesasOrdenadasPorDescricao.length > 1) {
+					const top2 = despesasOrdenadasPorDescricao[1];
+					insightTexto += ` e <strong>${top2.descricao}</strong> (${formatarMoeda(top2.valor)})`;
+				}
+				// Opcional: Adicionar top 3 se desejar
+				// if (despesasOrdenadasPorDescricao.length > 2) {
+				//   const top3 = despesasOrdenadasPorDescricao[2];
+				//   insightTexto += `, e <strong>${top3.descricao}</strong> (${formatarMoeda(top3.valor)})`;
+				// }
+				insightTexto += `.</li>`;
+				insightsHTML += insightTexto;
+			};
       }
       
       // Insight 4: Maiores Subcategorias (Anual)
