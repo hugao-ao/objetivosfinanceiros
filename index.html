@@ -1771,7 +1771,7 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
 	  // Calcula totais por cartão ANTES do loop para ter os valores disponíveis
 	  const totaisCartoesAno = calcularTotaisPorCartao(lancamentos, anoSelecionado);
 
-	  // 2. Verificar Fechamento/Vencimento de Cartões     cartoes.forEach(cartao => {
+	  // 2. Verificar Fechamento/Vencimento de Cartões\ncartoes.forEach(cartao => {
         const diaFechamento = cartao.diaFechamento;
         const diaVencimento = cartao.diaVencimento;
 
