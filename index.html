@@ -1833,7 +1833,8 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
         if (dataVencimentoNoMes >= inicioMesNorm && dataVencimentoNoMes <= fimMesNorm) {
             mensagensMes.push(`<li style="color: #c62828;">${dataVencimentoNoMes.toLocaleDateString("pt-BR")}: ${textoVencimento}</li>`);
         }
-    }); // Closes cartoes.forEach
+    } // Closes arrow function body
+); // Closes forEach call
 
 	      // Ordenar mensagens da semana e mês por data (extraindo data do texto)
 	      const sortByDate = (a, b) => {         const dateA = new Date(a.match(/(\d{2}\/\d{2}\/\d{4})/)[0].split('/').reverse().join('-') + 'T00:00:00');
