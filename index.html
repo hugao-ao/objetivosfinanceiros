@@ -1763,10 +1763,9 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
             }
             // Mês
             if (dataOcorrencia >= inicioMesNorm && dataOcorrencia <= fimMesNorm) {
-                mensagensMes.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);
-            }
-        });
-      });
+                mensagensMes.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString'''
+      // Calcula totais por cartão ANTES do loop para ter os valores disponíveis
+      const totaisCartoesAno = calcularTotaisPorCartao(lancamentos, anoSelecionado);
 
       // 2. Verificar Fechamento/Vencimento de Cartões
       cartoes.forEach(cartao => {
@@ -1778,8 +1777,8 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
         // Ajuste para vencimento no mês seguinte se fechamento for no final do mês anterior
         const dataVencimentoAjustada = new Date(dataFechamentoMesAtual);
         dataVencimentoAjustada.setDate(dataVencimentoAjustada.getDate() + (diaVencimento > diaFechamento ? diaVencimento - diaFechamento : (new Date(anoSelecionado, mesSelecionado+1, 0).getDate() - diaFechamento + diaVencimento) ));
-        
-        const dataSelecionadaNorm = new Date(dataSelecionada); 
+
+        const dataSelecionadaNorm = new Date(dataSelecionada);
         dataSelecionadaNorm.setHours(0, 0, 0, 0); // Normaliza a hora
         const inicioSemanaNorm = new Date(inicioSemana);
         inicioSemanaNorm.setHours(0, 0, 0, 0);
@@ -1791,7 +1790,17 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
         fimMesNorm.setHours(0, 0, 0, 0);
 
         const textoFechamento = `Fechamento da fatura do cartão ${cartao.nome}`;
-        const textoVencimento = `Vencimento da fatura do cartão ${cartao.nome}`;
+        let textoVencimento = `Vencimento da fatura do cartão ${cartao.nome}`;
+
+        // Calcula o índice do mês da fatura que vence no mês selecionado
+        // A fatura que vence no mesSelecionado (0-11) é a que fechou no mesSelecionado - 1
+        const mesDaFaturaVencendo = (mesSelecionado === 0) ? 11 : mesSelecionado - 1;
+        const valorEstimadoFatura = totaisCartoesAno[cartao.id]?.meses[mesDaFaturaVencendo] || 0;
+
+        // Adiciona valor estimado ao texto de vencimento
+        if (valorEstimadoFatura > 0) {
+            textoVencimento += ` (Valor Estimado: ${formatarMoeda(valorEstimadoFatura)})`;
+        }
 
         // Dia
         if (dataFechamentoMesAtual.getTime() === dataSelecionadaNorm.getTime()) {
@@ -1808,21 +1817,21 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
             mensagensSemana.push(`<li style="color: #c62828;">${dataVencimentoAjustada.toLocaleDateString('pt-BR')}: ${textoVencimento}</li>`);
         }
         // Mês
-        		// Mês
-		// Verifica data de fechamento no mês atual
-		const dataFechamentoNoMes = new Date(anoSelecionado, mesSelecionado, diaFechamento);
-		dataFechamentoNoMes.setHours(0, 0, 0, 0);
-		if (dataFechamentoNoMes >= inicioMesNorm && dataFechamentoNoMes <= fimMesNorm) {
-			mensagensMes.push(`<li style="color: #f57c00;">${dataFechamentoNoMes.toLocaleDateString('pt-BR')}: ${textoFechamento}</li>`);
-		}
+        // Verifica data de fechamento no mês atual
+        const dataFechamentoNoMes = new Date(anoSelecionado, mesSelecionado, diaFechamento);
+        dataFechamentoNoMes.setHours(0, 0, 0, 0);
+        if (dataFechamentoNoMes >= inicioMesNorm && dataFechamentoNoMes <= fimMesNorm) {
+            mensagensMes.push(`<li style="color: #f57c00;">${dataFechamentoNoMes.toLocaleDateString('pt-BR')}: ${textoFechamento}</li>`);
+        }
 
-		// Verifica data de vencimento no mês atual
-		const dataVencimentoNoMes = new Date(anoSelecionado, mesSelecionado, diaVencimento);
-		dataVencimentoNoMes.setHours(0, 0, 0, 0);
-		if (dataVencimentoNoMes >= inicioMesNorm && dataVencimentoNoMes <= fimMesNorm) {
-			mensagensMes.push(`<li style="color: #c62828;">${dataVencimentoNoMes.toLocaleDateString("pt-BR")}: ${textoVencimento}</li>`);			}
-		}); // Closes cartoes.forEach
-
+        // Verifica data de vencimento no mês atual
+        const dataVencimentoNoMes = new Date(anoSelecionado, mesSelecionado, diaVencimento);
+        dataVencimentoNoMes.setHours(0, 0, 0, 0);
+        if (dataVencimentoNoMes >= inicioMesNorm && dataVencimentoNoMes <= fimMesNorm) {
+            mensagensMes.push(`<li style="color: #c62828;">${dataVencimentoNoMes.toLocaleDateString("pt-BR")}: ${textoVencimento}</li>`);
+        }
+    }); // Closes cartoes.forEach
+'''
 	      // Ordenar mensagens da semana e mês por data (extraindo data do texto)
 	      const sortByDate = (a, b) => {         const dateA = new Date(a.match(/(\d{2}\/\d{2}\/\d{4})/)[0].split('/').reverse().join('-') + 'T00:00:00');
           const dateB = new Date(b.match(/(\d{2}\/\d{2}\/\d{4})/)[0].split('/').reverse().join('-') + 'T00:00:00');
