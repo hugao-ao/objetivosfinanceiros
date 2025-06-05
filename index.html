@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -1762,7 +1762,7 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
                 mensagensSemana.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);
             }
             // Mês (Apenas eventos a partir da data selecionada)
-            if (dataOcorrencia >= inicioMesNorm && dataOcorrencia <= fimMesNorm && dataOcorrencia >= dataSelecionadaNorm) {              				mensagensMes.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);			}); // Closes ocorrenciasAno.forEach
+            if (dataOcorrencia >= inicioMesNorm && dataOcorrencia <= fimMesNorm && dataOcorrencia >= dataSelecionadaNorm) {              				mensagensMes.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);			} // Closes ocorrenciasAno.forEach
 	  }); // Closes lancamentos.forEach
 
 	  // Calcula totais por cartão ANTES do loop para ter os valores disponíveis
