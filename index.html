@@ -1820,7 +1820,7 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
 		const dataVencimentoNoMes = new Date(anoSelecionado, mesSelecionado, diaVencimento);
 		dataVencimentoNoMes.setHours(0, 0, 0, 0);
 		if (dataVencimentoNoMes >= inicioMesNorm && dataVencimentoNoMes <= fimMesNorm) {
-			mensagensMes.push(`<li style=\"color: #c62828;\">${dataVencimentoNoMes.toLocaleDateString(\"pt-BR\")}: ${textoVencimento}</li>`);			}
+			mensagensMes.push(`<li style="color: #c62828;">${dataVencimentoNoMes.toLocaleDateString("pt-BR")}: ${textoVencimento}</li>`);			}
 		}); // Closes cartoes.forEach
 
 	      // Ordenar mensagens da semana e mês por data (extraindo data do texto)
