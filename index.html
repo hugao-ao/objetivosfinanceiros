@@ -1759,12 +1759,10 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
             }
             // Semana (Apenas eventos a partir da data selecionada)
             if (dataOcorrencia >= inicioSemanaNorm && dataOcorrencia <= fimSemanaNorm && dataOcorrencia >= dataSelecionadaNorm) {
-                mensagensSemana.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString(\'pt-BR\')}: ${textoLancamento}</li>`);
+                mensagensSemana.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);
             }
             // Mês (Apenas eventos a partir da data selecionada)
-            if (dataOcorrencia >= inicioMesNorm && dataOcorrencia <= fimMesNorm && dataOcorrencia >= dataSelecionadaNorm) {
-              				mensagensMes.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString(\'pt-BR\')}: ${textoLancamento}</li>`);
-			}); // Closes ocorrenciasAno.forEach
+            if (dataOcorrencia >= inicioMesNorm && dataOcorrencia <= fimMesNorm && dataOcorrencia >= dataSelecionadaNorm) {              				mensagensMes.push(`<li${estiloReceita}>${dataOcorrencia.toLocaleDateString('pt-BR')}: ${textoLancamento}</li>`);			}); // Closes ocorrenciasAno.forEach
 	  }); // Closes lancamentos.forEach
 
 	  // Calcula totais por cartão ANTES do loop para ter os valores disponíveis
@@ -1812,11 +1810,9 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
             mensagensDia.push(`<li style="color: #c62828;">${textoVencimento}</li>`);
              // Semana (Apenas eventos a partir da data selecionada)
         if (dataFechamentoMesAtual >= inicioSemanaNorm && dataFechamentoMesAtual <= fimSemanaNorm && dataFechamentoMesAtual >= dataSelecionadaNorm) {
-            mensagensSemana.push(`<li style=\"color: #f57c00;\">${dataFechamentoMesAtual.toLocaleDateString(\'pt-BR\')}: ${textoFechamento}</li>`);
-        }
+            mensagensSemana.push(`<li style=\"color: #f57c00;\">${dataFechamentoMesAtual.toLocaleDateString('pt-BR')}: ${textoFechamento}</li>`);       }
          if (dataVencimentoAjustada >= inicioSemanaNorm && dataVencimentoAjustada <= fimSemanaNorm && dataVencimentoAjustada >= dataSelecionadaNorm) {
-            mensagensSemana.push(`<li style=\"color: #c62828;\">${dataVencimentoAjustada.toLocaleDateString(\'pt-BR\')}: ${textoVencimento}</li>`);
-        }
+           mensagensSemana.push(`<li style=\"color: #c62828;\">${dataVencimentoAjustada.toLocaleDateString('pt-BR')}: ${textoVencimento}</li>`);        }
         // Mês (Apenas eventos a partir da data selecionada)
         // Verifica data de fechamento no mês atual
         const dataFechamentoNoMes = new Date(anoSelecionado, mesSelecionado, diaFechamento);
@@ -1829,7 +1825,7 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
         const dataVencimentoNoMes = new Date(anoSelecionado, mesSelecionado, diaVencimento);
         dataVencimentoNoMes.setHours(0, 0, 0, 0);
         if (dataVencimentoNoMes >= inicioMesNorm && dataVencimentoNoMes <= fimMesNorm && dataVencimentoNoMes >= dataSelecionadaNorm) {
-            mensagensMes.push(`<li style=\"color: #c62828;\">${dataVencimentoNoMes.toLocaleDateString("pt-BR")}: ${textoVencimento}</li>`);
+            mensagensMes.push(`<li style=\"color: #c62828;\">${dataVencimentoNoMes.toLocaleDateString(\'pt-BR\')}: ${textoVencimento}</li>`);
         }
 
 	      // Ordenar mensagens da semana e mês por data (extraindo data do texto)
