@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1819,14 +1818,13 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
 
 		// Verifica data de vencimento no mês atual
 		const dataVencimentoNoMes = new Date(anoSelecionado, mesSelecionado, diaVencimento);
-		dataVencimentoNoMes.setHours(0, 0, 0, 0)			 if (dataVencimentoNoMes >= inicioMesNorm && dataVencimentoNoMes <= fimMesNorm) {
-				mensagensMes.push(`<li style="color: #c62828;">${dataVencimentoNoMes.toLocaleDateString("pt-BR")}: ${textoVencimento}</li>`);
-			}        }
-      });
+		dataVencimentoNoMes.setHours(0, 0, 0, 0);
+		if (dataVencimentoNoMes >= inicioMesNorm && dataVencimentoNoMes <= fimMesNorm) {
+			mensagensMes.push(`<li style=\"color: #c62828;\">${dataVencimentoNoMes.toLocaleDateString(\"pt-BR\")}: ${textoVencimento}</li>`);			}
+		}); // Closes cartoes.forEach
 
-      // Ordenar mensagens da semana e mês por data (extraindo data do texto)
-      const sortByDate = (a, b) => {
-          const dateA = new Date(a.match(/(\d{2}\/\d{2}\/\d{4})/)[0].split('/').reverse().join('-') + 'T00:00:00');
+	      // Ordenar mensagens da semana e mês por data (extraindo data do texto)
+	      const sortByDate = (a, b) => {         const dateA = new Date(a.match(/(\d{2}\/\d{2}\/\d{4})/)[0].split('/').reverse().join('-') + 'T00:00:00');
           const dateB = new Date(b.match(/(\d{2}\/\d{2}\/\d{4})/)[0].split('/').reverse().join('-') + 'T00:00:00');
           return dateA - dateB;
       };
