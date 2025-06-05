@@ -2676,10 +2676,8 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
 				//   insightTexto += `, e <strong>${top3.descricao}</strong> (${formatarMoeda(top3.valor)})`;
 				// }
 				insightTexto += `.</li>`;
-				insightsHTML += insightTexto;
-			};
-      }
-      
+					insightsHTML += insightTexto;
+				}     
       // Insight 4: Maiores Subcategorias (Anual)
       const subcategoriasOrdenadas = Object.entries(subcategoriasResumo)
                                         .map(([nome, dadosSub]) => ({ nome, valor: dadosSub.total }))
