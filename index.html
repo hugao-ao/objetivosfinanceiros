@@ -1840,18 +1840,16 @@ if (!confirm(`Tem certeza que deseja excluir "${item.nome}"?`)) return;
       mesContainer.innerHTML = mensagensMes.length > 0 ? `<ul>${[...new Set(mensagensMes)].join('')}</ul>` : '<p>Nenhum evento esperado para este mês.</p>';
     }
 
-    // Funções de Formatação e Cálculo
-    function formatarMoeda(valor) {
-      const numero = typeof valor === "number" ? valor : parseFloat(String(valor).replace(/[^\d,-]/g, "").replace(",", "."));
+    // Funções de Formatação e Cá'''    function formatarMoeda(valor) {
+      const numero = typeof valor === "number" ? valor : parseFloat(String(valor).replace(/[^\\d,-]/g, "").replace(",", "."));
       if (isNaN(numero)) return "R$ 0,00";
       return numero.toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        maximumFractionDigits: 2
       });
-    }
-
+    }'''
     function formatarMoedaParaInput(valor) {
       if (!valor) return "";
       return valor.toLocaleString("pt-BR", {
