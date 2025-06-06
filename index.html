@@ -1514,6 +1514,42 @@
 
 <script>
     // Variáveis globais
+    // Função para mostrar/esconder campo de cartão
+    function toggleCartaoContainer() {
+      const formaPagamento = document.getElementById("formaPagamento").value;
+      const cartaoContainer = document.getElementById("cartaoContainer");
+      
+      if (formaPagamento === "credito") {
+        cartaoContainer.style.display = "block";
+        cartaoContainer.classList.add("show");
+        cartaoContainer.classList.add("obrigatorio");
+      } else {
+        cartaoContainer.style.display = "none";
+        cartaoContainer.classList.remove("show");
+        cartaoContainer.classList.remove("obrigatorio");
+        // Limpa a seleção do cartão quando não é necessário
+        document.getElementById("cartaoCredito").value = "";
+      }
+    }
+
+    // Função para mostrar/esconder campo de cartão na edição
+    function toggleCartaoContainerEdicao() {
+      const formaPagamento = document.getElementById("formaPagamentoEdicao").value;
+      const cartaoContainer = document.getElementById("cartaoContainerEdicao");
+      
+      if (formaPagamento === "credito") {
+        cartaoContainer.style.display = "block";
+        cartaoContainer.classList.add("show");
+        cartaoContainer.classList.add("obrigatorio");
+      } else {
+        cartaoContainer.style.display = "none";
+        cartaoContainer.classList.remove("show");
+        cartaoContainer.classList.remove("obrigatorio");
+        // Limpa a seleção do cartão quando não é necessário
+        document.getElementById("cartaoCreditoEdicao").value = "";
+      }
+    }
+
     let graficoDespesasPoupanca = null;
     let graficoDespesasReceitas = null;
     let graficoCartoesCreditoInstance = null; // Nova variável para o gráfico de cartões
