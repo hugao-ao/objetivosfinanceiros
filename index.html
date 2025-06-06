@@ -1552,6 +1552,74 @@
 
     let graficoDespesasPoupanca = null;
     let graficoDespesasReceitas = null;
+    // Função para adicionar um novo lançamento
+    function adicionarLancamento() {
+      const descricao = document.getElementById("descricao").value.trim();
+      const valorStr = document.getElementById("valor").value.trim();
+      const formaPagamento = document.getElementById("formaPagamento").value;
+      const tipo = document.getElementById("tipoLancamento").value;
+      const subcategoria = document.getElementById("subcategoria").value || null;
+      const cartaoId = document.getElementById("cartaoCredito").value || null;
+      const frequenciaValor = parseInt(document.getElementById("frequenciaValor").value) || 1;
+      const frequenciaTipo = document.getElementById("frequenciaTipo").value;
+      const dataInicial = document.getElementById("dataInicial").value;
+      const dataFinal = document.getElementById("dataFinal").value;
+
+      if (!descricao || !valorStr) {
+        alert("Preencha a descrição e o valor.");
+        return;
+      }
+
+      if (tipo === "receita" && formaPagamento !== "conta") {
+        alert("Receitas devem ser lançadas apenas como \"Conta\"");
+        return;
+      }
+
+      // Validação do Cartão Obrigatório
+      if (formaPagamento === "credito" && !cartaoId) {
+        alert("Selecione um cartão de crédito para este lançamento.");
+        return;
+      }
+
+      const valorNumerico = parseFloat(valorStr.replace(/\./g, "").replace(",", "."));
+      if (isNaN(valorNumerico)) {
+        alert("Valor inválido.");
+        return;
+      }
+
+      const lancamentosArray = JSON.parse(localStorage.getItem("lancamentos") || "[]");
+      const novoId = lancamentosArray.length > 0 ? Math.max(...lancamentosArray.map(l => l.id)) + 1 : 1;
+
+      const novoLancamento = {
+        id: novoId,
+        descricao,
+        valor: valorNumerico,
+        formaPagamento,
+        tipo,
+        subcategoria,
+        cartaoId: formaPagamento === "credito" ? cartaoId : null,
+        frequenciaValor,
+        frequenciaTipo,
+        dataInicial,
+        dataFinal,
+        valoresManuais: null
+      };
+
+      lancamentosArray.push(novoLancamento);
+      localStorage.setItem("lancamentos", JSON.stringify(lancamentosArray));
+
+      // Limpar formulário
+      document.getElementById("descricao").value = "";
+      document.getElementById("valor").value = "";
+      document.getElementById("subcategoria").value = "";
+      document.getElementById("cartaoCredito").value = "";
+      document.getElementById("frequenciaValor").value = "1";
+      document.getElementById("frequenciaTipo").value = "meses";
+
+      fecharModal();
+      carregarLancamentos();
+    }
+
     let graficoCartoesCreditoInstance = null; // Nova variável para o gráfico de cartões
     let graficoSubcategoriasInstance = null; // Nova variável para o gráfico de subcategorias
     let graficoComparacaoInstance = null; // Nova variável para o gráfico de comparação
