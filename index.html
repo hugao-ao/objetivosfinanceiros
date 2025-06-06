@@ -3,279 +3,411 @@
 <head>
   <title>Controle Financeiro V9 - Registro de Gastos Reais</title>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Formulário dentro do Modal */
-    .form-section-modal {
-      padding: 0; 
-      border-radius: 10px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 6px;
-      font-size: 14px;
-      border-radius: 5px;
-      border: none;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-    }
-
-    .botoes-formulario {
-      grid-column: 1 / -1; 
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 10px;
-    }
-
-    .table-container {
-      background-color: #014034;
-      border-radius: 10px;
-      overflow-x: auto;
-      margin-bottom: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      color: white;
-    }
-
-    th, td {
-      padding: 10px;
-      border: 1px solid #006a56;
-      text-align: center;
-    }
-
-    th {
-      background-color: #006a56;
-      color: #ffd700;
-      position: sticky;
-      top: 0;
-      z-index: 5; 
+    /* ===== VARIÁVEIS E RESET ===== */
+    :root {
+      /* Paleta de cores original - Verde esmeralda escuro + Dourado */
+      --color-primary: #014034;         /* Verde esmeralda escuro */
+      --color-primary-light: #006a56;   /* Verde esmeralda médio */
+      --color-primary-dark: #002d26;    /* Verde esmeralda muito escuro */
+      
+      /* Cores secundárias - Dourado */
+      --color-accent: #ffd700;          /* Dourado */
+      --color-accent-light: #ffec8b;    /* Dourado claro */
+      --color-accent-dark: #ffc400;     /* Dourado escuro */
+      
+      /* Cores de fundo - Tons escuros */
+      --color-bg-dark: #002d26;         /* Fundo principal escuro */
+      --color-bg-medium: #014034;       /* Fundo secundário */
+      --color-bg-light: #006a56;        /* Fundo para cards e elementos */
+      
+      /* Cores de texto */
+      --color-text: #ffffff;            /* Texto principal */
+      --color-text-muted: #b0bec5;      /* Texto secundário */
+      --color-text-accent: #ffd700;     /* Texto destacado */
+      
+      /* Cores de status */
+      --color-success: #4caf50;         /* Verde - sucesso */
+      --color-warning: #ff9800;         /* Laranja - alerta */
+      --color-danger: #f44336;          /* Vermelho - erro */
+      --color-info: #2196F3;            /* Azul - informação */
+      
+      /* Espaçamentos */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      
+      /* Bordas e sombras */
+      --border-radius-sm: 4px;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      
+      /* Transições */
+      --transition-fast: 0.2s ease;
+      --transition-normal: 0.3s ease;
+      --transition-slow: 0.5s ease;
     }
     
-    th.descricao-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between; 
-        padding-right: 5px; 
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-
-    .botao-abrir-modal {
-        background-color: #ffd700;
-        color: #002d26;
-        border: none;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        font-size: 18px;
-        font-weight: bold;
-        line-height: 24px; 
-        text-align: center;
-        cursor: pointer;
-        margin-left: 10px;
-        padding: 0;
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--color-bg-dark);
+      color: var(--color-text);
+      line-height: 1.6;
+      overflow-x: hidden;
     }
-
-    .botao-abrir-modal:hover {
-        background-color: #ffc400;
+    
+    /* ===== LAYOUT PRINCIPAL COM NAVEGAÇÃO LATERAL ===== */
+    .container-principal {
+      display: flex;
+      width: 400vw; /* 4 seções lado a lado */
+      height: 100vh;
+      transition: transform var(--transition-slow);
     }
-
-    .receita { color: #4caf50; }
-    .fixa { color: #f44336; }
-    .variavel { color: #ff9800; }
-    .cartao-credito { background-color: rgba(0, 106, 86, 0.3); }
-    .gasto-real { background-color: rgba(0, 150, 136, 0.2); } /* Nova classe para gastos reais */
-    .gasto-real-cartao { background-color: rgba(255, 152, 0, 0.2); } /* Nova classe para gastos reais no cartão */
-
-    .botao-lancar {
-      background-color: #ffd700;
-      color: #002d26;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
+    
+    .secao-lancamentos,
+    .secao-resumo,
+    .secao-mensagens,
+    .secao-gastos-reais {
+      width: 100vw;
+      height: 100vh;
+      overflow-y: auto;
+      padding: var(--spacing-md);
+      box-sizing: border-box;
+    }
+    
+    /* Estados de navegação */
+    .container-principal.mostrar-lancamentos {
+      transform: translateX(0);
+    }
+    
+    .container-principal.mostrar-resumo {
+      transform: translateX(-100vw);
+    }
+    
+    .container-principal.mostrar-mensagens {
+      transform: translateX(-200vw);
+    }
+    
+    .container-principal.mostrar-gastos-reais {
+      transform: translateX(-300vw);
+    }
+    
+    /* ===== COMPONENTES ===== */
+    
+    /* Títulos */
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: var(--spacing-lg);
+      color: var(--color-text-accent);
+      text-align: center;
+      border-bottom: 2px solid var(--color-accent);
+      padding-bottom: var(--spacing-sm);
+    }
+    
+    .resumo-titulo {
+      font-size: 1.2rem;
+      margin-bottom: var(--spacing-md);
+      color: var(--color-text-accent);
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    /* Botões */
+    .btn,
+    .botao-lancar,
+    .botao-filtrar,
+    .botao-voltar,
+    .botao-gerenciar,
+    .botao-adicionar-item,
+    .delete-btn,
+    .botao-fixo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--border-radius-md);
+      font-weight: 600;
       cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+      outline: none;
+      font-size: 0.9rem;
+      min-height: 38px;
+      gap: var(--spacing-sm);
     }
-
+    
+    .botao-lancar {
+      background-color: var(--color-accent);
+      color: var(--color-bg-dark);
+    }
+    
     .botao-lancar:hover {
-      background-color: #ffc400;
+      background-color: var(--color-accent-dark);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
-
-    /* Botões Fixos */
+    
+    .botao-filtrar {
+      background-color: var(--color-accent);
+      color: var(--color-bg-dark);
+      align-self: flex-end;
+      margin-top: auto;
+    }
+    
+    .botao-filtrar:hover {
+      background-color: var(--color-accent-dark);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    
+    .botao-voltar {
+      background-color: var(--color-warning);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .botao-voltar:hover {
+      background-color: #e68a00;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    
+    .botao-gerenciar {
+      background-color: var(--color-success);
+      color: var(--color-text);
+      font-size: 0.8rem;
+      padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    .botao-gerenciar:hover {
+      background-color: #45a049;
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+    
+    .botao-adicionar-item {
+      background-color: var(--color-success);
+      color: var(--color-text);
+    }
+    
+    .botao-adicionar-item:hover {
+      background-color: #45a049;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    
+    .delete-btn {
+      background-color: var(--color-danger);
+      color: var(--color-text);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: 0.8rem;
+    }
+    
+    .delete-btn:hover {
+      background-color: #b71c1c;
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+    
+    .botao-abrir-modal {
+      background-color: var(--color-accent);
+      color: var(--color-bg-dark);
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 24px;
+      text-align: center;
+      cursor: pointer;
+      margin-left: var(--spacing-sm);
+      padding: 0;
+      transition: all var(--transition-fast);
+    }
+    
+    .botao-abrir-modal:hover {
+      background-color: var(--color-accent-dark);
+      transform: scale(1.1);
+    }
+    
+    /* Botões fixos */
     .botao-fixo {
       position: fixed;
       z-index: 50;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      opacity: 1;
-      visibility: visible;
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition-normal);
     }
-
+    
     .botao-resumo-fixo {
-      top: 20px;
-      right: 20px;
-      background-color: #2196F3;
-      color: white;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      background-color: var(--color-info);
+      color: var(--color-text);
     }
     
     .botao-mensagens-fixo {
-      top: 60px;
-      right: 20px;
+      top: calc(var(--spacing-lg) + 50px);
+      right: var(--spacing-lg);
       background-color: #673ab7;
-      color: white;
+      color: var(--color-text);
     }
     
     .botao-gastos-reais-fixo {
-      top: 100px;
-      right: 20px;
+      top: calc(var(--spacing-lg) + 100px);
+      right: var(--spacing-lg);
       background-color: #009688;
-      color: white;
+      color: var(--color-text);
     }
     
     /* Esconde os botões fixos quando a seção correspondente está ativa */
-    .container-resumo-ativo ~ .botao-resumo-fixo,
-    .container-mensagens-ativo ~ .botao-mensagens-fixo,
-    .container-gastos-reais-ativo ~ .botao-gastos-reais-fixo,
-    /* Esconde o botão de mensagens quando o resumo está ativo */
-    .container-resumo-ativo ~ .botao-mensagens-fixo,
-    .container-resumo-ativo ~ .botao-gastos-reais-fixo,
-    /* Esconde o botão de resumo quando as mensagens estão ativas */
-    .container-mensagens-ativo ~ .botao-resumo-fixo,
-    .container-mensagens-ativo ~ .botao-gastos-reais-fixo,
-    /* Esconde os botões quando os gastos reais estão ativos */
-    .container-gastos-reais-ativo ~ .botao-resumo-fixo,
-    .container-gastos-reais-ativo ~ .botao-mensagens-fixo {
-        opacity: 0;
-        visibility: hidden;
+    .container-principal.mostrar-resumo ~ .botao-resumo-fixo,
+    .container-principal.mostrar-mensagens ~ .botao-mensagens-fixo,
+    .container-principal.mostrar-gastos-reais ~ .botao-gastos-reais-fixo {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(20px);
     }
-
+    
     .botao-resumo-fixo:hover {
       background-color: #0b7dda;
+      transform: translateY(-2px);
     }
     
     .botao-mensagens-fixo:hover {
       background-color: #5e35b1;
+      transform: translateY(-2px);
     }
     
     .botao-gastos-reais-fixo:hover {
       background-color: #00796b;
-    }
-
-    .botao-voltar {
-      background-color: #ff9800;
-      color: white;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-
-    .botao-voltar:hover {
-      background-color: #e68a00;
-    }
-
-    .delete-btn {
-      background-color: #c62828;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .delete-btn:hover {
-      background-color: #b71c1c;
+      transform: translateY(-2px);
     }
     
-    .hidden-id {
-      display: none;
+    /* Formulários */
+    .form-section {
+      background-color: var(--color-bg-medium);
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-lg);
+      margin-bottom: var(--spacing-lg);
     }
-
-    .resumo-titulo {
-      font-size: 18px;
-      margin-bottom: 15px;
-      color: #ffd700;
+    
+    .form-section-modal {
+      padding: 0;
+      border-radius: var(--border-radius-lg);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+    }
+    
+    .form-group {
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: var(--spacing-xs);
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: var(--spacing-sm);
+      font-size: 0.9rem;
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--color-bg-light);
+      background-color: var(--color-bg-light);
+      color: var(--color-text);
+      transition: all var(--transition-fast);
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+    }
+    
+    .botoes-formulario {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: var(--spacing-sm);
+      justify-content: flex-end;
+      margin-top: var(--spacing-sm);
+    }
+    
+    /* Tabelas */
+    .table-container {
+      background-color: var(--color-bg-medium);
+      border-radius: var(--border-radius-lg);
+      overflow-x: auto;
+      margin-bottom: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      color: var(--color-text);
+    }
+    
+    th, td {
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--color-bg-light);
       text-align: center;
     }
     
-    /* Congelar a primeira coluna (Categoria) - Tabela Resumo */
-    #tabelaResumo thead tr th:first-child,
-    #tabelaResumo tbody tr td:first-child {
+    th {
+      background-color: var(--color-bg-light);
+      color: var(--color-text-accent);
       position: sticky;
-      left: 0;
-      z-index: 10;
-      background-color: #014034; 
-    }
-    #tabelaResumo thead tr th:first-child {
-      background-color: #006a56; 
-      z-index: 20; 
-    }
-    #tabelaResumo tbody tr td:first-child {
-      font-weight: bold; 
-    }
-
-    /* Congelar a coluna Descrição - Tabela Lançamentos */
-    #tabelaLancamentos thead tr th:nth-child(2),
-    #tabelaLancamentos tbody tr td:nth-child(2) {
-      position: sticky;
-      left: 0;
-      z-index: 10;
-      background-color: #014034; 
-    }
-    #tabelaLancamentos thead tr th:nth-child(2) {
-      background-color: #006a56; 
-      z-index: 20;
-    }
-    #tabelaLancamentos tbody tr td:nth-child(2) {
-      white-space: nowrap;
-      min-width: 150px; 
+      top: 0;
+      z-index: 5;
+      font-weight: 600;
     }
     
-    /* Congelar a coluna Descrição - Tabela Gastos Reais */
-    #tabelaGastosReais thead tr th:nth-child(2),
-    #tabelaGastosReais tbody tr td:nth-child(2) {
-      position: sticky;
-      left: 0;
-      z-index: 10;
-      background-color: #014034; 
+    th.descricao-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: var(--spacing-xs);
     }
-    #tabelaGastosReais thead tr th:nth-child(2) {
-      background-color: #006a56; 
-      z-index: 20;
-    }
-    #tabelaGastosReais tbody tr td:nth-child(2) {
-      white-space: nowrap;
-      min-width: 150px; 
-    }
-
-    /* Estilo para células editáveis */
+    
+    /* Cores para tipos de lançamentos */
+    .receita { color: var(--color-success); }
+    .fixa { color: var(--color-danger); }
+    .variavel { color: var(--color-warning); }
+    .cartao-credito { background-color: rgba(0, 106, 86, 0.3); }
+    .gasto-real { background-color: rgba(0, 150, 136, 0.2); }
+    .gasto-real-cartao { background-color: rgba(255, 152, 0, 0.2); }
+    
+    /* Células editáveis */
     td.editable {
       cursor: pointer;
       position: relative;
     }
+    
     td.editable:hover {
       background-color: rgba(255, 255, 255, 0.1);
     }
+    
     .edit-input {
       position: absolute;
       top: 0;
@@ -283,269 +415,242 @@
       width: 100%;
       height: 100%;
       border: none;
-      background-color: #014034;
-      color: white;
+      background-color: var(--color-bg-medium);
+      color: var(--color-text);
       text-align: center;
       padding: 0;
       margin: 0;
-      font-size: 14px;
+      font-size: 0.9rem;
       box-sizing: border-box;
     }
+    
     .edit-input:focus {
-      outline: 2px solid #ffd700;
+      outline: 2px solid var(--color-accent);
     }
     
-    /* Estilos para os gráficos */
+    /* Congelar colunas */
+    /* Tabela Resumo */
+    #tabelaResumo thead tr th:first-child,
+    #tabelaResumo tbody tr td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      background-color: var(--color-bg-medium);
+    }
+    
+    #tabelaResumo thead tr th:first-child {
+      background-color: var(--color-bg-light);
+      z-index: 20;
+    }
+    
+    #tabelaResumo tbody tr td:first-child {
+      font-weight: 600;
+    }
+    
+    /* Tabela Lançamentos */
+    #tabelaLancamentos thead tr th:nth-child(2),
+    #tabelaLancamentos tbody tr td:nth-child(2) {
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      background-color: var(--color-bg-medium);
+    }
+    
+    #tabelaLancamentos thead tr th:nth-child(2) {
+      background-color: var(--color-bg-light);
+      z-index: 20;
+    }
+    
+    #tabelaLancamentos tbody tr td:nth-child(2) {
+      white-space: nowrap;
+      min-width: 150px;
+      text-align: left;
+    }
+    
+    /* Tabela Gastos Reais */
+    #tabelaGastosReais thead tr th:nth-child(2),
+    #tabelaGastosReais tbody tr td:nth-child(2) {
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      background-color: var(--color-bg-medium);
+    }
+    
+    #tabelaGastosReais thead tr th:nth-child(2) {
+      background-color: var(--color-bg-light);
+      z-index: 20;
+    }
+    
+    #tabelaGastosReais tbody tr td:nth-child(2) {
+      white-space: nowrap;
+      min-width: 150px;
+      text-align: left;
+    }
+    
+    /* Linha de espaçamento na tabela de resumo */
+    .spacer-row td {
+      height: 10px;
+      padding: 0;
+      border: none;
+      background-color: var(--color-bg-dark);
+    }
+    
+    /* Cards e Gráficos */
     .graficos-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: var(--spacing-lg);
       justify-content: center;
-      margin-top: 30px;
+      margin-top: var(--spacing-xl);
     }
+    
     .grafico-card {
-      background-color: #014034;
-      border-radius: 10px;
-      padding: 20px;
-      width: calc(50% - 40px);
+      background-color: var(--color-bg-medium);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-lg);
+      width: calc(50% - var(--spacing-lg));
       min-width: 400px;
       box-sizing: border-box;
+      box-shadow: var(--shadow-md);
+      transition: transform var(--transition-fast);
     }
+    
+    .grafico-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    
     .grafico-titulo {
       text-align: center;
-      margin-bottom: 15px;
-      color: #ffd700;
-      font-size: 16px;
+      margin-bottom: var(--spacing-md);
+      color: var(--color-text-accent);
+      font-size: 1.1rem;
+      font-weight: 600;
     }
+    
     .grafico {
       width: 100%;
       height: 300px;
       position: relative;
     }
+    
+    .grafico-comparacao {
+      height: 400px;
+    }
+    
     .seletor-mes {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: var(--spacing-lg);
     }
+    
     .seletor-mes select {
-      padding: 8px 15px;
-      border-radius: 5px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--border-radius-md);
       border: none;
-      background-color: #006a56;
-      color: white;
-      font-weight: bold;
+      background-color: var(--color-bg-light);
+      color: var(--color-text);
+      font-weight: 600;
+      cursor: pointer;
     }
+    
     .legenda-grafico {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-top: 15px;
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-md);
       width: 100%;
     }
+    
     .item-legenda {
       display: flex;
       align-items: center;
-      font-size: 14px;
+      font-size: 0.9rem;
       width: 100%;
     }
+    
     .cor-legenda {
       width: 15px;
       height: 15px;
-      margin-right: 10px;
-      border-radius: 3px;
+      margin-right: var(--spacing-sm);
+      border-radius: var(--border-radius-sm);
       flex-shrink: 0;
     }
+    
     .valor-legenda {
-      margin-left: 5px;
-      font-weight: bold;
+      margin-left: var(--spacing-xs);
+      font-weight: 600;
     }
+    
     .descricao-legenda {
       min-width: 120px;
     }
     
-    /* Linha de espaçamento na tabela de resumo */
-    .spacer-row td {
-        height: 10px; /* Altura do espaço */
-        padding: 0;
-        border: none; /* Remove bordas */
-        background-color: #002d26; /* Cor de fundo do corpo */
-    }
-
-    /* Estilos para subcategorias e cartões */
-    .categoria-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .categoria-select {
-      flex: 1;
-    }
-
-    .botao-gerenciar {
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .botao-gerenciar:hover {
-      background-color: #45a049;
-    }
-
-    /* Campo de cartão inicialmente oculto, mas com transição suave */
-    .cartao-container {
-      display: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .cartao-container.show {
-      display: block;
-      opacity: 1;
-    }
-
-    /* Estilos para a seção de Gastos Reais */
-    .botao-gastos-reais-fixo {
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      z-index: 50;
-      background-color: #4caf50;
-      color: white;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    .botao-gastos-reais-fixo:hover {
-      background-color: #45a049;
-    }
-    
-    .container-gastos-reais-ativo ~ .botao-gastos-reais-fixo {
-      opacity: 0;
-      visibility: hidden;
-    }
-    
-    /* Estilos para filtros de gastos reais */
-    .filtros-gastos-reais {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-      background-color: #014034;
-      padding: 15px;
-      border-radius: 10px;
-    }
-    
-    .filtro-grupo {
-      display: flex;
-      flex-direction: column;
-      min-width: 150px;
-    }
-    
-    .filtro-grupo label {
-      margin-bottom: 5px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-    
-    .filtro-grupo select {
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-    }
-    
-    .botao-filtrar {
-      background-color: #ffd700;
-      color: #002d26;
-      font-weight: bold;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      align-self: flex-end;
-      margin-top: auto;
-    }
-    
-    .botao-filtrar:hover {
-      background-color: #ffc400;
-    }
-    
-    /* Estilos para cards de faturas */
+    /* Cards de Faturas */
     .resumo-faturas {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
-      margin-top: 15px;
+      gap: var(--spacing-lg);
+      margin-top: var(--spacing-md);
     }
     
     .card-fatura {
-      background-color: #014034;
-      border-radius: 10px;
-      padding: 15px;
-      width: calc(33.33% - 20px);
+      background-color: var(--color-bg-medium);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-md);
+      width: calc(33.33% - var(--spacing-lg));
       min-width: 300px;
       box-sizing: border-box;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-sm);
     }
     
     .card-fatura:hover {
       transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: var(--shadow-lg);
     }
     
     .card-fatura-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
-      border-bottom: 1px solid #006a56;
-      padding-bottom: 10px;
+      margin-bottom: var(--spacing-sm);
+      border-bottom: 1px solid var(--color-bg-light);
+      padding-bottom: var(--spacing-sm);
     }
     
     .card-fatura-titulo {
-      font-weight: bold;
-      font-size: 16px;
+      font-weight: 600;
+      font-size: 1rem;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: var(--spacing-sm);
     }
     
     .card-fatura-valor {
-      font-weight: bold;
-      font-size: 18px;
-      color: #ffd700;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--color-text-accent);
     }
     
     .card-fatura-detalhes {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 15px;
-      font-size: 14px;
-      color: #b0bec5;
+      margin-bottom: var(--spacing-md);
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
     }
     
     .card-fatura-itens {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: var(--spacing-xs);
     }
     
     .card-fatura-item {
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
+      font-size: 0.9rem;
     }
     
     .card-fatura-item-descricao {
@@ -556,509 +661,131 @@
     }
     
     .card-fatura-item-valor {
-      font-weight: bold;
+      font-weight: 600;
     }
     
     .indicador-fatura {
-      font-size: 12px;
+      font-size: 0.75rem;
       padding: 3px 8px;
       border-radius: 10px;
-      margin-left: 5px;
+      margin-left: var(--spacing-xs);
     }
     
     .fatura-atual {
-      background-color: #2196f3;
-      color: white;
+      background-color: var(--color-info);
+      color: var(--color-text);
     }
     
     .fatura-fechada {
       background-color: #9e9e9e;
-      color: white;
+      color: var(--color-text);
     }
     
     .fatura-futura {
-      background-color: #4caf50;
-      color: white;
+      background-color: var(--color-success);
+      color: var(--color-text);
     }
     
-    /* Estilos para gastos reais na tabela */
-    .gasto-real {
-      background-color: rgba(0, 106, 86, 0.1);
-    }
-    
-    .gasto-real-cartao {
-      background-color: rgba(245, 124, 0, 0.1);
-    }
-    
-    /* Estilos para comparação de valores */
+    /* Comparação de valores */
     .comparacao-valor {
       display: flex;
       flex-direction: column;
     }
     
     .valor-real {
-      font-weight: bold;
-      font-size: 14px;
+      font-weight: 600;
+      font-size: 0.9rem;
     }
     
     .valor-planejado {
-      font-size: 12px;
-      color: #b0bec5;
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
     }
     
     .variacao-positiva {
-      color: #4caf50;
+      color: var(--color-success);
     }
     
     .variacao-negativa {
-      color: #f44336;
+      color: var(--color-danger);
     }
     
-    /* Estilos para info de fatura */
     .info-fatura {
-      margin-top: 5px;
-      font-size: 12px;
-      color: #ffd700;
-    }
-
-    /* Modal de gerenciamento genérico */
-    .modal-gerenciamento {
-      display: none;
-      position: fixed;
-      z-index: 200;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.7);
-      padding-top: 60px;
-    }
-
-    .modal-gerenciamento-content {
-      background-color: #014034;
-      margin: 5% auto;
-      padding: 30px;
-      border: 1px solid #888;
-      width: 60%;
-      max-width: 500px;
-      border-radius: 10px;
-      position: relative;
-    }
-
-    .lista-gerenciamento {
-      max-height: 300px;
-      overflow-y: auto;
-      margin-bottom: 20px;
-    }
-
-    .item-gerenciamento {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px;
-      margin-bottom: 5px;
-      background-color: #006a56;
-      border-radius: 5px;
-    }
-
-    .item-gerenciamento-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .item-gerenciamento-nome {
-      font-weight: bold;
-    }
-
-    .item-gerenciamento-detalhe {
-      font-size: 12px;
-      color: #b0bec5;
-    }
-
-    .botoes-item-gerenciamento button {
-      background-color: #ff9800;
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 12px;
-      margin-left: 5px;
-    }
-
-    .botoes-item-gerenciamento button.excluir {
-      background-color: #c62828;
-    }
-
-    .botoes-item-gerenciamento button:hover {
-      opacity: 0.8;
-    }
-
-    .novo-item-container {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap; /* Para responsividade */
-    }
-
-    .novo-item-input {
-      flex: 1;
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-      min-width: 150px; /* Largura mínima */
-    }
-
-    .novo-item-input.dia {
-      flex: 0 0 80px; /* Largura fixa para dia */
-    }
-
-    .botao-adicionar-item {
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .botao-adicionar-item:hover {
-      background-color: #45a049;
-    }
-
-    /* Cores aleatórias para subcategorias */
-    .subcategoria-cor-1 { color: #e91e63; }
-    .subcategoria-cor-2 { color: #9c27b0; }
-    .subcategoria-cor-3 { color: #673ab7; }
-    .subcategoria-cor-4 { color: #3f51b5; }
-    .subcategoria-cor-5 { color: #2196f3; }
-    .subcategoria-cor-6 { color: #00bcd4; }
-    .subcategoria-cor-7 { color: #009688; }
-    .subcategoria-cor-8 { color: #8bc34a; }
-    .subcategoria-cor-9 { color: #cddc39; }
-    .subcategoria-cor-10 { color: #ffeb3b; }
-    .subcategoria-cor-11 { color: #ff5722; }
-    .subcategoria-cor-12 { color: #795548; }
-
-    /* Linha clicável na tabela principal */
-    #tabelaLancamentos tbody tr {
-      cursor: pointer;
-    }
-    #tabelaLancamentos tbody tr:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-    }
-
-    /* Linha clicável na tabela de resumo */
-    #tabelaResumo tbody tr {
-      cursor: pointer;
-    }
-    #tabelaResumo tbody tr:hover {
-      background-color: rgba(255, 255, 255, 0.05);
+      margin-top: var(--spacing-xs);
+      font-size: 0.8rem;
+      color: var(--color-text-accent);
     }
     
-    /* Linha clicável na tabela de gastos reais */
-    #tabelaGastosReais tbody tr {
-      cursor: pointer;
-    }
-    #tabelaGastosReais tbody tr:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-    }
-
-    /* Modal de detalhamento */
-    .modal-detalhamento {
-      display: none;
-      position: fixed;
-      z-index: 150;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.7);
-      padding-top: 60px;
-    }
-
-    .modal-detalhamento-content {
-      background-color: #014034;
-      margin: 5% auto;
-      padding: 30px;
-      border: 1px solid #888;
-      width: 70%;
-      max-width: 900px;
-      border-radius: 10px;
-      position: relative;
-    }
-
-    .lista-detalhamento {
-      max-height: 400px;
-      overflow-y: auto;
-      margin-bottom: 20px;
-    }
-
-    .item-detalhamento {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      margin-bottom: 5px;
-      background-color: #006a56;
-      border-radius: 5px;
-    }
-
-    .item-detalhamento-info {
-      flex: 1;
-      text-align: left;
-    }
-
-    .item-detalhamento-valores {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 5px;
-    }
-
-    .item-detalhamento-valor {
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .item-detalhamento-media {
-      font-size: 14px;
-      color: #b0bec5;
-    }
-
-    .item-detalhamento-percentual {
-      color: #ffd700;
-      font-size: 14px;
-    }
-
-    /* Destaque para campo de cartão quando obrigatório */
-    .cartao-container.obrigatorio {
-      border: 2px solid #ffd700;
-      padding: 10px;
-      border-radius: 5px;
-      background-color: rgba(255, 215, 0, 0.1);
-    }
-  
-    /* MOD: Estilo para dia de fechamento editável */
-    .dia-fechamento-editavel {
-      cursor: pointer;
-      text-decoration: underline;
-      color: #ffd700; /* Cor de destaque */
-      font-weight: bold;
-    }
-    .dia-fechamento-editavel:hover {
-      color: #ffec8b; /* Cor mais clara no hover */
-    }
-    
-    /* Estilos para a seção de Gastos Reais */
+    /* Filtros */
+    .filtros-container,
     .filtros-gastos-reais {
       display: flex;
       flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 20px;
-      background-color: #014034;
-      padding: 15px;
-      border-radius: 10px;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-lg);
+      background-color: var(--color-bg-medium);
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-sm);
     }
     
     .filtro-grupo {
       display: flex;
       flex-direction: column;
       min-width: 150px;
+      flex: 1;
     }
     
     .filtro-grupo label {
-      margin-bottom: 5px;
-      font-weight: bold;
-      font-size: 14px;
+      margin-bottom: var(--spacing-xs);
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
     }
     
-    .filtro-grupo select,
-    .filtro-grupo input {
-      padding: 8px;
-      border-radius: 5px;
+    .filtro-grupo select {
+      padding: var(--spacing-sm);
+      border-radius: var(--border-radius-md);
       border: none;
-      background-color: #006a56;
-      color: white;
+      background-color: var(--color-bg-light);
+      color: var(--color-text);
     }
     
-    .botao-filtrar {
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      align-self: flex-end;
-      margin-top: auto;
-    }
-    
-    .botao-filtrar:hover {
-      background-color: #45a049;
-    }
-    
-    .indicador-fatura {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-left: 5px;
-    }
-    
-    .fatura-atual {
-      background-color: #f57c00;
-      color: white;
-    }
-    
-    .fatura-fechada {
-      background-color: #4caf50;
-      color: white;
-    }
-    
-    .fatura-futura {
-      background-color: #2196f3;
-      color: white;
-    }
-    
-    /* Comparação planejado vs real */
-    .comparacao-valor {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    .valor-planejado {
-      font-size: 12px;
-      color: #b0bec5;
-    }
-    
-    .valor-real {
-      font-weight: bold;
-    }
-    
-    .variacao-positiva {
-      color: #4caf50;
-    }
-    
-    .variacao-negativa {
-      color: #f44336;
-    }
-    
-    /* Resumo de faturas */
-    .resumo-faturas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 20px;
-    }
-    
-    .card-fatura {
-      background-color: #014034;
-      border-radius: 10px;
-      padding: 15px;
-      flex: 1;
-      min-width: 250px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-    
-    .card-fatura-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      border-bottom: 1px solid #006a56;
-      padding-bottom: 10px;
-    }
-    
-    .card-fatura-titulo {
-      font-weight: bold;
-      color: #ffd700;
-    }
-    
-    .card-fatura-valor {
-      font-weight: bold;
-      font-size: 18px;
-    }
-    
-    .card-fatura-detalhes {
-      font-size: 14px;
-      color: #b0bec5;
-    }
-    
-    .card-fatura-itens {
-      margin-top: 10px;
-      max-height: 150px;
-      overflow-y: auto;
-    }
-    
-    .card-fatura-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 5px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    .card-fatura-item-descricao {
-      flex: 1;
-    }
-    
-    .card-fatura-item-valor {
-      font-weight: bold;
-      margin-left: 10px;
-    }
-    
-    /* Estilo para o gráfico de comparação */
-    .grafico-comparacao {
-      height: 400px;
-    }
-</style>
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-
-    /* Estilos para subcategorias e cartões */
+    /* Categoria e Subcategoria */
     .categoria-container {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 15px;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
     }
-
+    
     .categoria-select {
       flex: 1;
     }
-
-    .botao-gerenciar {
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .botao-gerenciar:hover {
-      background-color: #45a049;
-    }
-
-    /* Campo de cartão inicialmente oculto, mas com transição suave */
+    
+    /* Cartão container */
     .cartao-container {
       display: none;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity var(--transition-normal);
     }
-
+    
     .cartao-container.show {
       display: block;
       opacity: 1;
     }
-
-    /* Modal de gerenciamento genérico */
-    .modal-gerenciamento {
+    
+    .cartao-container.obrigatorio {
+      border: 2px solid var(--color-accent);
+      padding: var(--spacing-sm);
+      border-radius: var(--border-radius-md);
+      background-color: rgba(255, 215, 0, 0.1);
+    }
+    
+    /* Modal */
+    .modal,
+    .modal-gerenciamento,
+    .modal-detalhamento {
       display: none;
       position: fixed;
       z-index: 200;
@@ -1067,103 +794,197 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgba(0,0,0,0.7);
+      background-color: rgba(0, 0, 0, 0.7);
       padding-top: 60px;
+      opacity: 0;
+      transition: opacity var(--transition-normal);
     }
-
-    .modal-gerenciamento-content {
-      background-color: #014034;
+    
+    .modal.show {
+      opacity: 1;
+    }
+    
+    .modal-content,
+    .modal-gerenciamento-content,
+    .modal-detalhamento-content {
+      background-color: var(--color-bg-medium);
       margin: 5% auto;
-      padding: 30px;
-      border: 1px solid #888;
+      padding: var(--spacing-xl);
+      border: 1px solid var(--color-bg-light);
       width: 60%;
-      max-width: 500px;
-      border-radius: 10px;
+      max-width: 600px;
+      border-radius: var(--border-radius-lg);
       position: relative;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: all var(--transition-normal);
     }
-
+    
+    .modal.show .modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .modal-title,
+    h2 {
+      margin-bottom: var(--spacing-lg);
+      color: var(--color-text-accent);
+      font-size: 1.2rem;
+      border-bottom: 1px solid var(--color-bg-light);
+      padding-bottom: var(--spacing-sm);
+    }
+    
+    .close-button,
+    .modal-close {
+      position: absolute;
+      top: var(--spacing-md);
+      right: var(--spacing-md);
+      color: var(--color-text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color var(--transition-fast);
+    }
+    
+    .close-button:hover,
+    .modal-close:hover {
+      color: var(--color-danger);
+    }
+    
+    /* Modal de gerenciamento */
     .lista-gerenciamento {
       max-height: 300px;
       overflow-y: auto;
-      margin-bottom: 20px;
+      margin-bottom: var(--spacing-lg);
     }
-
+    
     .item-gerenciamento {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px;
-      margin-bottom: 5px;
-      background-color: #006a56;
-      border-radius: 5px;
+      padding: var(--spacing-sm);
+      margin-bottom: var(--spacing-xs);
+      background-color: var(--color-bg-light);
+      border-radius: var(--border-radius-md);
+      transition: background-color var(--transition-fast);
     }
-
+    
+    .item-gerenciamento:hover {
+      background-color: var(--color-primary-dark);
+    }
+    
     .item-gerenciamento-info {
       display: flex;
       flex-direction: column;
     }
-
+    
     .item-gerenciamento-nome {
-      font-weight: bold;
+      font-weight: 600;
     }
-
+    
     .item-gerenciamento-detalhe {
-      font-size: 12px;
-      color: #b0bec5;
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
     }
-
+    
     .botoes-item-gerenciamento button {
-      background-color: #ff9800;
-      color: white;
+      background-color: var(--color-warning);
+      color: var(--color-text);
       border: none;
       padding: 4px 8px;
-      border-radius: 3px;
+      border-radius: var(--border-radius-sm);
       cursor: pointer;
-      font-size: 12px;
-      margin-left: 5px;
+      font-size: 0.8rem;
+      margin-left: var(--spacing-xs);
+      transition: all var(--transition-fast);
     }
-
+    
     .botoes-item-gerenciamento button.excluir {
-      background-color: #c62828;
+      background-color: var(--color-danger);
+      color: var(--color-text);
     }
-
+    
     .botoes-item-gerenciamento button:hover {
-      opacity: 0.8;
+      opacity: 0.9;
+      transform: translateY(-2px);
     }
-
+    
     .novo-item-container {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap; /* Para responsividade */
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-lg);
+      flex-wrap: wrap;
     }
-
+    
     .novo-item-input {
       flex: 1;
-      padding: 8px;
-      border-radius: 5px;
+      padding: var(--spacing-sm);
+      border-radius: var(--border-radius-md);
       border: none;
-      min-width: 150px; /* Largura mínima */
+      background-color: var(--color-bg-light);
+      color: var(--color-text);
+      min-width: 150px;
     }
-
+    
     .novo-item-input.dia {
-      flex: 0 0 80px; /* Largura fixa para dia */
+      flex: 0 0 80px;
     }
-
-    .botao-adicionar-item {
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
+    
+    /* Modal de detalhamento */
+    .modal-detalhamento-content {
+      width: 70%;
+      max-width: 900px;
     }
-
-    .botao-adicionar-item:hover {
-      background-color: #45a049;
+    
+    .lista-detalhamento {
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: var(--spacing-lg);
     }
-
-    /* Cores aleatórias para subcategorias */
+    
+    .item-detalhamento {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-sm);
+      margin-bottom: var(--spacing-xs);
+      background-color: var(--color-bg-light);
+      border-radius: var(--border-radius-md);
+      transition: background-color var(--transition-fast);
+    }
+    
+    .item-detalhamento:hover {
+      background-color: var(--color-primary-dark);
+    }
+    
+    .item-detalhamento-info {
+      flex: 1;
+      text-align: left;
+    }
+    
+    .item-detalhamento-valores {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--spacing-xs);
+    }
+    
+    .item-detalhamento-valor {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    
+    .item-detalhamento-media {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+    
+    .item-detalhamento-percentual {
+      color: var(--color-text-accent);
+      font-size: 0.85rem;
+    }
+    
+    /* Cores para subcategorias */
     .subcategoria-cor-1 { color: #e91e63; }
     .subcategoria-cor-2 { color: #9c27b0; }
     .subcategoria-cor-3 { color: #673ab7; }
@@ -1176,117 +997,384 @@
     .subcategoria-cor-10 { color: #ffeb3b; }
     .subcategoria-cor-11 { color: #ff5722; }
     .subcategoria-cor-12 { color: #795548; }
-
-    /* Linha clicável na tabela principal */
-    #tabelaLancamentos tbody tr {
-      cursor: pointer;
-    }
-    #tabelaLancamentos tbody tr:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-    }
-
-    /* Linha clicável na tabela de resumo */
+    
+    /* Linha clicável na tabela */
+    #tabelaLancamentos tbody tr,
     #tabelaResumo tbody tr {
       cursor: pointer;
+      transition: background-color var(--transition-fast);
     }
+    
+    #tabelaLancamentos tbody tr:hover,
     #tabelaResumo tbody tr:hover {
       background-color: rgba(255, 255, 255, 0.05);
     }
-
-    /* Modal de detalhamento */
-    .modal-detalhamento {
-      display: none;
-      position: fixed;
-      z-index: 150;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.7);
-      padding-top: 60px;
-    }
-
-    .modal-detalhamento-content {
-      background-color: #014034;
-      margin: 5% auto;
-      padding: 30px;
-      border: 1px solid #888;
-      width: 70%;
-      max-width: 900px;
-      border-radius: 10px;
-      position: relative;
-    }
-
-    .lista-detalhamento {
-      max-height: 400px;
-      overflow-y: auto;
-      margin-bottom: 20px;
-    }
-
-    .item-detalhamento {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      margin-bottom: 5px;
-      background-color: #006a56;
-      border-radius: 5px;
-    }
-
-    .item-detalhamento-info {
-      flex: 1;
-      text-align: left;
-    }
-
-    .item-detalhamento-valores {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 5px;
-    }
-
-    .item-detalhamento-valor {
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .item-detalhamento-media {
-      font-size: 14px;
-      color: #b0bec5;
-    }
-
-    .item-detalhamento-percentual {
-      color: #ffd700;
-      font-size: 14px;
-    }
-
-    /* Destaque para campo de cartão quando obrigatório */
-    .cartao-container.obrigatorio {
-      border: 2px solid #ffd700;
-      padding: 10px;
-      border-radius: 5px;
-      background-color: rgba(255, 215, 0, 0.1);
-    }
-
-  
-    /* MOD: Estilo para dia de fechamento editável */
+    
+    /* Estilo para dia de fechamento editável */
     .dia-fechamento-editavel {
       cursor: pointer;
       text-decoration: underline;
-      color: #ffd700; /* Cor de destaque */
-      font-weight: bold;
+      color: var(--color-text-accent);
+      font-weight: 600;
+      transition: color var(--transition-fast);
     }
+    
     .dia-fechamento-editavel:hover {
-      color: #ffec8b; /* Cor mais clara no hover */
+      color: var(--color-accent-light);
     }
-</style>
+    
+    /* Elementos escondidos */
+    .hidden-id {
+      display: none;
+    }
+    
+    /* Mensagens e Insights */
+    #insightsContainer,
+    .mensagem-card {
+      margin-top: var(--spacing-lg);
+      padding: var(--spacing-md);
+      background-color: var(--color-bg-medium);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-fast);
+    }
+    
+    #insightsContainer:hover,
+    .mensagem-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    #insightsContent,
+    #mensagensDia,
+    #mensagensSemana,
+    #mensagensMes {
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    
+    .seletor-data-mensagens {
+      text-align: center;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .seletor-data-mensagens input[type="date"] {
+      padding: var(--spacing-sm);
+      border-radius: var(--border-radius-md);
+      border: none;
+      background-color: var(--color-bg-light);
+      color: var(--color-text);
+      margin-right: var(--spacing-sm);
+    }
+    
+    /* ===== MELHORIAS DE ACESSIBILIDADE ===== */
+    
+    /* Foco visível para navegação por teclado */
+    *:focus {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+    
+    /* Indicadores de estado para leitores de tela */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    
+    /* Animações reduzidas para usuários que preferem menos movimento */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    
+    /* ===== RESPONSIVIDADE ===== */
+    
+    /* Tablets em modo paisagem */
+    @media (max-width: 1200px) {
+      .graficos-container {
+        gap: var(--spacing-md);
+      }
+      
+      .grafico-card {
+        min-width: 350px;
+      }
+      
+      .card-fatura {
+        width: calc(50% - var(--spacing-lg));
+      }
+    }
+    
+    /* Tablets em modo retrato */
+    @media (max-width: 1024px) {
+      .form-section-modal {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+      }
+      
+      .card-fatura {
+        width: calc(50% - var(--spacing-md));
+        min-width: 280px;
+      }
+      
+      .table-container {
+        font-size: 0.85rem;
+      }
+      
+      th, td {
+        padding: var(--spacing-xs) var(--spacing-sm);
+      }
+      
+      .grafico-card {
+        width: 100%;
+      }
+    }
+    
+    /* Smartphones grandes */
+    @media (max-width: 768px) {
+      .card-fatura {
+        width: 100%;
+        min-width: auto;
+      }
+      
+      .modal-content,
+      .modal-gerenciamento-content,
+      .modal-detalhamento-content {
+        width: 95%;
+        margin: 2% auto;
+        padding: var(--spacing-lg);
+      }
+      
+      .botao-fixo {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+        padding: 0;
+        border-radius: 50%;
+      }
+      
+      .botao-fixo span {
+        display: none;
+      }
+      
+      .filtros-container,
+      .filtros-gastos-reais {
+        flex-direction: column;
+        gap: var(--spacing-md);
+      }
+      
+      .filtro-grupo {
+        width: 100%;
+        min-width: auto;
+      }
+      
+      .novo-item-container {
+        flex-direction: column;
+      }
+      
+      .novo-item-input {
+        width: 100%;
+        min-width: auto;
+      }
+      
+      .botoes-formulario {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+      }
+      
+      .botao-lancar,
+      .botao-filtrar,
+      .botao-voltar,
+      .botao-gerenciar,
+      .botao-adicionar-item {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      /* Ajustes para tabelas em mobile */
+      .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      table {
+        min-width: 600px;
+      }
+      
+      /* Melhor visualização de cards em mobile */
+      .grafico-card {
+        width: 100%;
+        min-width: auto;
+        padding: var(--spacing-md);
+      }
+      
+      .grafico {
+        height: 250px;
+      }
+    }
+    
+    /* Smartphones pequenos */
+    @media (max-width: 576px) {
+      :root {
+        --spacing-xs: 2px;
+        --spacing-sm: 6px;
+        --spacing-md: 12px;
+        --spacing-lg: 18px;
+        --spacing-xl: 24px;
+      }
+      
+      body {
+        font-size: 0.9rem;
+      }
+      
+      .secao-lancamentos,
+      .secao-resumo,
+      .secao-mensagens,
+      .secao-gastos-reais {
+        padding: var(--spacing-xs);
+      }
+      
+      .table-container {
+        margin-left: -var(--spacing-xs);
+        margin-right: -var(--spacing-xs);
+        width: calc(100% + var(--spacing-xs) * 2);
+        border-radius: 0;
+      }
+      
+      .form-section {
+        padding: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
+      }
+      
+      .botao-lancar,
+      .botao-filtrar,
+      .botao-voltar,
+      .botao-gerenciar,
+      .botao-adicionar-item {
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+        min-height: 36px;
+      }
+      
+      .botao-fixo {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+      
+      .modal-content,
+      .modal-gerenciamento-content,
+      .modal-detalhamento-content {
+        width: 98%;
+        margin: 1% auto;
+        padding: var(--spacing-md);
+      }
+      
+      /* Ajustes específicos para formulários em mobile */
+      .form-group input,
+      .form-group select {
+        padding: var(--spacing-sm);
+        font-size: 16px; /* Evita zoom no iOS */
+      }
+      
+      /* Cards de fatura mais compactos */
+      .card-fatura {
+        padding: var(--spacing-sm);
+      }
+      
+      .card-fatura-titulo {
+        font-size: 0.9rem;
+      }
+      
+      .card-fatura-valor {
+        font-size: 1rem;
+      }
+      
+      /* Gráficos mais compactos */
+      .grafico {
+        height: 200px;
+      }
+      
+      .legenda-grafico {
+        font-size: 0.8rem;
+      }
+    }
+    
+    /* Smartphones muito pequenos */
+    @media (max-width: 375px) {
+      h1 {
+        font-size: 1.4rem;
+      }
+      
+      .botao-lancar,
+      .botao-filtrar,
+      .botao-voltar,
+      .botao-gerenciar,
+      .botao-adicionar-item {
+        font-size: 0.8rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
+      }
+      
+      .card-fatura-item {
+        font-size: 0.8rem;
+      }
+      
+      .table-container {
+        font-size: 0.8rem;
+      }
+      
+      th, td {
+        padding: var(--spacing-xs);
+      }
+    }
+    
+    /* ===== PRINT STYLES ===== */
+    @media print {
+      .botao-fixo,
+      .modal,
+      .botao-lancar,
+      .botao-filtrar,
+      .botao-voltar,
+      .botao-gerenciar,
+      .botao-adicionar-item,
+      .delete-btn {
+        display: none !important;
+      }
+      
+      .table-container {
+        box-shadow: none;
+        border: 1px solid #000;
+      }
+      
+      body {
+        background: white;
+        color: black;
+      }
+      
+      .card-fatura {
+        break-inside: avoid;
+        border: 1px solid #000;
+        margin-bottom: var(--spacing-md);
+      }
+    }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
 
   <h1>Controle Financeiro</h1>
   
   <!-- Container Principal (Lançamentos e Resumo) -->
-  <div class="container-principal" id="containerPrincipal">
+  <div class="container-principal mostrar-lancamentos" id="containerPrincipal">
     <!-- Seção da Tabela de Lançamentos -->
     <div class="secao-lancamentos">
       <div class="table-container">
@@ -1410,9 +1498,9 @@
         </div>
       </div>
       <!-- Nova Seção de Insights -->
-      <div id="insightsContainer" style="margin-top: 30px; padding: 20px; background-color: #014034; border-radius: 10px;">
+      <div id="insightsContainer">
         <div class="resumo-titulo">Insights Financeiros</div>
-        <div id="insightsContent" style="font-size: 14px; line-height: 1.6;">
+        <div id="insightsContent">
           <p>Insights serão gerados aqui...</p>
         </div>
       </div>
@@ -1423,35 +1511,168 @@
       <button class="botao-voltar" onclick="mostrarResumo()">← Voltar para Resumo</button>
       <div class="resumo-titulo">Mensagens e Alertas</div>
 
-      <div class="seletor-data-mensagens" style="text-align: center; margin-bottom: 20px;">
+      <div class="seletor-data-mensagens">
         <label for="dataSimulacao">Simular para data:</label>
-        <input type="date" id="dataSimulacao" style="padding: 8px; border-radius: 5px; border: none; background-color: #006a56; color: white; margin-right: 10px;">
-        <button class="botao-lancar" style="padding: 8px 15px;" onclick="gerarMensagens()">Gerar Mensagens</button>
-        <button class="botao-lancar" style="padding: 8px 15px; background-color: #2196F3; margin-left: 5px;" onclick="gerarMensagensHoje()">Usar Hoje</button>
+        <input type="date" id="dataSimulacao">
+        <button class="botao-lancar" onclick="gerarMensagens()">Gerar Mensagens</button>
+        <button class="botao-lancar" style="background-color: var(--color-info); margin-left: 5px;" onclick="gerarMensagensHoje()">Usar Hoje</button>
       </div>
 
-      <div id="mensagensContainer" style="margin-top: 20px;">
-        <div class="mensagem-card" style="background-color: #014034; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
-          <h3 style="color: #ffd700; margin-top: 0; margin-bottom: 10px; font-size: 16px;">Eventos do Dia</h3>
-          <div id="mensagensDia" style="font-size: 14px; line-height: 1.5;"><p>Selecione uma data e clique em 'Gerar Mensagens'.</p></div>
+      <div id="mensagensContainer">
+        <div class="mensagem-card">
+          <h3 style="color: var(--color-text-accent); margin-top: 0; margin-bottom: 10px; font-size: 16px;">Eventos do Dia</h3>
+          <div id="mensagensDia"><p>Selecione uma data e clique em 'Gerar Mensagens'.</p></div>
         </div>
-        <div class="mensagem-card" style="background-color: #014034; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
-          <h3 style="color: #ffd700; margin-top: 0; margin-bottom: 10px; font-size: 16px;">Eventos da Semana</h3>
-          <div id="mensagensSemana" style="font-size: 14px; line-height: 1.5;"></div>
+        <div class="mensagem-card">
+          <h3 style="color: var(--color-text-accent); margin-top: 0; margin-bottom: 10px; font-size: 16px;">Eventos da Semana</h3>
+          <div id="mensagensSemana"></div>
         </div>
-        <div class="mensagem-card" style="background-color: #014034; border-radius: 10px; padding: 15px;">
-          <h3 style="color: #ffd700; margin-top: 0; margin-bottom: 10px; font-size: 16px;">Eventos do Mês</h3>
-          <div id="mensagensMes" style="font-size: 14px; line-height: 1.5;"></div>
+        <div class="mensagem-card">
+          <h3 style="color: var(--color-text-accent); margin-top: 0; margin-bottom: 10px; font-size: 16px;">Eventos do Mês</h3>
+          <div id="mensagensMes"></div>
         </div>
       </div>
     </div>
     <!-- Fim da Nova Seção de Mensagens -->
-  </div>
-  
-  <!-- Botão Resumo Fixo (movido para fora do container principal para CSS funcionar) -->
+
     <!-- Nova Seção de Gastos Reais -->
     <div class="secao-gastos-reais">
       <button class="botao-voltar" onclick="voltarParaLancamentos()">← Voltar para Lançamentos</button>
+      
+      <div class="resumo-titulo">Registro de Gastos Reais</div>
+      
+      <!-- Filtros para Gastos Reais -->
+      <div class="filtros-gastos-reais">
+        <div class="filtro-grupo">
+          <label for="filtroMes">Mês:</label>
+          <select id="filtroMes">
+            <option value="todos">Todos</option>
+            <option value="0">Janeiro</option>
+            <option value="1">Fevereiro</option>
+            <option value="2">Março</option>
+            <option value="3">Abril</option>
+            <option value="4">Maio</option>
+            <option value="5">Junho</option>
+            <option value="6">Julho</option>
+            <option value="7">Agosto</option>
+            <option value="8">Setembro</option>
+            <option value="9">Outubro</option>
+            <option value="10">Novembro</option>
+            <option value="11">Dezembro</option>
+          </select>
+        </div>
+        
+        <div class="filtro-grupo">
+          <label for="filtroFormaPagamento">Forma de Pagamento:</label>
+          <select id="filtroFormaPagamento">
+            <option value="todos">Todos</option>
+            <option value="conta">Conta</option>
+            <option value="credito">Cartão de Crédito</option>
+          </select>
+        </div>
+        
+        <div class="filtro-grupo">
+          <label for="filtroCartao">Cartão:</label>
+          <select id="filtroCartao">
+            <option value="todos">Todos</option>
+            <!-- Opções de cartões serão preenchidas dinamicamente -->
+          </select>
+        </div>
+        
+        <div class="filtro-grupo">
+          <label for="filtroSubcategoria">Subcategoria:</label>
+          <select id="filtroSubcategoria">
+            <option value="todos">Todos</option>
+            <!-- Opções de subcategorias serão preenchidas dinamicamente -->
+          </select>
+        </div>
+        
+        <div class="filtro-grupo">
+          <label for="filtroFatura">Fatura:</label>
+          <select id="filtroFatura" onchange="aplicarFiltroFatura()">
+            <option value="todas">Todas as Faturas</option>
+            <!-- Opções de faturas serão preenchidas dinamicamente -->
+          </select>
+        </div>
+        
+        <button class="botao-filtrar" onclick="filtrarGastosReais()">Filtrar</button>
+      </div>
+      
+      <!-- Tabela de Gastos Reais -->
+      <div class="table-container">
+        <table id="tabelaGastosReais">
+          <thead>
+            <tr>
+              <th class="hidden-id">ID</th>
+              <th class="descricao-header">
+                <span>Descrição</span>
+                <button id="botaoAbrirModalGastoReal" class="botao-abrir-modal" onclick="abrirModalGastoReal()">+</button>
+              </th>
+              <th>Data</th>
+              <th>Valor</th>
+              <th>Forma de Pagamento</th>
+              <th>Cartão</th>
+              <th>Fatura</th>
+              <th>Subcategoria</th>
+              <th>Observação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="gastosReaisBody">
+            <!-- Gastos reais serão inseridos aqui -->
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Resumo de Faturas -->
+      <div class="resumo-titulo" style="margin-top: 30px;">Resumo de Faturas</div>
+      <div class="resumo-faturas" id="resumoFaturas">
+        <!-- Cards de faturas serão inseridos aqui -->
+      </div>
+      
+      <!-- Gráfico de Comparação Planejado vs Real -->
+      <div class="resumo-titulo" style="margin-top: 30px;">Comparação: Planejado vs Real</div>
+      <div class="seletor-mes">
+        <label for="mesComparacao">Selecione o mês: </label>
+        <select id="mesComparacao" onchange="atualizarGraficoComparacao()">
+          <option value="-1">Total Anual</option>
+          <option value="0">Janeiro</option>
+          <option value="1">Fevereiro</option>
+          <option value="2">Março</option>
+          <option value="3">Abril</option>
+          <option value="4">Maio</option>
+          <option value="5">Junho</option>
+          <option value="6">Julho</option>
+          <option value="7">Agosto</option>
+          <option value="8">Setembro</option>
+          <option value="9">Outubro</option>
+          <option value="10">Novembro</option>
+          <option value="11">Dezembro</option>
+        </select>
+      </div>
+      <div class="grafico-card" style="width: 100%; min-width: 100%;">
+        <div class="grafico-titulo">Planejado vs Real</div>
+        <div class="grafico grafico-comparacao">
+          <canvas id="graficoComparacao"></canvas>
+        </div>
+      </div>
+    </div>
+    <!-- Fim da Seção de Gastos Reais -->
+  </div>
+  
+  <!-- Botões fixos -->
+  <button class="botao-fixo botao-resumo-fixo" onclick="mostrarResumo()">
+    <span>Ver Resumo e Análises</span>
+  </button>
+  
+  <button class="botao-fixo botao-mensagens-fixo" onclick="mostrarMensagens()">
+    <span>Ver Mensagens</span>
+  </button>
+  
+  <button class="botao-fixo botao-gastos-reais-fixo" onclick="mostrarGastosReais()">
+    <span>Ver Gastos Reais</span>
+  </button>
+
   <!-- Modal do Formulário de Adição de Gasto Real -->
   <div id="modalGastoReal" class="modal">
     <div class="modal-content">
@@ -1497,6 +1718,291 @@
             <!-- Opções de lançamentos serão preenchidas dinamicamente -->
           </select>
           
+          <label for="gastoRealObservacao">Observação (opcional):</label>
+          <input type="text" id="gastoRealObservacao" placeholder="Observações adicionais" />
+        </div>
+        
+        <div class="botoes-formulario">
+          <button class="botao-lancar" onclick="registrarGastoReal()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Edição de Gasto Real -->
+  <div id="modalEdicaoGastoReal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="fecharModalEdicaoGastoReal()">&times;</span>
+      <h2>Editar Gasto Real</h2>
+      <input type="hidden" id="editGastoRealId" />
+      <div class="form-section-modal">
+        <div class="form-group">
+          <label for="gastoRealDescricaoEdicao">Descrição:</label>
+          <input type="text" id="gastoRealDescricaoEdicao" placeholder="Ex: Supermercado, Restaurante" />
+
+          <label for="gastoRealValorEdicao">Valor (R$):</label>
+          <input type="text" id="gastoRealValorEdicao" placeholder="Ex: 150,00" />
+          
+          <label for="gastoRealDataEdicao">Data:</label>
+          <input type="date" id="gastoRealDataEdicao" />
+          
+          <label for="gastoRealFormaPagamentoEdicao">Forma de Pagamento:</label>
+          <select id="gastoRealFormaPagamentoEdicao" onchange="toggleGastoRealCartaoContainerEdicao()">
+            <option value="conta">Conta</option>
+            <option value="credito">Cartão de Crédito</option>
+          </select>
+          
+          <div id="gastoRealCartaoContainerEdicao" class="cartao-container">
+            <label for="gastoRealCartaoCreditoEdicao">Cartão de Crédito:</label>
+            <select id="gastoRealCartaoCreditoEdicao" onchange="atualizarFaturaGastoRealEdicao()">
+              <option value="">Selecione o cartão</option>
+              <!-- Opções de cartões serão preenchidas dinamicamente -->
+            </select>
+            <div id="gastoRealInfoFaturaEdicao" class="info-fatura"></div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="gastoRealSubcategoriaEdicao">Subcategoria (opcional):</label>
+          <select id="gastoRealSubcategoriaEdicao">
+            <option value="">Nenhuma</option>
+            <!-- Opções de subcategorias serão preenchidas dinamicamente -->
+          </select>
+          
+          <label for="gastoRealLancamentoEdicao">Lançamento Relacionado (opcional):</label>
+          <select id="gastoRealLancamentoEdicao">
+            <option value="">Nenhum</option>
+            <!-- Opções de lançamentos serão preenchidas dinamicamente -->
+          </select>
+          
+          <label for="gastoRealObservacaoEdicao">Observação (opcional):</label>
+          <input type="text" id="gastoRealObservacaoEdicao" placeholder="Observações adicionais" />
+        </div>
+        
+        <div class="botoes-formulario">
+          <button class="botao-lancar" onclick="salvarEdicaoGastoReal()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal do Formulário de Adição -->
+  <div id="modalFormulario" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="fecharModal()">&times;</span>
+      <h2>Novo Lançamento</h2>
+      <div class="form-section-modal">
+        <div class="form-group">
+          <label for="descricao">Descrição:</label>
+          <input type="text" id="descricao" placeholder="Ex: Salário, Luz" />
+
+          <label for="valor">Valor (R$):</label>
+          <input type="text" id="valor" placeholder="Ex: 1.500,00" />
+          
+          <label for="tipoLancamento">Tipo de Lançamento:</label>
+          <select id="tipoLancamento">
+            <option value="receita">Receita</option>
+            <option value="fixa">Despesa Fixa</option>
+            <option value="variavel">Despesa Variável</option>
+          </select>
+
+          <label for="formaPagamento">Forma de Pagamento:</label>
+          <select id="formaPagamento" onchange="toggleCartaoContainer()">
+            <option value="conta">Conta</option>
+            <option value="credito">Cartão de Crédito</option>
+          </select>
+
+          <label for="subcategoria">Subcategoria (opcional):</label>
+          <div class="categoria-container">
+            <select id="subcategoria" class="categoria-select">
+              <option value="">Nenhuma</option>
+            </select>
+            <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento('subcategorias')">Gerenciar</button>
+          </div>
+
+          <!-- Campo Cartão (inicialmente oculto) -->
+          <div class="cartao-container" id="cartaoContainer">
+            <label for="cartaoCredito">Cartão de Crédito:</label>
+            <div class="categoria-container">
+              <select id="cartaoCredito" class="categoria-select">
+                <option value="">Selecione o cartão</option>
+              </select>
+              <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento('cartoes')">Gerenciar Cartões</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-group">
+          <label for="frequenciaValor">A cada:</label>
+          <input type="number" id="frequenciaValor" min="1" value="1" />
+
+          <label for="frequenciaTipo">Unidade de Frequência:</label>
+          <select id="frequenciaTipo">
+            <option value="unico">não se repete</option>
+            <option value="dias">dias</option>
+            <option value="dias_uteis">dias úteis</option>
+            <option value="segunda">segunda</option>
+            <option value="terca">terça</option>
+            <option value="quarta">quarta</option>
+            <option value="quinta">quinta</option>
+            <option value="sexta">sexta</option>
+            <option value="semanas">semanas</option>
+            <option value="quinzenas">quinzenas</option>
+            <option value="meses" selected>meses</option>
+            <option value="anos">anos</option>
+          </select>
+
+          <label for="dataInicial">Data Inicial:</label>
+          <input type="date" id="dataInicial" />
+
+          <label for="dataFinal">Data Final:</label>
+          <input type="date" id="dataFinal" />
+        </div>
+        <div class="botoes-formulario">
+            <button class="botao-lancar" onclick="adicionarLancamento()">Lançar Item</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal do Formulário de Edição -->
+  <div id="modalEdicao" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="fecharModalEdicao()">&times;</span>
+      <h2>Editar Lançamento</h2>
+      <input type="hidden" id="editLancamentoId">
+      <div class="form-section-modal">
+        <div class="form-group">
+          <label for="descricaoEdicao">Descrição:</label>
+          <input type="text" id="descricaoEdicao" placeholder="Ex: Salário, Luz" />
+
+          <label for="valorEdicao">Valor (R$):</label>
+          <input type="text" id="valorEdicao" placeholder="Ex: 1.500,00" />
+          
+          <label for="tipoLancamentoEdicao">Tipo de Lançamento:</label>
+          <select id="tipoLancamentoEdicao">
+            <option value="receita">Receita</option>
+            <option value="fixa">Despesa Fixa</option>
+            <option value="variavel">Despesa Variável</option>
+          </select>
+
+          <label for="formaPagamentoEdicao">Forma de Pagamento:</label>
+          <select id="formaPagamentoEdicao" onchange="toggleCartaoContainerEdicao()">
+            <option value="conta">Conta</option>
+            <option value="credito">Cartão de Crédito</option>
+          </select>
+
+          <label for="subcategoriaEdicao">Subcategoria (opcional):</label>
+          <div class="categoria-container">
+            <select id="subcategoriaEdicao" class="categoria-select">
+              <option value="">Nenhuma</option>
+            </select>
+            <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento('subcategorias')">Gerenciar</button>
+          </div>
+
+          <!-- Campo Cartão Edição (inicialmente oculto) -->
+          <div class="cartao-container" id="cartaoContainerEdicao">
+            <label for="cartaoCreditoEdicao">Cartão de Crédito:</label>
+            <div class="categoria-container">
+              <select id="cartaoCreditoEdicao" class="categoria-select">
+                <option value="">Selecione o cartão</option>
+              </select>
+              <button type="button" class="botao-gerenciar" onclick="abrirModalGerenciamento('cartoes')">Gerenciar Cartões</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-group">
+          <label for="frequenciaValorEdicao">A cada:</label>
+          <input type="number" id="frequenciaValorEdicao" min="1" value="1" />
+
+          <label for="frequenciaTipoEdicao">Unidade de Frequência:</label>
+          <select id="frequenciaTipoEdicao">
+            <option value="unico">não se repete</option>
+            <option value="dias">dias</option>
+            <option value="dias_uteis">dias úteis</option>
+            <option value="segunda">segunda</option>
+            <option value="terca">terça</option>
+            <option value="quarta">quarta</option>
+            <option value="quinta">quinta</option>
+            <option value="sexta">sexta</option>
+            <option value="semanas">semanas</option>
+            <option value="quinzenas">quinzenas</option>
+            <option value="meses" selected>meses</option>
+            <option value="anos">anos</option>
+          </select>
+
+          <label for="dataInicialEdicao">Data Inicial:</label>
+          <input type="date" id="dataInicialEdicao" />
+
+          <label for="dataFinalEdicao">Data Final:</label>
+          <input type="date" id="dataFinalEdicao" />
+        </div>
+        <div class="botoes-formulario">
+            <button class="botao-lancar" onclick="salvarEdicao()">Salvar Edição</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Gerenciamento Genérico (Subcategorias e Cartões) -->
+  <div id="modalGerenciamento" class="modal-gerenciamento">
+    <div class="modal-gerenciamento-content">
+      <span class="close-button" onclick="fecharModalGerenciamento()">&times;</span>
+      <h2 id="tituloModalGerenciamento">Gerenciar</h2>
+      
+      <div id="formNovoItem">
+        <!-- Formulário para adicionar novo item (subcategoria ou cartão) -->
+      </div>
+      
+      <div id="listaItens" class="lista-gerenciamento">
+        <!-- Lista de itens existentes -->
+      </div>
+      
+      <div style="text-align: center;">
+        <button class="botao-lancar" onclick="fecharModalGerenciamento()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Detalhamento -->
+  <div id="modalDetalhamento" class="modal-detalhamento">
+    <div class="modal-detalhamento-content">
+      <span class="close-button" onclick="fecharModalDetalhamento()">&times;</span>
+      <h2 id="tituloDetalhamento">Detalhamento</h2>
+      
+      <div id="listaDetalhamento" class="lista-detalhamento">
+        <!-- Lista de detalhes será inserida aqui -->
+      </div>
+      
+      <div style="text-align: center;">
+        <button class="botao-lancar" onclick="fecharModalDetalhamento()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Funções de navegação lateral
+    function mostrarResumo() {
+      document.getElementById('containerPrincipal').className = 'container-principal mostrar-resumo';
+    }
+    
+    function mostrarMensagens() {
+      document.getElementById('containerPrincipal').className = 'container-principal mostrar-mensagens';
+    }
+    
+    function mostrarGastosReais() {
+      document.getElementById('containerPrincipal').className = 'container-principal mostrar-gastos-reais';
+    }
+    
+    function voltarParaLancamentos() {
+      document.getElementById('containerPrincipal').className = 'container-principal mostrar-lancamentos';
+    }
+  </script>
+
+
           <label for="gastoRealObservacao">Observação (opcional):</label>
           <input type="text" id="gastoRealObservacao" placeholder="Observações adicionais" />
         </div>
